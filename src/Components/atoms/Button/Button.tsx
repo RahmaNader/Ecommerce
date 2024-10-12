@@ -3,15 +3,15 @@ import React from "react";
 type ButtonProps = {
   label: string;
   onClick?: () => void;
-  type?: "primary" | "secondary" | "outlined" | "disabled"; // Button types
-  isDisabled?: boolean; // Disabled flag
-  className?: string; // Additional classes
+  type?: "primary" | "secondary" | "outlined" | "disabled";
+  isDisabled?: boolean;
+  className?: string;
 };
 
 const Button: React.FC<ButtonProps> = ({
   label,
   onClick,
-  type = "primary", // Default to 'primary'
+  type = "primary",
   isDisabled = false,
   className = "",
 }) => {
