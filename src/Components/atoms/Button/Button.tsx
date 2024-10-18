@@ -15,7 +15,7 @@ const Button: React.FC<ButtonProps> = ({
   isDisabled = false,
   className = "",
 }) => {
-  let baseStyles = `px-4 py-2 rounded font-semibold text-sm transition duration-200 ease-in-out`;
+  const baseStyles = `px-4 py-2 rounded font-semibold text-sm transition duration-200 ease-in-out`;
 
   let buttonStyles = "";
 
