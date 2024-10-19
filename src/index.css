@@ -1,3 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+@font-face {
+    font-family: 'playball';
+    src: local("playball") ,url(../public/Fonts/Playball-Regular.ttf) format('truetype');
+    font-weight: 900; /* Black weight is typically 900 */
+}
+
+@font-face {
+    font-family: 'playfair display';
+    src: local("playfair display") ,url(../public/Fonts/PlayfairDisplay-SemiBold.ttf) format('truetype');
+    font-weight: 600; 
+}
+
+@font-face {
+    font-family: 'poppins';
+    src: local("poppins") ,url(../public/Fonts/Poppins-Medium.ttf) format('truetype');
+    font-weight: 500; 
+}

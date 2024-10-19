@@ -3,9 +3,10 @@ import React from "react";
 type ButtonProps = {
   label: string;
   onClick?: () => void;
-  type?: "primary" | "secondary" | "outlined" | "disabled";
-  isDisabled?: boolean;
-  className?: string;
+  type?: "primary" | "secondary" | "outlined" | "disabled"; // Button types
+  isDisabled?: boolean; // Disabled flag
+  className?: string; // Additional classes
+  size? : string;
 };
 
 const Button: React.FC<ButtonProps> = ({
@@ -14,6 +15,7 @@ const Button: React.FC<ButtonProps> = ({
   type = "primary",
   isDisabled = false,
   className = "",
+  size = "small"
 }) => {
   const baseStyles = `px-4 py-2 rounded font-semibold text-sm transition duration-200 ease-in-out`;
 
@@ -21,13 +23,13 @@ const Button: React.FC<ButtonProps> = ({
 
   switch (type) {
     case "primary":
-      buttonStyles = "bg-blue-500 text-white hover:bg-blue-600";
+      buttonStyles = "bg-[#721013] text-white ";
       break;
     case "secondary":
-      buttonStyles = "bg-gray-500 text-white hover:bg-gray-600";
+      buttonStyles = "bg-[#A78E78] text-white";
       break;
     case "outlined":
-      buttonStyles = "border border-blue-500 text-blue-500 hover:bg-blue-50";
+      buttonStyles = "border border-[#721013] text-[#721013]";
       break;
     case "disabled":
       buttonStyles = "bg-gray-400 text-gray-700 cursor-not-allowed";
@@ -37,9 +39,21 @@ const Button: React.FC<ButtonProps> = ({
       break;
   }
 
+  switch (size) {
+    case "small":
+      className = "px-2 py-2";
+      break;
+    case "medium": 
+      className = "px-3 py-4";
+      break;
+    case "large":
+      className = "px-10 py-4";
+      break;    
+  }
+
   return (
     <button
-      className={`${baseStyles} ${buttonStyles} ${className}`}
+      className={` ${buttonStyles} ${className}`}
       onClick={isDisabled ? undefined : onClick}
       disabled={isDisabled}
     >
