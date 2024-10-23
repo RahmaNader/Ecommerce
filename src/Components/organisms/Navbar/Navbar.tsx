@@ -26,7 +26,7 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <div className="w-full flex justify-between items-center relative">
+    <div className="w-full flex justify-between items-center relative mx-48 mt-4">
       <div className="flex items-center">
         <img src={Logo} alt="Logo" />
       </div>
