@@ -1,32 +1,44 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { NavLink as RouterNavLink } from "react-router-dom";
 
 type NavLinkProps = {
   label: string;
   to?: string;
-  onHover?: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 };
 
-const NavLink: React.FC<NavLinkProps> = ({ label, to, onHover }) => {
+const NavLink: React.FC<NavLinkProps> = ({
+  label,
+  to,
+  onMouseEnter,
+  onMouseLeave,
+}) => {
   if (to) {
     return (
-      <Link
+      <RouterNavLink
         to={to}
-        className="text-dark-grey hover:text-wine no-underline text-2xl font-normal"
+        className={({ isActive }) =>
+          `text-dark-grey hover:text-wine no-underline text-2xl font-normal font-playfair ${
+            isActive ? "text-wine" : "text-dark-grey"
+          }`
+        }
+        onMouseEnter={onMouseEnter} // Add optional hover start
+        onMouseLeave={onMouseLeave} // Add optional hover end
       >
         {label}
-      </Link>
+      </RouterNavLink>
     );
   }
 
   return (
-    <button
-      onMouseEnter={onHover}
-      onMouseLeave={onHover}
-      className="text-dark-grey hover:text-wine focus:outline-none text-2xl font-normal"
+    <span
+      className="text-dark-grey hover:text-wine text-2xl font-normal font-playfair cursor-pointer"
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
     >
       {label}
-    </button>
+    </span>
   );
 };
 
