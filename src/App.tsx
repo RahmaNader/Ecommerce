@@ -1,12 +1,10 @@
-// import { Link } from "react-router-dom";
-// import Button from "@components/atoms/Button/Button";
-import './App.css'
 import Cart from "@components/organisms/Cart/Cart";
+import { Navbar } from "@components/organisms";
 function App() {
-
   return (
-    <div className="flex flex-col items-center justify-center">     
-        <Cart/>
+    <div className="mx-48 mt-4">
+      <Navbar />
+      <Cart />
     </div>
   );
 }
