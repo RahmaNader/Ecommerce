@@ -1,28 +1,26 @@
+// ShopModal.tsx
 import React from "react";
 
 type ShopModalProps = {
   isOpen: boolean;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
-  modalRef: React.Ref<HTMLDivElement>;
 };
 
 const ShopModal: React.FC<ShopModalProps> = ({
   isOpen,
   onMouseEnter,
   onMouseLeave,
-  modalRef,
 }) => {
   if (!isOpen) return null;
 
   return (
     <div
-      className="absolute left-1/2 top-full transform -translate-x-1/2 mt-4 z-50 w-[78%] ease-in"
+      className="absolute left-1/2 top-full transform -translate-x-1/2 mt-4 z-50 w-[78%] ease-in shadow-[0px_0px_14.4px_-1px_#A78E7875]"
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
       <div
-        ref={modalRef}
         className="bg-[#faf7f2] p-8 rounded-lg w-auto"
         onClick={(e) => e.stopPropagation()}
       >
@@ -63,6 +61,7 @@ const ShopModal: React.FC<ShopModalProps> = ({
               <li className="text-[#8c7361] hover:text-[#721013]">Pants</li>
               <li className="text-[#8c7361] hover:text-[#721013]">Tops</li>
               <li className="text-[#721013] font-bold">Shoes</li>{" "}
+              {/* Highlighted Item */}
               <li className="text-[#8c7361] hover:text-[#721013]">
                 Accessories
               </li>
