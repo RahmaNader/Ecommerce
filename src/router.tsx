@@ -1,9 +1,31 @@
 import { createBrowserRouter } from "react-router-dom";
-import App from "./App";
+import {
+  HomeScreen,
+  ContactScreen,
+  BlogsScreen,
+  AboutScreen,
+  Shop,
+} from "@pages";
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: <HomeScreen />,
+  },
+  {
+    path: "/blogs",
+    element: <BlogsScreen />,
+  },
+  {
+    path: "/contact",
+    element: <ContactScreen />
+  },
+  {
+    path: "/about-us",
+    element: <AboutScreen />
+  },
+  {
+    path: "/products/:category/:item",
+    element: <Shop />
   },
 ]);

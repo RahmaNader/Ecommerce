@@ -1,9 +1,8 @@
 import { Navbar } from "@components/organisms";
 function App() {
-  // const [count, setCount] = useState(0);
 
   return (
-    <div>
+    <div className="bg-customBeige min-h-screen">
       <Navbar/>
     </div>
   );
