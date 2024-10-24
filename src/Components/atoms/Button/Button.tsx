@@ -15,7 +15,7 @@ const Button: React.FC<ButtonProps> = ({
   isDisabled = false,
   className = "",
 }) => {
-  let baseStyles = `px-4 py-2 rounded font-semibold text-sm transition duration-200 ease-in-out`;
+  const baseStyles = `w-[233px] h-[60px] rounded-[5px] bg-secondColor pt-[10px] pb-[10px] ps-[46px] pe-[46px] font-mainFontFamily text-[20px]  `;
 
   let buttonStyles = "";
 
@@ -33,13 +33,13 @@ const Button: React.FC<ButtonProps> = ({
       buttonStyles = "bg-gray-400 text-gray-700 cursor-not-allowed";
       break;
     default:
-      buttonStyles = "bg-blue-500 text-white hover:bg-blue-600";
+      buttonStyles = "w-[233px] h-[60px] rounded-[5px] bg-secondColor pt-[10px] pb-[10px] ps-[46px] pe-[46px]"
       break;
   }
 
   return (
     <button
-      className={`${baseStyles} ${buttonStyles} ${className}`}
+      className={`${baseStyles} ${buttonStyles} ${className} `}
       onClick={isDisabled ? undefined : onClick}
       disabled={isDisabled}
     >
