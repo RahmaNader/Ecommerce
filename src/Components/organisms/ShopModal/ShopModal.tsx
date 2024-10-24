@@ -1,6 +1,6 @@
-// ShopModal.tsx
 import React from "react";
-
+import { Link, useLocation } from "react-router-dom";
+import { categories } from "./utils";
 type ShopModalProps = {
   isOpen: boolean;
   onMouseEnter: () => void;
@@ -12,63 +12,90 @@ const ShopModal: React.FC<ShopModalProps> = ({
   onMouseEnter,
   onMouseLeave,
 }) => {
+  const location = useLocation();
+
   if (!isOpen) return null;
 
   return (
     <div
-      className="absolute left-1/2 top-full transform -translate-x-1/2 mt-4 z-50 w-[78%] ease-in shadow-[0px_0px_14.4px_-1px_#A78E7875]"
+      className="bg-customBeige absolute left-1/2 top-full transform -translate-x-1/2 mt-4 z-50 w-[55%] ease-in shadow-custom-light"
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      <div
-        className="bg-[#faf7f2] p-8 rounded-lg w-auto"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="p-8 rounded-lg w-auto">
         <div className="grid grid-cols-3 gap-8">
           <div className="text-center">
-            <h2 className="text-xl font-bold text-[#721013] mb-4">Men</h2>
+            <h2 className="text-xl font-bold text-wine mb-4">Men</h2>
             <ul className="space-y-2">
-              <li className="text-[#8c7361] hover:text-[#721013]">Pants</li>
-              <li className="text-[#8c7361] hover:text-[#721013]">Tops</li>
-              <li className="text-[#8c7361] hover:text-[#721013]">Shoes</li>
-              <li className="text-[#8c7361] hover:text-[#721013]">
-                Accessories
-              </li>
-              <li className="text-[#8c7361] hover:text-[#721013]">Dresses</li>
-              <li className="text-[#8c7361] hover:text-[#721013]">Bags</li>
-              <li className="text-[#8c7361] hover:text-[#721013]">Suits</li>
-              <li className="text-[#8c7361] hover:text-[#721013]">Sports</li>
+              {categories.men.map((item) => {
+                const isActive = location.pathname.includes(
+                  `/products/men/${item.toLowerCase()}`
+                );
+                return (
+                  <li key={item}>
+                    <Link
+                      to={`/products/men/${item.toLowerCase()}`}
+                      className={`text-[16px] ${
+                        isActive
+                          ? "text-wine font-medium"
+                          : "text-mutedGray font-normal"
+                      } hover:text-wine`}
+                    >
+                      {item}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </div>
+
           <div className="text-center">
-            <h2 className="text-xl font-bold text-[#721013] mb-4">Women</h2>
+            <h2 className="text-xl font-bold text-wine mb-4">Women</h2>
             <ul className="space-y-2">
-              <li className="text-[#8c7361] hover:text-[#721013]">Pants</li>
-              <li className="text-[#8c7361] hover:text-[#721013]">Tops</li>
-              <li className="text-[#8c7361] hover:text-[#721013]">Shoes</li>
-              <li className="text-[#8c7361] hover:text-[#721013]">
-                Accessories
-              </li>
-              <li className="text-[#8c7361] hover:text-[#721013]">Dresses</li>
-              <li className="text-[#8c7361] hover:text-[#721013]">Bags</li>
-              <li className="text-[#8c7361] hover:text-[#721013]">Suits</li>
-              <li className="text-[#8c7361] hover:text-[#721013]">Sports</li>
+              {categories.women.map((item) => {
+                const isActive = location.pathname.includes(
+                  `/products/women/${item.toLowerCase()}`
+                );
+                return (
+                  <li key={item}>
+                    <Link
+                      to={`/products/women/${item.toLowerCase()}`}
+                      className={`text-[16px] ${
+                        isActive
+                          ? "text-wine font-medium"
+                          : "text-mutedGray font-normal"
+                      } hover:text-wine`}
+                    >
+                      {item}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </div>
+
           <div className="text-center">
-            <h2 className="text-xl font-bold text-[#721013] mb-4">Kids</h2>
+            <h2 className="text-xl font-bold text-wine mb-4">Kids</h2>
             <ul className="space-y-2">
-              <li className="text-[#8c7361] hover:text-[#721013]">Pants</li>
-              <li className="text-[#8c7361] hover:text-[#721013]">Tops</li>
-              <li className="text-[#721013] font-bold">Shoes</li>{" "}
-              {/* Highlighted Item */}
-              <li className="text-[#8c7361] hover:text-[#721013]">
-                Accessories
-              </li>
-              <li className="text-[#8c7361] hover:text-[#721013]">Dresses</li>
-              <li className="text-[#8c7361] hover:text-[#721013]">Bags</li>
-              <li className="text-[#8c7361] hover:text-[#721013]">Suits</li>
-              <li className="text-[#8c7361] hover:text-[#721013]">Sports</li>
+              {categories.kids.map((item) => {
+                const isActive = location.pathname.includes(
+                  `/products/kids/${item.toLowerCase()}`
+                );
+                return (
+                  <li key={item}>
+                    <Link
+                      to={`/products/kids/${item.toLowerCase()}`}
+                      className={`text-[16px] ${
+                        isActive
+                          ? "text-wine font-medium"
+                          : "text-mutedGray font-normal"
+                      } hover:text-wine`}
+                    >
+                      {item}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         </div>
