@@ -1,7 +1,7 @@
 // import { Link } from "react-router-dom";
 // import Button from "@components/atoms/Button/Button";
 import './App.css'
-import Cart from "@components/organisms/Cart/Cart";
+import { Cart } from "@components/organisms";
 function App() {
 
   return (

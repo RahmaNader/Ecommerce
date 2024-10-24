@@ -6,7 +6,7 @@ type ButtonProps = {
   type?: "primary" | "secondary" | "outlined" | "disabled"; // Button types
   isDisabled?: boolean; // Disabled flag
   className?: string; // Additional classes
-  size? : string;
+  size? : "small" | "medium" | "large";
 };
 
 const Button: React.FC<ButtonProps> = ({
@@ -47,7 +47,7 @@ const Button: React.FC<ButtonProps> = ({
       className = "px-3 py-4";
       break;
     case "large":
-      className = "px-10 py-4";
+      className = "w-full py-4";
       break;    
   }
 

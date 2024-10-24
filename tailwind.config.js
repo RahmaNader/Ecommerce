@@ -15,6 +15,9 @@ export default {
           DEFAULT: "#edf2f7",
           dark: "#2d3748",
         },
+          mainColor: "#721013",
+          removeButton: "#E14B4B",
+          skin: "#A78E78"
       },
     },
   },
