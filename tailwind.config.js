@@ -3,21 +3,28 @@ export default {
   content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
+      fontFamily: {
+        playfair: ['"Playfair Display"', 'serif'],
+      },
       boxShadow: {
-        "custom-light": "0 2px 4px rgba(0, 0, 0, 0.1)",
-        "custom-dark": "0 4px 8px rgba(0, 0, 0, 0.2)",
+        "custom-light": "0 0 14.4px -1px rgba(167, 142, 120, 0.46)",
       },
       colors: {
-        primary: "#1da1f2",
-        secondary: "#14171a",
+        customBeige: "#F4EEE8",
         customGray: {
           light: "#f7fafc",
           DEFAULT: "#edf2f7",
           dark: "#2d3748",
         },
-          mainColor: "#721013",
-          removeButton: "#E14B4B",
-          skin: "#A78E78"
+        primary: "#1da1f2",
+        secondary: "#14171a",
+        darkGrey: "#141414",
+        wine: "#721013",
+        mutedGray: "#A78E78",
+        shadowColor: "rgba(167, 142, 120, 0.46)",
+        mainColor: "#721013",
+        removeButton: "#E14B4B",
+        skin: "#A78E78"
       },
     },
   },

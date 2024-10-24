@@ -1,0 +1,32 @@
+import { Navbar } from "@components/organisms";
+import React from "react";
+import { useParams, Navigate } from "react-router-dom";
+
+type ShopParams = {
+  category: string;
+  item: string;
+};
+
+const Shop: React.FC = () => {
+  const { category, item } = useParams<ShopParams>();
+
+  if (!category || !item) {
+    return <Navigate to="/" />;
+  }
+
+  return (
+    <div className="bg-customBeige min-h-screen">
+      <Navbar />
+      <div className="p-8">
+        <h1 className="text-2xl font-bold text-[#721013]">
+          {category.charAt(0).toUpperCase() + category.slice(1)}: {item}
+        </h1>
+        <p className="text-[#8c7361] mt-4">
+          This is the {item} section for {category}.
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default Shop;
