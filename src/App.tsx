@@ -1,17 +1,10 @@
-
-import {Home} from '@components/organisms'
-import { Slider } from '@components/molecules';
-import './App.css'
+import { Navbar } from "@components/organisms";
 function App() {
 
-
   return (
-       <>
-<Slider/>
-<Home/>
-       </>
-      
-
+    <div className="bg-customBeige min-h-screen">
+      <Navbar/>
+    </div>
   );
 }
 

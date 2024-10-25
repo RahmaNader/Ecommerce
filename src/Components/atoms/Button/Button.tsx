@@ -3,19 +3,19 @@ import React from "react";
 type ButtonProps = {
   label: string;
   onClick?: () => void;
-  type?: "primary" | "secondary" | "outlined" | "disabled"; // Button types
-  isDisabled?: boolean; // Disabled flag
-  className?: string; // Additional classes
+  type?: "primary" | "secondary" | "outlined" | "disabled";
+  isDisabled?: boolean;
+  className?: string;
 };
 
 const Button: React.FC<ButtonProps> = ({
   label,
   onClick,
-  type = "primary", // Default to 'primary'
+  type = "primary",
   isDisabled = false,
   className = "",
 }) => {
-  const baseStyles = `w-[233px] h-[60px] rounded-[5px] bg-secondColor pt-[10px] pb-[10px] ps-[46px] pe-[46px] font-mainFontFamily text-[20px]  `;
+  const baseStyles = `px-4 py-2 rounded font-semibold text-sm transition duration-200 ease-in-out`;
 
   let buttonStyles = "";
 
