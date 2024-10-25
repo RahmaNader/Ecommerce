@@ -12,13 +12,25 @@ const HomeSections =({SectionName}:SectionsProps) => {
     return <>
     <div className="">
     <Category SectionName={SectionName}></Category>
-    <div className="flex justify-between">
+    <div className="flex flex-wrap justify-between">
+     <div className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 flex justify-center">
      <Card src={Img1} alt="Image 1 " name={"Classic Jacket"} DisPrice="200EGP" NormalPrice="200EGP"></Card>
+     </div>
+     <div className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 flex justify-center">
      <Card src={Img2} alt="Image 2 " name={"Classic Jacket"} DisPrice="200EGP" NormalPrice="200EGP"></Card>
+     </div>
+     <div className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 flex justify-center ">
+     <Card src={Img1} alt="Image 1 " name={"Classic Jacket"} DisPrice="200EGP" NormalPrice="200EGP"></Card>
+     </div>
+     <div className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 flex justify-center ">
      <Card src={Img3} alt="Image 3 " name={"Classic Jacket"} DisPrice="200EGP" NormalPrice="200EGP"></Card>
-     <Card src={Img3} alt="Image 3 " name={"Classic Jacket"} DisPrice="200EGP" NormalPrice="200EGP"></Card>
+     </div>
+    
+     </div>
+     
+
     </div>
-    </div> 
+  
 
     </>
   };

@@ -12,6 +12,7 @@ export default {
         secondFontFamily: ['Poppins', 'sans-serif'], // M
         playball: ['Playball', 'cursive'], // home page 
         instrument: ['Instrument Sans', 'sans-serif'],
+        instrumentSerif: ['"Instrument Serif"', 'serif'],
       },
       fontSize: {
         'Nav-Font-size': '24px', // Custom font size
@@ -22,6 +23,9 @@ export default {
         ThirdColor:"#A78E78",
         ForthColor:"#A78E78",
         FifthColor:"#E14B4B",
+        sixColor:"#af754d",
+        sevenColor:"#3d3128",
+        eightColor:"#E5D4C6",
         primary: "#1da1f2",
         secondary: "#14171a",
         customGray: {
