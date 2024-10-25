@@ -13,6 +13,7 @@ const Footer: React.FC = () => {
           </p>
 
           {/* Brand Icons */}
+          {/* use icon or image and why ...... ??? */}
           <div className="flex   space-x-3 mt-14">
             <IconBrandFacebook width={25} height={25} />
             <IconBrandLinkedin width={25} height={25} />

@@ -1,8 +1,8 @@
 import { Card } from "@components/atoms";
 import {Category }from "@components/atoms";
-import Img1 from '../../../assets/HP_img1.svg'
-import Img2 from '../../../assets/HP_img2.svg'
-import Img3 from '../../../assets/HP_img3.svg'
+import Img1 from '@assets/HP_img1.svg'
+import Img2 from '@assets/HP_img2.svg'
+import Img3 from '@assets/HP_img3.svg'
 
 type SectionsProps={
     SectionName:string;
