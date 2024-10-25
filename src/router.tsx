@@ -6,6 +6,7 @@ import {
   AboutScreen,
   Shop,
 } from "@pages";
+import Cart from "@components/organisms/Cart/Cart";
 
 export const router = createBrowserRouter([
   {
@@ -28,4 +29,8 @@ export const router = createBrowserRouter([
     path: "/products/:category/:item",
     element: <Shop />
   },
+  {
+    path: "/cart",
+    element: <Cart />
+  }
 ]);

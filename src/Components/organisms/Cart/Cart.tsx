@@ -1,11 +1,13 @@
-import React from 'react'
+// import React from 'react'
 import './Cart.css'
 import cartIcon from '../../../assets/cart-icon.svg'
 import cartIcon2 from '../../../assets/cart-icon2.png'
 import icon from '../../../assets/discount icon.svg'
 import icon2 from '../../../assets/Vector.svg'
 import { Button } from '@components/atoms'
-import { CartProduct } from '@components/molecules'
+import  CartProduct  from '@components/molecules/CartProduct/CartProduct'
+
+
 
 export default function Cart() {
   return <div className="pt-16 w-full">

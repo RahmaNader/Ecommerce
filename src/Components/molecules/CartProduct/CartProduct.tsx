@@ -8,13 +8,21 @@ import { useState } from 'react'
 
 export default function CartProduct() {
 
-    let [productQuantity, setProductQuantity] = useState(1)
+    const [isDisabled , setIsDisabled] = useState(false)
+
+    const [productQuantity, setProductQuantity] = useState(1)
 
     function incrementProductQuantity(){
         setProductQuantity(productQuantity + 1)
+        setIsDisabled(false)
     }
     function decrementProductQuantity(){
-        setProductQuantity(productQuantity - 1)
+        if(productQuantity === 0){
+            setIsDisabled(true)
+        }else{
+            setProductQuantity(productQuantity - 1)
+        }
+        
     }
 
 
@@ -37,7 +45,7 @@ export default function CartProduct() {
                 </div>
                 <div className='flex'>
                     <div className='border rounded-sm border-[#721013] w-[20%] py-2 px-6 flex justify-between '>
-                        <img src={minusIcon} alt="" className='cursor-pointer' onClick={decrementProductQuantity} />
+                        {isDisabled ? <img src={minusIcon} alt="" className='text-gray-600' /> : <img src={minusIcon} alt="" className='cursor-pointer' onClick={decrementProductQuantity} />}
                         <span>{productQuantity}</span>
                         <img src={plusIcon} alt="" className='cursor-pointer' onClick={incrementProductQuantity}/>
                     </div>

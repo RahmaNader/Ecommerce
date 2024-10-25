@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import { Button } from "@components/atoms";
+import { Cart } from "@components/organisms"
 function App() {
 
   return (
@@ -16,6 +17,7 @@ function App() {
         <h1 className="text-3xl font-bold text-blue-500">Vite + React</h1>
         <Button label={"aDASD"} type="primary" />
         <Link to="/">Home</Link>
+
       </div>
     </div>
   );
