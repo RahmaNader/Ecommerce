@@ -15,7 +15,7 @@ const Button: React.FC<ButtonProps> = ({
   isDisabled = false,
   className = "",
 }) => {
-  const baseStyles = `px-4 py-2 rounded font-semibold text-sm transition duration-200 ease-in-out`;
+  const baseStyles = `w-[233px] h-[60px] rounded-[5px] bg-secondColor pt-[10px] pb-[10px] ps-[46px] pe-[46px] font-mainFontFamily `;
 
   let buttonStyles = "";
 
@@ -27,7 +27,7 @@ const Button: React.FC<ButtonProps> = ({
       buttonStyles = "bg-gray-500 text-white hover:bg-gray-600";
       break;
     case "outlined":
-      buttonStyles = "border border-blue-500 text-blue-500 hover:bg-blue-50";
+      buttonStyles = "border border-blue-500 text-blue-500 ";
       break;
     case "disabled":
       buttonStyles = "bg-gray-400 text-gray-700 cursor-not-allowed";

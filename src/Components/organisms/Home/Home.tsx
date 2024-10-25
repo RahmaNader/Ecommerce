@@ -1,9 +1,9 @@
-import { HomeSections } from "@components/molecules";
+import { Footer, HomeSections } from "@components/molecules";
 import { Button } from "@components/atoms";
 import kids from '@assets/HP_kids.svg';
 import women from '@assets/HP_women.svg';
 import men from '@assets/HP_men.svg';
-import {Footer} from "@components/molecules";
+
 // # loop on NavItems 
 
 const HomeSection = () => {
@@ -36,7 +36,7 @@ const HomeSection = () => {
          
         </div>
 
-        <Footer/>
+      
     </>
   );
 };

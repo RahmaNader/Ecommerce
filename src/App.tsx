@@ -1,10 +1,15 @@
-import { Navbar } from "@components/organisms";
+import { HomeScreen } from "./pages";
+
+
+
+
 function App() {
 
   return (
-    <div className="bg-customBeige min-h-screen">
-      <Navbar/>
-    </div>
+    
+    <>
+    <HomeScreen/>
+    </>
   );
 }
 

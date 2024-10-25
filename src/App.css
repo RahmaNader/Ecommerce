@@ -1,0 +1,11 @@
+.slider-background {
+    position: absolute;
+   
+  
+    background-image: url('../../../assets/HP_slider.svg'); /* Add your background image */
+    background-size: cover;
+    background-position: center;
+  
+    background-color: black;
+  }
+  

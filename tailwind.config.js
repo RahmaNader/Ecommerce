@@ -31,6 +31,7 @@ export default {
         primary: "#1da1f2",
         secondary: "#14171a",
         customBeige: "#F4EEE8",
+        
         customGray: {
           light: "#f7fafc",
           DEFAULT: "#edf2f7",

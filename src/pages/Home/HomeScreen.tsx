@@ -1,14 +1,16 @@
 import { Navbar } from "@components/organisms";
+import { Home } from "@components/organisms";
+import { Slider } from "@components/molecules";
+import {Footer} from "@components/molecules";
 import React from "react";
 
 const HomeScreen: React.FC = () => {
   return (
-    <div className="bg-customBeige min-h-screen">
+    <div className=" min-h-screen">
       <Navbar />
-      <div className="bg-customBeige min-h-screen p-8">
-        <h1 className="text-3xl font-bold">Welcome to Home</h1>
-        <p className="mt-4">This is the Home Screen content.</p>
-      </div>
+      <Slider/>
+      <Home/>
+      <Footer/>
     </div>
   );
 };
