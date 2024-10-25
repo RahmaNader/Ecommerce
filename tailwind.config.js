@@ -5,20 +5,15 @@ export default {
     extend: {
       fontFamily: {
         playfair: ['"Playfair Display"', 'serif'],
+        instrumentSerif: ['"Instrument Serif"', 'serif'],
+        playball: ['Playball', 'cursive'], // home page 
+        instrumentSans: ['Instrument Sans', 'sans-serif'],
+        Poppins: ['Poppins', 'sans-serif'], // M
       },
       boxShadow: {
         "custom-light": "0 0 14.4px -1px rgba(167, 142, 120, 0.46)",
       },
-      fontFamily: {
-        mainFontFamily: ['Playfair Display', 'serif'], // Main Font 
-        secondFontFamily: ['Poppins', 'sans-serif'], // M
-        playball: ['Playball', 'cursive'], // home page 
-        instrument: ['Instrument Sans', 'sans-serif'],
-        instrumentSerif: ['"Instrument Serif"', 'serif'],
-      },
-      fontSize: {
-        'Nav-Font-size': '24px', // Custom font size
-      },
+
       colors: {
         mainColor:"#f4eee8",
         secondColor:"#710e12",

@@ -6,7 +6,7 @@ import React from "react";
 
 const HomeScreen: React.FC = () => {
   return (
-    <div className="bg-customBeige min-h-screen">
+    <div className="bg-customBeige  min-h-screen">
       <Navbar />
       <Slider/>
       <Home/>

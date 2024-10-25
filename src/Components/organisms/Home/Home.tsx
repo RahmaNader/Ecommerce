@@ -15,15 +15,13 @@ const HomeSection = () => {
           <div>  <img src={kids} alt="" /></div>
           <div>  <img src={women} alt="" /></div>
           <div>  <img src={men} alt="" /></div>
-            
-      
          </div>
         
 
         <div className="  ">
         <HomeSections  SectionName={"New Collection"}></HomeSections>
            <div className="flex justify-center mt-12">
-           <Button label="View Collection"></Button>
+           <Button label="View Collection" ></Button>
            </div>
         <HomeSections SectionName={"Special Offers"}></HomeSections>
         <div className="flex justify-center mt-12">
