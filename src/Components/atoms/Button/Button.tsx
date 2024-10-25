@@ -53,6 +53,7 @@ const Button: React.FC<ButtonProps> = ({
 
   return (
     <button
+      className={`${className} ${buttonStyles}`}
       onClick={isDisabled ? undefined : onClick}
       disabled={isDisabled}
     >

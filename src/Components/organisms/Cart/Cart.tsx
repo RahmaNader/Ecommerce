@@ -1,4 +1,3 @@
-// import React from 'react'
 import './Cart.css'
 import cartIcon from '../../../assets/cart-icon.svg'
 import cartIcon2 from '../../../assets/cart-icon2.png'
