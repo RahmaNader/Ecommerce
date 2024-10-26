@@ -10,11 +10,11 @@ const Category = ({ SectionName }: categoryProps) => {
     <>
     
         <div className="flex flex-col items-center my-16">
-          <img src={Img4} alt="no des" />
+          <img src={Img4} alt="Top of section image " />
           <p className="font-playball text-5xl leading-[60px] text-secondColor ">
             {SectionName}
           </p>
-          <img src={Img5} alt="no des" />
+          <img src={Img5} alt="down of section image" />
         </div>
     </>
   );

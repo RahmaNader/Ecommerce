@@ -1,6 +1,5 @@
 import star from '@assets/Star.svg'
-import test from '@assets/test.jpeg'
-import tests from '../../../assets/HP_slider.svg'
+import tests from '@assets/tree.jpg'  // image with another w and h to test card Frame work good  or not 
 type CardProps={
 
   src:string;// for image 

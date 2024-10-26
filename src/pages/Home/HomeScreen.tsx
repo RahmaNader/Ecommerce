@@ -2,6 +2,7 @@ import { Navbar } from "@components/organisms";
 import { Home } from "@components/organisms";
 import { Slider } from "@components/molecules";
 import {Footer} from "@components/molecules";
+
 import React from "react";
 
 const HomeScreen: React.FC = () => {
@@ -11,6 +12,7 @@ const HomeScreen: React.FC = () => {
       <Slider/>
       <Home/>
       <Footer/>
+
     </div>
   );
 };

@@ -22,6 +22,7 @@ const Footer: React.FC = () => {
           {/*  # until know links  */}
           <div className="flex space-x-3 mt-14">
             <div>
+              {/* anchor until calling api ....??? */}
               <a href="#" target="_blank">
                 <IconBrandFacebook width={25} height={25} />
               </a>
@@ -57,7 +58,7 @@ const Footer: React.FC = () => {
           </div>
           <div>
          
-            <NavLink label="About Us " to="/about-us" unStyled={true} />
+            <NavLink label="About Us" to="/about-us" unStyled={true} />
           </div>
         </div>
 
