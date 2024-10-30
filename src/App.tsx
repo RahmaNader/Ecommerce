@@ -1,4 +1,4 @@
-import Cart from "@components/organisms/Cart/Cart";
+import { Cart } from "@components/organisms";
 import { Navbar } from "@components/organisms";
 function App() {
 

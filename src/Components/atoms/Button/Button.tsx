@@ -6,7 +6,7 @@ type ButtonProps = {
   type?: "primary" | "secondary" | "outlined" | "disabled"; // Button types
   isDisabled?: boolean; // Disabled flag
   className?: string; // Additional classes
-  size? : "small" | "medium" | "large";
+  size?: "small" | "medium" | "large" | "login-register";
 };
 
 const Button: React.FC<ButtonProps> = ({
@@ -23,13 +23,13 @@ const Button: React.FC<ButtonProps> = ({
 
   switch (type) {
     case "primary":
-      buttonStyles = "bg-[#721013] text-white rounded rounded-4";
+      buttonStyles = "bg-mainColor text-white rounded rounded-4";
       break;
     case "secondary":
-      buttonStyles = "bg-[#A78E78] text-white rounded rounded-4";
+      buttonStyles = "bg-skin text-white rounded rounded-4";
       break;
     case "outlined":
-      buttonStyles = "border border-[#721013] text-[#721013] rounded rounded-4";
+      buttonStyles = "border border-mainColor text-mainColor rounded rounded-4";
       break;
     case "disabled":
       buttonStyles = "bg-gray-400 text-gray-700 cursor-not-allowed rounded rounded-4";
@@ -41,14 +41,17 @@ const Button: React.FC<ButtonProps> = ({
 
   switch (size) {
     case "small":
-      className = "px-2 py-2";
+      className = "px-5 py-2.5";
       break;
-    case "medium": 
-      className = "px-3 py-4";
+    case "medium":
+      className = "px-10 py-2.5";
       break;
     case "large":
-      className = "w-full py-4";
-      break;    
+      className = "w-full py-3.5";
+      break;
+    case "login-register":
+      className = "w-1/2 py-3.5";
+      break;
   }
 
   return (
