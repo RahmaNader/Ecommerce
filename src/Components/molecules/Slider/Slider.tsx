@@ -6,7 +6,8 @@ import React from "react";
 import { Button } from "@components/atoms";
 import RightArrow from "@assets/RightArrow.svg";
 import LeftArrow from "@assets/LeftArrow.svg";
-import "../../../App.css";
+// import { useQuery } from "react-query";
+// import axios from "axios";
 
 interface Item {
   text: string;
@@ -16,28 +17,66 @@ interface Item {
 
 const items: Item[] = [
   {
-    text: "Find Your Perfect Blend of Our Traditional and Modern Fashion",
+    text: "Find Your Perfect Blend of Our Traditional and Modern Fashion.",
     img: x,
     line: line,
   },
   {
-    text: "ediuf edheduo eddhhiede dedioedhu",
+    text: "Unite Timeless Traditions with Fresh, Modern Styles Today.",
     img: x,
     line: line,
   },
   {
-    text: "uedhied udheudeud wjiuw wijwowd ",
+    text: "Uncover the Perfect Balance of Tradition and Trendy Pieces.",
     img: x,
     line: line,
   },
 ];
 
+
+//code preparation for fetching from backend
+{
+  /*
+  const fetchSliderItems = async (): Promise<Item[]> => {
+  const response = await axios.get<Item[]>('/api/sliderItems');
+  return response.data;
+};
+  */
+}
+
 const Slider: React.FC = () => {
+
+  //code preparation for fetching from backend
+  {
+    /*
+      const { data: fetchedItems, isLoading, isError } = useQuery<Item[]>('sliderItems', fetchSliderItems);
+
+  const combinedItems = React.useMemo(() => {
+    if (fetchedItems && fetchedItems.length > 0) {
+      return [...items, ...fetchedItems];
+    }
+    return items;
+  }, [fetchedItems]);
+
+  if (isLoading) {
+    return <div>Loading slider...</div>;
+  }
+
+  if (isError) {
+    console.error('Error fetching slider items');
+    // Optionally display an error message or proceed silently
+  }
+
+  */
+  }
+
+  const combinedItems = items;
+
   return (
     <div className="relative mx-[52.5px] mt-1 mb-20 md:h-[669px]">
       <div className="absolute inset-0 bg-cover bg-center filter blur-md z-0 bg-[url('@assets/Blur.svg')]"></div>
 
-      <Container sx={{ py: 2 }} maxWidth={false} className="relative ">
+      <Container sx={{ py: 2 }} maxWidth={false} className="relative">
         <Carousel
           navButtonsAlwaysVisible
           indicators={false}
@@ -46,7 +85,6 @@ const Slider: React.FC = () => {
           interval={5000}
           cycleNavigation={true}
           fullHeightHover={false}
-          index={0}
           navButtonsProps={{
             style: {
               backgroundColor: "#710e12",
@@ -63,7 +101,7 @@ const Slider: React.FC = () => {
           NextIcon={<img src={RightArrow} alt="right-arrow" />}
           PrevIcon={<img src={LeftArrow} alt="left-arrow" />}
         >
-          {items.map((item, i) => (
+          {combinedItems.map((item, i) => (
             <SliderItem key={i} {...item} />
           ))}
         </Carousel>

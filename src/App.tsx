@@ -1,8 +1,5 @@
 import { HomeScreen } from "./pages";
 
-
-
-
 function App() {
 
   return (
@@ -10,7 +7,9 @@ function App() {
     <>
      <HomeScreen/>
     </>
+
   );
+  
 }
 
 export default App;
