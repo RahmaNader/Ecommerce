@@ -4,13 +4,13 @@ import { useParams, Navigate } from "react-router-dom";
 
 type ShopParams = {
   category: string;
-  item: string;
+  item?: string;
 };
 
 const Shop: React.FC = () => {
   const { category, item } = useParams<ShopParams>();
 
-  if (!category || !item) {
+  if (!category) {
     return <Navigate to="/" />;
   }
 
@@ -19,10 +19,13 @@ const Shop: React.FC = () => {
       <Navbar />
       <div className="p-8">
         <h1 className="text-2xl font-bold text-[#721013]">
-          {category.charAt(0).toUpperCase() + category.slice(1)}: {item}
+          {category.charAt(0).toUpperCase() + category.slice(1)}
+          {item ? `: ${item}` : ""}
         </h1>
         <p className="text-[#8c7361] mt-4">
-          This is the {item} section for {category}.
+          {item
+            ? `This is the ${item} section for ${category}.`
+            : `Browse items in the ${category} category.`}
         </p>
       </div>
     </div>

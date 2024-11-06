@@ -19,18 +19,18 @@ export const router = createBrowserRouter([
   },
   {
     path: "/contact",
-    element: <ContactScreen />
+    element: <ContactScreen />,
   },
   {
     path: "/about-us",
-    element: <AboutScreen />
+    element: <AboutScreen />,
   },
   {
-    path: "/products/:category/:item",
-    element: <Shop />
+    path: "/products/:category/:item?",
+    element: <Shop />,
   },
   {
     path: "/cart",
-    element: <Cart />
-  }
+    element: <Cart />,
+  },
 ]);
