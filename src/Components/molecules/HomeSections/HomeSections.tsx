@@ -9,7 +9,7 @@ type CardData = {
   name: string;
   DisPrice: string;
   NormalPrice: string;
-  rate: number; // Add rate to CardData type
+  rate: number; 
 };
 
 type SectionsProps = {
@@ -39,7 +39,7 @@ const HomeSections: React.FC<SectionsProps> = ({ SectionName, cards }) => {
                 name={card.name}
                 DisPrice={card.DisPrice}
                 NormalPrice={card.NormalPrice}
-                rate={card.rate} // Pass rate to Card component
+                rate={card.rate} 
                 onClick={() => handleCardClick(card.name)}
               />
             </div>
