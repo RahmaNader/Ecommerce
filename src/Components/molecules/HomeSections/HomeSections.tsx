@@ -1,38 +1,53 @@
-import { Card } from "@components/atoms";
-import {Category }from "@components/atoms";
-import Img1 from '@assets/HP_img1.jpeg'
-import Img2 from '@assets/HP_img2.jpeg'
-import Img3 from '@assets/HP_img3.jpeg'
+// src/Components/molecules/HomeSections/HomeSections.tsx
+import React from 'react';
+import { Card } from '@components/atoms';
+import { Category } from '@components/atoms';
 
-type SectionsProps={
-    SectionName:string;
+type CardData = {
+  src: string;
+  alt: string;
+  name: string;
+  DisPrice: string;
+  NormalPrice: string;
+  rate: number; // Add rate to CardData type
+};
 
-}
-const HomeSections =({SectionName}:SectionsProps) => {
-    return <>
-    <div className="">
-    <Category SectionName={SectionName}></Category>
-    <div className="flex flex-wrap justify-between mx-[50px]">
-     <div className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 flex justify-center">
-     <Card src={Img1} alt="Image 1 " name={"Classic Jacket"} DisPrice="200EGP" NormalPrice="200EGP"></Card>
-     </div>
-     <div className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 flex justify-center">
-     <Card src={Img2} alt="Image 2 " name={"Classic Jacket"} DisPrice="200EGP" NormalPrice="200EGP"></Card>
-     </div>
-     <div className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 flex justify-center ">
-     <Card src={Img1} alt="Image 1 " name={"Classic Jacket"} DisPrice="200EGP" NormalPrice="200EGP"></Card>
-     </div>
-     <div className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 flex justify-center ">
-     <Card src={Img3} alt="Image 3 " name={"Classic Jacket"} DisPrice="200EGP" NormalPrice="200EGP"></Card>
-     </div>
-    
-     </div>
-     
+type SectionsProps = {
+  SectionName: string;
+  cards: CardData[];
+};
 
-    </div>
-  
-
-    </>
+const HomeSections: React.FC<SectionsProps> = ({ SectionName, cards }) => {
+  const handleCardClick = (item: string) => {
+    console.log(`Image clicked: ${item}`);
   };
-  
-  export default HomeSections;
+
+  return (
+    <>
+      <div>
+        <Category SectionName={SectionName} />
+
+        <div className="flex flex-wrap justify-between mx-[50px]">
+          {cards.map((card, index) => (
+            <div
+              key={index}
+              className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 flex justify-center my-10"
+            >
+              <Card
+                src={card.src}
+                alt={card.alt}
+                name={card.name}
+                DisPrice={card.DisPrice}
+                NormalPrice={card.NormalPrice}
+                rate={card.rate} // Pass rate to Card component
+                onClick={() => handleCardClick(card.name)}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default HomeSections;
