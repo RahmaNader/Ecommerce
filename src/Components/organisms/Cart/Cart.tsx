@@ -19,11 +19,11 @@ export default function Cart() {
         <h1 className="text-center w-full text-mainColor font-playfair text-5xl">Cart</h1>
         <img src={cartIcon2} alt="" className='w-25 mt-2.5' />
       </div>
-      <div className='py-8 lg:px-24 md:px-5 sm:px-4 flex justify-between w-full sm:flex-col md:flex-row'>
-        <div className='lg:w-3/4 md:w-7/12 sm:w-full '>
+      <div className='py-8 lg:px-12 md:px-5 max-sm:px-2.5 flex justify-between w-full max-sm:flex-col md:flex-row'>
+        <div className='lg:w-3/4 md:w-7/12 max-sm:w-full '>
           <CartProduct />
         </div>
-        <div className='primary lg:w-1/4 md:w-5/12 sm:w-full sm:my-4 sm: flex flex-col border border-1 border-skin p-12 bg-[#A78E781C] '>
+        <div className='primary lg:w-1/4 md:w-5/12 max-sm:w-full max-sm:my-4 flex flex-col border border-1 border-skin p-12 bg-[#A78E781C] '>
           <h2 className='pb-4 w-full'>Order Summary</h2>
           <div className='flex justify-between w-full border border-b-gray-400border border-b-gray-400'>
             <div className='mb-5'>
