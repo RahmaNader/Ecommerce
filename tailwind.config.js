@@ -22,6 +22,9 @@ export default {
         wine: "#721013",
         mutedGray: "#A78E78",
         shadowColor: "rgba(167, 142, 120, 0.46)",
+        mainColor: "#721013",
+        removeButton: "#E14B4B",
+        skin: "#A78E78"
       },
     },
   },
