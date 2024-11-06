@@ -2,7 +2,7 @@ import React from "react";
 
 type ButtonProps = {
   label: string;
-  onClick?: () => void;
+  onClick: () => void;
   type?: "primary" | "secondary" | "outlined" | "disabled"; // Button types
   isDisabled?: boolean; // Disabled flag
   className?: string; // Additional classes
@@ -17,7 +17,6 @@ const Button: React.FC<ButtonProps> = ({
   className = "",
   size = "small"
 }) => {
-  // const baseStyles = `px-4 py-2 rounded font-semibold text-sm transition duration-200 ease-in-out`;
 
   let buttonStyles = "";
 

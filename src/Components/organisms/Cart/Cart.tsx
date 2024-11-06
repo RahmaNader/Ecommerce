@@ -5,13 +5,11 @@ import icon from "../../../assets/discount icon.svg";
 import icon2 from "../../../assets/Vector.svg";
 import { Button } from "@components/atoms";
 import { CartProduct } from "@components/molecules";
-import Navbar from "../Navbar/Navbar";
 import { product } from "@components/molecules/CartProduct/CartProduct";
 
 export default function Cart() {
   return (
     <div className="py-8 lg:px-12 md:px-5 max-sm:px-2.5 ">
-      <Navbar />
       <div className="pt-16 w-full">
         <div className="flex flex-col items-center">
           <img src={cartIcon} alt="" className="" />
@@ -66,7 +64,14 @@ export default function Cart() {
                 />
               </div>
             </div>
-            <Button label={"Checkout"} type="primary" size="large" />
+            <Button
+              label={"Checkout"}
+              type="primary"
+              size="large"
+              onClick={function (): void {
+                throw new Error("Function not implemented.");
+              }}
+            />
           </div>
         </div>
       </div>

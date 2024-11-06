@@ -1,4 +1,3 @@
-import { Navbar } from "@components/organisms";
 import React from "react";
 import { useParams, Navigate } from "react-router-dom";
 
@@ -16,7 +15,6 @@ const Shop: React.FC = () => {
 
   return (
     <div className="bg-customBeige min-h-screen">
-      <Navbar />
       <div className="p-8">
         <h1 className="text-2xl font-bold text-[#721013]">
           {category.charAt(0).toUpperCase() + category.slice(1)}
