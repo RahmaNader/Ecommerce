@@ -126,7 +126,9 @@ const Home: React.FC = () => {
               cards={newCollectionCards}
             />
             <div className="flex justify-center mt-12">
-              <Button label="View Collection" />
+              <Button label="View Collection" onClick={function (): void {
+                throw new Error("Function not implemented.");
+              } } />
             </div>
           </>
         )}
@@ -138,7 +140,9 @@ const Home: React.FC = () => {
               cards={specialOffersCards}
             />
             <div className="flex justify-center mt-12">
-              <Button label="View Collection" />
+              <Button label="View Collection" onClick={function (): void {
+                throw new Error("Function not implemented.");
+              } } />
             </div>
           </>
         )}
@@ -147,7 +151,9 @@ const Home: React.FC = () => {
           <>
             <HomeSections SectionName="Best Seller" cards={bestSellerCards} />
             <div className="flex justify-center mt-12">
-              <Button label="View Collection" />
+              <Button label="View Collection" onClick={function (): void {
+                throw new Error("Function not implemented.");
+              } } />
             </div>
           </>
         )}

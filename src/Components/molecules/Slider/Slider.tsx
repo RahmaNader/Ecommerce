@@ -127,7 +127,9 @@ const SliderItem: React.FC<Item> = React.memo(({ text, img, line }) => {
           </p>
           <div className="mt-8 md:mt-12">
             <img src={line} alt="Line" className="mb-9 md:w-auto" />
-            <Button label="View Collection" />
+            <Button label="View Collection" onClick={function (): void {
+              throw new Error("Function not implemented.");
+            } } />
           </div>
         </div>
       </div>
