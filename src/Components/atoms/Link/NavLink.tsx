@@ -3,8 +3,7 @@ import { NavLink as RouterNavLink } from "react-router-dom";
 
 type NavLinkProps = {
   label: string;
-  to?: string;
-  unStyled?:boolean;
+  to?: string;  
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   onClick?: () => void;
@@ -13,7 +12,6 @@ type NavLinkProps = {
 const NavLink: React.FC<NavLinkProps> = ({
   label,
   to,
-  unStyled,
   onMouseEnter,
   onMouseLeave,
   onClick,
@@ -22,15 +20,9 @@ const NavLink: React.FC<NavLinkProps> = ({
     return (
       <RouterNavLink
         to={to}
-        className={({ isActive }) =>
-          unStyled
-            ? "" // No styling applied if `unstyled` is true
-            : `text-dark-grey hover:text-wine no-underline text-2xl font-normal font-playfair ${
-                isActive ? "text-wine" : "text-dark-grey"
-              }`
-        }
-        onMouseEnter={onMouseEnter} // Add optional hover start
-        onMouseLeave={onMouseLeave} // Add optional hover end
+        className="text-dark-grey hover:text-ThirdColor no-underline font-normal font-playfair"
+        onMouseEnter={onMouseEnter} 
+        onMouseLeave={onMouseLeave}
         onClick={onClick}
       >
         {label}
@@ -39,13 +31,12 @@ const NavLink: React.FC<NavLinkProps> = ({
   }
 
   return (
-    <span
-      className="text-dark-grey hover:text-wine text-2xl font-normal font-playfair cursor-pointer"
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
+    <button
+      className="text-dark-grey hover:text-wine text-2xl font-normal font-playfair cursor-pointer bg-transparent border-none"
+      onClick={onClick}
     >
       {label}
-    </span>
+    </button>
   );
 };
 

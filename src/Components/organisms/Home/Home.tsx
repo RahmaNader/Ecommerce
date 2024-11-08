@@ -10,9 +10,13 @@ import Img2 from "@assets/HP_img2.jpeg";
 import Img3 from "@assets/HP_img3.jpeg";
 
 const Home: React.FC = () => {
-  const handleImageClick = (category: string) => {
-    console.log(`Image clicked: ${category}`);
+  const handleButtonClick = (string:string) => {
+    console.log("Button clicked " + string);
   };
+
+  // const handleImageClick = (category: string) => {
+  //   console.log(`Image clicked: ${category}`);
+  // };
 
   //a placeholder array for now until the backend api is ready
   const newCollectionCards = [
@@ -89,33 +93,25 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <div className="flex justify-center my-10">
-        <div>
-          <img
-            src={kids}
-            alt="kids-image"
-            className="cursor-pointer hover:opacity-80 my-10"
-            onClick={() => handleImageClick("kids")}
-          />
-        </div>
-
-        <div>
-          <img
-            src={women}
-            alt="women-image"
-            className="cursor-pointer hover:opacity-80 my-10"
-            onClick={() => handleImageClick("women")}
-          />
-        </div>
-
-        <div>
-          <img
-            src={men}
-            alt="men-image"
-            className="cursor-pointer hover:opacity-80 my-10"
-            onClick={() => handleImageClick("men")}
-          />
-        </div>
+      <div className="flex justify-between my-20 mx-32">
+        <button
+          onClick={() => handleButtonClick("kids")}
+          className="cursor-pointer hover:opacity-80 "
+        >
+          <img src={kids} alt="kids-image" />
+        </button>
+        <button
+          onClick={() => handleButtonClick("women")}
+          className="cursor-pointer hover:opacity-80"
+        >
+          <img src={women} alt="women-image" />
+        </button>
+        <button
+          onClick={() => handleButtonClick("men")}
+          className="cursor-pointer hover:opacity-80"
+        >
+          <img src={men} alt="men-image" />
+        </button>
       </div>
 
       <div>
@@ -126,9 +122,10 @@ const Home: React.FC = () => {
               cards={newCollectionCards}
             />
             <div className="flex justify-center mt-12">
-              <Button label="View Collection" onClick={function (): void {
-                throw new Error("Function not implemented.");
-              } } />
+              <Button
+                label="View Collection"
+                onClick={() => handleButtonClick("New Collection")}
+              />
             </div>
           </>
         )}
@@ -140,9 +137,10 @@ const Home: React.FC = () => {
               cards={specialOffersCards}
             />
             <div className="flex justify-center mt-12">
-              <Button label="View Collection" onClick={function (): void {
-                throw new Error("Function not implemented.");
-              } } />
+              <Button
+                label="View Collection"
+                onClick={() => handleButtonClick("Special Offers")}
+              />
             </div>
           </>
         )}
@@ -151,9 +149,10 @@ const Home: React.FC = () => {
           <>
             <HomeSections SectionName="Best Seller" cards={bestSellerCards} />
             <div className="flex justify-center mt-12">
-              <Button label="View Collection" onClick={function (): void {
-                throw new Error("Function not implemented.");
-              } } />
+              <Button
+                label="View Collection"
+                onClick={() => handleButtonClick("Best Seller")}
+              />
             </div>
           </>
         )}

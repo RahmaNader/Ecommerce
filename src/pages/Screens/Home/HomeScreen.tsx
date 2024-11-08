@@ -1,7 +1,6 @@
 import React from "react";
 import { Home } from "@components/organisms";
-import { Slider } from "@components/molecules";
-import {Footer} from "@components/molecules";
+import { Slider, Footer } from "@components/molecules";
 
 const HomeScreen: React.FC = () => {
   return (
@@ -9,7 +8,6 @@ const HomeScreen: React.FC = () => {
       <Slider/>
       <Home/>
       <Footer/>
-
     </div>
 
   );

@@ -1,5 +1,5 @@
-import { Cart } from "@components/organisms";
-import { Navbar } from "@components/organisms";
+import { Cart, Navbar } from "@components/organisms";
+
 function App() {
 
   return (

@@ -1,4 +1,3 @@
-import React from "react";
 import { NavLink } from "@components/atoms";
 import {
   IconBrandFacebook,
@@ -7,87 +6,67 @@ import {
   IconBrandLinkedin,
 } from "@tabler/icons-react";
 
+const socialLinks = [
+  { id: 'facebook', href: "https://facebook.com", icon: <IconBrandFacebook width={25} height={25} /> },
+  { id: 'linkedin', href: "https://linkedin.com", icon: <IconBrandLinkedin width={25} height={25} /> },
+  { id: 'twitter', href: "https://twitter.com", icon: <IconBrandTwitter width={25} height={25} /> },
+  { id: 'instagram', href: "https://instagram.com", icon: <IconBrandInstagram width={25} height={25} /> },
+];
+
+
 const Footer: React.FC = () => {
   return (
     <footer className="bg-secondColor text-white font-playfair font-semibold mt-20">
       <div className="flex flex-col md:flex-row ms-20 p-9">
-        {/* Section 1: Brand and Social Links */}
         <div className="mt-8 md:w-1/3 lg:w-1/3">
-          <p className="text-2xl">Royal Key</p>
+          <p className="text-2xl" >Royal Key</p>
+          
           <p className="text-[16px] mt-3 font-normal">
             2024 Royal Key. All Rights Reserved
           </p>
 
-          {/* Social Media Icons */}
-          {/*  # until know links  */}
           <div className="flex space-x-3 mt-14">
-            <div>
-              {/* anchor until calling api ....??? */}
-              <a href="#" target="_blank">
-                <IconBrandFacebook width={25} height={25} />
+            {socialLinks.map((link) => (
+              <a key={link.id} href={link.href} target="_blank" rel="noopener noreferrer" className="hover:text-sixColor">
+                {link.icon}
               </a>
-            </div>
-            <div>
-              <a href="#" target="_blank">
-                <IconBrandLinkedin width={25} height={25} />
-              </a>
-            </div>
-            <div>
-              <a href="#" target="_blank">
-                <IconBrandTwitter width={25} height={25} />
-              </a>
-            </div>
-            <div>
-              <a href="#" target="_blank">
-                <IconBrandInstagram width={25} height={25} />
-              </a>
-            </div>
+            ))}
           </div>
         </div>
 
-        {/* Section 2: Navigation Links */}
         <div className="mt-8 md:w-1/3 lg:w-1/3 space-y-3 font-medium ">
-          {/* # until to make brand section   */}
           <div>
-            <NavLink label="Collection" to="#" unStyled={true} />{" "}
+            <NavLink label="Collection" to="#" />
           </div>
-          {/* # until to make brand section  */}
+
           <div>
-            
-            <NavLink label="Brands" to="#" unStyled={true} />
+            <NavLink label="Brands" to="#" />
           </div>
+
           <div>
-         
-            <NavLink label="About Us" to="/about-us" unStyled={true} />
+            <NavLink label="About Us" to="/about-us"/>
           </div>
         </div>
 
-        {/* Section 3: Contact Information */}
         <div className="mt-8 md:w-1/3 lg:w-1/3 space-y-3">
           <div>
-            <p className="font-medium">Contact Us</p>
+            <h4>Contact Us:</h4>
           </div>
-          {/* suppose it telegram number  */}
+
           <div>
-            
-            <a href="tel:5222524244" className="font-normal">
+            <a href="tel:5222524244" className="font-normal hover:text-ThirdColor">
               522-252-4244
             </a>
           </div>
+
           <div>
-           
-            <a href="mailto:Royalkey@gmail.com" className="font-normal">
+            <a href="mailto:Royalkey@gmail.com" className="font-normal hover:text-ThirdColor">
               Royalkey@gmail.com
             </a>
           </div>
+
           <div>
-            <a
-              href="#" // until i know link 
-              target="_blank"
-              className="font-normal "
-            >
-              www.Royalkey.com
-            </a>
+            <NavLink label="www.RoyalKey.com" to="/" />
           </div>
         </div>
       </div>
