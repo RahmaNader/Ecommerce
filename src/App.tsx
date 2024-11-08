@@ -1,13 +1,12 @@
-import { HomeScreen } from "./pages";
-
+import { Cart } from "@components/organisms";
+import { Navbar } from "@components/organisms";
 function App() {
 
   return (
-    
-    <>
-     <HomeScreen/>
-    </>
-
+    <div className="bg-customBeige min-h-screen">
+      <Navbar />
+      <Cart />
+    </div>
   );
   
 }

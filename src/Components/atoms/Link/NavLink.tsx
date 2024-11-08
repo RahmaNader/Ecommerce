@@ -7,6 +7,7 @@ type NavLinkProps = {
   unStyled?:boolean;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
+  onClick?: () => void;
 };
 
 const NavLink: React.FC<NavLinkProps> = ({
@@ -15,6 +16,7 @@ const NavLink: React.FC<NavLinkProps> = ({
   unStyled,
   onMouseEnter,
   onMouseLeave,
+  onClick,
 }) => {
   if (to) {
     return (
@@ -29,6 +31,7 @@ const NavLink: React.FC<NavLinkProps> = ({
         }
         onMouseEnter={onMouseEnter} // Add optional hover start
         onMouseLeave={onMouseLeave} // Add optional hover end
+        onClick={onClick}
       >
         {label}
       </RouterNavLink>
