@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import{ useRef, useState } from "react";
 import Logo from "@assets/Logo.png";
 import { IconSearch, IconMenu2, IconX } from "@tabler/icons-react";
 import profile from "@assets/Profile.svg";
@@ -74,7 +74,7 @@ const Navbar: React.FC = () => {
             Shop
           </span>
         </div>
-        <NavLink label="Blogs" to="/blogs" />
+        <NavLink label="Blogs" to="/blogs"  />
         <NavLink label="Contact Us" to="/contact" />
         <NavLink label="About us" to="/about-us" />
       </div>
