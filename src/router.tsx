@@ -8,6 +8,7 @@ import {
   ContactScreen,
   HomeScreen,
   Shop,
+  SearchScreen as Search,
 } from "@pages/Screens";
 
 export const router = createBrowserRouter([
@@ -24,7 +25,7 @@ export const router = createBrowserRouter([
         element: <BlogsScreen />,
       },
       {
-        path: "contact",
+        path: "contact-us",
         element: <ContactScreen />,
       },
       {
@@ -38,6 +39,10 @@ export const router = createBrowserRouter([
       {
         path: "cart",
         element: <Cart />,
+      },
+      {
+        path: "search",
+        element: <Search />,
       },
     ],
   },
