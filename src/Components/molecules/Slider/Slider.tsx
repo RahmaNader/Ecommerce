@@ -73,7 +73,7 @@ const Slider: React.FC = () => {
   const combinedItems = items;
 
   return (
-    <div className="relative mx-[52.5px] mt-10 mb-20 md:h-[669px]">
+    <div className="relative mx-[52.5px] mt-1 mb-20 md:h-[669px]">
       <div className="absolute inset-0 bg-cover bg-center filter blur-md z-0 bg-[url('@assets/Blur.svg')]"></div>
 
       <Container sx={{ py: 2 }} maxWidth={false} className="relative">

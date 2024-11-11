@@ -44,12 +44,12 @@ const SearchBar: React.FC = () => {
       </div>
 
       {inputValue && suggestions.length > 0 && (
-        <div className="absolute w-[1205px] max-h-[260px] left-1/2 transform -translate-x-1/2 top-[110px] border border-ThirdColor rounded-[10px] bg-customBeige z-10 overflow-y-auto overflow-x-hidden">
+        <div className="absolute w-full max-w-[1206px] px-4 max-h-[260px] left-1/2 transform -translate-x-1/2 top-[110px] border border-ThirdColor rounded-[10px] bg-customBeige z-10 overflow-y-auto overflow-x-hidden">
           {suggestions.map((suggestion, index) => (
             <div 
               key={index} 
               onClick={() => handleSuggestionClick(suggestion)}
-              className="w-[1181px] h-[64px] m-[12px] rounded-[10px] flex items-center px-4 cursor-pointer hover:bg-[rgba(167,142,120,0.13)] hover:text-wine"
+              className="w-full  h-[64px] my-[12px] rounded-[10px] flex items-center px-4 cursor-pointer hover:bg-[rgba(167,142,120,0.13)] hover:text-wine"
             >
               <span className="font-playfair font-medium text-[24px] leading-[32px] text-wine">
                 {suggestion}
