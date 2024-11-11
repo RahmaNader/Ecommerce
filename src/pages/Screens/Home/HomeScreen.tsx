@@ -4,7 +4,7 @@ import { Slider, Footer } from "@components/molecules";
 
 const HomeScreen: React.FC = () => {
   return (
-    <div className="bg-customBeige  min-h-screen mt-10">
+    <div className="bg-customBeige min-h-screen">
       <Slider/>
       <Home/>
       <Footer/>
