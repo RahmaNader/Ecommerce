@@ -4,7 +4,7 @@ type NavLinkProps = {
   label: string | JSX.Element;
   to?: string;
   variant: "navbar" | "footer" | "navbaricons" | "subnavbar" | "breadcrumb";
-  state?: any;
+  state?: never;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   onClick?: () => void;
