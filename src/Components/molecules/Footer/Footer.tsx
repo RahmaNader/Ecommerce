@@ -37,7 +37,7 @@ const Footer: React.FC = () => {
 
   return (
     <footer className="bg-secondColor text-white font-playfair font-semibold mt-20">
-      <div className="flex flex-col md:flex-row ms-20 p-9">
+      <div className="flex flex-col md:flex-row p-9">
         {/* Section 1: Brand and Social Links */}
         <div className="mt-8 md:w-1/3 lg:w-1/3">
           <p className="text-2xl">Royal Key</p>
@@ -68,7 +68,7 @@ const Footer: React.FC = () => {
         </div>
 
         {/* Section 3: Contact Information */}
-        <div className="flex flex-col mt-8 space-y-3 font-medium mr-60">
+        <div className="flex flex-col  mt-8 space-y-3 font-medium ">
           <h4>Contact Us:</h4>
           <NavLink
             label={contactInfo.phone}

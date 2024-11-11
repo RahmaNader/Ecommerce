@@ -10,15 +10,11 @@ import Img2 from "@assets/HP_img2.jpeg";
 import Img3 from "@assets/HP_img3.jpeg";
 
 const Home: React.FC = () => {
-  const handleButtonClick = (string:string) => {
+  const handleButtonClick = (string: string) => {
     console.log("Button clicked " + string);
   };
 
-  // const handleImageClick = (category: string) => {
-  //   console.log(`Image clicked: ${category}`);
-  // };
-
-  //a placeholder array for now until the backend api is ready
+  // a placeholder array for now until the backend api is ready
   const newCollectionCards = [
     {
       src: Img1,
@@ -93,16 +89,16 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <div className="flex justify-between my-20 mx-32">
+      <div className="flex flex-col md:flex-row justify-between my-20 mx-8 md:mx-32">
         <button
           onClick={() => handleButtonClick("kids")}
-          className="cursor-pointer hover:opacity-80 "
+          className="cursor-pointer hover:opacity-80 mb-8 md:mb-0"
         >
           <img src={kids} alt="kids-image" />
         </button>
         <button
           onClick={() => handleButtonClick("women")}
-          className="cursor-pointer hover:opacity-80"
+          className="cursor-pointer hover:opacity-80 mb-8 md:mb-0"
         >
           <img src={women} alt="women-image" />
         </button>
@@ -114,7 +110,7 @@ const Home: React.FC = () => {
         </button>
       </div>
 
-      <div>
+      <div className="flex flex-col">
         {newCollectionCards.length > 0 && (
           <>
             <HomeSections
