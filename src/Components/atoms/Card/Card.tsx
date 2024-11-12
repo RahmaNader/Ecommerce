@@ -22,7 +22,7 @@ const Card: React.FC<CardProps> = ({
 }) => {
   return (
     <div className="text-center">
-      <div  onClick={onClick} className="image-container w-[225px] h-[358.3px] relative overflow-hidden rounded-t-[500px] cursor-pointer hover:opacity-80">
+      <div  onClick={onClick} className="image-container w-[225px] h-[358.3px] relative overflow-hidden rounded-t-[500px] cursor-pointer hover:opacity-80 ">
         
         <img
           src={src}
