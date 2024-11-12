@@ -89,7 +89,7 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <div className="flex flex-col md:flex-row justify-between my-20 mx-8 md:mx-32">
+      <div className="flex flex-col md:flex-row justify-center items-center  md:justify-between my-20 mx-8 md:mx-32">
         <button
           onClick={() => handleButtonClick("kids")}
           className="cursor-pointer hover:opacity-80 mb-8 md:mb-0"

@@ -72,7 +72,7 @@ const Slider: React.FC = () => {
   const isMobile = window.innerWidth <= 768; // Check if it's a mobile screen
 
   return (
-    <div className={`relative mx-[52.5px] mt-8 mb-20 ${isMobile ? 'h-auto' : 'md:h-[669px]'}`}>
+    <div className={`relative mx-[52.5px] mt-8 mb-20 ${isMobile ? 'h-auto mx-[10px]' : 'md:h-[669px]'}`}>
       <div className="absolute inset-0 bg-cover bg-center filter blur-md z-0 bg-[url('@assets/Blur.svg')]"></div>
 
       <Container sx={{ py: 2 }} maxWidth={false} className="relative">
@@ -87,17 +87,17 @@ const Slider: React.FC = () => {
           navButtonsProps={{
             style: {
               backgroundColor: "#710e12",
-              width: isMobile ? "40px" : "56px",
-              height: isMobile ? "40px" : "56px",
+              width: isMobile ? "35px" : "56px",
+              height: isMobile ? "35px" : "56px",
             },
           }}
           navButtonsWrapperProps={{
             style: {
               position: 'absolute',
-              top: isMobile ? '60%' : '', // Lowered buttons for mobile
+              top: isMobile ? '55%' : '', // Lowered buttons for mobile
               transform: 'translateY(-50%)',
-              marginLeft: isMobile ? '0px':'20px',
-              marginRight: isMobile ? '0px':'20px',
+              marginLeft: isMobile ? '-10px':'20px',
+              marginRight: isMobile ? '-10px':'20px',
             },
           }}
           NextIcon={<img src={RightArrow} alt="right-arrow" />}
@@ -142,7 +142,7 @@ const SliderItem: React.FC<SliderItemProps> = React.memo(({ text, img, line, isM
         </div>
       </div>
       <div className={`${isMobile ? 'w-full mt-6' : 'flex md:w-[45%] w-full mt-6 md:mt-0'}`}>
-        <img src={img} alt="Fashion" className={`${isMobile ? 'w-full h-auto' : ''}`} />
+        <img src={img} alt="Fashion" className={`${isMobile ? 'w-[80%] justify-self-center h-auto' : ''}`} />
         {isMobile && (
           <div className="mt-4 text-center">
             <Button label="View Collection" onClick={function (): void {
