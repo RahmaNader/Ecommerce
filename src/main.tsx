@@ -1,19 +1,25 @@
 import React from "react";
-import ReactDOM from "react-dom/client"; // Use createRoot from React 18
+import ReactDOM from "react-dom/client";
 import "./index.css";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./router";
+import { QueryClient, QueryClientProvider } from "react-query";
 
+const queryClient = new QueryClient();
+
+// eslint-disable-next-line react-refresh/only-export-components
 const App: React.FC = () => {
   return <RouterProvider router={router} />;
 };
 
-// Correct way to initialize in React 18
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
+
 root.render(
   <React.StrictMode>
-    <App />
+    <QueryClientProvider client={queryClient}>
+      <App />
+    </QueryClientProvider>
   </React.StrictMode>
 );

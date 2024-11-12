@@ -22,19 +22,19 @@ const Button: React.FC<ButtonProps> = ({
 
   switch (type) {
     case "primary":
-      buttonStyles = "bg-mainColor text-white rounded rounded-4";
+      buttonStyles = "bg-mainColor text-white rounded rounded-4 hover:bg-sixColor";
       break;
     case "secondary":
-      buttonStyles = "bg-skin text-white rounded rounded-4";
+      buttonStyles = "bg-skin text-white rounded rounded-4 ";
       break;
     case "outlined":
-      buttonStyles = "border border-mainColor text-mainColor rounded rounded-4";
+      buttonStyles = "border border-mainColor text-mainColor rounded rounded-4 ";
       break;
     case "disabled":
-      buttonStyles = "bg-gray-400 text-gray-700 cursor-not-allowed rounded rounded-4";
+      buttonStyles = "bg-gray-400 text-gray-700 cursor-not-allowed rounded rounded-4 ";
       break;
     default:
-      buttonStyles = "bg-blue-500 text-white hover:bg-blue-600 rounded rounded-4";
+      buttonStyles = "bg-blue-500 text-white hover:bg-blue-600 rounded rounded-4 ";
       break;
   }
 
