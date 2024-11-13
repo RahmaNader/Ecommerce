@@ -29,7 +29,7 @@ const previousPageName: string =
     .join(" ") || "Home";
 
   return (
-    <div className="flex items-center gap-[4px] w-auto h-[32px] space-x-1 px-4 md:px-6 lg:px-8">
+    <div className="flex items-center gap-[4px] w-auto h-[32px] space-x-1">
       <NavLink
         label={previousPageName}
         to={previousPagePath}
