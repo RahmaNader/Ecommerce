@@ -14,18 +14,18 @@ const Breadcrumb: React.FC = () => {
     ?.replace(/-/g, " ")
     .split(" ")
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ") || "Home";
+    .join(" ");
 
 // Get the previous page path and name from location.state
 const previousPagePath = location.state?.from || "/";
-const previousPageName =
+const previousPageName: string =
   previousPagePath
     .split("/")
     .filter(Boolean)
     .pop()
     ?.replace(/-/g, " ")
     .split(" ")
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ") || "Home";
 
   return (
