@@ -1,5 +1,7 @@
 import React from "react";
 import { useParams, Navigate } from "react-router-dom";
+import {Filter} from '@components/organisms';
+import { Breadcrumb } from "@components/molecules";
 
 type ShopParams = {
   category: string;
@@ -16,6 +18,7 @@ const Shop: React.FC = () => {
   return (
     <div className="bg-customBeige min-h-screen">
       <div className="p-8">
+      <Breadcrumb />
         <h1 className="text-2xl font-bold text-[#721013]">
           {category.charAt(0).toUpperCase() + category.slice(1)}
           {item ? `: ${item}` : ""}
@@ -26,6 +29,8 @@ const Shop: React.FC = () => {
             : `Browse items in the ${category} category.`}
         </p>
       </div>
+      <Filter/>
+
     </div>
   );
 };
