@@ -3,7 +3,7 @@ import React from "react";
 type ButtonProps = {
   label: string;
   onClick: () => void;
-  type?: "primary" | "secondary" | "outlined" | "disabled"; // Button types
+  type?: "primary" | "secondary" | "outlined" | "disabled" | "PaginationOutlined" |"Pagination"; // Button types
   isDisabled?: boolean; // Disabled flag
   className?: string; // Additional classes
   size?: "small" | "medium" | "large" | "login-register";
@@ -28,10 +28,16 @@ const Button: React.FC<ButtonProps> = ({
       buttonStyles = "bg-skin text-white rounded rounded-4 ";
       break;
     case "outlined":
-      buttonStyles = "border border-mainColor text-mainColor rounded rounded-4 ";
+      buttonStyles = "border border-mainColor text-mainColor rounded rounded-4";
       break;
     case "disabled":
       buttonStyles = "bg-gray-400 text-gray-700 cursor-not-allowed rounded rounded-4 ";
+      break;
+    case "PaginationOutlined":
+      buttonStyles = "font-Playfair text-[20px] mx-2 w-[141px] h-[60px] border-2  border-wine text-wine rounded rounded-4 cursor-pointer hover:border-sixColor hover:text-sixColor";
+      break;
+    case "Pagination":
+      buttonStyles = "font-Playfair text-[20px] mx-2 w-[141px] h-[60px] bg-wine text-white rounded rounded-4 cursor-pointer hover:bg-sixColor";
       break;
     default:
       buttonStyles = "bg-blue-500 text-white hover:bg-blue-600 rounded rounded-4 ";
