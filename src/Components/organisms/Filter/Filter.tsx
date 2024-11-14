@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactSlider from "react-slider";
 import FilterIcon from "@assets/FilterIcon.svg";
 import FilterArrow from "@assets/FilterArrow.svg";
@@ -8,7 +8,11 @@ interface Category {
   isChecked: boolean;
 }
 
-const Filter: React.FC = () => {
+type FilterProps = {
+  onFilterChange: (filters: { size: string | null; collection: number | null }) => void;
+};
+
+const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
   const sizes = ["S", "M", "L", "XL", "XXL"];
   const categories: Category[] = [
     { name: "Pants", isChecked: false },
@@ -29,15 +33,11 @@ const Filter: React.FC = () => {
   ];
 
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [selectedCollection, setSelectedCollection] = useState<number | null>(
-    null
-  );
+  const [selectedCollection, setSelectedCollection] = useState<number | null>(null);
 
   // State to manage category collapse
-  const [isCategoriesCollapsed, setIsCategoriesCollapsed] =
-    useState<boolean>(false);
-  const [isCollectionsCollapsed, setIsCollectionsCollapsed] =
-    useState<boolean>(false);
+  const [isCategoriesCollapsed, setIsCategoriesCollapsed] = useState<boolean>(true);
+  const [isCollectionsCollapsed, setIsCollectionsCollapsed] = useState<boolean>(true);
 
   // State to manage category items
   const [categoryItems, setCategoryItems] = useState<Category[]>(categories);
@@ -82,8 +82,12 @@ const Filter: React.FC = () => {
     return `EGP ${value.toFixed(2)}`;
   };
 
+  useEffect(() => {
+    onFilterChange({ size: selectedSize, collection: selectedCollection });
+  }, [selectedSize, selectedCollection]);
+
   return (
-    <div className="flex flex-col items-start p-0 gap-[36px] max-w-[305px] max-h-[845px] mt-10 ">
+    <div className="flex flex-col items-start p-0 gap-[36px] max-w-[305px] max-h-[845px] mt-10">
       <div className="flex flex-row items-center w-[269px] h-[36px] justify-between">
         <p className="font-playfair text-[30px] font-bold text-wine text-left">
           Filters
