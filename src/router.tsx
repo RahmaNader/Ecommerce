@@ -9,6 +9,7 @@ import {
   HomeScreen,
   Shop,
 } from "@pages/Screens";
+import CheckOut from "@components/organisms/CheckOut/CheckOut";
 
 export const router = createBrowserRouter([
   {
@@ -38,6 +39,10 @@ export const router = createBrowserRouter([
       {
         path: "cart",
         element: <Cart />,
+      },
+      {
+        path: "checkOut",
+        element: <CheckOut />,
       },
     ],
   },

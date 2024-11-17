@@ -24,7 +24,8 @@ export default {
         shadowColor: "rgba(167, 142, 120, 0.46)",
         mainColor: "#721013",
         removeButton: "#E14B4B",
-        skin: "#A78E78"
+        skin: "#A78E78",
+        addressDetails: "#AF754D"
       },
     },
   },
