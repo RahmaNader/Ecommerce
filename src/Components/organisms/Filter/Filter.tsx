@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+// src/components/organisms/Filter/Filter.tsx
+import React, { useState } from "react";
 import ReactSlider from "react-slider";
 import FilterIcon from "@assets/FilterIcon.svg";
 import FilterArrow from "@assets/FilterArrow.svg";
@@ -9,20 +10,21 @@ interface Category {
 }
 
 type FilterProps = {
-  onFilterChange: (filters: { size: string | null; collection: number | null }) => void;
+  onFilterChange: (filters: {
+    size?: string;
+    collection?: number;
+    categories?: string[];
+    priceRange?: [number, number];
+  }) => void;
 };
 
 const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
   const sizes = ["S", "M", "L", "XL", "XXL"];
-  const categories: Category[] = [
-    { name: "Pants", isChecked: false },
-    { name: "Tops", isChecked: false },
-    { name: "Shoes", isChecked: false },
-    { name: "Accessories", isChecked: false },
-    { name: "Dresses", isChecked: false },
-    { name: "Bags", isChecked: false },
-    { name: "Suits", isChecked: false },
-    { name: "Sports", isChecked: false },
+  const initialCategories: Category[] = [
+    { name: "Jackets", isChecked: false },
+    { name: "Coats", isChecked: false },
+    { name: "Shirts", isChecked: false },
+    // ... add more categories as needed
   ];
 
   const collections = [
@@ -33,61 +35,43 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
   ];
 
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [selectedCollection, setSelectedCollection] = useState<number | null>(null);
+  const [selectedCollection, setSelectedCollection] = useState<number | null>(
+    null
+  );
+  const [categoryItems, setCategoryItems] = useState<Category[]>(initialCategories);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
 
-  // State to manage category collapse
-  const [isCategoriesCollapsed, setIsCategoriesCollapsed] = useState<boolean>(true);
-  const [isCollectionsCollapsed, setIsCollectionsCollapsed] = useState<boolean>(true);
+  // Collapse states
+  const [isCategoriesCollapsed, setIsCategoriesCollapsed] = useState<boolean>(
+    true
+  );
+  const [isCollectionsCollapsed, setIsCollectionsCollapsed] = useState<boolean>(
+    true
+  );
 
-  // State to manage category items
-  const [categoryItems, setCategoryItems] = useState<Category[]>(categories);
-
-  // State for price range slider
-  const [priceRange, setPriceRange] = useState<[number, number]>([10, 1000]);
-
-  // Function to handle clicking on a size box
-  const handleSizeClick = (size: string) => {
-    setSelectedSize(size);
-  };
-
-  // Function to handle key press on a size box
-  const handleKeyPress = (
-    event: React.KeyboardEvent<HTMLDivElement>,
-    size: string
-  ) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      handleSizeClick(size);
-    }
-  };
-
-  // Function to handle category collapse toggle
-  const handleCategoriesToggle = () => {
-    setIsCategoriesCollapsed(!isCategoriesCollapsed);
-  };
-
-  // Function to handle collections collapse toggle
-  const handleCollectionsToggle = () => {
-    setIsCollectionsCollapsed(!isCollectionsCollapsed);
-  };
-
-  // Function to handle category checkbox change
+  // Handle category checkbox change
   const handleCategoryChange = (index: number) => {
     const updatedCategories = [...categoryItems];
     updatedCategories[index].isChecked = !updatedCategories[index].isChecked;
     setCategoryItems(updatedCategories);
   };
 
-  const formatCurrency = (value: number) => {
-    return `EGP ${value.toFixed(2)}`;
-  };
+  const handleFilterClick = () => {
+    const selectedCategories = categoryItems
+      .filter((category) => category.isChecked)
+      .map((category) => category.name);
 
-  useEffect(() => {
-    onFilterChange({ size: selectedSize, collection: selectedCollection });
-  }, [selectedSize, selectedCollection]);
+    onFilterChange({
+      size: selectedSize || undefined,
+      collection: selectedCollection !== null ? selectedCollection : undefined,
+      categories: selectedCategories.length > 0 ? selectedCategories : undefined,
+      priceRange,
+    });
+  };
 
   return (
     <div className="flex flex-col items-start p-0 gap-[36px] max-w-[305px] max-h-[845px] mt-10">
+      {/* Filter Header */}
       <div className="flex flex-row items-center w-[269px] h-[36px] justify-between">
         <p className="font-playfair text-[30px] font-bold text-wine text-left">
           Filters
@@ -95,6 +79,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
         <img src={FilterIcon} alt="Filter icon" className="w-[27px] h-[25px]" />
       </div>
 
+      {/* Size Filter */}
       <div>
         <p className="font-playfair text-[18px] text-wine text-left font-semibold">
           Size
@@ -107,17 +92,15 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
           {sizes.map((size, index) => (
             <div
               key={index}
-              onClick={() => handleSizeClick(size)}
-              onKeyPress={(e) => handleKeyPress(e, size)}
+              onClick={() => setSelectedSize(size)}
               role="button"
               tabIndex={0}
               aria-pressed={selectedSize === size}
-              className={`font-Jost flex items-center text-[16px] w-[42px] h-[42px] justify-center border-2 text-ThirdColor border-ThirdColor rounded-lg cursor-pointer focus:outline-none 
-                ${
-                  selectedSize === size
-                    ? "text-wine border-wine"
-                    : "text-ThirdColor border-ThirdColor"
-                }`}
+              className={`font-Jost flex items-center text-[16px] w-[42px] h-[42px] justify-center border-2 rounded-lg cursor-pointer focus:outline-none ${
+                selectedSize === size
+                  ? "text-wine border-wine"
+                  : "text-ThirdColor border-ThirdColor"
+              }`}
             >
               {size}
             </div>
@@ -125,10 +108,11 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
         </div>
       </div>
 
+      {/* Categories Filter */}
       <div className="max-w-[272px] flex flex-col">
         <div
           className="w-[272px] flex flex-row items-center justify-between cursor-pointer"
-          onClick={handleCategoriesToggle}
+          onClick={() => setIsCategoriesCollapsed(!isCategoriesCollapsed)}
         >
           <p className="font-playfair text-[18px] text-wine text-left font-semibold">
             Categories
@@ -142,40 +126,39 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
           />
         </div>
 
-        <div
-          className={`mt-2 overflow-hidden transition-max-height duration-500 ease-in-out ${
-            isCategoriesCollapsed ? "max-h-0" : "max-h-screen"
-          }`}
-        >
-          {categoryItems.map((category, index) => (
-            <div
-              key={index}
-              className="w-[272px] flex flex-row items-center justify-between"
-            >
-              <label
-                htmlFor={`category-${index}`}
-                className={`font-Poppins text-[16px] cursor-pointer ${
-                  category.isChecked ? "text-wine" : "text-ThirdColor"
-                }`}
+        {!isCategoriesCollapsed && (
+          <div className="mt-2">
+            {categoryItems.map((category, index) => (
+              <div
+                key={index}
+                className="w-[272px] flex flex-row items-center justify-between"
               >
-                {category.name}
-              </label>
-              <input
-                type="checkbox"
-                checked={category.isChecked}
-                onChange={() => handleCategoryChange(index)}
-                id={`category-${index}`}
-                className={`border-2 rounded-[4px] w-[20px] h-[20px] appearance-none cursor-pointer border-ThirdColor bg-customBeige checked:bg-wine checked:border-wine `}
-              />
-            </div>
-          ))}
-        </div>
+                <label
+                  htmlFor={`category-${index}`}
+                  className={`font-Poppins text-[16px] cursor-pointer ${
+                    category.isChecked ? "text-wine" : "text-ThirdColor"
+                  }`}
+                >
+                  {category.name}
+                </label>
+                <input
+                  type="checkbox"
+                  checked={category.isChecked}
+                  onChange={() => handleCategoryChange(index)}
+                  id={`category-${index}`}
+                  className="border-2 rounded-[4px] w-[20px] h-[20px] appearance-none cursor-pointer border-ThirdColor bg-customBeige checked:bg-wine checked:border-wine "
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
+      {/* Collections Filter */}
       <div className="max-w-[272px] flex flex-col">
         <div
           className="w-[272px] flex flex-row items-center justify-between cursor-pointer"
-          onClick={handleCollectionsToggle}
+          onClick={() => setIsCollectionsCollapsed(!isCollectionsCollapsed)}
         >
           <p className="font-playfair text-[18px] text-wine text-left font-semibold">
             Collections
@@ -189,12 +172,8 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
           />
         </div>
 
-        <div
-          className={`mt-2 overflow-hidden transition-max-height duration-500 ease-in-out ${
-            isCollectionsCollapsed ? "max-h-0" : "max-h-screen"
-          }`}
-        >
-          <div className="list-disc">
+        {!isCollectionsCollapsed && (
+          <div className="mt-2">
             {collections.map((collection, index) => (
               <p
                 key={index}
@@ -207,12 +186,13 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
               </p>
             ))}
           </div>
-        </div>
+        )}
       </div>
 
+      {/* Price Range Filter */}
       <div className="max-w-[272px] flex flex-col">
         <p className="font-playfair text-[18px] text-wine text-left font-semibold">
-          Prices Range
+          Price Range
         </p>
         <div className="flex justify-between mt-2">
           <span className="font-Poppins text-[16px] text-wine">
@@ -237,9 +217,11 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
         />
       </div>
 
+      {/* Filter Button */}
       <button
-        className=" font-Playfair w-[100%] max-w-[263px] h-[60px] bg-wine text-[20px] text-white  rounded-md mt-4 focus:outline-none focus:ring-0"
+        className="font-Playfair w-full max-w-[263px] h-[60px] bg-wine text-[20px] text-white rounded-md mt-4 focus:outline-none focus:ring-0"
         aria-label="Apply filters"
+        onClick={handleFilterClick}
       >
         Filter
       </button>
