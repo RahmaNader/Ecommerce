@@ -14,7 +14,7 @@ const Card: React.FC<CardProps> = ({
 }) => {
   return (
     <div className="text-center">
-      <div className="image-container w-[225px] h-[358.3px] relative overflow-hidden rounded-t-[500px] cursor-pointer hover:opacity-80 ">
+      <div className="image-container w-[109px] h-[174px] sm:w-[225px] sm:h-[358.3px] relative overflow-hidden rounded-t-[500px] cursor-pointer hover:opacity-80">
         <img
           src={src}
           alt={alt}
@@ -23,24 +23,25 @@ const Card: React.FC<CardProps> = ({
         <div className="absolute top-0 left-0 w-full h-full border-[2px] border-[#E3C174] rounded-t-[500px]" />
       </div>
 
-      <div className="mt-5">
-        <p className="font-instrument font-medium text-[20px] leading-[24.4px] hover:opacity-80 cursor-pointer text-secondColor">
+      <div className="mt-2 sm:mt-5">
+        <p className="font-instrument font-medium text-[14px] leading-[16px] sm:text-[20px] sm:leading-[24.4px] hover:opacity-80 cursor-pointer text-secondColor">
           {name}
         </p>
-        <p className="font-playfair font-semibold text-[20px] leading-[30px] text-ForthColor">
+        <p className="font-playfair font-semibold text-[14px] leading-[20px] sm:text-[20px] sm:leading-[30px] text-ForthColor">
           EGP {DisPrice}
         </p>
-        <p className="font-playfair font-medium text-[15px] line-through text-FifthColor">
+        <p className="font-playfair font-medium text-[12px] line-through text-FifthColor sm:text-[15px]">
           EGP {NormalPrice}
         </p>
       </div>
 
-      <div className="flex justify-center">
+      <div className="flex justify-center mt-1 sm:mt-2">
         {[...Array(5)].map((_, i) => (
           <img
             key={i}
             src={i < rate ? star : greyStar}
             alt={i < rate ? "Golden Star" : "Grey Star"}
+            className="w-3 h-3 sm:w-4 sm:h-4"
           />
         ))}
       </div>

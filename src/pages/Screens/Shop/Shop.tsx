@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Navigate, useLocation } from "react-router-dom";
 import { Filter } from "@components/organisms";
-import { Breadcrumb } from "@components/molecules";
-import {ProductsDisplay} from "@components/organisms";
+// import { Breadcrumb } from "@components/molecules";
+import { ProductsDisplay } from "@components/organisms";
 import { cards } from "@data/cards";
 import { CardProps } from "@types";
 
@@ -25,39 +25,32 @@ const Shop: React.FC = () => {
   const [filteredCards, setFilteredCards] = useState<CardProps[]>(cards);
   const [filterCriteria, setFilterCriteria] = useState<FilterCriteria>({});
 
-  if (!category) {
-    return <Navigate to="/" />;
-  }
-
-  // Extract the last segment of the URL path
   const lastSegment = location.pathname.split("/").filter(Boolean).pop();
 
-  // Update filteredCards whenever filterCriteria changes
   useEffect(() => {
+    if (!category) {
+      return;
+    }
     let newFilteredCards = [...cards];
 
-    // Apply size filter
     if (filterCriteria.size) {
       newFilteredCards = newFilteredCards.filter(
         (card) => card.size === filterCriteria.size
       );
     }
 
-    // Apply collection filter
     if (filterCriteria.collection !== undefined) {
       newFilteredCards = newFilteredCards.filter(
         (card) => card.collection === filterCriteria.collection
       );
     }
 
-    // Apply category filter
     if (filterCriteria.categories && filterCriteria.categories.length > 0) {
       newFilteredCards = newFilteredCards.filter((card) =>
         filterCriteria.categories?.includes(card.category)
       );
     }
 
-    // Apply price range filter
     if (filterCriteria.priceRange) {
       newFilteredCards = newFilteredCards.filter((card) => {
         return (
@@ -68,21 +61,23 @@ const Shop: React.FC = () => {
     }
 
     setFilteredCards(newFilteredCards);
-  }, [filterCriteria]);
+    setFilteredCards(newFilteredCards);
+  }, [filterCriteria, category]);
 
+  if (!category) {
+    return <Navigate to="/" />;
+  }
   const handleFilterChange = (filters: FilterCriteria) => {
     setFilterCriteria(filters);
   };
 
   return (
     <div className="bg-customBeige min-h-screen md:p-10">
-      <Breadcrumb />
+      {/* <Breadcrumb /> */}
       <div className="flex flex-col lg:flex-row items-start ">
-        {/* Filter Section */}
         <div className="w-full md:w-1/4 p-4 md:sticky md:top-0 md:h-screen md:overflow-y-auto flex justify-center">
           <Filter onFilterChange={handleFilterChange} />
         </div>
-        {/* Products Section */}
         <div className="w-full lg:w-3/4 p-4 ">
           <p className="font-playball text-[40px] text-wine text-center md:text-left">
             {(lastSegment ?? "").charAt(0).toUpperCase() +

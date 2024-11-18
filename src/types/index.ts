@@ -1,4 +1,6 @@
+// src/types/index.ts
 export interface CardProps {
+    id: number;
     src: string;
     alt: string;
     name: string;
@@ -10,7 +12,4 @@ export interface CardProps {
     collection: number;
     price: number;
   }
-  
-  // If you have other types, you can export them here as well
-  // export interface AnotherType { ... }
   
