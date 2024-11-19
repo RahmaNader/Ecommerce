@@ -1,11 +1,11 @@
-// src/pages/screens/Shop/Shop.tsx
+// src/pages/Screens/Shop/Shop.tsx
+
 import React, { useState, useEffect } from "react";
 import { useParams, Navigate, useLocation } from "react-router-dom";
-import { Filter } from "@components/organisms";
-// import { Breadcrumb } from "@components/molecules";
-import { ProductsDisplay } from "@components/organisms";
+import { Filter, ProductsDisplay } from "@components/organisms";
 import { cards } from "@data/cards";
 import { CardProps } from "@types";
+import FilterIcon from "@assets/FilterIcon.svg";
 
 type ShopParams = {
   category: string;
@@ -24,6 +24,8 @@ const Shop: React.FC = () => {
   const location = useLocation();
   const [filteredCards, setFilteredCards] = useState<CardProps[]>(cards);
   const [filterCriteria, setFilterCriteria] = useState<FilterCriteria>({});
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false); // Controls sidebar visibility with animation
 
   const lastSegment = location.pathname.split("/").filter(Boolean).pop();
 
@@ -61,29 +63,75 @@ const Shop: React.FC = () => {
     }
 
     setFilteredCards(newFilteredCards);
-    setFilteredCards(newFilteredCards);
   }, [filterCriteria, category]);
+
+  // Handle sidebar visibility with animation
+  useEffect(() => {
+    if (isFilterOpen) {
+      setShowSidebar(true);
+    } else {
+      const timer = setTimeout(() => setShowSidebar(false), 300); // Match duration with CSS transition
+      return () => clearTimeout(timer);
+    }
+  }, [isFilterOpen]);
 
   if (!category) {
     return <Navigate to="/" />;
   }
+
   const handleFilterChange = (filters: FilterCriteria) => {
     setFilterCriteria(filters);
   };
 
   return (
     <div className="bg-customBeige min-h-screen md:p-10">
-      {/* <Breadcrumb /> */}
-      <div className="flex flex-col lg:flex-row items-start ">
-        <div className="w-full md:w-1/4 p-4 md:sticky md:top-0 md:h-screen md:overflow-y-auto flex justify-center">
+      {/* Filter Toggle Button for screens smaller than laptop size */}
+      <div className="laptop:flex hidden justify-start m-8">
+        <button onClick={() => setIsFilterOpen(true)}>
+          <img src={FilterIcon} alt="Open Filters" />
+        </button>
+      </div>
+      <div className="flex flex-col lg:flex-row items-start">
+        {/* Filter Sidebar for screens smaller than laptop size */}
+        {showSidebar && (
+          <div className="fixed inset-0 z-50 flex">
+            <div
+              className={`transform ${
+                isFilterOpen ? "translate-x-0" : "-translate-x-full"
+              } transition-transform duration-300 ease-in-out w-3/4 max-w-[364px] bg-white p-4 overflow-y-auto`}
+            >
+              <div className="flex flex-row items-center w-[269px] h-[36px] justify-between mt-10">
+                <p className="font-playfair text-[30px] font-bold text-wine text-left">
+                  Filters
+                </p>
+                <button onClick={() => setIsFilterOpen(false)}>
+                  <img src={FilterIcon} alt="Close Filters" />
+                </button>
+              </div>
+              <div className="flex justify-center">
+                <Filter onFilterChange={handleFilterChange} />
+              </div>
+            </div>
+            {/* Overlay */}
+            <div
+              className="flex-1 bg-black opacity-50"
+              onClick={() => setIsFilterOpen(false)}
+            ></div>
+          </div>
+        )}
+        {/* Desktop Filter for screens larger than laptop size */}
+        <div className="laptop:hidden w-full md:w-1/4 p-4 md:sticky md:top-0 md:h-screen md:overflow-y-auto">
           <Filter onFilterChange={handleFilterChange} />
         </div>
-        <div className="w-full lg:w-3/4 p-4 ">
+        {/* Products Section */}
+        <div className="w-full lg:w-3/4 p-4">
           <p className="font-playball text-[40px] text-wine text-center md:text-left">
             {(lastSegment ?? "").charAt(0).toUpperCase() +
               (lastSegment ?? "").slice(1)}
           </p>
-          <ProductsDisplay products={filteredCards} />
+          <div className="flex justify-center">
+            <ProductsDisplay products={filteredCards} />
+          </div>
         </div>
       </div>
     </div>

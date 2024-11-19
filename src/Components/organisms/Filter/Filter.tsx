@@ -37,26 +37,30 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
     "Accessories",
   ];
 
-  const ALL_PRODUCTS_INDEX = 0;
+  const ALL_PRODUCTS_INDEX = 0; 
 
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedCollection, setSelectedCollection] = useState<number | null>(
     null
   );
-  const [categoryItems, setCategoryItems] =
-    useState<Category[]>(initialCategories);
+  const [categoryItems, setCategoryItems] = useState<Category[]>(initialCategories);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
 
-  const [isCategoriesCollapsed, setIsCategoriesCollapsed] =
-    useState<boolean>(true);
-  const [isCollectionsCollapsed, setIsCollectionsCollapsed] =
-    useState<boolean>(true);
+
+  const [isCategoriesCollapsed, setIsCategoriesCollapsed] = useState<boolean>(
+    true
+  );
+  const [isCollectionsCollapsed, setIsCollectionsCollapsed] = useState<boolean>(
+    true
+  );
+
 
   const handleCategoryChange = (index: number) => {
     const updatedCategories = [...categoryItems];
     updatedCategories[index].isChecked = !updatedCategories[index].isChecked;
     setCategoryItems(updatedCategories);
   };
+
 
   const handleSizeClick = (size: string) => {
     if (selectedSize === size) {
@@ -66,6 +70,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
     }
   };
 
+
   const handleFilterClick = () => {
     const selectedCategories = categoryItems
       .filter((category) => category.isChecked)
@@ -73,12 +78,8 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
 
     const filters = {
       size: selectedSize || undefined,
-      collection:
-        selectedCollection !== null && selectedCollection !== ALL_PRODUCTS_INDEX
-          ? selectedCollection
-          : undefined,
-      categories:
-        selectedCategories.length > 0 ? selectedCategories : undefined,
+      collection: selectedCollection !== null && selectedCollection !== ALL_PRODUCTS_INDEX ? selectedCollection : undefined,
+      categories: selectedCategories.length > 0 ? selectedCategories : undefined,
       priceRange,
     };
 
@@ -93,12 +94,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
 
   return (
     <div className="flex flex-col items-start p-0 gap-[36px] max-w-[305px] max-h-[845px] mt-10">
-      <div className="flex flex-row items-center w-[269px] h-[36px] justify-between">
-        <p className="font-playfair text-[30px] font-bold text-wine text-left">
-          Filters
-        </p>
-        <img src={FilterIcon} alt="Filter icon" className="w-[27px] h-[25px]" />
-      </div>
+      
 
       <div>
         <p className="font-playfair text-[18px] text-wine text-left font-semibold">
@@ -234,19 +230,19 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
         />
       </div>
       <Button
-        label="Filter"
-        type="primary"
-        onClick={handleFilterClick}
-        style={{
-          width: "263px", // Fixed width
-          height: "60px", // Fixed height
-          fontSize: "20px", // Fixed font size
-          minWidth: "100px", // Minimum width, change as per your requirements
-          maxWidth: "200px", // Maximum width, change as per your requirements
-          marginLeft: "auto", // Center align
-          marginRight: "auto",
-        }}
-      />
+      label="Filter"
+      type="primary"
+      onClick={handleFilterClick}
+      style={{
+        width: "263px",          // Fixed width
+        height: "60px",          // Fixed height
+        fontSize: "20px",        // Fixed font size
+        minWidth: "100px",       // Minimum width, change as per your requirements
+        maxWidth: "200px",       // Maximum width, change as per your requirements
+        marginLeft: "auto",          // Center align
+        marginRight:"auto",
+      }}
+    />
     </div>
   );
 };
