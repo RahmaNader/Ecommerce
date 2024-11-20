@@ -44,7 +44,7 @@ const Button: React.FC<ButtonProps> = ({
       break;
     case "PaginationOutlined":
       buttonStyles =
-        "font-Playfair text-[20px] mx-2 border-2 border-wine text-wine rounded rounded-4 cursor-pointer hover:border-sixColor hover:text-sixColor";
+        "font-Playfair text-[100px] mx-2 border-2 border-wine text-wine rounded rounded-4 cursor-pointer hover:border-sixColor hover:text-sixColor";
       break;
     case "Pagination":
       buttonStyles =

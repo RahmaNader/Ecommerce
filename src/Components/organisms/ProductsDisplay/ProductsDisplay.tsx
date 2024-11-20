@@ -50,34 +50,34 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products }) => {
         for (let i = 1; i <= maxPageButtons; i++) {
           pageNumbers.push(i);
         }
-        pageNumbers.push("right");
+        pageNumbers.push("right"); 
       } else if (currentPage > totalPages - maxPageButtons + 1) {
-        pageNumbers.push("left");
+        pageNumbers.push("left"); 
         for (let i = totalPages - maxPageButtons + 1; i <= totalPages; i++) {
           pageNumbers.push(i);
         }
       } else {
-        pageNumbers.push("left");
+        pageNumbers.push("left"); 
         for (let i = currentPage - 1; i <= currentPage + 1; i++) {
           pageNumbers.push(i);
         }
-        pageNumbers.push("right");
+        pageNumbers.push("right"); 
       }
     }
     return pageNumbers;
   };
 
   return (
-    <div>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-5 justify-items-center ">
+    <div className="flex flex-col items-center w-full">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-5 w-full">
         {currentCards.map((card) => (
-          <div key={card.id}>
+          <div className="flex justify-center" key={card.id}>
             <Card {...card} />
           </div>
         ))}
       </div>
 
-      <div className="max-w-[856px] max-h-[100px] py-8">
+      <div className="py-8">
         <div className="flex items-center justify-center space-x-2">
           {/* Previous Button */}
           <Button
@@ -87,15 +87,15 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products }) => {
             isDisabled={currentPage === 1}
             className="flex items-center justify-center leading-none"
             style={{
-              width: isMobile ? "60px" : "141px",
-              height: isMobile ? "22px" : "59px",
-              fontSize: isMobile ? "8px" : "20px",
-              borderWidth: isMobile ? "0.5px" : "",
-            }}
+                width: isMobile ? "60px" : "141px", 
+                height: isMobile ? "22px" : "59px", 
+                fontSize: isMobile ? "8px" : "20px",
+                borderWidth:  isMobile ?  "0.5px" : "", 
+              }}
             size={isMobile ? "small" : "medium"}
           />
 
-          <div className="flex space-x-2 ">
+          <div className="flex space-x-2">
             {getPageNumbers().map((item, index) =>
               typeof item === "number" ? (
                 <button
@@ -105,22 +105,14 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products }) => {
                     currentPage === item
                       ? "bg-wine text-white border-spacing-1"
                       : "border-wine border-2 text-wine"
-                  } ${
-                    isMobile
-                      ? "w-[24px] h-[24px] text-[8px] border-spacing-1"
-                      : "w-[50px] h-[50px]"
-                  }`}
+                  } w-[21px] h-[21px] text-[10px] sm:w-[30px] sm:h-[30px] sm:text-[14px] md:w-[40px] md:h-[40px] md:text-[16px] `}
                 >
                   {item}
                 </button>
               ) : (
                 <span
                   key={`ellipsis-${index}`}
-                  className={`rounded-full flex items-center justify-center border-wine border-2 text-wine ${
-                    isMobile
-                      ? "w-[24px] h-[24px] text-[8px]"
-                      : "w-[50px] h-[50px]"
-                  }`}
+                  className={`rounded-full flex items-center justify-center border-wine border-2 text-wine w-[21px] h-[21px] text-[10px] sm:w-[30px] sm:h-[30px] sm:text-[14px] md:w-[40px] md:h-[40px] md:text-[16px] `}
                 >
                   {item === "left" ? "<<" : ">>"}
                 </span>
@@ -135,12 +127,12 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products }) => {
             isDisabled={currentPage === totalPages}
             className="flex items-center justify-center leading-none"
             style={{
-              width: isMobile ? "60px" : "141px",
-              height: isMobile ? "22px" : "59px",
-              fontSize: isMobile ? "8px" : "20px",
-              borderWidth: "0.5px",
-            }}
-            size={isMobile ? "small" : "medium"}
+                width: isMobile ? "60px" : "141px", 
+                height: isMobile ? "22px" : "59px", 
+                fontSize: isMobile ? "8px" : "20px",
+                borderWidth: "0.5px", 
+              }}
+            size={isMobile ? "small" : "medium"} 
           />
         </div>
       </div>
