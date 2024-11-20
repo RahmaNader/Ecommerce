@@ -83,28 +83,32 @@ const Shop: React.FC = () => {
     setFilterCriteria(filters);
   };
 
+  const handleCloseSidebar = () => {
+    setIsFilterOpen(false);
+    setShowSidebar(false); // Hide the overlay immediately
+  };
+
   return (
     <div className="bg-customBeige min-h-screen md:p-10">
-      {/* Filter Toggle Button for screens smaller than laptop size */}
       <div className="laptop:flex hidden justify-start m-8">
         <button onClick={() => setIsFilterOpen(true)}>
           <img src={FilterIcon} alt="Open Filters" />
         </button>
       </div>
-      <div className="flex flex-col lg:flex-row items-start">
+      <div className="flex flex-col xl:flex-row xl:items-start items-center">
         {/* Filter Sidebar for screens smaller than laptop size */}
         {showSidebar && (
           <div className="fixed inset-0 z-50 flex">
             <div
               className={`transform ${
                 isFilterOpen ? "translate-x-0" : "-translate-x-full"
-              } transition-transform duration-300 ease-in-out w-3/4 max-w-[364px] bg-white p-4 overflow-y-auto`}
+              } transition-transform duration-300 ease-in-out w-3/4 max-w-[364px] bg-white p-4 overflow-y-auto `}
             >
               <div className="flex flex-row items-center w-[269px] h-[36px] justify-between mt-10">
                 <p className="font-playfair text-[30px] font-bold text-wine text-left">
                   Filters
                 </p>
-                <button onClick={() => setIsFilterOpen(false)}>
+                <button onClick={handleCloseSidebar}>
                   <img src={FilterIcon} alt="Close Filters" />
                 </button>
               </div>
@@ -115,7 +119,7 @@ const Shop: React.FC = () => {
             {/* Overlay */}
             <div
               className="flex-1 bg-black opacity-50"
-              onClick={() => setIsFilterOpen(false)}
+              onClick={handleCloseSidebar}
             ></div>
           </div>
         )}
