@@ -1,31 +1,26 @@
 import React from "react";
 import phoneIcon from '../../../assets/PhoneIcon.svg'
 import letterIcon from '../../../assets/LetterIcon.svg'
-// import Input from '../../../Components/atoms/Input/Input';
 import { Button } from "@components/atoms";
-// import { SubmitHandler, useForm } from "react-hook-form"
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, SubmitHandler, FieldError  } from 'react-hook-form';
 
-
-
-
-// type formFirelds = {
-//   name: string;
-//   email: string;
-//   phone: number;
-// }
+type formFields = {
+  name: string;
+  email: string;
+  phone: number;
+  message: string;
+}
 
 const ContactScreen: React.FC = () => {
 
-  // const { register, handleSubmit } = useForm<formFirelds>()
-  const { control, handleSubmit, formState: { errors } } = useForm();
+  const { control, handleSubmit, formState: { errors } } = useForm<formFields>();
 
-
-  // const onSubmit: SubmitHandler<formFirelds> = (data) => {
-  //   console.log(data);
-  // }
-  const onSubmit = (data) => {
+  const onSubmit: SubmitHandler<formFields> = (data) => {
     console.log(data);
+  }
+
+  const getErrorMessage = (error: FieldError | undefined) => {
+    return error?.message ? error.message : null;
   };
 
   return (
@@ -67,7 +62,114 @@ const ContactScreen: React.FC = () => {
           </div>
         </div>
         <div className="xl:w-2/3 lg:w-2/3 md:w-1/2 max-md:w-full border border-skin bg-[#A78E7821] p-10 rounded-lg max-md:px-4 md:h-[550px] lg:h-[450px]">
-          {/* <form onSubmit={handleSubmit(onSubmit)}>
+
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="flex justify-between gap-3 max-md:flex-col md:flex-col lg:flex-row xl:flex-row xl:justify-between">
+              <div className="lg:w-1/3">
+                <Controller
+                  name="name"
+                  control={control}
+                  rules={{ required: "Name is required" }}
+                  render={({ field }) => <input {...field} id="name" placeholder="Your Name"
+                    className='bg-[#A78E7821] border border-skin px-3 py-3 rounded-md placeholder:text-skin md:w-full max-sm:w-full sm:w-full focus:border-skin focus:text-skin' />}
+                />
+                {errors.name && <span>{getErrorMessage(errors.name as FieldError)}</span>}
+              </div>
+              <div className="lg:w-1/3">
+                <Controller
+                  name="email"
+                  control={control}
+                  rules={{
+                    required: "Email is required",
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                      message: "Invalid email address"
+                    }
+                  }}
+                  render={({ field }) => <input {...field} id="email" placeholder="Your Email" className='bg-[#A78E7821] border border-skin px-3 py-3 rounded-md placeholder:text-skin md:w-full max-sm:w-full sm:w-full focus:border-skin focus:text-skin' />}
+                />
+                {errors.email && <span>{getErrorMessage(errors.email as FieldError)}</span>}
+              </div>
+              <div className="lg:w-1/3">
+                <Controller
+                  name="phone"
+                  control={control}
+                  rules={{ required: "Phone number is required" }}
+                  render={({ field }) => <input {...field} id="phone" placeholder="Your Phone" className='bg-[#A78E7821] border border-skin px-3 py-3 rounded-md placeholder:text-skin max-sm:w-full sm:w-full  md:w-full focus:border-skin focus:text-skin' />}
+                />
+                <div>
+                  {errors.phone && <span>{getErrorMessage(errors.phone as FieldError)}</span>}
+                </div>
+              </div>
+            </div>
+            <div>
+              <Controller
+                name="message"
+                control={control}
+                rules={{ required: "Message is required" }}
+                render={({ field }) => <textarea {...field} id="message" placeholder="Message" className="w-full h-[200px] bg-[#A78E7821] border border-skin p-5 mt-5 placeholder:text-skin focus:text-skin focus:border-skin " />}
+              />
+              {errors.message && <span>{getErrorMessage(errors.message as FieldError)}</span>}
+            </div>
+            <div className="float-right pt-5">
+              <Button
+                type="primary"
+                size="medium"
+                label="Send"
+                onClick={
+                  handleSubmit(onSubmit)
+                } />
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </div>
+  );
+};
+
+export default ContactScreen;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{/* <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex justify-between gap-3 max-md:flex-col md:flex-col lg:flex-row xl:flex-row xl:justify-between">
               <Input {...register("name", {
                 required: true
@@ -95,69 +197,6 @@ const ContactScreen: React.FC = () => {
                  } />
             </div>
           </form> */}
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex justify-between gap-3 max-md:flex-col md:flex-col lg:flex-row xl:flex-row xl:justify-between">
-              <div className="lg:w-1/3">
-                <Controller
-                  name="name"
-                  control={control}
-                  rules={{ required: "Name is required" }}
-                  render={({ field }) => <input {...field} id="name" placeholder="Your Name" 
-                  className='bg-[#A78E7821] border border-skin px-3 py-3 rounded-md placeholder:text-skin md:w-full max-sm:w-full sm:w-full focus:border-skin focus:text-skin' />}
-                />
-                {errors.name && <span className="text-red-500">{errors.name.message}</span>}
-              </div>
-              <div className="lg:w-1/3">
-                <Controller
-                  name="email"
-                  control={control}
-                  rules={{
-                    required: "Email is required",
-                    pattern: {
-                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                      message: "Invalid email address"
-                    }
-                  }}
-                  render={({ field }) => <input {...field} id="email" placeholder="Your Email" className='bg-[#A78E7821] border border-skin px-3 py-3 rounded-md placeholder:text-skin md:w-full max-sm:w-full sm:w-full focus:border-skin focus:text-skin' />}
-                />
-                {errors.email && <span className="text-red-500">{errors.email.message}</span>}
-              </div>
-              <div className="lg:w-1/3">
-                <Controller
-                  name="phone"
-                  control={control}
-                  rules={{ required: "Phone number is required" }}
-                  render={({ field }) => <input {...field} id="phone" placeholder="Your Phone" className='bg-[#A78E7821] border border-skin px-3 py-3 rounded-md placeholder:text-skin max-sm:w-full sm:w-full  md:w-full focus:border-skin focus:text-skin' />}
-                />
-                {errors.phone && <span className="text-red-500">{errors.phone.message}</span>}
-              </div>
-            </div>
-            <div>
-              <Controller
-                name="message"
-                control={control}
-                rules={{ required: "Message is required" }}
-                render={({ field }) => <textarea {...field} id="message" placeholder="Message" className="w-full h-[200px] bg-[#A78E7821] border border-skin p-5 mt-5 placeholder:text-skin focus:text-skin focus:border-skin " />}
-              />
-              {errors.message && <span className="text-red-500">{errors.message.message}</span>}
-            </div>
-            <div className="float-right pt-5">
-            <Button
-                type="primary"
-                size="medium"
-                label="Send"
-                onClick={
-                  handleSubmit(onSubmit)
-                 } />
-            </div>
-        
-            {/* <button className="float-right pt-5" type="submit">Submit</button> */}
-          </form>
-        </div>
 
-      </div>
-    </div>
-  );
-};
 
-export default ContactScreen;
+{/* <button className="float-right pt-5" type="submit">Submit</button> */ }
