@@ -2,7 +2,7 @@ import React from "react";
 
 type ButtonProps = {
   label: string;
-  onClick: () => void;
+  onClick?: () => void;
   type?: "primary" | "secondary" | "outlined" | "disabled"; // Button types
   isDisabled?: boolean; // Disabled flag
   className?: string; // Additional classes
@@ -58,6 +58,7 @@ const Button: React.FC<ButtonProps> = ({
       className={`${className} ${buttonStyles}`}
       onClick={isDisabled ? undefined : onClick}
       disabled={isDisabled}
+      type="submit"
     >
       {label}
     </button>
