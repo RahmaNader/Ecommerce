@@ -102,7 +102,7 @@ const Shop: React.FC = () => {
             <div
               className={`transform ${
                 isFilterOpen ? "translate-x-0" : "-translate-x-full"
-              } transition-transform duration-300 ease-in-out w-3/4 max-w-[300px] bg-white p-4 overflow-y-auto `}
+              } transition-transform duration-300 ease-in-out sm:w-3/4 bg-white p-4 overflow-y-auto `}
             >
               <div className="flex flex-row items-center w-[100%] h-[36px] justify-between mt-10">
                 <p className="font-playfair text-[25px] md:text-[30px] lg:text-[35px] font-bold text-wine text-left">
@@ -112,7 +112,7 @@ const Shop: React.FC = () => {
                   <img src={FilterIcon} alt="Close Filters" />
                 </button>
               </div>
-              <div className="flex justify-center">
+              <div className="flex w-[100%]">
                 <Filter onFilterChange={handleFilterChange} />
               </div>
             </div>

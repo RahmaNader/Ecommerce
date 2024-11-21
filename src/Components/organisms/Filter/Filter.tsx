@@ -92,14 +92,14 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
   };
 
   return (
-    <div className="flex flex-col items-start p-0 gap-[36px] max-w-[100%]  mt-10">
+    <div className="flex flex-col items-start px-4 gap-[36px] w-full  mt-10">
       {/* title div here*/}
-      <div className="max-w-[100%] flex flex-col">
-        <p className="font-playfair text-[18px] text-wine text-left font-semibold">
+      <div className="flex flex-col w-full">
+        <p className="font-playfair text-[20px] md:text-[30px] text-wine text-left font-semibold">
           Size
         </p>
         <div
-          className="flex gap-3 sm:gap-4 mt-2 max-w-[100%] items-center justify-between"
+          className="flex gap-3 sm:gap-4 mt-2 w-full items-center justify-evenly"
           role="group"
           aria-label="Size selection"
         >
@@ -122,18 +122,18 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
         </div>
       </div>
 
-      <div className="w-[100%] flex flex-col">
+      <div className="w-full flex flex-col">
         <div
           className="flex flex-row items-center justify-between cursor-pointer"
           onClick={() => setIsCategoriesCollapsed(!isCategoriesCollapsed)}
         >
-          <p className="font-playfair text-[18px] text-wine text-left font-semibold">
+          <p className="font-playfair text-[20px] md:text-[30px] text-wine text-left font-semibold">
             Categories
           </p>
           <img
             src={FilterArrow}
             alt="Filter icon"
-            className={`w-[12.25px] h-[14px] transform transition-transform duration-300 ${
+            className={`w-[21px] h-[21px] transform transition-transform duration-300 ${
               isCategoriesCollapsed ? "rotate-180" : "rotate-270"
             }`}
           />
@@ -167,18 +167,18 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
         )}
       </div>
 
-      <div className="w-[100%] flex flex-col">
+      <div className="w-full flex flex-col">
         <div
           className="flex flex-row items-center justify-between cursor-pointer"
           onClick={() => setIsCollectionsCollapsed(!isCollectionsCollapsed)}
         >
-          <p className="font-playfair text-[18px] text-wine text-left font-semibold">
+          <p className="font-playfair text-[20px] md:text-[30px] text-wine text-left font-semibold">
             Collections
           </p>
           <img
             src={FilterArrow}
             alt="Filter icon"
-            className={`w-[12.25px] h-[14px] transform transition-transform duration-300 ${
+            className={`w-[21px] h-[21px] transform transition-transform duration-300 ${
               isCollectionsCollapsed ? "rotate-180" : "rotate-270"
             }`}
           />
@@ -202,7 +202,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
       </div>
 
       <div className="w-[100%] flex flex-col">
-        <p className="font-playfair text-[18px] text-wine text-left font-semibold">
+        <p className="font-playfair text-[20px] md:text-[30px] text-wine text-left font-semibold">
           Price Range
         </p>
         <div className="flex justify-between mt-2">
