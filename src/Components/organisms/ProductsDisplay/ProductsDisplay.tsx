@@ -86,13 +86,6 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products }) => {
             type="PaginationOutlined"
             isDisabled={currentPage === 1}
             className="flex items-center justify-center leading-none"
-            style={{
-                width: isMobile ? "60px" : "141px", 
-                height: isMobile ? "22px" : "59px", 
-                fontSize: isMobile ? "8px" : "20px",
-                borderWidth:  isMobile ?  "0.5px" : "", 
-              }}
-            size={isMobile ? "small" : "medium"}
           />
 
           <div className="flex space-x-2">
@@ -126,13 +119,6 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products }) => {
             onClick={handleNext}
             isDisabled={currentPage === totalPages}
             className="flex items-center justify-center leading-none"
-            style={{
-                width: isMobile ? "60px" : "141px", 
-                height: isMobile ? "22px" : "59px", 
-                fontSize: isMobile ? "8px" : "20px",
-                borderWidth: "0.5px", 
-              }}
-            size={isMobile ? "small" : "medium"} 
           />
         </div>
       </div>

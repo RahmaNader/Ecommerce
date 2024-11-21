@@ -95,17 +95,17 @@ const Shop: React.FC = () => {
           <img src={FilterIcon} alt="Open Filters" />
         </button>
       </div>
-      <div className="flex flex-col xl:flex-row xl:items-start items-center">
+      <div className="flex flex-col  xl:flex-row xl:items-start items-center">
         {/* Filter Sidebar for screens smaller than laptop size */}
         {showSidebar && (
           <div className="fixed inset-0 z-50 flex">
             <div
               className={`transform ${
                 isFilterOpen ? "translate-x-0" : "-translate-x-full"
-              } transition-transform duration-300 ease-in-out w-3/4 max-w-[364px] bg-white p-4 overflow-y-auto `}
+              } transition-transform duration-300 ease-in-out w-3/4 max-w-[300px] bg-white p-4 overflow-y-auto `}
             >
-              <div className="flex flex-row items-center w-[269px] h-[36px] justify-between mt-10">
-                <p className="font-playfair text-[30px] font-bold text-wine text-left">
+              <div className="flex flex-row items-center w-[100%] h-[36px] justify-between mt-10">
+                <p className="font-playfair text-[25px] md:text-[30px] lg:text-[35px] font-bold text-wine text-left">
                   Filters
                 </p>
                 <button onClick={handleCloseSidebar}>
@@ -129,7 +129,7 @@ const Shop: React.FC = () => {
         </div>
         {/* Products Section */}
         <div className="w-full lg:w-3/4 p-4">
-          <p className="font-playball text-[40px] text-wine text-center md:text-left">
+          <p className="font-playball text-[30px] md:text-[35px]  lg:text-[40px] text-wine text-center md:text-left">
             {(lastSegment ?? "").charAt(0).toUpperCase() +
               (lastSegment ?? "").slice(1)}
           </p>

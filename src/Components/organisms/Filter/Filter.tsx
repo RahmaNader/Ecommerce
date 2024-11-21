@@ -37,30 +37,26 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
     "Accessories",
   ];
 
-  const ALL_PRODUCTS_INDEX = 0; 
+  const ALL_PRODUCTS_INDEX = 0;
 
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedCollection, setSelectedCollection] = useState<number | null>(
     null
   );
-  const [categoryItems, setCategoryItems] = useState<Category[]>(initialCategories);
+  const [categoryItems, setCategoryItems] =
+    useState<Category[]>(initialCategories);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
 
-
-  const [isCategoriesCollapsed, setIsCategoriesCollapsed] = useState<boolean>(
-    true
-  );
-  const [isCollectionsCollapsed, setIsCollectionsCollapsed] = useState<boolean>(
-    true
-  );
-
+  const [isCategoriesCollapsed, setIsCategoriesCollapsed] =
+    useState<boolean>(true);
+  const [isCollectionsCollapsed, setIsCollectionsCollapsed] =
+    useState<boolean>(true);
 
   const handleCategoryChange = (index: number) => {
     const updatedCategories = [...categoryItems];
     updatedCategories[index].isChecked = !updatedCategories[index].isChecked;
     setCategoryItems(updatedCategories);
   };
-
 
   const handleSizeClick = (size: string) => {
     if (selectedSize === size) {
@@ -70,7 +66,6 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
     }
   };
 
-
   const handleFilterClick = () => {
     const selectedCategories = categoryItems
       .filter((category) => category.isChecked)
@@ -78,8 +73,12 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
 
     const filters = {
       size: selectedSize || undefined,
-      collection: selectedCollection !== null && selectedCollection !== ALL_PRODUCTS_INDEX ? selectedCollection : undefined,
-      categories: selectedCategories.length > 0 ? selectedCategories : undefined,
+      collection:
+        selectedCollection !== null && selectedCollection !== ALL_PRODUCTS_INDEX
+          ? selectedCollection
+          : undefined,
+      categories:
+        selectedCategories.length > 0 ? selectedCategories : undefined,
       priceRange,
     };
 
@@ -93,15 +92,14 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
   };
 
   return (
-    <div className="flex flex-col items-start p-0 gap-[36px] max-w-[305px] max-h-[845px] mt-10">
-      
-
-      <div>
+    <div className="flex flex-col items-start p-0 gap-[36px] max-w-[100%]  mt-10">
+      {/* title div here*/}
+      <div className="max-w-[100%] flex flex-col">
         <p className="font-playfair text-[18px] text-wine text-left font-semibold">
           Size
         </p>
         <div
-          className="flex gap-4 mt-2 max-w-[268px]"
+          className="flex gap-3 sm:gap-4 mt-2 max-w-[100%] items-center justify-between"
           role="group"
           aria-label="Size selection"
         >
@@ -112,7 +110,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
               role="button"
               tabIndex={0}
               aria-pressed={selectedSize === size}
-              className={`font-Jost flex items-center text-[16px] w-[42px] h-[42px] justify-center border-2 rounded-lg cursor-pointer focus:outline-none ${
+              className={`font-Jost flex items-center text-[10px] w-[30px] h-[30px] md:text-[16px] md:w-[42px] md:h-[42px] justify-center border-2 rounded-lg cursor-pointer focus:outline-none ${
                 selectedSize === size
                   ? "text-wine border-wine"
                   : "text-ThirdColor border-ThirdColor"
@@ -124,9 +122,9 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
         </div>
       </div>
 
-      <div className="max-w-[272px] flex flex-col">
+      <div className="w-[100%] flex flex-col">
         <div
-          className="w-[272px] flex flex-row items-center justify-between cursor-pointer"
+          className="flex flex-row items-center justify-between cursor-pointer"
           onClick={() => setIsCategoriesCollapsed(!isCategoriesCollapsed)}
         >
           <p className="font-playfair text-[18px] text-wine text-left font-semibold">
@@ -146,7 +144,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
             {categoryItems.map((category, index) => (
               <div
                 key={index}
-                className="w-[272px] flex flex-row items-center justify-between"
+                className="flex flex-row items-center justify-between"
               >
                 <label
                   htmlFor={`category-${index}`}
@@ -169,9 +167,9 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
         )}
       </div>
 
-      <div className="max-w-[272px] flex flex-col">
+      <div className="w-[100%] flex flex-col">
         <div
-          className="w-[272px] flex flex-row items-center justify-between cursor-pointer"
+          className="flex flex-row items-center justify-between cursor-pointer"
           onClick={() => setIsCollectionsCollapsed(!isCollectionsCollapsed)}
         >
           <p className="font-playfair text-[18px] text-wine text-left font-semibold">
@@ -203,7 +201,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
         )}
       </div>
 
-      <div className="max-w-[272px] flex flex-col">
+      <div className="w-[100%] flex flex-col">
         <p className="font-playfair text-[18px] text-wine text-left font-semibold">
           Price Range
         </p>
@@ -216,7 +214,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
           </span>
         </div>
         <ReactSlider
-          className="relative w-[263px] items-center rounded-md mt-2"
+          className="relative w-[100%] items-center rounded-md mt-2"
           thumbClassName="absolute relative transform -translate-y-1/2 w-4 h-4 bg-wine rounded-full cursor-pointer focus:outline-none focus:ring-wine"
           trackClassName="h-[1px] bg-ThirdColor"
           min={0}
@@ -230,19 +228,15 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
         />
       </div>
       <Button
-      label="Filter"
-      type="primary"
-      onClick={handleFilterClick}
-      style={{
-        width: "263px",          // Fixed width
-        height: "60px",          // Fixed height
-        fontSize: "20px",        // Fixed font size
-        minWidth: "100px",       // Minimum width, change as per your requirements
-        maxWidth: "200px",       // Maximum width, change as per your requirements
-        marginLeft: "auto",          // Center align
-        marginRight:"auto",
-      }}
-    />
+        label="Filter"
+        type="primary"
+        onClick={handleFilterClick}
+        style={{
+          width: "90%",
+          maxheight: "60px",
+          fontSize: "20px",
+        }}
+      />
     </div>
   );
 };
