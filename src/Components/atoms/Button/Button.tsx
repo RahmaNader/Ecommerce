@@ -44,11 +44,11 @@ const Button: React.FC<ButtonProps> = ({
       break;
     case "PaginationOutlined":
       buttonStyles =
-        "font-Playfair text-[100px] mx-2 border-2 border-wine text-wine rounded rounded-4 cursor-pointer hover:border-sixColor hover:text-sixColor";
+        "font-Playfair text-[10px] w-[40px] h-[25px] sm:text-[20px] sm:w-[140px] sm:h-[60px] mx-2 border-2 border-wine text-wine rounded rounded-4 cursor-pointer hover:border-sixColor hover:text-sixColor";
       break;
     case "Pagination":
       buttonStyles =
-        "font-Playfair text-[20px] mx-2 bg-wine text-white rounded rounded-4 cursor-pointer hover:bg-sixColor";
+        "font-Playfair text-[10px] w-[40px] h-[25px] sm:text-[20px] sm:w-[140px] sm:h-[60px] mx-2 bg-wine text-white rounded rounded-4 cursor-pointer hover:bg-sixColor";
       break;
     default:
       buttonStyles =

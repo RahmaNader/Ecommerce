@@ -21,7 +21,7 @@ const Card: React.FC<CardProps> = ({
   onClick,
 }) => {
   return (
-    <div className="w-auto text-center">
+    <div className="w-[75%] h-[75%] text-center m-4">
       <div  onClick={onClick} className="image-container w-auto h-auto relative overflow-hidden rounded-t-[500px] cursor-pointer hover:opacity-80 ">
         
         <img
@@ -34,17 +34,17 @@ const Card: React.FC<CardProps> = ({
       </div>
 
     
-      <div className="mt-5">
+      <div className="mt-4">
         <p
           onClick={onClick}
-          className="font-instrument font-medium text-[20px] leading-[24.4px] hover:opacity-80 cursor-pointer text-secondColor"
+          className="font-instrument font-medium text-[15px] md:text-[20px]  lg:text-[25px] leading-[24.4px] hover:opacity-80 cursor-pointer text-secondColor"
         >
           {name}
         </p>
-        <p className="font-playfair font-semibold text-[20px] leading-[30px] text-ForthColor">
+        <p className="font-playfair font-semibold text-[15px]  md:text-[20px]  lg:text-[25px] leading-[30px] text-ForthColor">
           {DisPrice}
         </p>
-        <p className="font-playfair font-medium text-[15px] line-through text-FifthColor">
+        <p className="font-playfair font-medium text-[15px] md:text-[20px]  lg:text-[20px]  line-through text-FifthColor">
           {NormalPrice}
         </p>
       </div>
