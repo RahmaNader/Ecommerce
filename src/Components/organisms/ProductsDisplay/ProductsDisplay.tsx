@@ -50,18 +50,18 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products }) => {
         for (let i = 1; i <= maxPageButtons; i++) {
           pageNumbers.push(i);
         }
-        pageNumbers.push("right"); 
+        pageNumbers.push("right");
       } else if (currentPage > totalPages - maxPageButtons + 1) {
-        pageNumbers.push("left"); 
+        pageNumbers.push("left");
         for (let i = totalPages - maxPageButtons + 1; i <= totalPages; i++) {
           pageNumbers.push(i);
         }
       } else {
-        pageNumbers.push("left"); 
+        pageNumbers.push("left");
         for (let i = currentPage - 1; i <= currentPage + 1; i++) {
           pageNumbers.push(i);
         }
-        pageNumbers.push("right"); 
+        pageNumbers.push("right");
       }
     }
     return pageNumbers;
@@ -77,50 +77,51 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products }) => {
         ))}
       </div>
 
-      <div className="py-8">
-        <div className="flex items-center justify-center space-x-2">
-          {/* Previous Button */}
-          <Button
-            label="Previous"
-            onClick={handlePrevious}
-            type="PaginationOutlined"
-            isDisabled={currentPage === 1}
-            className="flex items-center justify-center leading-none"
-          />
+      <div className="py-8 flex items-center w-full justify-between space-x-2">
+        {/* Previous Button */}
+        <Button
+          label="Previous"
+          onClick={handlePrevious}
+          type="PaginationOutlined"
+          isDisabled={currentPage === 1}
+          className="flex items-center justify-center leading-none"
+        />
 
-          <div className="flex space-x-2">
-            {getPageNumbers().map((item, index) =>
-              typeof item === "number" ? (
-                <button
-                  key={item}
-                  onClick={() => paginate(item)}
-                  className={`rounded-full flex items-center justify-center ${
-                    currentPage === item
-                      ? "bg-wine text-white border-spacing-1"
-                      : "border-wine border-2 text-wine"
-                  } w-[21px] h-[21px] text-[10px] sm:w-[30px] sm:h-[30px] sm:text-[14px] md:w-[40px] md:h-[40px] md:text-[16px] `}
-                >
-                  {item}
-                </button>
-              ) : (
-                <span
-                  key={`ellipsis-${index}`}
-                  className={`rounded-full flex items-center justify-center border-wine border-2 text-wine w-[21px] h-[21px] text-[10px] sm:w-[30px] sm:h-[30px] sm:text-[14px] md:w-[40px] md:h-[40px] md:text-[16px] `}
-                >
-                  {item === "left" ? "<<" : ">>"}
-                </span>
-              )
-            )}
-          </div>
-
-          <Button
-            label="Next"
-            type="Pagination"
-            onClick={handleNext}
-            isDisabled={currentPage === totalPages}
-            className="flex items-center justify-center leading-none"
-          />
+        <div className="flex space-x-2">
+          {getPageNumbers().map((item, index) =>
+            typeof item === "number" ? (
+              <button
+                key={item}
+                onClick={() => paginate(item)}
+                className={`rounded-full flex items-center justify-center ${
+                  currentPage === item
+                    ? "bg-wine text-white border-spacing-1"
+                    : "border-wine border-2 text-wine"
+                } w-[21px] h-[21px] text-[10px] sm:w-[30px] sm:h-[30px] sm:text-[14px] md:w-[40px] md:h-[40px] md:text-[16px] `}
+              >
+                {item}
+              </button>
+            ) : (
+              <span
+                key={`ellipsis-${index}`}
+                className={`rounded-full flex items-center justify-center border-wine border-2 text-wine w-[21px] h-[21px] text-[10px] sm:w-[30px] sm:h-[30px] sm:text-[14px] md:w-[40px] md:h-[40px] md:text-[16px] `}
+              >
+                {item === "left" ? "<<" : ">>"}
+              </span>
+            )
+          )}
         </div>
+
+        <Button
+          label="Next"
+          type="Pagination"
+          onClick={handleNext}
+          isDisabled={currentPage === totalPages}
+          className="flex items-center justify-center leading-none"
+          style={{
+            alignSelf: "self-end",
+          }}
+        />
       </div>
     </div>
   );

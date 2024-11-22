@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ReactSlider from "react-slider";
-import FilterIcon from "@assets/FilterIcon.svg";
+// import FilterIcon from "@assets/FilterIcon.svg";
 import FilterArrow from "@assets/FilterArrow.svg";
 import { Button } from "@components/atoms";
 
@@ -233,8 +233,9 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
         onClick={handleFilterClick}
         style={{
           width: "90%",
-          maxheight: "60px",
+          maxHeight: "60px",
           fontSize: "20px",
+          alignSelf:"center",
         }}
       />
     </div>
