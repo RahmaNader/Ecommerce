@@ -1,0 +1,53 @@
+@font-face {
+    font-family: 'Playfair Display';
+    src: url('@assets/fonts/PlayfairDisplay-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900; /* This tells the browser it's a variable font with a weight range */
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'Poppins';
+    src: url('@assets/fonts/Poppins-Regular.ttf') format('truetype');
+    font-weight: 400; /* Regular */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('@assets/fonts/Poppins-Bold.ttf') format('truetype');
+    font-weight: 700; /* Bold */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('@assets/fonts/Poppins-Italic.ttf') format('truetype');
+    font-weight: 400; /* Regular weight in Italic style */
+    font-style: italic;
+}
+@font-face {
+  font-family: 'IncrementSerif';
+  src: url('@assets/fonts/IncrementSerif-Regular.ttf') format('truetype');
+  font-weight: 400; /* Regular weight */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'IncrementSerif';
+  src: url('@assets/fonts/IncrementSerif-Italic.ttf') format('truetype');
+  font-weight: 400; /* Italic style */
+  font-style: italic;
+}
+@font-face {
+  font-family: 'IncrementSans';
+  src: url('@assets/fonts/IncrementSans-VariableFont_wght.ttf.ttf') format('truetype');
+  font-weight:100 900; /* Regular weight */
+  font-style: normal;
+}
+
+
+@font-face {
+  font-family: 'Playball';
+  src: url('@assets/fonts/Playball-Regular.ttf') format('truetype');
+  font-weight: 100 900; /* Regular weight */
+  font-style: normal;
+}
