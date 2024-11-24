@@ -6,8 +6,7 @@ import { Button } from "@components/atoms";
 import IconGoogle from "@assets/Icon-Google.svg";
 
 const SignUpForm = () => {
-  
-  const { 
+  const {
     register,
     handleSubmit,
     formState: { errors },
@@ -247,7 +246,12 @@ const SignUpForm = () => {
 
         {/* Submit Button */}
         <div className="flex items-center justify-center">
-        <Button type="primary" size="login-register" label="Register" onClick={() => {}} />
+          <Button
+            type="primary"
+            size="login-register"
+            label="Register"
+            onClick={() => {}}
+          />
         </div>
 
         {/* Separator with Text */}
@@ -256,27 +260,32 @@ const SignUpForm = () => {
             <div className="w-full border-t border-ForthColor"></div>
           </div>
           <div className="relative flex justify-center">
-            <span className="bg-mainColor px-2 text-ForthColor">Or Sign Up With </span>
+            <span className="bg-mainColor px-2 text-ForthColor">
+              Or Sign Up With{" "}
+            </span>
           </div>
         </div>
 
         {/* Login with Google Button */}
         <button
-          type='button'
-          className='w-4/5 md:w-2/5 py-2 px-4 flex items-center justify-center m-auto border-2 border-ForthColor rounded-lg text-black text-[10px] md:text-[16px] hover:border-wine'
+          type="button"
+          className="w-4/5 md:w-2/5 py-2 px-4 flex items-center justify-center m-auto border-2 border-ForthColor rounded-lg text-black text-[10px] md:text-[16px] hover:border-wine"
           onClick={() => {}}
         >
           <img src={IconGoogle} alt="Google Icon" className="w-4 h-4 mr-2" />
           Sign Up with Google
         </button>
-        
+
         <div className="relative flex items-center justify-center w-3/4 mx-auto">
-        <p className="font-playfair text-[10px] md:text-[28px] text-sixColor flex justify-center">
-          Already have an account?  &nbsp;
-          <a href="/auth" className="text-wine border-b-2 border-wine text-[10px] md:text-[28px]">
-            Log in
-          </a>
-        </p>
+          <p className="font-playfair text-[10px] md:text-[28px] text-sixColor flex justify-center">
+            Already have an account? &nbsp;
+            <a
+              href="/auth"
+              className="text-wine border-b-2 border-wine text-[10px] md:text-[28px]"
+            >
+              Log in
+            </a>
+          </p>
         </div>
       </form>
     </div>
