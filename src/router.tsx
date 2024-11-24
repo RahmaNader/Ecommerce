@@ -1,5 +1,4 @@
 import { createBrowserRouter } from "react-router-dom";
-
 import Cart from "@components/organisms/Cart/Cart";
 import { Layout } from "@components/organisms";
 import {
@@ -10,6 +9,8 @@ import {
   Shop,
   SearchScreen as Search,
 } from "@pages/Screens";
+
+import AuthPage from '@pages/Screens/Authentication/AuthPage';
 
 export const router = createBrowserRouter([
   {
@@ -43,6 +44,10 @@ export const router = createBrowserRouter([
       {
         path: "search",
         element: <Search />,
+      },
+      {
+        path: 'auth',
+        element: <AuthPage />,
       },
     ],
   },
