@@ -2,12 +2,13 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tsconfigPaths()],
   resolve: {
     alias: {
       '@components': path.resolve(__dirname, './src/Components'),
@@ -17,6 +18,8 @@ export default defineConfig({
       '@utils': path.resolve(__dirname, './src/utils'),
       '@pages': path.resolve(__dirname, './src/pages'),
       '@assets': path.resolve(__dirname, './src/assets'),
+      '@data': path.resolve(__dirname, 'src/data'),
+      '@types': path.resolve(__dirname, 'src/types/index.ts'),
     },
   },
 });
