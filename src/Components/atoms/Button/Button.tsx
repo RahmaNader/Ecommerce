@@ -23,7 +23,6 @@ const Button: React.FC<ButtonProps> = ({
   isDisabled = false,
   className = "",
   size = "small",
-  style = {},
 }) => {
   let buttonStyles = "";
 
@@ -76,7 +75,6 @@ const Button: React.FC<ButtonProps> = ({
       className={`${buttonStyles} ${className}`}
       onClick={isDisabled ? undefined : onClick}
       disabled={isDisabled}
-      style={style}
     >
       {label}
     </button>
