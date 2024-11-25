@@ -14,22 +14,22 @@ const Breadcrumb: React.FC = () => {
     ?.replace(/-/g, " ")
     .split(" ")
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ") || "Home";
+    .join(" ");
 
 // Get the previous page path and name from location.state
 const previousPagePath = location.state?.from || "/";
-const previousPageName =
+const previousPageName: string =
   previousPagePath
     .split("/")
     .filter(Boolean)
     .pop()
     ?.replace(/-/g, " ")
     .split(" ")
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ") || "Home";
 
   return (
-    <div className="flex items-center gap-[4px] w-auto h-[32px] space-x-1 px-4 md:px-6 lg:px-8">
+    <div className="flex items-center gap-[4px] w-auto h-[32px] space-x-1">
       <NavLink
         label={previousPageName}
         to={previousPagePath}
