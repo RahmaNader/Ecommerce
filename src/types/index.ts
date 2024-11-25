@@ -24,5 +24,10 @@ export interface CardProps {
     month: string;
     year: string;
   };
+
+  export type LoginFormInputs = {
+    email: string;
+    password: string;
+  };
   
   

@@ -1,5 +1,4 @@
 // AuthPage.tsx
-
 import React, { useState } from 'react';
 import LoginForm from './LoginForm';
 import SignUpForm from './SignUpForm';
@@ -16,11 +15,12 @@ const AuthPage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen justify-center items-center">
-      <div className="flex w-full max-w-md">
+    <div className="flex w-4/5 flex-col justify-center items-center mt-12 mx-auto">
+      
+      <div className="flex w-full">
         <button
           onClick={handleLoginClick}
-          className={`w-1/2 text-center font-playfair font-semibold text-[28px] ${
+          className={`w-1/2 text-center font-playfair font-semibold text-[15px] md:text-[28px] pb-4 ${
             isLogin ? 'border-b-2 border-wine text-wine' : 'text-ThirdColor border-b-2 border-ThirdColor'
           }`}
         >
@@ -28,14 +28,15 @@ const AuthPage: React.FC = () => {
         </button>
         <button
           onClick={handleRegisterClick}
-          className={`w-1/2 text-center font-playfair font-semibold text-2xl ${
+          className={`w-1/2 text-center font-playfair font-semibold text-[15px] md:text-[28px] pb-4 ${
             !isLogin ? 'border-b-2 border-wine text-wine' : 'text-ThirdColor border-b-2 border-ThirdColor'
           }`}
         >
-          Sign Up
+          Create Account
         </button>
       </div>
-      <div className="border p-6 w-full max-w-md">
+
+      <div className="w-full">
         {isLogin ? <LoginForm /> : <SignUpForm />}
       </div>
     </div>
