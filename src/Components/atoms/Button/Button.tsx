@@ -78,7 +78,6 @@ const Button: React.FC<ButtonProps> = ({
       disabled={isDisabled}
       type="submit"
       style={style}
-      type="submit"
     >
       {label}
     </button>
