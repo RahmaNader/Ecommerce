@@ -25,8 +25,8 @@ const ContactScreen: React.FC = () => {
 
   return (
     <div className="bg-customBeige min-h-screen xl:px-24 lg:px-6">
-      <div className="bg-customBeige min-h-screen xl:p-10 lg:p-5 flex justify-center items-center gap-5 lg:justify-between max-md:flex-col max-md:py-12 max-md:px-4 md:px-3">
-        <div className=" xl:w-1/3 lg:w-1/3 md:w-1/2 border border-skin bg-[#A78E7821] xl:p-10 lg:p-8 rounded-lg max-md:px-5 max-md:py-4 max-md:w-full md:px-7 md:h-[550px] md:flex md:flex-col md:justify-center lg:h-[450px] lg:px-12 ">
+      <div className="bg-customBeige min-h-screen xl:p-10 lg:p-5 flex justify-center items-center gap-5 lg:justify-between sm:flex-col sm:py-12 sm:px-4 md:px-3 xs:flex-col xs:py-12 xs:px-4 md:flex-row">
+        <div className=" xl:w-1/3 lg:w-1/3 md:w-1/2 sm:w-full xs:w-full border border-skin bg-[#A78E7821] xl:p-10 lg:p-8 rounded-lg sm:px-5 sm:py-4 xs:px-5 xs:py-4 md:px-7 md:h-[550px] md:flex md:flex-col md:justify-center lg:h-[450px] lg:px-12 ">
           <div className="text-mainColor border border-b-mainColor flex-col">
             <div className="flex items-center mb-4">
               <span className="w-10 h-10 flex justify-center items-center rounded-3xl bg-mainColor">
@@ -61,21 +61,21 @@ const ContactScreen: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="xl:w-2/3 lg:w-2/3 md:w-1/2 max-md:w-full border border-skin bg-[#A78E7821] p-10 rounded-lg max-md:px-4 md:h-[550px] lg:h-[450px]">
+        <div className="xl:w-2/3 lg:w-2/3 md:w-1/2 sm:w-full xs:w-full border border-skin bg-[#A78E7821] p-10 rounded-lg sm:px-4 xs:px-4 md:h-[550px] lg:h-[450px]">
 
           <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex justify-between gap-3 max-md:flex-col md:flex-col lg:flex-row xl:flex-row xl:justify-between">
+            <div className="flex justify-between gap-3 xs:flex-col sm:flex-col  md:flex-col lg:flex-row xl:flex-row xl:justify-between">
               <div className="lg:w-1/3">
                 <Controller
                   name="name"
                   control={control}
                   rules={{ required: "Name is required" }}
                   render={({ field }) => <input {...field} id="name" placeholder="Your Name"
-                    className='bg-[#A78E7821] border border-skin px-3 py-3 rounded-md placeholder:text-skin md:w-full max-sm:w-full sm:w-full focus:border-skin focus:text-skin' />}
+                    className='bg-[#A78E7821] border border-skin px-3 py-3 rounded-md placeholder:text-skin md:w-full xs:w-full sm:w-full focus:border-skin focus:text-skin' />}
                 />
                 {errors.name && <span>{getErrorMessage(errors.name as FieldError)}</span>}
               </div>
-              <div className="lg:w-1/3">
+              <div className="lg:w-1/3 xs:w-full">
                 <Controller
                   name="email"
                   control={control}
@@ -86,16 +86,16 @@ const ContactScreen: React.FC = () => {
                       message: "Invalid email address"
                     }
                   }}
-                  render={({ field }) => <input {...field} id="email" placeholder="Your Email" className='bg-[#A78E7821] border border-skin px-3 py-3 rounded-md placeholder:text-skin md:w-full max-sm:w-full sm:w-full focus:border-skin focus:text-skin' />}
+                  render={({ field }) => <input {...field} id="email" placeholder="Your Email" className='bg-[#A78E7821] border border-skin px-3 py-3 rounded-md placeholder:text-skin md:w-full xs:w-full sm:w-full focus:border-skin focus:text-skin' />}
                 />
                 {errors.email && <span>{getErrorMessage(errors.email as FieldError)}</span>}
               </div>
-              <div className="lg:w-1/3">
+              <div className="lg:w-1/3 xs:w-full">
                 <Controller
                   name="phone"
                   control={control}
                   rules={{ required: "Phone number is required" }}
-                  render={({ field }) => <input {...field} id="phone" placeholder="Your Phone" className='bg-[#A78E7821] border border-skin px-3 py-3 rounded-md placeholder:text-skin max-sm:w-full sm:w-full  md:w-full focus:border-skin focus:text-skin' />}
+                  render={({ field }) => <input {...field} id="phone" placeholder="Your Phone" className='bg-[#A78E7821] border border-skin px-3 py-3 rounded-md placeholder:text-skin xs:w-full sm:w-full  md:w-full focus:border-skin focus:text-skin' />}
                 />
                 <div>
                   {errors.phone && <span>{getErrorMessage(errors.phone as FieldError)}</span>}
