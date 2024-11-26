@@ -5,7 +5,11 @@ import { SignUpFormInputs } from "@types";
 import { Button } from "@components/atoms";
 import IconGoogle from "@assets/Icon-Google.svg";
 
-const SignUpForm = () => {
+interface SignUpFormProps {
+  onSwitchToLogin: () => void;
+}
+
+const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
   const {
     register,
     handleSubmit,
@@ -277,12 +281,12 @@ const SignUpForm = () => {
         <div className="relative flex items-center justify-center w-3/4 mx-auto">
           <p className="font-playfair text-[10px] md:text-[28px] text-sixColor flex justify-center">
             Already have an account? &nbsp;
-            <a
-              href="/auth"
+            <button
+              onClick={onSwitchToLogin}
               className="text-wine border-b-2 border-wine text-[10px] md:text-[28px]"
             >
               Log in
-            </a>
+            </button>
           </p>
         </div>
       </form>

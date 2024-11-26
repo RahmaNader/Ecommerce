@@ -4,7 +4,6 @@ import LoginForm from "./LoginForm";
 import SignUpForm from "./SignUpForm";
 import { Breadcrumb } from "@components/molecules";
 
-
 const AuthPage: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
 
@@ -21,7 +20,7 @@ const AuthPage: React.FC = () => {
       <div className="flex justify-start w-full">
         <Breadcrumb />
       </div>
-      
+
       <div className="flex w-full mt-4">
         <button
           onClick={handleLoginClick}
@@ -45,7 +44,13 @@ const AuthPage: React.FC = () => {
         </button>
       </div>
 
-      <div className="w-full">{isLogin ? <LoginForm /> : <SignUpForm />}</div>
+      <div className="w-full">
+        {isLogin ? (
+          <LoginForm onSwitchToSignUp={handleRegisterClick} />
+        ) : (
+          <SignUpForm onSwitchToLogin={handleLoginClick} />
+        )}
+      </div>
     </div>
   );
 };

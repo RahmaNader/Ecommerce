@@ -46,7 +46,7 @@ export const router = createBrowserRouter([
         element: <Search />,
       },
       {
-        path: 'auth',
+        path: 'authentication',
         element: <AuthPage />,
       },
     ],

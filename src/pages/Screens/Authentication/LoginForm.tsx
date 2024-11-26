@@ -5,7 +5,11 @@ import IconGoogle from "@assets/Icon-Google.svg";
 import { LoginFormInputs } from "@types";
 import loginInputFields from "@data/loginInputFields";
 
-const LoginForm = () => {
+interface LoginFormProps {
+  onSwitchToSignUp: () => void;
+}
+
+const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
   const {
     register,
     handleSubmit,
@@ -41,7 +45,9 @@ const LoginForm = () => {
 
         {/* Forgot Password Link */}
         <div className="flex justify-end mx-auto">
-          <a href="/forgot-password" className="text-blue-600 text-sm mt-2">Forgot password?</a>
+          <a href="/forgot-password" className="text-blue-600 text-sm mt-2">
+            Forgot password?
+          </a>
         </div>
 
         {/* Submit Button */}
@@ -80,12 +86,12 @@ const LoginForm = () => {
         <div className="relative flex items-center justify-center w-3/4 mx-auto">
           <p className="font-playfair text-[10px] md:text-[28px] text-sixColor flex justify-center">
             Don't have an account? &nbsp;
-            <a
-              href="/auth"
+            <button
+              onClick={onSwitchToSignUp}
               className="text-wine border-b-2 border-wine text-[10px] md:text-[28px]"
             >
               Sign Up
-            </a>
+            </button>
           </p>
         </div>
       </form>
