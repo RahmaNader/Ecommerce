@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { Button } from "@components/atoms";
 import IconGoogle from "@assets/Icon-Google.svg";
 import { LoginFormInputs } from "@types";
+import loginInputFields from "@data/loginInputFields";
 
 const LoginForm = () => {
   const {
@@ -12,55 +13,35 @@ const LoginForm = () => {
   } = useForm<LoginFormInputs>();
 
   const onSubmit = (data: LoginFormInputs) => {
-    console.log("Sign Up Data:", data);
-    alert(`Sign-up successful! Welcome, ${data.email}`);
+    console.log("Login In data:", data);
+    alert(`Log-in successful! Welcome, ${data.email}`);
   };
 
   return (
-    <div className="bg-mainColor text-secondColor p-6 rounded shadow-lg w-full mx-auto">
+    <div className="bg-mainColor text-secondColor p-6 rounded w-full mx-auto">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* Email Field */}
-        <div>
-          <input
-            id="email"
-            type="email"
-            placeholder="Email"
-            {...register("email", {
-              required: "Email is required",
-              pattern: {
-                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                message: "Invalid email address",
-              },
-            })}
-            className={`w-full px-4 py-2 mt-1 border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none`}
-          />
-          {errors.email && (
-            <p className="text-FifthColor text-sm mt-1">
-              {errors.email.message}
-            </p>
-          )}
-        </div>
+        {/* Mapping Input Fields */}
 
-        {/* Password Field */}
-        <div>
-          <input
-            id="password"
-            type="password"
-            placeholder="Password"
-            {...register("password", {
-              required: "Password is required",
-              minLength: {
-                value: 6,
-                message: "Password must be at least 6 characters",
-              },
-            })}
-            className={`w-full px-4 py-2 mt-1 border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none`}
-          />
-          {errors.password && (
-            <p className="text-FifthColor text-sm mt-1">
-              {errors.password.message}
-            </p>
-          )}
+        {loginInputFields.map((field) => (
+          <div key={field.id}>
+            <input
+              id={field.id}
+              type={field.type}
+              placeholder={field.placeholder}
+              {...register(field.id, field.validation)}
+              className={`w-full px-4 py-2 mt-1 border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none`}
+            />
+            {errors[field.id] && (
+              <p className="text-FifthColor text-sm mt-1">
+                {errors[field.id]?.message as string}
+              </p>
+            )}
+          </div>
+        ))}
+
+        {/* Forgot Password Link */}
+        <div className="flex justify-end mx-auto">
+          <a href="/forgot-password" className="text-blue-600 text-sm mt-2">Forgot password?</a>
         </div>
 
         {/* Submit Button */}
@@ -95,6 +76,7 @@ const LoginForm = () => {
           Log In with Google
         </button>
 
+        {/* Sign Up Link */}
         <div className="relative flex items-center justify-center w-3/4 mx-auto">
           <p className="font-playfair text-[10px] md:text-[28px] text-sixColor flex justify-center">
             Don't have an account? &nbsp;

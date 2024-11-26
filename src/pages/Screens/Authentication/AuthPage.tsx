@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import LoginForm from "./LoginForm";
 import SignUpForm from "./SignUpForm";
+import { Breadcrumb } from "@components/molecules";
+
 
 const AuthPage: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -15,8 +17,12 @@ const AuthPage: React.FC = () => {
   };
 
   return (
-    <div className="flex w-4/5 flex-col justify-center items-center mt-12 mx-auto">
-      <div className="flex w-full">
+    <div className="flex w-4/5 flex-col my-6 justify-center items-center mx-auto">
+      <div className="flex justify-start w-full">
+        <Breadcrumb />
+      </div>
+      
+      <div className="flex w-full mt-4">
         <button
           onClick={handleLoginClick}
           className={`w-1/2 text-center font-playfair font-semibold text-[15px] md:text-[28px] pb-4 ${

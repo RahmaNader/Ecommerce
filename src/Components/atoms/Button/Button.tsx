@@ -66,7 +66,7 @@ const Button: React.FC<ButtonProps> = ({
       className += " w-full py-3.5";
       break;
     case "login-register":
-      className += "w-3/4 py-2 text-[20px] ";
+      className += "font-playfair md:w-2/4 w-3/4 py-2 text-[15px] md:text-[20px] ";
       break;
   }
 

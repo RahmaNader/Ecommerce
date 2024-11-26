@@ -22,7 +22,7 @@ const SignUpForm = () => {
   };
 
   return (
-    <div className="bg-mainColor text-secondColor p-6 rounded shadow-lg w-full mx-auto">
+    <div className="bg-mainColor text-secondColor p-6 rounded w-full mx-auto">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Full Name Field */}
         <div>
@@ -139,30 +139,28 @@ const SignUpForm = () => {
         </div>
 
         {/* Gender and Dates Row */}
-        <div className="flex items-center justify-between space-x-4">
+        <div className="flex flex-col md:flex-row items-center md:justify-between space-y-4 md:space-y-0 md:space-x-4">
           {/* Gender Dropdown */}
-          <div className="w-1/2">
-            <div>
-              <select
-                id="gender"
-                {...register("gender", { required: "Gender is required" })}
-                className="w-full py-2 mt-1 border rounded text-ForthColor text-[15px] border-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none"
-              >
-                <option value="">Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-              </select>
-              {errors.gender && (
-                <p className="text-FifthColor text-sm mt-1">
-                  {errors.gender.message}
-                </p>
-              )}
-            </div>
+          <div className="w-full md:w-1/2">
+            <select
+              id="gender"
+              {...register("gender", { required: "Gender is required" })}
+              className="w-full py-2 mt-1 border rounded text-ForthColor text-[15px] border-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none"
+            >
+              <option value="">Gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+            {errors.gender && (
+              <p className="text-FifthColor text-sm mt-1">
+                {errors.gender.message}
+              </p>
+            )}
           </div>
 
           {/* Dates Dropdowns */}
-          <div className="flex justify-end space-x-2 w-1/2">
+          <div className="flex flex-wrap md:flex-nowrap justify-between md:justify-end space-x-0 md:space-x-2 w-full md:w-1/2">
             {/* Day Dropdown */}
             <div className="w-1/4">
               <select
