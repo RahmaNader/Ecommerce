@@ -16,10 +16,10 @@ const AboutScreen: React.FC = () => {
   return (
     <div className="bg-customBeige min-h-screen">
       <div className="bg-customBeige min-h-screen flex-col xl:w-[80%] lg:w-full mx-auto">
-        <div className="bg-customBeige lg:py-20 lg:px-28 md:px-6 md:py-12 max-md:px-6 max-md:py-6 ">
-          <div className="flex justify-between items-center max-md:flex-col lg:flex-row">
+        <div className="bg-customBeige lg:py-20 lg:px-28 md:px-6 md:py-12 sm:px-6 sm:py-6 xs:px-6 xs:py-6 ">
+          <div className="flex justify-between items-center sm:flex-col xs:flex-col lg:flex-row">
             <div className="lg:w-1/2 md:w-full">
-              <h1 className="text-5xl mb-10 text-mainColor font-playfair max-md:w-full font-bold">
+              <h1 className="text-5xl mb-10 text-mainColor font-playfair sm:w-full xs:w-full font-bold">
                 Our Story
               </h1>
               <p className="text-md mb-5 text-mainColor font-Poppins">
@@ -35,17 +35,17 @@ const AboutScreen: React.FC = () => {
                 ranging from consumer.
               </p>
             </div>
-            <div className="lg:w-1/2 md:w-full max-md:w-full">
+            <div className="lg:w-1/2 md:w-full sm:w-full xs:w-full">
               <img
                 src={aboutSectionHero}
-                className="float-right max-md:py-6 mx-auto max-md:w-full"
+                className="float-right sm:py-6 mx-auto sm:w-full xs:w-full xs:py-6"
                 alt=""
               />
             </div>
           </div>
         </div>
-        <div className="flex lg:w-[95%] xl:w-[85%] md:w-[95%] mx-auto justify-between py-20 gap-5 md:flex-col max-md:flex-col lg:flex-row">
-          <div className="border border-skin p-10 rounded-md md:w-5/6 max-md:w-[95%] mx-auto parent">
+        <div className="flex lg:w-[95%] xl:w-[85%] md:w-[95%] mx-auto justify-between py-20 gap-5 md:flex-col sm:flex-col xs:flex-col lg:flex-row">
+          <div className="border border-skin p-10 rounded-md md:w-5/6 sm:w-[95%] xs:w-[95%] mx-auto parent">
             <div className="flex justify-center items-center child1">
               <div className="w-20 h-20 bg-[#72101375] rounded-full flex justify-center items-center grandChild1">
                 <div className="w-14 h-14 bg-mainColor rounded-full flex justify-center items-center grandChild2">
@@ -106,7 +106,7 @@ const AboutScreen: React.FC = () => {
               </h4>
             </div>
           </div>
-          <div className="border border-skin p-10 rounded-md md:w-5/6 max-md:w-[95%] mx-auto parent">
+          <div className="border border-skin p-10 rounded-md md:w-5/6 sm:w-[95%] xs:w-[95%] mx-auto parent">
             <div className="flex justify-center items-center child1">
               <div className="w-20 h-20 bg-[#72101375] rounded-full flex justify-center items-center grandChild1">
                 <div className="w-14 h-14 bg-mainColor rounded-full flex justify-center items-center grandChild2">
@@ -154,7 +154,7 @@ const AboutScreen: React.FC = () => {
               </h4>
             </div>
           </div>
-          <div className="border border-skin p-10 rounded-md md:w-5/6 max-md:w-[95%] mx-auto parent">
+          <div className="border border-skin p-10 rounded-md md:w-5/6 sm:w-[95%] xs:w-[95%] mx-auto parent">
             <div className="flex justify-center items-center child1">
               <div className="w-20 h-20 bg-[#72101375] rounded-full flex justify-center items-center grandChild1">
                 <div className="w-14 h-14 bg-mainColor rounded-full flex justify-center items-center grandChild2">
@@ -183,7 +183,7 @@ const AboutScreen: React.FC = () => {
               </h4>
             </div>
           </div>
-          <div className="border border-skin p-10 rounded-md md:w-5/6 max-md:w-[95%] mx-auto parent">
+          <div className="border border-skin p-10 rounded-md md:w-5/6 sm:w-[95%] xs:w-[95%] mx-auto parent">
             <div className="flex justify-center items-center child1">
               <div className="w-20 h-20 bg-[#72101375] rounded-full flex justify-center items-center grandChild1">
                 <div className="w-14 h-14 bg-mainColor rounded-full flex justify-center items-center grandChild2">
@@ -227,8 +227,8 @@ const AboutScreen: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="flex w-[80%] mx-auto justify-between max-md:flex-col md:flex-row ">
-          <div className="flex-col max-md:mb-8">
+        <div className="flex w-[80%] mx-auto justify-between sm:flex-col xs:flex-col md:flex-row ">
+          <div className="flex-col sm:mb-8 xs:mb-8">
             <div className="flex justify-center">
               <img src={AboutImage1} className="w-2/3" alt="" />
             </div>
@@ -244,7 +244,7 @@ const AboutScreen: React.FC = () => {
               <img src={LinkedInIcon} className="w-3" alt="" />
             </div>
           </div>
-          <div className="flex-col max-md:mb-8">
+          <div className="flex-col sm:mb-8 xs:mb-8">
             <div className="flex justify-center">
               <img src={AboutImage2} className="w-2/3" alt="" />
             </div>
@@ -260,7 +260,7 @@ const AboutScreen: React.FC = () => {
               <img src={LinkedInIcon} className="w-3" alt="" />
             </div>
           </div>
-          <div className="flex-col max-md:mb-8">
+          <div className="flex-col sm:mb-8 xs:mb-8">
             <div className="flex justify-center">
               <img src={AboutImage3} className="w-2/3" alt="" />
             </div>
@@ -277,8 +277,8 @@ const AboutScreen: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="flex w-[80%] mx-auto justify-between my-20 max-md:flex-col md:flex-row">
-          <div className="max-md:mb-8">
+        <div className="flex w-[80%] mx-auto justify-between my-20 sm:flex-col xs:flex-col md:flex-row">
+          <div className="sm:mb-8 xs:mb-8">
             <div className="flex justify-center items-center">
               <div className="w-20 h-20 bg-[#72101375] rounded-full flex justify-center items-center">
                 <div className="w-14 h-14 bg-mainColor rounded-full  xl flex justify-center items-center">
@@ -295,7 +295,7 @@ const AboutScreen: React.FC = () => {
               </h4>
             </div>
           </div>
-          <div className="max-md:mb-8">
+          <div className="sm:mb-8 xs:mb-8">
             <div className="flex justify-center items-center">
               <div className="w-20 h-20 bg-[#72101375] rounded-full flex justify-center items-center">
                 <div className="w-14 h-14 bg-mainColor rounded-full  xl flex justify-center items-center">
@@ -312,7 +312,7 @@ const AboutScreen: React.FC = () => {
               </h4>
             </div>
           </div>
-          <div className="max-md:mb-8">
+          <div className="sm:mb-8 xs:mb-8">
             <div className="flex justify-center items-center">
               <div className="w-20 h-20 bg-[#72101375] rounded-full flex justify-center items-center">
                 <div className="w-14 h-14 bg-mainColor rounded-full  xl flex justify-center items-center">
