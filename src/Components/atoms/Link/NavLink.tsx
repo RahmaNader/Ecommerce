@@ -36,7 +36,7 @@ const NavLink: React.FC<NavLinkProps> = ({
       "font-playfair text-[20px] font-normal leading-[28px] underline-from-font decoration-skip-ink-none hover:text-wine inline text-center";
   } else if (variant === "breadcrumb") {
     className =
-      "font-playfair text-[22px] leading-[29px] text-ThirdColor inline font-bold";
+      "font-playfair text-[15px] md:text-[28px] text-ThirdColor inline font-bold";
   }
 
   return (

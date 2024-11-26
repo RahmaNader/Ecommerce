@@ -29,8 +29,7 @@ const Button: React.FC<ButtonProps> = ({
 
   switch (type) {
     case "primary":
-      buttonStyles =
-        "bg-mainColor text-white rounded rounded-4 hover:bg-sixColor";
+      buttonStyles = "bg-wine text-white rounded rounded-4 hover:bg-sixColor";
       break;
     case "secondary":
       buttonStyles = "bg-skin text-white rounded rounded-4 ";
@@ -67,7 +66,7 @@ const Button: React.FC<ButtonProps> = ({
       className += " w-full py-3.5";
       break;
     case "login-register":
-      className += " w-1/2 py-3.5";
+      className += "font-playfair md:w-2/4 w-3/4 py-2 text-[15px] md:text-[20px] ";
       break;
   }
 
