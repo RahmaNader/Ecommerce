@@ -19,17 +19,17 @@ const AboutScreen: React.FC = () => {
         <div className="bg-customBeige lg:py-20 lg:px-28 md:px-6 md:py-12 sm:px-6 sm:py-6 xs:px-6 xs:py-6 ">
           <div className="flex justify-between items-center sm:flex-col xs:flex-col lg:flex-row">
             <div className="lg:w-1/2 md:w-full">
-              <h1 className="text-5xl mb-10 text-mainColor font-playfair sm:w-full xs:w-full font-bold">
+              <h1 className="text-5xl mb-10 text-wine font-playfair sm:w-full xs:w-full font-bold">
                 Our Story
               </h1>
-              <p className="text-md mb-5 text-mainColor font-Poppins">
+              <p className="text-md mb-5 text-wine font-Poppins">
                 Launched in 2015, Exclusive is South Asia’s premier online
                 shopping makterplace with an active presense in Bangladesh.
                 Supported by wide range of tailored marketing, data and service
                 solutions, Exclusive has 10,500 sallers and 300 brands and
                 serves 3 millioons customers across the region.{" "}
               </p>
-              <p className="text-md text-mainColor font-Poppins">
+              <p className="text-md text-wine font-Poppins">
                 Exclusive has more than 1 Million products to offer, growing at
                 a very fast. Exclusive offers a diverse assotment in categories
                 ranging from consumer.
@@ -48,7 +48,7 @@ const AboutScreen: React.FC = () => {
           <div className="border border-skin p-10 rounded-md md:w-5/6 sm:w-[95%] xs:w-[95%] mx-auto parent">
             <div className="flex justify-center items-center child1">
               <div className="w-20 h-20 bg-[#72101375] rounded-full flex justify-center items-center grandChild1">
-                <div className="w-14 h-14 bg-mainColor rounded-full flex justify-center items-center grandChild2">
+                <div className="w-14 h-14 bg-wine rounded-full flex justify-center items-center grandChild2">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="35"
@@ -98,7 +98,7 @@ const AboutScreen: React.FC = () => {
               </div>
             </div>
             <div className="child2">
-              <h3 className="text-center mt-4 font-Poppins text-mainColor font-bold text-3xl">
+              <h3 className="text-center mt-4 font-Poppins text-wine font-bold text-3xl">
                 10.5K
               </h3>
               <h4 className="text-center mt-3 font-Poppins text-skin">
@@ -109,7 +109,7 @@ const AboutScreen: React.FC = () => {
           <div className="border border-skin p-10 rounded-md md:w-5/6 sm:w-[95%] xs:w-[95%] mx-auto parent">
             <div className="flex justify-center items-center child1">
               <div className="w-20 h-20 bg-[#72101375] rounded-full flex justify-center items-center grandChild1">
-                <div className="w-14 h-14 bg-mainColor rounded-full flex justify-center items-center grandChild2">
+                <div className="w-14 h-14 bg-wine rounded-full flex justify-center items-center grandChild2">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="40"
@@ -146,7 +146,7 @@ const AboutScreen: React.FC = () => {
               </div>
             </div>
             <div className="child2">
-              <h3 className="text-center mt-4 font-Poppins text-mainColor font-bold text-3xl">
+              <h3 className="text-center mt-4 font-Poppins text-wine font-bold text-3xl">
                 33k
               </h3>
               <h4 className="text-center mt-3 font-Poppins  text-skin">
@@ -157,7 +157,7 @@ const AboutScreen: React.FC = () => {
           <div className="border border-skin p-10 rounded-md md:w-5/6 sm:w-[95%] xs:w-[95%] mx-auto parent">
             <div className="flex justify-center items-center child1">
               <div className="w-20 h-20 bg-[#72101375] rounded-full flex justify-center items-center grandChild1">
-                <div className="w-14 h-14 bg-mainColor rounded-full flex justify-center items-center grandChild2">
+                <div className="w-14 h-14 bg-wine rounded-full flex justify-center items-center grandChild2">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="40"
@@ -175,7 +175,7 @@ const AboutScreen: React.FC = () => {
               </div>
             </div>
             <div className="child2">
-              <h3 className="text-center mt-4 font-Poppins text-mainColor font-bold text-3xl">
+              <h3 className="text-center mt-4 font-Poppins text-wine font-bold text-3xl">
                 45.5k
               </h3>
               <h4 className="text-center mt-3 font-Poppins text-skin">
@@ -186,7 +186,7 @@ const AboutScreen: React.FC = () => {
           <div className="border border-skin p-10 rounded-md md:w-5/6 sm:w-[95%] xs:w-[95%] mx-auto parent">
             <div className="flex justify-center items-center child1">
               <div className="w-20 h-20 bg-[#72101375] rounded-full flex justify-center items-center grandChild1">
-                <div className="w-14 h-14 bg-mainColor rounded-full flex justify-center items-center grandChild2">
+                <div className="w-14 h-14 bg-wine rounded-full flex justify-center items-center grandChild2">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="40"
@@ -218,7 +218,7 @@ const AboutScreen: React.FC = () => {
               </div>
             </div>
             <div className="child2">
-              <h3 className="text-center mt-4 font-Poppins text-mainColor font-bold text-3xl">
+              <h3 className="text-center mt-4 font-Poppins text-wine font-bold text-3xl">
                 25k
               </h3>
               <h4 className="text-center mt-3 font-Poppins  text-skin">
@@ -232,7 +232,7 @@ const AboutScreen: React.FC = () => {
             <div className="flex justify-center">
               <img src={AboutImage1} className="w-2/3" alt="" />
             </div>
-            <h3 className="text-center mt-4 font-Poppins text-mainColor">
+            <h3 className="text-center mt-4 font-Poppins text-wine">
               John Salem
             </h3>
             <h4 className="text-center mt-1 font-Poppins text-skin">
@@ -248,7 +248,7 @@ const AboutScreen: React.FC = () => {
             <div className="flex justify-center">
               <img src={AboutImage2} className="w-2/3" alt="" />
             </div>
-            <h3 className="text-center mt-4 font-Poppins text-mainColor">
+            <h3 className="text-center mt-4 font-Poppins text-wine">
               John Salem
             </h3>
             <h4 className="text-center mt-1 font-Poppins text-skin">
@@ -264,7 +264,7 @@ const AboutScreen: React.FC = () => {
             <div className="flex justify-center">
               <img src={AboutImage3} className="w-2/3" alt="" />
             </div>
-            <h3 className="text-center mt-4 font-Poppins text-mainColor">
+            <h3 className="text-center mt-4 font-Poppins text-wine">
               John Salem
             </h3>
             <h4 className="text-center mt-1 font-Poppins text-skin">
@@ -281,13 +281,13 @@ const AboutScreen: React.FC = () => {
           <div className="sm:mb-8 xs:mb-8">
             <div className="flex justify-center items-center">
               <div className="w-20 h-20 bg-[#72101375] rounded-full flex justify-center items-center">
-                <div className="w-14 h-14 bg-mainColor rounded-full  xl flex justify-center items-center">
+                <div className="w-14 h-14 bg-wine rounded-full  xl flex justify-center items-center">
                   <img src={DeliveryIcon} className="w-9" alt="" />
                 </div>
               </div>
             </div>
             <div>
-              <h3 className="text-center mt-4 font-Poppins text-mainColor font-bold">
+              <h3 className="text-center mt-4 font-Poppins text-wine font-bold">
                 FREE AND FAST DELIVERY
               </h3>
               <h4 className="text-center mt-1 font-Poppins font-semibold text-skin">
@@ -298,13 +298,13 @@ const AboutScreen: React.FC = () => {
           <div className="sm:mb-8 xs:mb-8">
             <div className="flex justify-center items-center">
               <div className="w-20 h-20 bg-[#72101375] rounded-full flex justify-center items-center">
-                <div className="w-14 h-14 bg-mainColor rounded-full  xl flex justify-center items-center">
+                <div className="w-14 h-14 bg-wine rounded-full  xl flex justify-center items-center">
                   <img src={CustomerServiceIcon} className="w-9" alt="" />
                 </div>
               </div>
             </div>
             <div>
-              <h3 className="text-center mt-4 font-Poppins text-mainColor font-bold">
+              <h3 className="text-center mt-4 font-Poppins text-wine font-bold">
                 24/7 CUSTOMER SERVICE
               </h3>
               <h4 className="text-center mt-1 font-Poppins font-semibold text-skin">
@@ -315,13 +315,13 @@ const AboutScreen: React.FC = () => {
           <div className="sm:mb-8 xs:mb-8">
             <div className="flex justify-center items-center">
               <div className="w-20 h-20 bg-[#72101375] rounded-full flex justify-center items-center">
-                <div className="w-14 h-14 bg-mainColor rounded-full  xl flex justify-center items-center">
+                <div className="w-14 h-14 bg-wine rounded-full  xl flex justify-center items-center">
                   <img src={SecureIcon} className="w-9" alt="" />
                 </div>
               </div>
             </div>
             <div>
-              <h3 className="text-center mt-4 font-Poppins text-mainColor font-bold">
+              <h3 className="text-center mt-4 font-Poppins text-wine font-bold">
                 MONEY BACK GUARANTEE
               </h3>
               <h4 className="text-center mt-1 font-Poppins font-semibold text-skin">

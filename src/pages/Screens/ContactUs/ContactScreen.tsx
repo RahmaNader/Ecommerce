@@ -35,9 +35,9 @@ const ContactScreen: React.FC = () => {
     <div className="bg-customBeige min-h-screen xl:px-24 lg:px-6">
       <div className="bg-customBeige min-h-screen xl:p-10 lg:p-5 flex justify-center items-center gap-5 lg:justify-between sm:flex-col sm:py-12 sm:px-4 md:px-3 xs:flex-col xs:py-12 xs:px-4 md:flex-row">
         <div className=" xl:w-1/3 lg:w-1/3 md:w-1/2 sm:w-full xs:w-full border border-skin bg-[#A78E7821] xl:p-10 lg:p-8 rounded-lg sm:px-5 sm:py-4 xs:px-5 xs:py-4 md:px-7 md:h-[550px] md:flex md:flex-col md:justify-center lg:h-[450px] lg:px-12 ">
-          <div className="text-mainColor border border-b-mainColor flex-col">
+          <div className="text-wine border border-b-wine flex-col">
             <div className="flex items-center mb-4">
-              <span className="w-10 h-10 flex justify-center items-center rounded-3xl bg-mainColor">
+              <span className="w-10 h-10 flex justify-center items-center rounded-3xl bg-wine">
                 <img src={phoneIcon} alt="" />
               </span>
               <span className="ms-4">Call To Us</span>
@@ -50,9 +50,9 @@ const ContactScreen: React.FC = () => {
             </div>
           </div>
           <div>
-            <div className="text-mainColor mt-5 flex-col ">
+            <div className="text-wine mt-5 flex-col ">
               <div className="flex items-center mb-4">
-                <span className="w-10 h-10 flex justify-center items-center rounded-3xl bg-mainColor">
+                <span className="w-10 h-10 flex justify-center items-center rounded-3xl bg-wine">
                   <img src={letterIcon} alt="" />
                 </span>
                 <span className="ms-4">Write To US</span>
