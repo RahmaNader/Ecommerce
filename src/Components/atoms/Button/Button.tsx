@@ -2,7 +2,6 @@ import React from "react";
 
 type ButtonProps = {
   label: string;
-  onClick: () => void;
   type?:
     | "primary"
     | "secondary"
@@ -10,8 +9,9 @@ type ButtonProps = {
     | "disabled"
     | "PaginationOutlined"
     | "Pagination";
-  isDisabled?: boolean;
-  className?: string;
+  onClick?: () => void;
+  isDisabled?: boolean; // Disabled flag
+  className?: string; // Additional classes
   size?: "small" | "medium" | "large" | "login-register";
   style?: React.CSSProperties;
 };
@@ -23,6 +23,7 @@ const Button: React.FC<ButtonProps> = ({
   isDisabled = false,
   className = "",
   size = "small",
+  style = {},
 }) => {
   let buttonStyles = "";
 
@@ -75,6 +76,8 @@ const Button: React.FC<ButtonProps> = ({
       className={`${buttonStyles} ${className}`}
       onClick={isDisabled ? undefined : onClick}
       disabled={isDisabled}
+      style={style}
+      type="submit"
     >
       {label}
     </button>

@@ -13,6 +13,7 @@ export default {
       screens: {
         // Custom breakpoint for screens below 1277px
         'laptop': { 'max': '1277px' },
+        'xs' : {'max' : '639px'}
         'xs' : { 'max' : '639px'}
       },
       boxShadow: {
