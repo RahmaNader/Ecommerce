@@ -14,7 +14,7 @@ export default {
         // Custom breakpoint for screens below 1277px
         'laptop': { 'max': '1277px' },
         'xs' : {'max' : '639px'}
-      },
+            },
       boxShadow: {
         "custom-light": "0 0 14.4px -1px rgba(167, 142, 120, 0.46)",
       },

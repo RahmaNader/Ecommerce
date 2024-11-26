@@ -75,8 +75,8 @@ const Button: React.FC<ButtonProps> = ({
       className={`${buttonStyles} ${className}`}
       onClick={isDisabled ? undefined : onClick}
       disabled={isDisabled}
-      type="submit"
       style={style}
+      type="submit"
     >
       {label}
     </button>

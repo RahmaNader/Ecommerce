@@ -1,0 +1,20 @@
+.outlined{
+    filter: drop-shadow(0 0 10px rgb(255, 255, 255));
+}
+.parent:hover{
+    background-color: #721013;
+    border-color: #721013;
+    transition: all 0.4s;
+}
+.parent:hover .child1 .grandChild1{
+    background-color: #ec8c8f;
+}
+.parent:hover .child1 .grandChild2{
+    background-color: #F4EEE8;
+}
+.parent:hover .child1 .grandChild2 svg .path{
+    stroke: #721013;
+}
+.parent:hover .child2 h3, .parent:hover .child2 h4{
+    color: white;
+}
