@@ -38,9 +38,9 @@ const previousPageName: string =
       <img
         src={breadcrumbArrow}
         alt="Breadcrumb Arrow"
-        className="w-[22px] h-[22px] opacity-100 transform"
+        className="w-[16px] h-[16px] md:w-[22px] md:h-[22px] opacity-100 transform"
       />
-      <span className="text-[24px] leading-[31.99px] text-wine font-playfair font-bold">
+      <span className="text-[15px] md:text-[28px] text-wine font-playfair font-bold">
         {currentPageName}
       </span>
     </div>
