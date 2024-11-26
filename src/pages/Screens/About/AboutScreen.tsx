@@ -15,7 +15,7 @@ import SecureIcon from "../../../assets/Icon-secure.svg";
 const AboutScreen: React.FC = () => {
   return (
     <div className="bg-customBeige min-h-screen">
-      <div className="bg-customBeige min-h-screen flex-col xl:w-[80%] lg:w-full mx-auto">
+      <div className="bg-customBeige min-h-screen flex-col xl:w-[85%] lg:w-full mx-auto">
         <div className="bg-customBeige lg:py-20 lg:px-28 md:px-6 md:py-12 sm:px-6 sm:py-6 xs:px-6 xs:py-6 ">
           <div className="flex justify-between items-center sm:flex-col xs:flex-col lg:flex-row">
             <div className="lg:w-1/2 md:w-full">
@@ -35,7 +35,7 @@ const AboutScreen: React.FC = () => {
                 ranging from consumer.
               </p>
             </div>
-            <div className="lg:w-1/2 md:w-full sm:w-full xs:w-full">
+            <div className="lg:w-1/2 md:w-full sm:w-full xs:w-full xl:px-8 lg:px-4 md:px-5">
               <img
                 src={aboutSectionHero}
                 className="float-right sm:py-6 mx-auto sm:w-full xs:w-full xs:py-6"
