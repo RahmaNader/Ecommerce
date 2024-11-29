@@ -21,16 +21,14 @@ const Card: React.FC<CardComponent> = ({
   };
 
   return (
-    <div className="w-[75%] h-[75%] text-center m-4">
+    <div className="text-center m-4">
       <div  onClick={handleCardClick} className="image-container w-auto h-auto relative overflow-hidden rounded-t-[500px] cursor-pointer hover:opacity-80 ">
-        
         <img
           src={src}
           alt={alt}
-          className="object-cover w-full h-full cursor-pointer"
+          className="object-cover w-full h-full cursor-pointer "
         />
-        
-        <div className="absolute top-0 left-0 w-full h-full border-[2px] border-[#E3C174] rounded-t-[500px]" />
+        <div className="absolute top-0 left-0 w-full h-full border-[2px] border-[#E3C174] rounded-t-[500px] " />
       </div>
 
     

@@ -109,7 +109,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
               onClick={() => handleSizeClick(size)}
               role="button"
               tabIndex={0}
-              aria-pressed={selectedSize === size}
+              aria-pressed={selectedSize === size ? 'true' : 'false'}
               className={`font-Jost flex items-center text-[10px] w-[30px] h-[30px] md:text-[16px] md:w-[42px] md:h-[42px] justify-center border-2 rounded-lg cursor-pointer focus:outline-none ${
                 selectedSize === size
                   ? "text-wine border-wine"

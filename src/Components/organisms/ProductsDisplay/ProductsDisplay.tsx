@@ -79,7 +79,6 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products }) => {
       <Card
         {...card}
         onClick={() => {
-          // Navigate to the product details page with the product ID
           navigate(`/product-details/${card.id}`);
         }}
       />
