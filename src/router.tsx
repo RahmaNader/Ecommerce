@@ -8,6 +8,7 @@ import {
   HomeScreen,
   Shop,
   SearchScreen as Search,
+  ProductDetails as ProductDetails,
 } from "@pages/Screens";
 
 import AuthPage from '@pages/Screens/Authentication/AuthPage';
@@ -49,6 +50,11 @@ export const router = createBrowserRouter([
         path: 'authentication',
         element: <AuthPage />,
       },
+      {
+        path: "product-details/:id",
+        element: <ProductDetails/>,
+      },
+      
     ],
   },
 ]);

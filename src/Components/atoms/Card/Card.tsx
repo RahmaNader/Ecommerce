@@ -1,28 +1,28 @@
+import { useNavigate } from "react-router-dom";
 import star from "@assets/Star.svg";
 import greyStar from "@assets/GreyStar.svg";
+import { CardComponent } from "@types";
 
-type CardProps = {
-  src: string;
-  alt: string; 
-  name: string; 
-  DisPrice: string; 
-  NormalPrice: string; 
-  rate: number;
-  onClick?: () => void;
-};
 
-const Card: React.FC<CardProps> = ({
+
+const Card: React.FC<CardComponent> = ({
+  id,
   src,
   alt,
   name,
   DisPrice,
   NormalPrice,
   rate,
-  onClick,
 }) => {
+  const navigate = useNavigate();
+
+  const handleCardClick = () => {
+    navigate(`/product-details/${id}`); // Navigate to the product details page with the product ID
+  };
+
   return (
     <div className="w-[75%] h-[75%] text-center m-4">
-      <div  onClick={onClick} className="image-container w-auto h-auto relative overflow-hidden rounded-t-[500px] cursor-pointer hover:opacity-80 ">
+      <div  onClick={handleCardClick} className="image-container w-auto h-auto relative overflow-hidden rounded-t-[500px] cursor-pointer hover:opacity-80 ">
         
         <img
           src={src}
@@ -36,7 +36,7 @@ const Card: React.FC<CardProps> = ({
     
       <div className="mt-4">
         <p
-          onClick={onClick}
+          onClick={handleCardClick}
           className="font-instrument font-medium text-[15px] md:text-[20px]  lg:text-[25px] leading-[24.4px] hover:opacity-80 cursor-pointer text-secondColor"
         >
           {name}

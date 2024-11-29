@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, Navigate, useLocation } from "react-router-dom";
 import { Filter, ProductsDisplay } from "@components/organisms";
 import { cards } from "@data/cards";
-import { CardProps } from "@types";
+import { CardComponent } from "@types";
 import FilterIcon from "@assets/FilterIcon.svg";
 
 type ShopParams = {
@@ -22,7 +22,7 @@ type FilterCriteria = {
 const Shop: React.FC = () => {
   const { category } = useParams<ShopParams>();
   const location = useLocation();
-  const [filteredCards, setFilteredCards] = useState<CardProps[]>(cards);
+  const [filteredCards, setFilteredCards] = useState<CardComponent[]>(cards);
   const [filterCriteria, setFilterCriteria] = useState<FilterCriteria>({});
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false); // Controls sidebar visibility with animation
