@@ -3,7 +3,7 @@ import star from "@assets/Star.svg";
 import greyStar from "@assets/GreyStar.svg";
 
 type RatingProps = {
-  rate: number; // Rating value between 0 and 5
+  rate: number;
 };
 
 const Rating: React.FC<RatingProps> = ({ rate }) => {

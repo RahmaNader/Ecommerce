@@ -24,9 +24,11 @@ export type CardComponent = {
   DisPrice: number;
   NormalPrice: number;
   rate: number;
-  size: string;
+  size: string[]; // Array of available sizes
   category: string;
   collection: number;
-  price: number;
+  description: string;
+  color: string[]; // Array of available colors
+  availableQuantity: number; // Stock quantity
   onClick?: () => void;
 };
