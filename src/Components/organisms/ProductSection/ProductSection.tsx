@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import { CardComponent } from "@types";
-import Rating from "@components/atoms/Rating/Rating";
+import Rating from "@components/atoms/CustomRating/CustomRating";
 import { calculateDiscountPercentage } from "@utils/calculations";
-import { FaShareAlt } from "react-icons/fa"; // Importing the share icon
+import { FaShareAlt } from "react-icons/fa";
 import { ProductCount } from "@components/atoms";
-
-//
 import heart from "@assets/heart.svg";
 
 const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {

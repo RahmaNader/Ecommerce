@@ -2,7 +2,7 @@ import Img4 from "@assets/HP_img4.svg";
 import Img5 from "@assets/HP_img5.svg";
 
 type categoryProps = {
-  SectionName: string; // section name
+  SectionName: string;
 };
 
 const Category = ({ SectionName }: categoryProps) => {

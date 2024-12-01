@@ -4,6 +4,8 @@ import { cards } from "@data/cards";
 import Loading from "@components/molecules/LoadingSkeleton/LoadingSkeleton";
 import ProductSection from "@components/organisms/ProductSection/ProductSection";
 import { CardComponent } from "@types";
+import { Category } from '@components/atoms';
+
 
 const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -36,9 +38,11 @@ const ProductDetails: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 px-10 w-full">
       {/* Product Section */}
       <ProductSection product={product} />
+      
+      <Category SectionName={"Rating And Reviews"} />
 
       {/* Reviews Section */}
       <div>

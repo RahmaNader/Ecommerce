@@ -41,7 +41,7 @@ export const cards: CardComponent[] = [
     name: "Leather Jacket",
     DisPrice: 300,
     NormalPrice: 350,
-    rate: 4,
+    rate: 4.5,
     size: ["M", "L", "XL"],
     category: "Jackets",
     collection: 2,

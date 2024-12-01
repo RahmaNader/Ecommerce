@@ -7,8 +7,8 @@ type CardData = {
   src: string;
   alt: string;
   name: string;
-  DisPrice: string;
-  NormalPrice: string;
+  DisPrice: number;
+  NormalPrice: number;
   rate: number; 
 };
 
