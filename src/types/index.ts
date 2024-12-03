@@ -1,4 +1,3 @@
-// src/types/index.ts
 export type SignUpFormInputs = {
   fullName: string;
   email: string;
@@ -24,12 +23,12 @@ export type CardComponent = {
   DisPrice: number;
   NormalPrice: number;
   rate: number;
-  size: string[]; // Array of available sizes
+  size: string[];
   category: string;
   collection: number;
   description: string;
-  color: string[]; // Array of available colors
-  availableQuantity: number; // Stock quantity
+  color: string[]; 
+  availableQuantity: number; 
   onClick?: () => void;
 };
 
@@ -45,3 +44,8 @@ export type ReviewCardProps =  {
   reviewText: string;
   rating: number;
 }
+
+export type ProductsViewProps = {
+  sectionName: string;
+  cards: CardComponent[];
+};

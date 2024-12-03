@@ -6,8 +6,8 @@ import ProductSection from "@components/organisms/ProductSection/ProductSection"
 import { CardComponent } from "@types";
 import { Category } from '@components/atoms';
 import { RatingSection, ReviewsSection } from "@components/organisms";
-import { HomeSections } from "@components/molecules";
-import { relatedProductsCards } from "@data/cards"
+import { ProductsView } from "@components/molecules";
+import { productsViewCards } from "@data/cards"
 
 
 
@@ -56,9 +56,9 @@ const ProductDetails: React.FC = () => {
       <ReviewsSection />
 
       {/* Related Products Section */}
-      <HomeSections
-              SectionName="Related Products"
-              cards={relatedProductsCards}
+      <ProductsView
+              sectionName="Related Products"
+              cards={productsViewCards}
             />
       
 

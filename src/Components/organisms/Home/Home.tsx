@@ -1,90 +1,16 @@
 // src/Components/organisms/Home/Home.tsx
 import React from "react";
-import { HomeSections } from "@components/molecules";
+import { ProductsView } from "@components/molecules";
+import {productsViewCards} from "@data/cards"
 import { Button } from "@components/atoms";
 import kids from "@assets/HP_kids.svg";
 import women from "@assets/HP_women.svg";
 import men from "@assets/HP_men.svg";
-import Img1 from "@assets/HP_img1.jpeg";
-import Img2 from "@assets/HP_img2.jpeg";
-import Img3 from "@assets/HP_img3.jpeg";
 
 const Home: React.FC = () => {
   const handleButtonClick = (string: string) => {
     console.log("Button clicked " + string);
   };
-
-  const newCollectionCards = [
-    {
-      src: Img1,
-      alt: "product-image",
-      name: "Classic Jacket",
-      DisPrice: 200,
-      NormalPrice: 250,
-      rate: 4,
-    },
-    {
-      src: Img2,
-      alt: "product-image",
-      name: "Modern Coat",
-      DisPrice: 300,
-      NormalPrice: 350,
-      rate: 5,
-    },
-    {
-      src: Img3,
-      alt: "product-image",
-      name: "Stylish Shirt",
-      DisPrice: 150,
-      NormalPrice: 180,
-      rate: 3,
-    },
-    {
-      src: Img1,
-      alt: "product-image",
-      name: "Elegant Dress",
-      DisPrice: 400,
-      NormalPrice: 450,
-      rate: 2,
-    },
-  ];
-
-  const specialOffersCards: string | never[] = [];
-
-  const bestSellerCards = [
-    {
-      src: Img1,
-      alt: "product-image",
-      name: "Classic Jacket",
-      DisPrice: 200,
-      NormalPrice: 250,
-      rate: 4,
-    },
-    {
-      src: Img2,
-      alt: "product-image",
-      name: "Modern Coat",
-      DisPrice: 300,
-      NormalPrice: 350,
-      rate: 5,
-    },
-    {
-      src: Img3,
-      alt: "product-image",
-      name: "Stylish Shirt",
-      DisPrice: 150,
-      NormalPrice: 180,
-      rate: 3,
-    },
-    {
-      src: Img1,
-      alt: "product-image",
-      name: "Elegant Dress",
-      DisPrice: 400,
-      NormalPrice: 450,
-      rate: 2,
-    },
-  ];
 
   return (
     <>
@@ -110,11 +36,11 @@ const Home: React.FC = () => {
       </div>
 
       <div className="flex flex-col">
-        {newCollectionCards.length > 0 && (
+        {productsViewCards.length > 0 && (
           <>
-            <HomeSections
-              SectionName="New Collection"
-              cards={newCollectionCards}
+            <ProductsView
+              sectionName="New Collection"
+              cards={productsViewCards}
             />
             <div className="flex justify-center mt-12">
               <Button
@@ -125,11 +51,11 @@ const Home: React.FC = () => {
           </>
         )}
 
-        {specialOffersCards.length > 0 && (
+        {productsViewCards.length > 0 && (
           <>
-            <HomeSections
-              SectionName="Special Offers"
-              cards={specialOffersCards}
+            <ProductsView
+              sectionName="Special Offers"
+              cards={productsViewCards}
             />
             <div className="flex justify-center mt-12">
               <Button
@@ -140,9 +66,9 @@ const Home: React.FC = () => {
           </>
         )}
 
-        {bestSellerCards.length > 0 && (
+        {productsViewCards.length > 0 && (
           <>
-            <HomeSections SectionName="Best Seller" cards={bestSellerCards} />
+            <ProductsView sectionName="Best Seller" cards={productsViewCards} />
             <div className="flex justify-center mt-12">
               <Button
                 label="View Collection"

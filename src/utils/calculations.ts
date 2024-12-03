@@ -31,7 +31,7 @@ export const calculateRatingDistribution = (ratings: number[]): RatingDistributi
   }));
 };
 
-const getColorForRating = (rating: number) => {
+export const getColorForRating = (rating: number) => {
   switch (rating) {
     case 5:
       return '#fbbf24'; 

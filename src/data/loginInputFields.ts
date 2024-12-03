@@ -1,4 +1,4 @@
-// src/data/inputFields.ts
+
 import { LoginFormInputs } from "@types";
 
 export const loginInputFields: Array<{

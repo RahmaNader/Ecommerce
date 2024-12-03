@@ -2,9 +2,6 @@ import { useNavigate } from "react-router-dom";
 import star from "@assets/Star.svg";
 import greyStar from "@assets/GreyStar.svg";
 import { CardComponent } from "@types";
-
-
-
 const Card: React.FC<CardComponent> = ({
   id,
   src,

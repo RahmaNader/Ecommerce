@@ -232,7 +232,7 @@ export const cards: CardComponent[] = [
 ];
 
 
-export const relatedProductsCards: CardComponent[] = [
+export const productsViewCards: CardComponent[] = [
   {
     id: 12,
     src: Img3,
