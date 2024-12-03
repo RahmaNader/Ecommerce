@@ -5,12 +5,14 @@ import Loading from "@components/molecules/LoadingSkeleton/LoadingSkeleton";
 import ProductSection from "@components/organisms/ProductSection/ProductSection";
 import { CardComponent } from "@types";
 import { Category } from '@components/atoms';
+import { RatingSection } from "@components/organisms";
 
 
 const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(true);
   const [product, setProduct] = useState<CardComponent | null>(null);
+  const ratingsData = [5, 4, 5, 5, 3, 2, 1, 5, 4, 5, 2, 3, 5, 5, 5, 1, 4, 3, 5, 5, 1, 2, 4, 5];
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -42,19 +44,19 @@ const ProductDetails: React.FC = () => {
       {/* Product Section */}
       <ProductSection product={product} />
       
+      {/* Divider */}
       <Category SectionName={"Rating And Reviews"} />
 
       {/* Reviews Section */}
-      <div>
-        <h2 className="text-xl font-bold">Reviews</h2>
-        <p className="text-gray-500">This section is under construction.</p>
-      </div>
+      <RatingSection ratingsData={ratingsData} />
+      {/* reviews section */}
+
+      {/* Divider */}
+      <Category SectionName={"Related Products"} />
 
       {/* Related Products Section */}
-      <div>
-        <h2 className="text-xl font-bold">Related Products</h2>
-        <p className="text-gray-500">This section is under construction.</p>
-      </div>
+      
+
     </div>
   );
 };

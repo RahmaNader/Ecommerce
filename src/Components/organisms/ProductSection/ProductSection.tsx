@@ -69,7 +69,7 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
 
         {/* product rating */}
         <div className="flex items-center space-x-1">
-          <Rating rate={product.rate} />
+          <Rating rate={product.rate}  mode="show"/>
         </div>
 
         {/* price */}

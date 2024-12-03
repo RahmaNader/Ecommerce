@@ -32,3 +32,9 @@ export type CardComponent = {
   availableQuantity: number; // Stock quantity
   onClick?: () => void;
 };
+
+export type RatingDistributionItem = {
+  rating: number;
+  percentage: string;
+  color: string;
+}

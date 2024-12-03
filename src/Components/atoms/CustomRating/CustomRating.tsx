@@ -2,7 +2,12 @@ import React from 'react';
 import MuiRating from '@mui/material/Rating';
 import { Box, Typography } from '@mui/material';
 
-const CustomRating: React.FC<{ rate: number }> = ({ rate }) => {
+interface CustomRatingProps {
+  rate: number;
+  mode: 'show' | 'hide'; // New prop to control the mode
+}
+
+const CustomRating: React.FC<CustomRatingProps> = ({ rate, mode }) => {
   return (
     <Box className="flex items-center">
       {/* Rating Stars */}
@@ -12,18 +17,20 @@ const CustomRating: React.FC<{ rate: number }> = ({ rate }) => {
         readOnly
         sx={{
           '& .MuiRating-iconFilled': {
-            color: '#FFD700', 
+            color: '#FFD700', // Filled stars color
           },
           '& .MuiRating-iconEmpty': {
-            color: '#f4eee8', 
+            color: '#f4eee8', // Empty stars color
           },
         }}
       />
 
-      {/* Rating Label */}
-      <Typography className="font-Poppins font-semibold text-wine ml-2">
-        {rate}
-      </Typography>
+      {/* Rating Label - only show if mode is set to 'show' */}
+      {mode === 'show' && (
+        <Typography className="font-Poppins font-semibold text-wine ml-2">
+          {rate}
+        </Typography>
+      )}
     </Box>
   );
 };
