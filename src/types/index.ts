@@ -38,3 +38,10 @@ export type RatingDistributionItem = {
   percentage: string;
   color: string;
 }
+
+export type ReviewCardProps =  {
+  reviewerName: string;
+  datePosted: string;
+  reviewText: string;
+  rating: number;
+}

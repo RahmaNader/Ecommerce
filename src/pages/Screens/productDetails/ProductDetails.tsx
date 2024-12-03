@@ -5,7 +5,8 @@ import Loading from "@components/molecules/LoadingSkeleton/LoadingSkeleton";
 import ProductSection from "@components/organisms/ProductSection/ProductSection";
 import { CardComponent } from "@types";
 import { Category } from '@components/atoms';
-import { RatingSection } from "@components/organisms";
+import { RatingSection, ReviewsSection } from "@components/organisms";
+
 
 
 const ProductDetails: React.FC = () => {
@@ -50,6 +51,7 @@ const ProductDetails: React.FC = () => {
       {/* Reviews Section */}
       <RatingSection ratingsData={ratingsData} />
       {/* reviews section */}
+      <ReviewsSection />
 
       {/* Divider */}
       <Category SectionName={"Related Products"} />
