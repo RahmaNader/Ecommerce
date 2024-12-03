@@ -1,5 +1,5 @@
 import React from 'react';
-import CustomRating from "@components/atoms/CustomRating/CustomRating";
+import {CustomRating} from "@components/atoms";
 import {ReviewCardProps} from "@types"
 
 
@@ -12,7 +12,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ reviewerName, datePosted, revie
 
       <div className="w-full font-bold text-lg text-wine font-Poppins">
         {reviewerName}
-        <span className="bg-[#01AB31] w-5 h-5 inline-flex p-2 items-center justify-center rounded-full text-base text-white ml-2">
+        <span className="bg-green w-5 h-5 inline-flex p-2 items-center justify-center rounded-full text-base text-mainColor ml-2">
           &#x2714;
         </span>
       </div>

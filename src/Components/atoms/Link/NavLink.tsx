@@ -22,7 +22,6 @@ const NavLink: React.FC<NavLinkProps> = ({
   const location = useLocation();
   let className = "";
 
-  // Your existing className logic based on variant
   if (variant === "navbar") {
     className =
       "font-playfair text-[24px] font-normal leading-[31.99px] text-left underline-from-font decoration-skip-ink-none hover:text-wine inline";
@@ -42,7 +41,7 @@ const NavLink: React.FC<NavLinkProps> = ({
   return (
     <RouterNavLink
       to={to}
-      state={state ?? { from: location.pathname }} // Pass the current path in state
+      state={state ?? { from: location.pathname }}
       className={className}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}

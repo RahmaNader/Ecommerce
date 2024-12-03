@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography } from '@mui/material';
-import CustomRating from "@components/atoms/CustomRating/CustomRating";
+import {CustomRating} from "@components/atoms";
 import { RatingDistributionItem } from "@types";
 import { calculateRatingDistribution, getColorForRating } from '@utils/calculations';
 

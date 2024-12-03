@@ -1,9 +1,6 @@
 import Img4 from "@assets/HP_img4.svg";
 import Img5 from "@assets/HP_img5.svg";
-
-type categoryProps = {
-  SectionName: string;
-};
+import {categoryProps} from "@types"
 
 const Category = ({ SectionName }: categoryProps) => {
   return (
@@ -11,10 +8,10 @@ const Category = ({ SectionName }: categoryProps) => {
     
         <div className="flex flex-col items-center my-16">
           <img src={Img4} alt="Top of section image " />
-          <p className="font-playball text-3xl md:text-5xl leading-[60px] text-secondColor ">
+          <p className="font-playball text-3xl md:text-5xl leading-[60px] text-wine ">
             {SectionName}
           </p>
-          <img src={Img5} alt="down of section image" />
+          <img src={Img5} alt="Bottom of section image" />
         </div>
     </>
   );

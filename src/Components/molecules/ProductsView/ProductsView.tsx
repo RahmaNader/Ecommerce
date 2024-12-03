@@ -1,7 +1,6 @@
 // src/Components/molecules/ProductsView/ProductsView.tsx
 import React from 'react';
-import { Card } from '@components/atoms';
-import { Category } from '@components/atoms';
+import { Card, Category } from '@components/atoms';
 import { CardComponent, ProductsViewProps } from '@types'; // Adjust the import path accordingly
 
 const ProductsView: React.FC<ProductsViewProps> = ({ sectionName, cards }) => {

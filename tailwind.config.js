@@ -31,6 +31,10 @@ export default {
         primary: "#1da1f2",
         secondary: "#14171a",
         customBeige: "#F4EEE8",
+        golden:"#E3C174",
+        yellow: '#FFD700',
+        grey:"#f4eee8",
+        green:"#01AB31",
         
         customGray: {
           light: "#f7fafc",

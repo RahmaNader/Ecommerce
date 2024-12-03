@@ -1,9 +1,5 @@
 import React, { useState } from "react";
-
-type ProductCountProps = {
-  initialCount?: number; 
-  onCountChange?: (count: number) => void; 
-};
+import {ProductCountProps} from "@types"
 
 const ProductCount: React.FC<ProductCountProps> = ({
   initialCount = 1,

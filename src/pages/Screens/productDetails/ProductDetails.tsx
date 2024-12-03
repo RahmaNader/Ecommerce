@@ -1,21 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { cards } from "@data/cards";
-import Loading from "@components/molecules/LoadingSkeleton/LoadingSkeleton";
-import ProductSection from "@components/organisms/ProductSection/ProductSection";
 import { CardComponent } from "@types";
-import { Category } from '@components/atoms';
-import { RatingSection, ReviewsSection } from "@components/organisms";
-import { ProductsView } from "@components/molecules";
-import { productsViewCards } from "@data/cards"
-
-
+import { Category } from "@components/atoms";
+import { RatingSection, ReviewsSection, ProductSection } from "@components/organisms";
+import { ProductsView, Loading } from "@components/molecules";
+import { productsViewCards , cards} from "@data/cards";
 
 const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(true);
   const [product, setProduct] = useState<CardComponent | null>(null);
-  const ratingsData = [5, 4, 5, 5, 3, 2, 1, 5, 4, 5, 2, 3, 5, 5, 5, 1, 4, 3, 5, 5, 1, 2, 4, 5];
+  const ratingsData = [
+    5, 4, 5, 5, 3, 2, 1, 5, 4, 5, 2, 3, 5, 5, 5, 1, 4, 3, 5, 5, 1, 2, 4, 5,
+  ];
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -46,22 +43,17 @@ const ProductDetails: React.FC = () => {
     <div className="flex flex-col gap-8 px-10 w-full">
       {/* Product Section */}
       <ProductSection product={product} />
-      
+
       {/* Divider */}
       <Category SectionName={"Rating And Reviews"} />
 
-      {/* Reviews Section */}
+      {/* Ratings Section */}
       <RatingSection ratingsData={ratingsData} />
       {/* reviews section */}
       <ReviewsSection />
 
       {/* Related Products Section */}
-      <ProductsView
-              sectionName="Related Products"
-              cards={productsViewCards}
-            />
-      
-
+      <ProductsView sectionName="Related Products" cards={productsViewCards} />
     </div>
   );
 };

@@ -49,3 +49,17 @@ export type ProductsViewProps = {
   sectionName: string;
   cards: CardComponent[];
 };
+
+export type categoryProps = {
+  SectionName: string;
+};
+
+export type CustomRatingProps  = {
+  rate: number;
+  mode: 'show' | 'hide';
+}
+
+export type ProductCountProps = {
+  initialCount?: number; 
+  onCountChange?: (count: number) => void; 
+};

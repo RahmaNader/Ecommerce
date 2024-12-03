@@ -1,5 +1,5 @@
 import React from 'react';
-import ReviewCard from '@components/atoms/ReviewCard/ReviewCard';
+import {ReviewCard} from '@components/atoms';
 
 const ReviewsSection: React.FC = () => {
   
