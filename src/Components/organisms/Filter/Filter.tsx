@@ -92,8 +92,8 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
   };
 
   return (
-    <div className="flex flex-col items-start px-4 gap-[36px] w-full  mt-10">
-      {/* title div here*/}
+    <div className="flex flex-col items-start px-4 gap-[36px] w-full mt-10">
+      {/* Size Filter */}
       <div className="flex flex-col w-full">
         <p className="font-playfair text-[20px] md:text-[30px] text-wine text-left font-semibold">
           Size
@@ -109,7 +109,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
               onClick={() => handleSizeClick(size)}
               role="button"
               tabIndex={0}
-              aria-pressed={selectedSize === size ? 'true' : 'false'}
+              aria-pressed={selectedSize === size ? "true" : "false"}
               className={`font-Jost flex items-center text-[10px] w-[30px] h-[30px] md:text-[16px] md:w-[42px] md:h-[42px] justify-center border-2 rounded-lg cursor-pointer focus:outline-none ${
                 selectedSize === size
                   ? "text-wine border-wine"
@@ -122,6 +122,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
         </div>
       </div>
 
+      {/* Categories Filter */}
       <div className="w-full flex flex-col">
         <div
           className="flex flex-row items-center justify-between cursor-pointer"
@@ -167,6 +168,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
         )}
       </div>
 
+      {/* Collections Filter */}
       <div className="w-full flex flex-col">
         <div
           className="flex flex-row items-center justify-between cursor-pointer"
@@ -201,6 +203,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
         )}
       </div>
 
+      {/* Price Range Filter */}
       <div className="w-[100%] flex flex-col">
         <p className="font-playfair text-[20px] md:text-[30px] text-wine text-left font-semibold">
           Price Range
@@ -227,6 +230,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
           minDistance={10}
         />
       </div>
+      {/* Filter Button */}
       <Button
         label="Filter"
         type="primary"
@@ -235,7 +239,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
           width: "90%",
           maxHeight: "60px",
           fontSize: "20px",
-          alignSelf:"center",
+          alignSelf: "center",
         }}
       />
     </div>

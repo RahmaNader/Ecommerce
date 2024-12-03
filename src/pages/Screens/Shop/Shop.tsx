@@ -1,5 +1,3 @@
-// src/pages/Screens/Shop/Shop.tsx
-
 import React, { useState, useEffect } from "react";
 import { useParams, Navigate, useLocation } from "react-router-dom";
 import { Filter, ProductsDisplay } from "@components/organisms";
@@ -30,40 +28,43 @@ const Shop: React.FC = () => {
   const lastSegment = location.pathname.split("/").filter(Boolean).pop();
 
   useEffect(() => {
-    if (!category) {
-      return;
-    }
+    // Filter cards based on filter criteria
     let newFilteredCards = [...cards];
 
-    if (filterCriteria.size) {
-      newFilteredCards = newFilteredCards.filter(
-        (card) => card.size === filterCriteria.size
-      );
-    }
-
-    if (filterCriteria.collection !== undefined) {
-      newFilteredCards = newFilteredCards.filter(
-        (card) => card.collection === filterCriteria.collection
-      );
-    }
-
-    if (filterCriteria.categories && filterCriteria.categories.length > 0) {
-      newFilteredCards = newFilteredCards.filter((card) =>
-        filterCriteria.categories?.includes(card.category)
-      );
-    }
-
-    if (filterCriteria.priceRange) {
-      newFilteredCards = newFilteredCards.filter((card) => {
-        return (
-          card.price >= filterCriteria.priceRange![0] &&
-          card.price <= filterCriteria.priceRange![1]
+    if (Object.keys(filterCriteria).length === 0) {
+      // Reset to all cards if no filters are applied
+      newFilteredCards = cards;
+    } else {
+      if (filterCriteria.size) {
+        newFilteredCards = newFilteredCards.filter((card) =>
+          card.size.includes(filterCriteria.size!)
         );
-      });
+      }
+
+      if (filterCriteria.collection !== undefined) {
+        newFilteredCards = newFilteredCards.filter(
+          (card) => card.collection === filterCriteria.collection
+        );
+      }
+
+      if (filterCriteria.categories && filterCriteria.categories.length > 0) {
+        newFilteredCards = newFilteredCards.filter((card) =>
+          filterCriteria.categories?.includes(card.category)
+        );
+      }
+
+      if (filterCriteria.priceRange) {
+        newFilteredCards = newFilteredCards.filter((card) => {
+          return (
+            card.DisPrice >= filterCriteria.priceRange![0] &&
+            card.DisPrice <= filterCriteria.priceRange![1]
+          );
+        });
+      }
     }
 
     setFilteredCards(newFilteredCards);
-  }, [filterCriteria, category]);
+  }, [filterCriteria]);
 
   // Handle sidebar visibility with animation
   useEffect(() => {

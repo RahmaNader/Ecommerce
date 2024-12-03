@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { CardComponent } from "@types";
-import Rating from "@components/atoms/CustomRating/CustomRating";
+import {ProductCount, CustomRating} from "@components/atoms";
 import { calculateDiscountPercentage } from "@utils/calculations";
 import { FaShareAlt } from "react-icons/fa";
-import { ProductCount } from "@components/atoms";
 import heart from "@assets/heart.svg";
 
 const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
@@ -32,7 +31,6 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
 
   return (
     <div className="flex flex-col md:flex-row items-center justify-center w-full  gap-8 my-8 px-6">
-      {/* product photos */}
       <div className="flex flex-col justify-center items-center gap-2">
         <div className="image-container w-[200px] min-h-[200px]  md:w-full h-[100%] relative overflow-hidden rounded-t-[500px]">
           <img
@@ -69,7 +67,7 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
 
         {/* product rating */}
         <div className="flex items-center space-x-1">
-          <Rating rate={product.rate}  mode="show"/>
+          <CustomRating rate={product.rate}  mode="show"/>
         </div>
 
         {/* price */}

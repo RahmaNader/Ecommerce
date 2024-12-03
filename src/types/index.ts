@@ -63,3 +63,19 @@ export type ProductCountProps = {
   initialCount?: number; 
   onCountChange?: (count: number) => void; 
 };
+
+export type Category  = {
+  name: string;
+  isChecked: boolean;
+}
+
+export type NavLinkProps = {
+  label: string | JSX.Element;
+  to?: string;
+  variant: "navbar" | "footer" | "navbaricons" | "subnavbar" | "breadcrumb";
+  state?: never;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+  onClick?: () => void;
+  isActive?: boolean;
+};
