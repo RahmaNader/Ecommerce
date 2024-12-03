@@ -6,6 +6,8 @@ import ProductSection from "@components/organisms/ProductSection/ProductSection"
 import { CardComponent } from "@types";
 import { Category } from '@components/atoms';
 import { RatingSection, ReviewsSection } from "@components/organisms";
+import { HomeSections } from "@components/molecules";
+import { relatedProductsCards } from "@data/cards"
 
 
 
@@ -53,10 +55,11 @@ const ProductDetails: React.FC = () => {
       {/* reviews section */}
       <ReviewsSection />
 
-      {/* Divider */}
-      <Category SectionName={"Related Products"} />
-
       {/* Related Products Section */}
+      <HomeSections
+              SectionName="Related Products"
+              cards={relatedProductsCards}
+            />
       
 
     </div>

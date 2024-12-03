@@ -34,12 +34,19 @@ const HomeSections: React.FC<SectionsProps> = ({ SectionName, cards }) => {
               className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 flex justify-center my-10"
             >
               <Card
+                id={index}
                 src={card.src}
                 alt={card.alt}
                 name={card.name}
                 DisPrice={card.DisPrice}
                 NormalPrice={card.NormalPrice}
-                rate={card.rate} 
+                rate={card.rate}
+                description="Default description"
+                color={["Default color"]}
+                availableQuantity={0}
+                size={["medium"]}
+                category="default"
+                collection={0}
                 onClick={() => handleCardClick(card.name)}
               />
             </div>
