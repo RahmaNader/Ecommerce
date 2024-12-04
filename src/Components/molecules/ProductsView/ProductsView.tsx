@@ -1,13 +1,8 @@
-// src/Components/molecules/ProductsView/ProductsView.tsx
 import React from 'react';
 import { Card, Category } from '@components/atoms';
-import { CardComponent, ProductsViewProps } from '@types'; // Adjust the import path accordingly
+import { CardComponent, ProductsViewProps } from '@types';
 
 const ProductsView: React.FC<ProductsViewProps> = ({ sectionName, cards }) => {
-  const handleCardClick = (item: string) => {
-    console.log(`Product clicked: ${item}`);
-  };
-
   return (
     <>
       <div>
@@ -17,7 +12,7 @@ const ProductsView: React.FC<ProductsViewProps> = ({ sectionName, cards }) => {
           {cards.map((card: CardComponent) => (
             <div
               key={card.id}
-              className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 flex justify-center my-10"
+              className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 flex justify-center"
             >
               <Card
                 id={card.id}
@@ -33,7 +28,6 @@ const ProductsView: React.FC<ProductsViewProps> = ({ sectionName, cards }) => {
                 size={card.size}
                 category={card.category}
                 collection={card.collection}
-                onClick={() => handleCardClick(card.name)}
               />
             </div>
           ))}

@@ -15,6 +15,7 @@ const ProductDetails: React.FC = () => {
   ];
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     const timeout = setTimeout(() => {
       const foundProduct = cards.find((item) => item.id === Number(id)) || null;
       setProduct(foundProduct);
@@ -30,7 +31,7 @@ const ProductDetails: React.FC = () => {
 
   if (!product) {
     return (
-      <div className="text-center mt-8">
+      <div className="text-center mt-20">
         <h1 className="text-2xl font-semibold">Product Not Found</h1>
         <p className="text-gray-500">
           The product you're looking for doesn't exist.

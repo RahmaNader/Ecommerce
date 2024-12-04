@@ -29,6 +29,7 @@
       "@data/*": ["src/data/*"],
       "@types": ["src/types/index.ts"],
       "@assets/*": ["src/assets/*"],
+      
     }
   },
   "include": ["src"]

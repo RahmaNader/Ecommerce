@@ -6,7 +6,7 @@ const Category = ({ SectionName }: categoryProps) => {
   return (
     <>
     
-        <div className="flex flex-col items-center my-16">
+        <div className="flex flex-col items-center my-8 md:my-16">
           <img src={Img4} alt="Top of section image " />
           <p className="font-playball text-3xl md:text-5xl leading-[60px] text-wine ">
             {SectionName}
