@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useState, ReactNode, useEffect } from "react";
 import { AuthService } from "./AuthService";
 
 interface User {
@@ -14,24 +14,34 @@ interface AuthContextType {
   logout: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
 
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
   const login = async (email: string, password: string) => {
-    const user = await AuthService.login(email, password);
-    setUser(user);
+    const loggedInUser = await AuthService.login(email, password);
+    setUser(loggedInUser);
+    localStorage.setItem("user", JSON.stringify(loggedInUser));
   };
 
   const register = async (username: string, email: string, password: string) => {
-    const newUser = await AuthService.register(username, email, password);
-    setUser(newUser);
+    const registeredUser = await AuthService.register(username, email, password);
+    setUser(registeredUser);
+    localStorage.setItem("user", JSON.stringify(registeredUser));
   };
 
   const logout = async () => {
     await AuthService.logout();
     setUser(null);
+    localStorage.removeItem("user");
   };
 
   return (
@@ -39,12 +49,4 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
 };

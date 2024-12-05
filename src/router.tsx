@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import Cart from "@components/organisms/Cart/Cart";
 import { Layout } from "@components/organisms";
+import ProfileLayout from "@components/organisms/ProfileLayout/ProfileLayout";
 import {
   AboutScreen,
   BlogsScreen,
@@ -8,10 +9,16 @@ import {
   HomeScreen,
   Shop,
   SearchScreen as Search,
-  ProductDetails as ProductDetails,
+  ProductDetails,
+  Logout,
+  Orders,
+  Payment,
+  PersonalData,
+  Returns,
+  Verification,
+  Wishlist,
+  AuthPage,
 } from "@pages/Screens";
-
-import AuthPage from '@pages/Screens/Authentication/AuthPage';
 
 export const router = createBrowserRouter([
   {
@@ -47,14 +54,47 @@ export const router = createBrowserRouter([
         element: <Search />,
       },
       {
-        path: 'authentication',
+        path: "authentication",
         element: <AuthPage />,
       },
       {
         path: "product-details/:id",
-        element: <ProductDetails/>,
+        element: <ProductDetails />,
       },
-      
+      {
+        path: "profile",
+        element: <ProfileLayout />,
+        children: [
+          {
+            index: true,
+            element: <PersonalData />,
+          },
+          {
+            path: "orders",
+            element: <Orders />,
+          },
+          {
+            path: "returns",
+            element: <Returns />,
+          },
+          {
+            path: "wishlist",
+            element: <Wishlist />,
+          },
+          {
+            path: "verification",
+            element: <Verification />,
+          },
+          {
+            path: "payment-credit-card",
+            element: <Payment />,
+          },
+          {
+            path: "logout",
+            element: <Logout />,
+          },
+        ],
+      },
     ],
   },
 ]);
