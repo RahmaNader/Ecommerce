@@ -1,6 +1,5 @@
 import React from "react";
-import { Breadcrumb } from "@components/molecules";
-import { SearchBar } from "@components/molecules";
+import { Breadcrumb, SearchBar } from "@components/molecules";
 
 const SearchScreen: React.FC = () => {
   return (

@@ -1,6 +1,7 @@
-export {default as HomeSections} from './HomeSections/HomeSections'
+export {default as ProductsView} from './ProductsView/ProductsView'
 export {default as Slider} from './Slider/Slider'
 export {default as Footer} from './Footer/Footer'
 export { default as CartProduct } from "./CartProduct/CartProduct";
 export { default as Breadcrumb } from "./Breadcrumb/Breadcrumb";
 export { default as SearchBar } from "./SearchBar/SearchBar";
+export { default as Loading } from "./LoadingSkeleton/LoadingSkeleton";

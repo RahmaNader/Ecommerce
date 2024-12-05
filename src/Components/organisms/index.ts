@@ -5,3 +5,6 @@ export { default as Layout } from "./Layout/Layout";
 export {default as Home} from './Home/Home'
 export {default as Filter} from './Filter/Filter'
 export {default as ProductsDisplay} from './ProductsDisplay/ProductsDisplay'
+export {default as ProductSection} from './ProductSection/ProductSection'
+export {default as RatingSection} from './RatingSection/RatingSection'
+export { default as ReviewsSection } from './ReviewsSection/ReviewsSection'
