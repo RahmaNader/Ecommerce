@@ -81,3 +81,11 @@ export type NavLinkProps = {
   DefaultIcon?: string;
   ActiveIcon?: string;
 };
+
+export type PersonalData = {
+  fullName: string;
+  phoneNumber: string;
+  address: string;
+  email: string;
+  password:string;
+};

@@ -37,6 +37,7 @@ export default {
         green:"#01AB31",
         grayColor:"#E5E7EB",
         
+        
         customGray: {
           light: "#f7fafc",
           DEFAULT: "#edf2f7",
