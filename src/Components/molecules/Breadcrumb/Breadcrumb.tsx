@@ -5,26 +5,32 @@ import breadcrumbArrow from "@assets/breadcrumb.png";
 
 const Breadcrumb: React.FC = () => {
   const location = useLocation();
-  const currentPageName =
-  location.pathname
-    .split("/")
-    .filter(Boolean)
-    .pop()
-    ?.replace(/-/g, " ")
-    .split(" ")
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
 
-const previousPagePath = location.state?.from || "/";
-const previousPageName: string =
-  previousPagePath
-    .split("/")
-    .filter(Boolean)
-    .pop()
-    ?.replace(/-/g, " ")
-    .split(" ")
-    .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ") || "Home";
+  // Check if the current path contains "profile"
+  const isProfilePath = location.pathname.includes("profile");
+
+  const currentPageName = isProfilePath
+    ? "Profile"
+    : location.pathname
+        .split("/")
+        .filter(Boolean)
+        .pop()
+        ?.replace(/-/g, " ")
+        .split(" ")
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+
+  const previousPagePath = isProfilePath ? "/" : location.state?.from || "/";
+  const previousPageName = isProfilePath
+    ? "Home"
+    : previousPagePath
+        .split("/")
+        .filter(Boolean)
+        .pop()
+        ?.replace(/-/g, " ")
+        .split(" ")
+        .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ") || "Home";
 
   return (
     <div className="flex items-center gap-[4px] w-auto h-[32px] space-x-1">

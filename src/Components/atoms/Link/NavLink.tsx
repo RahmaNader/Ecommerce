@@ -1,17 +1,21 @@
 import { NavLink as RouterNavLink, useLocation } from "react-router-dom";
-import { NavLinkProps } from "@types"
+import { NavLinkProps } from "@types";
 
 const NavLink: React.FC<NavLinkProps> = ({
   label,
+  DefaultIcon,
+  ActiveIcon,
   to = "/",
   variant,
   state,
   onMouseEnter,
   onMouseLeave,
   onClick,
-  isActive = false,
 }) => {
   const location = useLocation();
+
+  const isSidebarActive = variant === "sidebar" && location.pathname === to;
+
   let className = "";
 
   if (variant === "navbar") {
@@ -28,10 +32,10 @@ const NavLink: React.FC<NavLinkProps> = ({
   } else if (variant === "breadcrumb") {
     className =
       "font-playfair text-[15px] md:text-[28px] text-ThirdColor inline font-bold";
-  }
-
-  if (isActive) {
-    className += " text-wine";
+  } else if (variant === "sidebar") {
+    className = `flex items-center space-x-4 p-2 rounded-md font-playfair text-xl font-semibold ${
+      isSidebarActive ? "text-wine" : "text-ForthColor"
+    } hover:text-wine`;
   }
 
   return (
@@ -43,7 +47,24 @@ const NavLink: React.FC<NavLinkProps> = ({
       onMouseLeave={onMouseLeave}
       onClick={onClick}
     >
-      {label}
+      <div className="flex flex-row items-center gap-4">
+        {variant === "sidebar" && (
+          <span>
+            {isSidebarActive ? 
+              <img
+              src={ActiveIcon}
+              className="w-8 h-8"
+              alt="Profile Icon"/> 
+              : 
+              <img
+              src={DefaultIcon}
+              className="w-8 h-8"
+              alt="Profile Icon"/> 
+            }
+          </span>
+        )}
+        <span>{label}</span>
+      </div>
     </RouterNavLink>
   );
 };

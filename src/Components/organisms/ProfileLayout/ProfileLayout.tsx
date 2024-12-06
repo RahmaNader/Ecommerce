@@ -5,15 +5,15 @@ import { Outlet } from 'react-router-dom';
 
 const ProfileLayout: React.FC = () => {
   return (
-    <>
-      <Breadcrumb />
-      <div className="flex min-h-screen">
-        <ProfileSidebar />
-        <div className="flex-1 p-4">
+      <div className="flex flex-wrap md:flex-row min-h-screen p-10 gap-4 items-start">
+        <div className='flex flex-col gap-10'>
+          <Breadcrumb />
+          <ProfileSidebar />
+        </div>
+        <div className="flex-1 mx-8">
           <Outlet />
         </div>
       </div>
-    </>
   );
 };
 

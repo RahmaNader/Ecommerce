@@ -72,10 +72,12 @@ export type Category  = {
 export type NavLinkProps = {
   label: string | JSX.Element;
   to?: string;
-  variant: "navbar" | "footer" | "navbaricons" | "subnavbar" | "breadcrumb";
+  variant: "navbar" | "footer" | "navbaricons" | "subnavbar" | "breadcrumb" | "sidebar";
   state?: never;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   onClick?: () => void;
   isActive?: boolean;
+  DefaultIcon?: string;
+  ActiveIcon?: string;
 };
