@@ -89,3 +89,11 @@ export type PersonalData = {
   email: string;
   password:string;
 };
+
+export type CreditCard = {
+  type: string;
+  number: string;
+  nameOnCard: string;
+  expiry: string;
+  CVV: number;
+}

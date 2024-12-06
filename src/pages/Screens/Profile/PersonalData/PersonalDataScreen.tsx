@@ -37,7 +37,7 @@ const PersonalDataScreen: React.FC = () => {
 
   return (
     <div className="flex flex-col mt-16 items-center justify-center">
-      <h1 className="text-2xl font-semibold mb-6 text-wine font-playfair  md:self-start ml-4">
+      <h1 className="text-2xl font-semibold mb-6 text-wine font-playfair  md:self-start">
         Identification
       </h1>
 
