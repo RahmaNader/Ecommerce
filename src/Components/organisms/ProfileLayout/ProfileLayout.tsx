@@ -6,7 +6,7 @@ import { Outlet } from 'react-router-dom';
 const ProfileLayout: React.FC = () => {
   return (
       <div className="flex flex-wrap md:flex-row min-h-screen p-4 md:p-10 gap-4">
-        <div className='flex flex-col gap-10 mx-auto'>
+        <div className='flex flex-col gap-10 mx-auto md:sticky md:top-0 md:h-screen md:overflow-y-auto'>
           <Breadcrumb />
           <ProfileSidebar />
         </div>

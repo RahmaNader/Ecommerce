@@ -1,4 +1,7 @@
 import React from 'react';
+import { ProductsDisplay } from "@components/organisms";
+import { wishlist } from '@data/cards';
+
 
 const WishListScreen: React.FC = () => {
   return (
@@ -9,6 +12,9 @@ const WishListScreen: React.FC = () => {
       <p className="text-ForthColor font-playfair text-xl mb-4 md:self-start mx-auto md:mx-0">
           See your favorites list
       </p>
+      <div className="flex justify-center">
+          <ProductsDisplay products={wishlist} />
+      </div>
     </div>
   );
 };

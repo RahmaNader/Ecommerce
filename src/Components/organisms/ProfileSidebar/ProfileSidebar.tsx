@@ -24,8 +24,7 @@ const ProfileSidebar: React.FC = () => {
   ];
 
   return (
-    <div className="h-fit bg-[#A78E7821] justify-center border-[1px] rounded-md border-ForthColor p-6">
-      
+    <div className="h-fit bg-[#A78E7821] justify-center border-[1px] rounded-md border-ForthColor p-6 md:sticky md:top-0 md:overflow-y-auto">
       <div className="flex flex-row mb-4 font-bold items-center justify-center">
         <img src={ProfilePhoto} alt="Profile Photo" className="w-8 h-8 rounded-full" />
         <p className="ml-4 font-playfair font-semibold text-lg text-wine">John Doe</p>   

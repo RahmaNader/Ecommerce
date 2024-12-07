@@ -39,9 +39,11 @@ const PersonalDataScreen: React.FC = () => {
       <h1 className="text-2xl font-semibold text-wine font-playfair md:self-start">
         Identification
       </h1>
-      <p className="text-ForthColor mb-6 font-playfair text-xl mb-4 md:self-start mx-auto md:mx-0">
+      <p className="text-ForthColor font-playfair text-xl mb-4 md:self-start mx-auto md:mx-0">
           Profile details
       </p>
+
+      
 
       <div className="w-full max-w-md">
         <div className="relative mb-4 w-[100px] h-[100px] cursor-pointer mx-auto rounded-full bg-[#A78E7821] border-wine border-[1px]">
