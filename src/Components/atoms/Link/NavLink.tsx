@@ -35,7 +35,7 @@ const NavLink: React.FC<NavLinkProps> = ({
   } else if (variant === "sidebar") {
     className = `flex items-center space-x-4 p-2 rounded-md font-playfair text-xl font-semibold ${
       isSidebarActive ? "text-wine" : "text-ForthColor"
-    } hover:text-wine`;
+    } `;
   }
 
   return (
