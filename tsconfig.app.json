@@ -25,7 +25,10 @@
       "@hooks/*": ["src/hooks/*"],
       "@services/*": ["src/services/*"],
       "@utils/*": ["src/utils/*"],
-      "@pages/*": ["src/pages/*"]   
+      "@pages/*": ["src/pages/*"],
+      "@data/*": ["src/data/*"],
+      "@types": ["src/types/index.ts"],
+      "@assets/*": ["src/assets/*"]
     }
   },
   "include": ["src"]

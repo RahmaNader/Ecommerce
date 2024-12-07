@@ -1,5 +1,4 @@
 import { createBrowserRouter } from "react-router-dom";
-
 import Cart from "@components/organisms/Cart/Cart";
 import { Layout } from "@components/organisms";
 import {
@@ -8,7 +7,10 @@ import {
   ContactScreen,
   HomeScreen,
   Shop,
+  SearchScreen as Search,
 } from "@pages/Screens";
+
+import AuthPage from '@pages/Screens/Authentication/AuthPage';
 import CheckOut from "@components/organisms/CheckOut/CheckOut";
 
 export const router = createBrowserRouter([
@@ -25,7 +27,7 @@ export const router = createBrowserRouter([
         element: <BlogsScreen />,
       },
       {
-        path: "contact",
+        path: "contact-us",
         element: <ContactScreen />,
       },
       {
@@ -39,10 +41,6 @@ export const router = createBrowserRouter([
       {
         path: "cart",
         element: <Cart />,
-      },
-      {
-        path: "checkOut",
-        element: <CheckOut />,
       },
     ],
   },

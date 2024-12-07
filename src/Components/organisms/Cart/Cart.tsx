@@ -13,7 +13,7 @@ export default function Cart() {
       <div className="pt-16 w-full">
         <div className="flex flex-col items-center">
           <img src={cartIcon} alt="" className="" />
-          <h1 className="text-center w-full text-mainColor font-playfair text-5xl">
+          <h1 className="text-center w-full text-wine font-playfair text-5xl">
             Cart
           </h1>
           <img src={cartIcon2} alt="" className="w-25 mt-2.5" />
