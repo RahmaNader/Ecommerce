@@ -40,11 +40,11 @@ const PaymentCreditCardScreen: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col mt-16">
-      <h1 className="text-2xl font-semibold text-wine font-playfair md:self-start ">
+    <div className="flex flex-col mt-8 md:mt-16">
+      <h1 className="text-2xl font-semibold text-wine font-playfair md:self-start mx-auto md:mx-0">
         Payment & Credit Card
       </h1>
-      <p className="text-ForthColor font-playfair text-xl mb-4">
+      <p className="text-ForthColor font-playfair text-xl mb-4 md:self-start mx-auto md:mx-0">
         Manage payment method
       </p>
 

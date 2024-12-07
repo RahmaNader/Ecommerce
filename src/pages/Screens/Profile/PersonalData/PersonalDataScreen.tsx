@@ -31,13 +31,12 @@ const PersonalDataScreen: React.FC = () => {
   };
 
   const onNext = () => {
-    // Custom logic for the Next button
     console.log("Navigating to the next step without submitting form...");
   };
 
   return (
-    <div className="flex flex-col mt-16 items-center justify-center">
-      <h1 className="text-2xl font-semibold mb-6 text-wine font-playfair  md:self-start">
+    <div className="flex flex-col mt-8 md:mt-16 items-center justify-center">
+      <h1 className="text-2xl font-semibold mb-6 text-wine font-playfair md:self-start">
         Identification
       </h1>
 
@@ -54,9 +53,9 @@ const PersonalDataScreen: React.FC = () => {
               <input
                 type={field.type}
                 id={field.id}
-                disabled={!isEditable[field.id]} // Only editable when toggled
+                disabled={!isEditable[field.id]} 
                 placeholder={field.placeholder}
-                {...register(field.id, isEditable[field.id] ? field.validation : {})} // Apply validation only if editable
+                {...register(field.id, isEditable[field.id] ? field.validation : {})}
                 className={`w-full px-4 py-2 border rounded ${
                   isEditable[field.id] ? "border-wine border-[2px]" : "border-ForthColor"
                 }  placeholder-wine text-wine bg-ForthColor/[0.13] focus:outline-none focus:ring-none`}
@@ -80,7 +79,6 @@ const PersonalDataScreen: React.FC = () => {
             </div>
           ))}
 
-          {/* Next Button */}
           <button
             type="button"
             onClick={onNext}
@@ -95,4 +93,3 @@ const PersonalDataScreen: React.FC = () => {
 };
 
 export default PersonalDataScreen;
-

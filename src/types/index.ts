@@ -97,3 +97,10 @@ export type CreditCard = {
   expiry: string;
   CVV: number;
 }
+
+export type Order = {
+  orderNumber: string;
+  total: string;
+  date: string;
+  status: string;
+}

@@ -36,7 +36,7 @@ export default {
         grey:"#f4eee8",
         green:"#01AB31",
         grayColor:"#E5E7EB",
-        
+        tableDivider: "#A78E785E",
         
         customGray: {
           light: "#f7fafc",
