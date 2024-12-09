@@ -70,7 +70,7 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products }) => {
       {/* Display Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-5 w-full">
         {currentCards.map((card) => (
-          <div className="flex justify-center" key={card.id}>
+          <div className="flex justify-center mx-auto w-full md:w-[70%]" key={card.id}>
             <Card
               {...card}
               onClick={() => {

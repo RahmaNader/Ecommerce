@@ -24,7 +24,7 @@ const Card: React.FC<CardComponent> = ({
   };
 
   return (
-    <div className="text-center m-4">
+    <div className="text-center m-4 ">
       <div
         onClick={handleCardClick}
         className="image-container relative w-auto h-auto overflow-hidden rounded-t-[500px] cursor-pointer"
