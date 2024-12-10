@@ -1,14 +1,5 @@
 import { NavLink as RouterNavLink, useLocation } from "react-router-dom";
-
-type NavLinkProps = {
-  label: string | JSX.Element;
-  to?: string;
-  variant: "navbar" | "footer" | "navbaricons" | "subnavbar" | "breadcrumb";
-  state?: never;
-  onMouseEnter?: () => void;
-  onMouseLeave?: () => void;
-  onClick?: () => void;
-};
+import { NavLinkProps } from "@types"
 
 const NavLink: React.FC<NavLinkProps> = ({
   label,
@@ -18,11 +9,11 @@ const NavLink: React.FC<NavLinkProps> = ({
   onMouseEnter,
   onMouseLeave,
   onClick,
+  isActive = false,
 }) => {
   const location = useLocation();
   let className = "";
 
-  // Your existing className logic based on variant
   if (variant === "navbar") {
     className =
       "font-playfair text-[24px] font-normal leading-[31.99px] text-left underline-from-font decoration-skip-ink-none hover:text-wine inline";
@@ -39,10 +30,14 @@ const NavLink: React.FC<NavLinkProps> = ({
       "font-playfair text-[15px] md:text-[28px] text-ThirdColor inline font-bold";
   }
 
+  if (isActive) {
+    className += " text-wine";
+  }
+
   return (
     <RouterNavLink
       to={to}
-      state={state ?? { from: location.pathname }} // Pass the current path in state
+      state={state ?? { from: location.pathname }}
       className={className}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}

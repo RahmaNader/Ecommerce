@@ -10,8 +10,8 @@ type ButtonProps = {
     | "PaginationOutlined"
     | "Pagination";
   onClick?: () => void;
-  isDisabled?: boolean; // Disabled flag
-  className?: string; // Additional classes
+  isDisabled?: boolean; 
+  className?: string;
   size?: "small" | "medium" | "large" | "login-register";
   style?: React.CSSProperties;
 };

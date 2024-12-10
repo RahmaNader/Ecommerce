@@ -5,3 +5,4 @@ export { default as BlogsScreen } from "./Blogs/BlogsScreen";
 export { default as AboutScreen } from "./About/AboutScreen";
 export { default as SearchScreen } from "./Search/SearchScreen";
 export { default as AuthPage } from "./Authentication/AuthPage";
+export { default as ProductDetails } from "./productDetails/ProductDetails";

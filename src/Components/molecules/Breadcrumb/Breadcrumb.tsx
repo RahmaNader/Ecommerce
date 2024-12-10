@@ -5,7 +5,6 @@ import breadcrumbArrow from "@assets/breadcrumb.png";
 
 const Breadcrumb: React.FC = () => {
   const location = useLocation();
-
   const currentPageName =
   location.pathname
     .split("/")
@@ -16,7 +15,6 @@ const Breadcrumb: React.FC = () => {
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 
-// Get the previous page path and name from location.state
 const previousPagePath = location.state?.from || "/";
 const previousPageName: string =
   previousPagePath

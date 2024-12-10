@@ -1,16 +1,16 @@
-// src/components/organisms/ProductsDisplay/ProductsDisplay.tsx
 import React, { useState, useEffect } from "react";
-import { Card } from "@components/atoms";
-import { Button } from "@components/atoms";
-import { CardProps } from "@types";
+import { Card, Button } from "@components/atoms";
+import { CardComponent } from "@types";
+import { useNavigate } from "react-router-dom";
+
 
 type ProductsDisplayProps = {
-  products: CardProps[];
+  products: CardComponent[];
 };
 
 const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const cardsPerPage = 10;
+  const cardsPerPage = 9;
 
   const isMobile = window.innerWidth < 768;
   const maxPageButtons = isMobile ? 3 : 4;
@@ -45,40 +45,44 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products }) => {
       for (let i = 1; i <= totalPages; i++) {
         pageNumbers.push(i);
       }
-    } else {
-      if (currentPage <= maxPageButtons - 1) {
-        for (let i = 1; i <= maxPageButtons; i++) {
-          pageNumbers.push(i);
-        }
-        pageNumbers.push("right");
-      } else if (currentPage > totalPages - maxPageButtons + 1) {
-        pageNumbers.push("left");
-        for (let i = totalPages - maxPageButtons + 1; i <= totalPages; i++) {
-          pageNumbers.push(i);
-        }
-      } else {
-        pageNumbers.push("left");
-        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
-          pageNumbers.push(i);
-        }
-        pageNumbers.push("right");
+    } else if (currentPage <= maxPageButtons - 1) {
+      for (let i = 1; i <= maxPageButtons; i++) {
+        pageNumbers.push(i);
       }
+      pageNumbers.push("right");
+    } else if (currentPage > totalPages - maxPageButtons + 1) {
+      pageNumbers.push("left");
+      for (let i = totalPages - maxPageButtons + 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+      }
+    } else {
+      pageNumbers.push("left");
+      for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+        pageNumbers.push(i);
+      }
+      pageNumbers.push("right");
     }
     return pageNumbers;
   };
 
+  const navigate = useNavigate();
   return (
+    
     <div className="flex flex-col items-center w-full">
       <div className="grid grid-cols-2 md:grid-cols-3 gap-5 w-full">
-        {currentCards.map((card) => (
-          <div className="flex justify-center" key={card.id}>
-            <Card {...card} />
-          </div>
-        ))}
+      {currentCards.map((card) => (
+    <div className="flex justify-center" key={card.id}>
+      <Card
+        {...card}
+        onClick={() => {
+          navigate(`/product-details/${card.id}`);
+        }}
+      />
+    </div>
+  ))}
       </div>
 
       <div className="py-8 flex items-center w-full justify-between space-x-2">
-        {/* Previous Button */}
         <Button
           label="Previous"
           onClick={handlePrevious}
@@ -103,7 +107,7 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products }) => {
               </button>
             ) : (
               <span
-                key={`ellipsis-${index}`}
+                key={`ellipsis-${item}-${index}`}
                 className={`rounded-full flex items-center justify-center border-wine border-2 text-wine w-[21px] h-[21px] text-[10px] sm:w-[30px] sm:h-[30px] sm:text-[14px] md:w-[40px] md:h-[40px] md:text-[16px] `}
               >
                 {item === "left" ? "<<" : ">>"}

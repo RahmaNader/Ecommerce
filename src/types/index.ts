@@ -1,18 +1,3 @@
-// src/types/index.ts
-export interface CardProps {
-  id: number;
-  src: string;
-  alt: string;
-  name: string;
-  DisPrice: number;
-  NormalPrice: number;
-  rate: number;
-  size: string;
-  category: string;
-  collection: number;
-  price: number;
-}
-
 export type SignUpFormInputs = {
   fullName: string;
   email: string;
@@ -28,4 +13,69 @@ export type SignUpFormInputs = {
 export type LoginFormInputs = {
   email: string;
   password: string;
+};
+
+export type CardComponent = {
+  id: number;
+  src: string;
+  alt: string;
+  name: string;
+  DisPrice: number;
+  NormalPrice: number;
+  rate: number;
+  size: string[];
+  category: string;
+  collection: number;
+  description: string;
+  color: string[]; 
+  availableQuantity: number; 
+  onClick?: () => void;
+};
+
+export type RatingDistributionItem = {
+  rating: number;
+  percentage: string;
+  color: string;
+}
+
+export type ReviewCardProps =  {
+  reviewerName: string;
+  datePosted: string;
+  reviewText: string;
+  rating: number;
+}
+
+export type ProductsViewProps = {
+  sectionName: string;
+  cards: CardComponent[];
+};
+
+export type categoryProps = {
+  SectionName: string;
+};
+
+export type CustomRatingProps  = {
+  rate: number;
+  mode: 'show' | 'hide';
+}
+
+export type ProductCountProps = {
+  initialCount?: number; 
+  onCountChange?: (count: number) => void; 
+};
+
+export type Category  = {
+  name: string;
+  isChecked: boolean;
+}
+
+export type NavLinkProps = {
+  label: string | JSX.Element;
+  to?: string;
+  variant: "navbar" | "footer" | "navbaricons" | "subnavbar" | "breadcrumb";
+  state?: never;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+  onClick?: () => void;
+  isActive?: boolean;
 };
