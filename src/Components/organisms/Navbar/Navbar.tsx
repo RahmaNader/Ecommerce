@@ -8,7 +8,6 @@ import { NavLink } from "@components/atoms";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 
-
 const Navbar: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -118,19 +117,19 @@ const Navbar: React.FC = () => {
       )}
 
       <div
-        className={`fixed top-0 left-0 right-0 bg-eightColor z-50 overflow-hidden transition-transform duration-300 ease-in-out transform ${
-          isMenuOpen ? "translate-y-0" : "-translate-y-full"
+        className={`fixed top-0 left-0 w-3/4 max-w-xs bg-mainColor z-50 h-full shadow-md overflow-y-auto transition-transform duration-300 ease-in-out transform ${
+          isMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex justify-between items-center px-4 pt-4">
+        <div className="flex justify-between items-center px-4 py-4">
           <img src={Logo} alt="Logo" className="h-8 w-auto" />
 
-          <button onClick={toggleMenu} aria-label="Close Menu">
-            <IconX size={32} />
+          <button onClick={toggleMenu} aria-label="Close Menu" className="text-wine border-wine border-2 rounded-full">
+            <IconX size={28} />
           </button>
         </div>
 
-        <div className="flex flex-col items-center space-y-4 mb-8 ">
+        <div className="flex flex-col space-y-8 px-4 py-2 mt-4">
           <NavLink
             label="Home"
             to="/"
@@ -138,7 +137,7 @@ const Navbar: React.FC = () => {
             isActive={isActive("/")}
             onClick={toggleMenu}
           />
-          <div className="w-full text-center">
+          <div className="relative">
             <NavLink
               label="Shop"
               to="#"
@@ -147,32 +146,28 @@ const Navbar: React.FC = () => {
               isActive={isActive("/shop")}
             />
             <div
-              className={`overflow-hidden transition-max-height duration-300 ease-in-out ${
+              className={`flex flex-col space-y-2 pl-4 transition-max-height duration-300 ease-in-out ${
                 isShopOpen ? "max-h-40" : "max-h-0"
-              } flex justify-center items-center`}
+              } overflow-hidden`}
             >
-              <div className="flex flex-row items-center space-x-4 mt-2">
-                <NavLink
-                  label="Men"
-                  to="/products/men"
-                  variant="subnavbar"
-                  onClick={toggleMenu}
-                />
-                <p>.</p>
-                <NavLink
-                  label="Women"
-                  to="/products/women"
-                  variant="subnavbar"
-                  onClick={toggleMenu}
-                />
-                <p>.</p>
-                <NavLink
-                  label="Kids"
-                  to="/products/kids"
-                  variant="subnavbar"
-                  onClick={toggleMenu}
-                />
-              </div>
+              <NavLink
+                label="Men"
+                to="/products/men"
+                variant="subnavbar"
+                onClick={toggleMenu}
+              />
+              <NavLink
+                label="Women"
+                to="/products/women"
+                variant="subnavbar"
+                onClick={toggleMenu}
+              />
+              <NavLink
+                label="Kids"
+                to="/products/kids"
+                variant="subnavbar"
+                onClick={toggleMenu}
+              />
             </div>
           </div>
           <NavLink
