@@ -6,6 +6,8 @@ import bag from "@assets/Bag.svg";
 import { ShopModal } from "@components/organisms";
 import { NavLink } from "@components/atoms";
 import { useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
+
 
 const Navbar: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -43,27 +45,29 @@ const Navbar: React.FC = () => {
       <div className="flex items-center gap-4">
         <div className="xl:hidden flex items-center">
           <button onClick={toggleMenu} aria-label="Toggle Menu">
-            <IconMenu2 size={32} />
+            <IconMenu2 size={28} />
           </button>
         </div>
-        <img src={Logo} alt="Logo" className="h-8 w-auto ml-2" />
+        <Link to="/">
+          <img src={Logo} alt="Logo" className="h-8 md:h-14 w-auto ml-2" />
+        </Link>
       </div>
 
-      <div className="flex items-center space-x-4 gap-4 md:gap-0 ">
+      <div className="flex items-center space-x-2 gap-0 md:space-x-4 ">
         <NavLink
-          label={<IconSearch width={32} height={32} />}
+          label={<IconSearch width={28} height={28} />}
           to="/search"
           variant="navbaricons"
           isActive={isActive("/search")}
         />
         <NavLink
-          label={<img src={bag} alt="Shopping Bag" width={32} height={32} />}
+          label={<img src={bag} alt="Shopping Bag" width={28} height={28} />}
           to="/cart"
           variant="navbaricons"
           isActive={isActive("/cart")}
         />
         <NavLink
-          label={<img src={profile} alt="Profile" width={32} height={32} />}
+          label={<img src={profile} alt="Profile" width={28} height={28} />}
           to="/profile"
           variant="navbaricons"
           isActive={isActive("/profile")}
