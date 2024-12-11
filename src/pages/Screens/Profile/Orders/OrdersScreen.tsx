@@ -1,8 +1,15 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import noOrder from "@assets/noorders.svg";
 import { orders } from "@data/orders";
 
 const OrdersScreen: React.FC = () => {
+  const navigate = useNavigate();
+
+  const handleRowClick = () => {
+    navigate(`/order-details`);
+  };
+
   return (
     <div className="flex flex-col mt-8 md:mt-16 justify-center">
       <h1 className="text-2xl font-semibold text-wine font-playfair md:self-start mx-auto md:mx-0">
@@ -35,7 +42,11 @@ const OrdersScreen: React.FC = () => {
 
             <tbody>
               {orders.map((order, index) => (
-                <tr key={index} className="text-sm h-14 text-wine font-Poppins cursor-pointer">
+                <tr
+                  key={index}
+                  className="text-sm h-14 text-wine font-Poppins cursor-pointer  transition"
+                  onClick={() => handleRowClick()}
+                >
                   <td className="p-2 border-b border-tableDivider">
                     {order.orderNumber}
                   </td>

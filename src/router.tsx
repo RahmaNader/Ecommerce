@@ -18,6 +18,7 @@ import {
   Verification,
   Wishlist,
   AuthPage,
+  OrderDetails,
 } from "@pages/Screens";
 
 export const router = createBrowserRouter([
@@ -33,6 +34,11 @@ export const router = createBrowserRouter([
         path: "blogs",
         element: <BlogsScreen />,
       },
+      {
+        path: "order-details",
+        element: <OrderDetails />,
+      },
+      
       {
         path: "contact-us",
         element: <ContactScreen />,
@@ -96,5 +102,6 @@ export const router = createBrowserRouter([
         ],
       },
     ],
+    
   },
 ]);

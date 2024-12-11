@@ -13,3 +13,4 @@ export { default as PersonalData } from "./Profile/PersonalData/PersonalDataScre
 export { default as Returns } from "./Profile/Returns/ReturnsScreen";
 export { default as Verification } from "./Profile/Verification/VerificationScreen";
 export { default as Wishlist } from "./Profile/WishList/WishListScreen";
+export { default as OrderDetails } from "./OrderDetails/OrderDetails";
