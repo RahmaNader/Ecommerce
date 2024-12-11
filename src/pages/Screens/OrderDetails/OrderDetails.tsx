@@ -22,6 +22,7 @@ interface OrderData {
   payment: { method: string; lastFourDigits: string; icon?: string };
   delivery: { address: string; city: string; phone: string };
   summary: { label: string; value: string }[];
+  total: string;
 }
 
 const fallbackImage = Img1;
@@ -87,8 +88,8 @@ const OrderDetails: React.FC = () => {
           { label: "Discount (20%)", value: "20 EGP" },
           { label: "Delivery", value: "20 EGP" },
           { label: "Tax", value: "14 EGP" },
-          { label: "Total", value: "214 EGP" },
         ],
+        total: "214 EGP",
       };
 
       setOrderData(mockData);
@@ -226,9 +227,9 @@ const OrderDetails: React.FC = () => {
 
           <div>
             <h3 className="text-xl font-Poppins font-semibold text-wine">Delivery</h3>
-            <p className="text-wine">{delivery.address}</p>
-            <p className="text-wine">{delivery.city}</p>
-            <p className="text-wine">{delivery.phone}</p>
+            <p className="text-ForthColor text-lg font-Poppins">{delivery.address}</p>
+            <p className="text-ForthColor text-lg font-Poppins">{delivery.city}</p>
+            <p className="text-ForthColor text-lg font-Poppins">{delivery.phone}</p>
             {/* Order Summary */}
             <div className="border-t border-ForthColor mt-4 pt-2">
               <h3 className="text-xl font-Poppins font-semibold text-wine">
@@ -236,14 +237,14 @@ const OrderDetails: React.FC = () => {
               </h3>
               {summary.map((item, index) => (
                 <div key={index} className="flex justify-between mb-2">
-                  <p className="text-wine">{item.label}</p>
-                  <p className="text-wine">{item.value}</p>
+                  <p className="text-ForthColor text-lg font-Poppins">{item.label}</p>
+                  <p className="text-ForthColor text-lg font-Poppins">{item.value}</p>
                 </div>
               ))}
-              <div className="flex justify-between font-semibold border-ForthColor border-t border-dotted mt-4 pt-2">
-                <p className="text-wine">Total</p>
-                <p className="text-wine">
-                  {summary.find((s) => s.label === "Total")?.value || "N/A"}
+              <div className="flex justify-between border-ForthColor border-t border-dotted mt-4 pt-2">
+                <p className="text-xl font-Poppins font-semibold text-wine">Total</p>
+                <p className="text-ForthColor text-lg font-Poppins">
+                  {orderData.total || "N/A"}
                 </p>
               </div>
             </div>
