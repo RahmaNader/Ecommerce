@@ -30,7 +30,7 @@ const NavLink: React.FC<NavLinkProps> = ({
       "font-playfair text-[20px] font-normal leading-[28px] underline-from-font decoration-skip-ink-none hover:text-wine inline text-center";
   } else if (variant === "breadcrumb") {
     className =
-      "font-playfair text-[15px] md:text-[28px] text-ThirdColor inline font-bold";
+      "font-playfair text-base md:text-2xl text-ThirdColor inline font-bold";
   } else if (variant === "sidebar") {
     className = `flex items-center space-x-4 p-2 rounded-md font-playfair text-xl font-semibold ${
       isSidebarActive ? "text-wine" : "text-ForthColor"

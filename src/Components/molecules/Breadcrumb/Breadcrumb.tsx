@@ -33,7 +33,7 @@ const Breadcrumb: React.FC = () => {
         .join(" ") || "Home";
 
   return (
-    <div className="flex items-center gap-[4px] w-auto h-[32px] space-x-1">
+    <div className="flex items-center mt-4 gap-1 w-auto h-8 space-x-1">
       <NavLink
         label={previousPageName}
         to={previousPagePath}
@@ -42,9 +42,9 @@ const Breadcrumb: React.FC = () => {
       <img
         src={breadcrumbArrow}
         alt="Breadcrumb Arrow"
-        className="w-[16px] h-[16px] md:w-[22px] md:h-[22px] opacity-100 transform"
+        className="w-4 h-4 md:w-6 md:h-6 transform"
       />
-      <span className="text-[15px] md:text-[28px] text-wine font-playfair font-bold">
+      <span className="text-base md:text-2xl text-wine font-playfair font-bold">
         {currentPageName}
       </span>
     </div>
