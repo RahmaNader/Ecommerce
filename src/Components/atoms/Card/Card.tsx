@@ -34,7 +34,7 @@ const Card: React.FC<CardComponent> = ({
           alt={alt}
           className="object-cover w-full h-full cursor-pointer"
         />
-        <div className="absolute top-0 left-0 w-full h-full border-[2px] border-golden rounded-t-[500px]" />
+        <div className="absolute top-0 left-0 w-full h-full border-2 border-golden rounded-t-[500px]" />
 
         <div
           onClick={handleAddToCartClick}
@@ -47,14 +47,14 @@ const Card: React.FC<CardComponent> = ({
       <div className="mt-4">
         <p
           onClick={handleCardClick}
-          className="font-instrumentSans font-medium text-[15px] md:text-[20px] lg:text-[25px] leading-[24.4px] hover:opacity-80 cursor-pointer text-secondColor"
+          className="font-playfair font-medium text-base md:text-2xl hover:opacity-80 cursor-pointer text-wine"
         >
           {name}
         </p>
-        <p className="font-playfair font-semibold text-[15px] md:text-[20px] lg:text-[25px] leading-[30px] text-ForthColor">
+        <p className="font-playfair font-semibold text-base md:text-xl text-ForthColor">
           {DisPrice} EGP
         </p>
-        <p className="font-playfair font-medium text-[15px] md:text-[20px] lg:text-[20px] line-through text-FifthColor">
+        <p className="font-playfair font-medium text-base md:text-xl line-through text-FifthColor">
           {NormalPrice} EGP
         </p>
       </div>
