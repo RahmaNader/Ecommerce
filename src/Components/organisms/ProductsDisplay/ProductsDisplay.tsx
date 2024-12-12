@@ -83,7 +83,7 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products }) => {
 
       {/* Pagination */}
       {products.length > cardsPerPage && (
-        <div className="py-8 flex items-center w-full justify-between space-x-2">
+        <div className="mt-8 flex items-center w-full justify-between space-x-2 md:px-10">
           <Button
             label="Previous"
             onClick={handlePrevious}
@@ -100,16 +100,16 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products }) => {
                   onClick={() => paginate(item)}
                   className={`rounded-full flex items-center justify-center ${
                     currentPage === item
-                      ? "bg-wine text-white border-spacing-1"
-                      : "border-wine border-2 text-wine"
-                  } w-[21px] h-[21px] text-[10px] sm:w-[30px] sm:h-[30px] sm:text-[14px] md:w-[40px] md:h-[40px] md:text-[16px] `}
+                      ? "bg-wine text-mainColor border-spacing-1"
+                      : "border-wine border text-wine"
+                  } w-6 h-6 md:w-10 md:h-10 text-xs md:text-base`}
                 >
                   {item}
                 </button>
               ) : (
                 <span
                   key={`ellipsis-${item}-${index}`}
-                  className={`rounded-full flex items-center justify-center border-wine border-2 text-wine w-[21px] h-[21px] text-[10px] sm:w-[30px] sm:h-[30px] sm:text-[14px] md:w-[40px] md:h-[40px] md:text-[16px] `}
+                  className={`rounded-full flex items-center justify-center border-wine border text-wine w-6 h-6 text-xs md:w-10 md:h-10 md:text-base`}
                 >
                   {item === "left" ? "<<" : ">>"}
                 </span>
