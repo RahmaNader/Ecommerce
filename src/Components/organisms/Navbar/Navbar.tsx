@@ -5,15 +5,14 @@ import profile from "@assets/Profile.svg";
 import bag from "@assets/Bag.svg";
 import { ShopModal } from "@components/organisms";
 import { NavLink } from "@components/atoms";
-import { useLocation } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 
 const Navbar: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isShopOpen, setIsShopOpen] = useState(false);
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const location = useLocation(); 
+  const location = useLocation();
 
   const handleOpenModal = () => {
     if (closeTimeoutRef.current) {
@@ -52,7 +51,7 @@ const Navbar: React.FC = () => {
         </Link>
       </div>
 
-      <div className="flex items-center space-x-2 gap-0 md:space-x-4 ">
+      <div className="flex items-center space-x-2 gap-0 md:space-x-4">
         <NavLink
           label={<IconSearch width={28} height={28} />}
           to="/search"
@@ -123,71 +122,76 @@ const Navbar: React.FC = () => {
       >
         <div className="flex justify-between items-center px-4 py-4">
           <img src={Logo} alt="Logo" className="h-8 w-auto" />
-
-          <button onClick={toggleMenu} aria-label="Close Menu" className="text-wine border-wine border-2 rounded-full">
+          <button
+            onClick={toggleMenu}
+            aria-label="Close Menu"
+            className="text-wine border-wine border-2 rounded-full"
+          >
             <IconX size={28} />
           </button>
         </div>
 
-        <div className="flex flex-col space-y-8 px-4 py-2 mt-4">
+        <div className="flex items-center text-center w-full flex-col mt-4">
           <NavLink
             label="Home"
             to="/"
-            variant="navbar"
+            variant="sidenavbar"
             isActive={isActive("/")}
             onClick={toggleMenu}
           />
-          <div className="relative">
+
+          <div className="relative w-full">
             <NavLink
               label="Shop"
               to="#"
-              variant="navbar"
+              variant="sidenavbar"
               onClick={toggleShopMenu}
               isActive={isActive("/shop")}
             />
             <div
-              className={`flex flex-col space-y-2 pl-4 transition-max-height duration-300 ease-in-out ${
+              className={`flex flex-col transition-max-height duration-300 ease-in-out ${
                 isShopOpen ? "max-h-40" : "max-h-0"
-              } overflow-hidden`}
+              } overflow-hidden border-l-4  border-wine`}
             >
               <NavLink
                 label="Men"
                 to="/products/men"
-                variant="subnavbar"
+                variant="sidenavbarsub"
                 onClick={toggleMenu}
               />
               <NavLink
                 label="Women"
                 to="/products/women"
-                variant="subnavbar"
+                variant="sidenavbarsub"
                 onClick={toggleMenu}
               />
               <NavLink
                 label="Kids"
                 to="/products/kids"
-                variant="subnavbar"
+                variant="sidenavbarsub"
                 onClick={toggleMenu}
               />
             </div>
           </div>
+
           <NavLink
             label="Blogs"
             to="/blogs"
-            variant="navbar"
+            variant="sidenavbar"
             isActive={isActive("/blogs")}
             onClick={toggleMenu}
           />
           <NavLink
             label="Contact Us"
             to="/contact-us"
-            variant="navbar"
+            variant="sidenavbar"
             isActive={isActive("/contact-us")}
             onClick={toggleMenu}
           />
           <NavLink
             label="About Us"
             to="/about-us"
-            variant="navbar"
+            variant="sidenavbar"
             isActive={isActive("/about-us")}
             onClick={toggleMenu}
           />
