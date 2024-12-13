@@ -1,7 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
-import Cart from "@components/organisms/Cart/Cart";
-import { Layout } from "@components/organisms";
-import ProfileLayout from "@components/organisms/ProfileLayout/ProfileLayout";
+import { Layout, ProfileLayout, Cart } from "@components/organisms";
 import {
   AboutScreen,
   BlogsScreen,
@@ -19,6 +17,7 @@ import {
   Wishlist,
   AuthPage,
   OrderDetails,
+  NotFound,
 } from "@pages/Screens";
 
 export const router = createBrowserRouter([
@@ -32,7 +31,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "*",
-        element: <HomeScreen />, 
+        element: <NotFound />,
       },
       {
         path: "blogs",
