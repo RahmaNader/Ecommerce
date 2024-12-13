@@ -4,6 +4,8 @@ import FilterIcon from "@assets/FilterIcon.svg";
 import { IconX } from "@tabler/icons-react";
 import FilterArrow from "@assets/FilterArrow.svg";
 import { Button } from "@components/atoms";
+import Checkbox from "@mui/material/Checkbox";
+import { styled } from "@mui/material/styles";
 
 interface Category {
   name: string;
@@ -19,6 +21,17 @@ type FilterProps = {
   }) => void;
   onClose?: () => void; // Optional onClose prop
 };
+
+// Create a custom styled checkbox
+const CustomCheckbox = styled(Checkbox)(() => ({
+  color: "#721013",
+  "&.Mui-checked": {
+    color: "#721013",
+  },
+  "&:hover": {
+    backgroundColor: "rgba(114, 16, 19, 0.1)",
+  },
+}));
 
 const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
   const sizes = ["S", "M", "L", "XL", "XXL"];
@@ -62,11 +75,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
   };
 
   const handleSizeClick = (size: string) => {
-    if (selectedSize === size) {
-      setSelectedSize(null);
-    } else {
-      setSelectedSize(size);
-    }
+    setSelectedSize(selectedSize === size ? null : size);
   };
 
   const handleFilterClick = () => {
@@ -117,11 +126,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
           <p className="font-playfair text-2xl font-bold text-wine text-left">
             Filters
           </p>
-          <img
-            src={FilterIcon}
-            alt="Filter icon"
-            className="h-6 w-6"
-          />
+          <img src={FilterIcon} alt="Filter icon" className="h-6 w-6" />
         </div>
       </div>
 
@@ -189,12 +194,11 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
                   >
                     {category.name}
                   </label>
-                  <input
-                    type="checkbox"
+                  <CustomCheckbox
                     checked={category.isChecked}
                     onChange={() => handleCategoryChange(index)}
                     id={`category-${index}`}
-                    className="border-2 rounded-[4px] w-5 h-5 appearance-none cursor-pointer border-ThirdColor bg-customBeige checked:bg-wine checked:border-wine "
+                    inputProps={{ "aria-label": category.name }}
                   />
                 </div>
               ))}
