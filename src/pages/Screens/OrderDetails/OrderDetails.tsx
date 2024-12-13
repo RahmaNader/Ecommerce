@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
 import Img1 from "@assets/HP_img1.jpeg";
 import visaLogo from "@assets/visa.svg";
 import truck from "@assets/truck.svg";
 import { Breadcrumb } from "@components/molecules";
 import { Category } from "@components/atoms";
-import Stepper from "react-stepper-horizontal";
+import Box from "@mui/material/Box";
+import Stepper from "@mui/material/Stepper";
+import Step from "@mui/material/Step";
+import StepLabel from "@mui/material/StepLabel";
+import StepConnector, {
+  stepConnectorClasses,
+} from "@mui/material/StepConnector";
+import { styled } from "@mui/material/styles";
 
 interface OrderData {
   orderId: string;
@@ -27,17 +33,50 @@ interface OrderData {
 
 const fallbackImage = Img1;
 
+const CustomStepConnector = styled(StepConnector)(() => ({
+  [`&.${stepConnectorClasses.alternativeLabel}`]: {
+    top: 10,
+  },
+  [`&.${stepConnectorClasses.line}`]: {
+    height: 10,
+    backgroundColor: "#A78E78",
+  },
+}));
+
+const CustomStepLabel = styled(StepLabel)(() => ({
+  [`& .MuiStepLabel-label`]: {
+    fontSize: "1rem",
+    fontFamily: "Playfair Display, serif",
+    color: "#A78E78",
+    textAlign: "center",
+    display: "block",
+  },
+  [`& .MuiStepLabel-label.Mui-active`]: {
+    color: "#721013",
+    fontWeight: "500",
+  },
+  [`& .MuiStepLabel-label.Mui-completed`]: {
+    color: "#721013",
+  },
+  [`& .MuiStepLabel-iconContainer .Mui-active`]: {
+    color: "#721013",
+  },
+  [`& .MuiStepLabel-iconContainer .Mui-completed`]: {
+    color: "#721013",
+  },
+  [`& .MuiStepLabel-iconContainer`]: {
+    color: "#A78E78",
+  },
+}));
+
 const OrderDetails: React.FC = () => {
-  const { orderId } = useParams<{ orderId: string }>();
   const [orderData, setOrderData] = useState<OrderData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchOrderData = async () => {
-      setLoading(false);
-
       const mockData: OrderData = {
-        orderId: orderId || "Unknown",
+        orderId: "15456", // Hardcoded Order ID
         orderDate: "Feb 16, 2022",
         estimatedDelivery: "May 16, 2022",
         steps: [
@@ -67,7 +106,7 @@ const OrderDetails: React.FC = () => {
           },
           {
             name: "Classic Jacket",
-            details: "Yellow | Meduim",
+            details: "Yellow | Medium",
             price: "200EGP",
             quantity: 1,
             image: Img1,
@@ -97,7 +136,7 @@ const OrderDetails: React.FC = () => {
     };
 
     fetchOrderData();
-  }, [orderId]);
+  }, []);
 
   if (loading) {
     return <div className="text-center mt-10 text-wine">Loading...</div>;
@@ -115,15 +154,12 @@ const OrderDetails: React.FC = () => {
     payment,
     delivery,
     summary,
+    orderId,
   } = orderData;
 
   const activeStepIndex = steps.findIndex((step) => !step.completed);
-  let activeStep;
-  if (activeStepIndex === steps.length - 1) {
-    activeStep = steps.length - 2 >= 0 ? steps.length - 2 : 0;
-  } else {
-    activeStep = activeStepIndex === -1 ? steps.length - 1 : activeStepIndex;
-  }
+  const activeStep =
+    activeStepIndex === -1 ? steps.length - 1 : activeStepIndex;
 
   return (
     <div className="container mx-auto mt-8 md:mt-16 px-4">
@@ -133,54 +169,90 @@ const OrderDetails: React.FC = () => {
       <Category SectionName={"Order Details"} mdMyValue={"md:my-2"} />
 
       <div className="mx-2 md:mx-20">
-        
         <div className="flex flex-col w-full">
           {/* Order ID and Return Button */}
-          <div className="flex felx-row justify-between my-4 items-center">
-            <h2 className="text-2xl font-semibold font-Poppins text-wine">
-              Order ID: <span className="font-normal">#33546</span>
+          <div className="flex flex-col md:flex-row justify-between gap-4 my-2 items-center">
+            <h2 className="text-xl md:text-2xl font-semibold font-playfair text-wine">
+              Order ID: <span className="font-normal">{orderId}</span>
             </h2>
-
-            <button className="bg-wine text-mainColor font-playfair px-8 py-2 rounded-md hover:bg-ForthColor text-xl">
+            <button className="bg-wine text-mainColor font-playfair px-8 py-2 rounded-md hover:bg-ForthColor text-lg md:text-xl">
               Return
             </button>
           </div>
 
           {/* Order Status */}
-          <div className="flex felx-row gap-4 w-full my-4 items-center">
-            <p className="text-ForthColor font-Poppins text-xl font-medium">
+          <div className="flex flex-row gap-4 w-full my-4 items-center  border-b-2 border-ForthColor/50 pb-8">
+            <p className="text-ForthColor font-Poppins text-xs md:text-xl font-medium">
               Order date: <span className="text-wine">{orderDate}</span>
             </p>
-            <span className="text-green font-Poppins text-xl font-medium">
+            <span className="text-green font-Poppins text-base md:text-xl font-medium">
               |
             </span>
             <img src={truck} alt="Truck Icon" className="w-6 h-6" />
-            <p className="text-green font-Poppins text-xl font-medium">
+            <p className="text-green font-Poppins text-xs md:text-xl font-medium">
               Estimated delivery: {estimatedDelivery}
             </p>
           </div>
         </div>
 
-        {/* Timeline using react-stepper-horizontal */}
-        <div className="my-8 items-center">
-          <Stepper
-            steps={steps.map((step) => ({
-              title: step.label,
-              subtitle: step.date,
-            }))}
-            activeStep={activeStep}
-            size={30}
-            circleFontSize={12}
-            titleFontSize={14}
-            defaultColor="#A78E78"
-            defaultTitleColor="#A78E78"
-            completeBarColor="#721013"
-            completeColor="#721013"
-            activeColor="#721013"
-            activeTitleColor="#721013"
-            completeTitleColor="#721013"
-            barStyle="solid"
-          />
+        {/* Timeline using Material-UI Stepper */}
+        <div className="flex justify-center my-2 items-center">
+          <Box
+            sx={{
+              width: { sm: "90%", md: "100%" },
+              maxWidth: "1000px",
+              padding: 2,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Stepper
+              activeStep={activeStep}
+              alternativeLabel
+              connector={<CustomStepConnector />}
+            >
+              {steps.map((step, index) => (
+                <Step key={step.label}>
+                  <CustomStepLabel>
+                    <div style={{ textAlign: "center" }}>
+                      <span
+                        style={{
+                          display: "block",
+                          color:
+                            index < activeStep
+                              ? "#721013"
+                              : index === activeStep
+                              ? "#721013"
+                              : "#A78E78",
+                          fontFamily: "Playfair Display, serif",
+                          fontSize: "0.8rem",
+                          fontWeight: index === activeStep ? "500" : "normal",
+                        }}
+                      >
+                        {step.label}
+                      </span>
+                      <span
+                        style={{
+                          display: "block",
+                          color:
+                            index < activeStep
+                              ? "#721013"
+                              : index === activeStep
+                              ? "#721013"
+                              : "#A78E78",
+                          fontFamily: "Poppins, sans-serif",
+                          fontSize: "0.875rem",
+                        }}
+                      >
+                        {step.date}
+                      </span>
+                    </div>
+                  </CustomStepLabel>
+                </Step>
+              ))}
+            </Stepper>
+          </Box>
         </div>
 
         {/* Items List */}
@@ -194,17 +266,17 @@ const OrderDetails: React.FC = () => {
                   className="w-16 h-16 object-cover rounded mr-4"
                 />
                 <div>
-                  <h4 className="font-semibold text-wine font-playfair text-xl">
+                  <h4 className="font-semibold text-wine font-playfair text-xs md:text-xl">
                     {item.name}
                   </h4>
-                  <p className="text-ForthColor text-lg font-Poppins">
+                  <p className="text-ForthColor text-xs md:text-lg font-Poppins">
                     {item.details}
                   </p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-wine font-semibold text-lg">{item.price}</p>
-                <p className="text-ForthColor text-base">
+                <p className="text-wine font-semibold text-xs md:text-lg">{item.price}</p>
+                <p className="text-ForthColor text-sm md:text-base font-Poppins">
                   Qty: {item.quantity}
                 </p>
               </div>
@@ -214,10 +286,11 @@ const OrderDetails: React.FC = () => {
 
         {/* Payment and Delivery Details */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          
           <div>
-            <h3 className="text-xl font-Poppins font-semibold text-wine">Payment</h3>
-            <p className="text-ForthColor text-base font-Poppins flex items-center">
+            <h3 className="text-lg md:text-xl font-Poppins font-semibold text-wine">
+              Payment
+            </h3>
+            <p className="text-ForthColor text-xs md:text-base font-Poppins flex items-center">
               {payment.method} *{payment.lastFourDigits}
               {payment.icon && (
                 <img src={payment.icon} alt={payment.method} className="ml-2" />
@@ -226,33 +299,44 @@ const OrderDetails: React.FC = () => {
           </div>
 
           <div>
-            <h3 className="text-xl font-Poppins font-semibold text-wine">Delivery</h3>
-            <p className="text-ForthColor text-lg font-Poppins">{delivery.address}</p>
-            <p className="text-ForthColor text-lg font-Poppins">{delivery.city}</p>
-            <p className="text-ForthColor text-lg font-Poppins">{delivery.phone}</p>
-            {/* Order Summary */}
+            <h3 className="text-lg md:text-xl font-Poppins font-semibold text-wine">
+              Delivery
+            </h3>
+            <p className="text-ForthColor text-base md:text-lg font-Poppins">
+              {delivery.address}
+            </p>
+            <p className="text-ForthColor text-base md:text-lg font-Poppins">
+              {delivery.city}
+            </p>
+            <p className="text-ForthColor text-base md:text-lg font-Poppins">
+              {delivery.phone}
+            </p>
             <div className="border-t border-ForthColor mt-4 pt-2">
-              <h3 className="text-xl font-Poppins font-semibold text-wine">
+              <h3 className="text-lg md:text-xl font-Poppins font-semibold text-wine">
                 Order Summary
               </h3>
               {summary.map((item, index) => (
                 <div key={index} className="flex justify-between mb-2">
-                  <p className="text-ForthColor text-lg font-Poppins">{item.label}</p>
-                  <p className="text-ForthColor text-lg font-Poppins">{item.value}</p>
+                  <p className="text-ForthColor text-base md:text-lg font-Poppins">
+                    {item.label}
+                  </p>
+                  <p className="text-ForthColor text-base md:text-lg font-Poppins">
+                    {item.value}
+                  </p>
                 </div>
               ))}
               <div className="flex justify-between border-ForthColor border-t border-dotted mt-4 pt-2">
-                <p className="text-xl font-Poppins font-semibold text-wine">Total</p>
-                <p className="text-ForthColor text-lg font-Poppins">
+                <p className="text-lg md:text-xl font-Poppins font-semibold text-wine">
+                  Total
+                </p>
+                <p className="text-ForthColor text-base md:text-lg font-Poppins">
                   {orderData.total || "N/A"}
                 </p>
               </div>
             </div>
           </div>
         </div>
-
       </div>
-
     </div>
   );
 };
