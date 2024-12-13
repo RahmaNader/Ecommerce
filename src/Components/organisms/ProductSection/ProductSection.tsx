@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { CardComponent } from "@types";
-import { CustomRating } from "@components/atoms";
 import { calculateDiscountPercentage } from "@utils/calculations";
+import { ProductCount, CustomRating } from "@components/atoms";
 import heart from "@assets/heart.svg";
 import filledHeart from "@assets/filledHeart.svg";
+import { FaShareAlt } from "react-icons/fa";
 
 const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
   const discountedPrice = calculateDiscountPercentage(
@@ -14,6 +15,22 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [isFavorited, setIsFavorited] = useState(false);
+
+  const handleAddToCart = () => {
+    console.log(product.name);
+  };
+
+  const handleBuyNow = () => {
+    console.log(product.name);
+  };
+
+  const handleShare = () => {
+    console.log("Share button clicked");
+  };
+
+  const handleCountChange = (count: number) => {
+    console.log(`Selected quantity: ${count}`);
+  };
 
   useEffect(() => {
     const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
@@ -141,6 +158,35 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
                 {size}
               </button>
             ))}
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex gap-2 flex-row justify-between items-center">
+          <div className="flex flex-col sm:flex-row gap-2 items-center">
+            <ProductCount initialCount={1} onCountChange={handleCountChange} />
+            <button
+              onClick={handleAddToCart}
+              className="w-32 h-10 bg-wine text-mainColor rounded-md hover:bg-sixColor"
+            >
+              Add to Cart
+            </button>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-2 items-center">
+            <button
+              onClick={handleBuyNow}
+              className="w-32 h-10 bg-mainColor text-wine border-[2px] border-wine rounded-md hover:border-sixColor"
+            >
+              Buy Now
+            </button>
+            <button
+              onClick={handleShare}
+              className="w-10 h-10 rounded-full bg-wine text-mainColor hover:bg-sixColor flex items-center justify-center"
+              aria-label="Share Product"
+            >
+              <FaShareAlt size={16} />
+            </button>
           </div>
         </div>
       </div>
