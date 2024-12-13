@@ -1,53 +1,92 @@
 import React from "react";
-import { NavLink } from "@components/atoms";
-import { useLocation } from "react-router-dom";
-import breadcrumbArrow from "@assets/breadcrumb.png";
+import { useLocation, Link } from "react-router-dom";
+import Breadcrumbs from "@mui/material/Breadcrumbs";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import Typography from "@mui/material/Typography";
+
+
+const routeNameMap: { [key: string]: string } = {
+  "/": "Home",
+  "/blogs": "Blogs",
+  "/order-details": "Order Details",
+  "/contact-us": "Contact Us",
+  "/about-us": "About Us",
+  "/cart": "Cart",
+  "/search": "Search",
+  "/profile": "Profile",
+  "/profile/orders": "Orders",
+  "/profile/returns": "Returns",
+  "/profile/wishlist": "Wishlist",
+  "/profile/verification": "Verification",
+  "/profile/payment-credit-card": "Payment",
+  "/profile/logout": "Logout",
+  "/product-details/:id": "Product Details",
+};
+
+const capitalizeWords = (text: string): string =>
+  text
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
 
 const Breadcrumb: React.FC = () => {
   const location = useLocation();
 
-  // Check if the current path contains "profile"
-  const isProfilePath = location.pathname.includes("profile");
+  const pathnames = location.pathname.split("/").filter((x) => x);
 
-  const currentPageName = isProfilePath
-    ? "Profile"
-    : location.pathname
-        .split("/")
-        .filter(Boolean)
-        .pop()
-        ?.replace(/-/g, " ")
-        .split(" ")
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ");
+  const breadcrumbs = pathnames
+    .map((value, index) => {
+      if (value.toLowerCase() === "products") {
+        return null;
+      }
 
-  const previousPagePath = isProfilePath ? "/" : location.state?.from || "/";
-  const previousPageName = isProfilePath
-    ? "Home"
-    : previousPagePath
-        .split("/")
-        .filter(Boolean)
-        .pop()
-        ?.replace(/-/g, " ")
-        .split(" ")
-        .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ") || "Home";
+      const to = `/${pathnames.slice(0, index + 1).join("/")}`;
+      const isLast = index === pathnames.length - 1;
+
+      const breadcrumbName = capitalizeWords(routeNameMap[to] || value);
+
+      return isLast ? (
+        <Typography
+          key={to}
+          sx={{
+            color: "#721013", 
+            fontWeight: "bold",
+            fontSize: "1rem",
+          }}
+        >
+          {breadcrumbName}
+        </Typography>
+      ) : (
+        <Link
+          key={to}
+          to={to}
+          style={{
+            textDecoration: "none",
+            color: "#A78E78",
+            fontSize: "1rem",
+          }}
+        >
+          {breadcrumbName}
+        </Link>
+      );
+    })
+    .filter((breadcrumb) => breadcrumb !== null);
 
   return (
-    <div className="flex items-center mt-4 gap-1 w-auto h-8 space-x-1">
-      <NavLink
-        label={previousPageName}
-        to={previousPagePath}
-        variant="breadcrumb"
-      />
-      <img
-        src={breadcrumbArrow}
-        alt="Breadcrumb Arrow"
-        className="w-4 h-4 md:w-6 md:h-6 transform"
-      />
-      <span className="text-base md:text-2xl text-wine font-playfair font-bold">
-        {currentPageName}
-      </span>
-    </div>
+    <Breadcrumbs
+      separator={<NavigateNextIcon fontSize="small" style={{ color: "#A78E78" }} />}
+      aria-label="breadcrumb"
+      sx={{
+        margin: "1rem 0",
+        padding: "0.5rem 1rem",
+        color: "#A78E78",
+      }}
+    >
+      <Link to="/" style={{ textDecoration: "none", color: "#A78E78" }}>
+        {capitalizeWords(routeNameMap["/"])}
+      </Link>
+      {breadcrumbs}
+    </Breadcrumbs>
   );
 };
 
