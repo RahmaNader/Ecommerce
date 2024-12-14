@@ -39,7 +39,7 @@ const Navbar: React.FC = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="w-full flex justify-between items-center relative px-6 xl:px-44 pt-4">
+    <div className="w-full flex justify-between items-center bg-mainColor relative px-6 xl:px-44 pt-4">
       <div className="flex items-center gap-4">
         <div className="xl:hidden flex items-center">
           <button onClick={toggleMenu} aria-label="Toggle Menu">

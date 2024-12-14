@@ -164,7 +164,9 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
         {/* Action Buttons */}
         <div className="flex gap-2 flex-row justify-between items-center">
           <div className="flex flex-col sm:flex-row gap-2 items-center">
+
             <ProductCount initialCount={1} onCountChange={handleCountChange} />
+            
             <button
               onClick={handleAddToCart}
               className="w-32 h-10 bg-wine text-mainColor rounded-md hover:bg-sixColor"

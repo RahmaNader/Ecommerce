@@ -554,3 +554,15 @@ export const wishlist: CardComponent[] =[
   },
   
 ];
+
+export const product = {
+  name: "Osmond Armchair",
+  Price: "200.00EGP",
+  Discount: "200.00EGP",
+  Shipping: "200.00EGP",
+  CouponApplied: "200.00EGP",
+  TOTAL: "200.00EGP",
+  EstimatedDeliveryBy: "01 Feb, 2023",
+  Color: "Brown",
+  Size: "Small",
+};

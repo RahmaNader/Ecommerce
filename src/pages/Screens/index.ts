@@ -15,4 +15,4 @@ export { default as Verification } from "./Profile/Verification/VerificationScre
 export { default as Wishlist } from "./Profile/WishList/WishListScreen";
 export { default as OrderDetails } from "./OrderDetails/OrderDetails";
 export { default as NotFound } from "./NotFound/NotFound";
-
+export { default as Cart } from "./Cart/Cart";
