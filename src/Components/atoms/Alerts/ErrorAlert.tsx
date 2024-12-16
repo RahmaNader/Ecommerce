@@ -13,8 +13,8 @@ const ErrorAlert: React.FC<{ message: string }> = ({ message }) => {
             backgroundColor: "white",
             borderRadius: "50%",
             color: "#dc2626",
-            width: "48px",
-            height: "48px",
+            width: "32px",
+            height: "32px",
           }}
         />
       }
@@ -22,12 +22,14 @@ const ErrorAlert: React.FC<{ message: string }> = ({ message }) => {
         borderRadius: "9999px",
         backgroundColor: "#dc2626",
         color: "white",
-        fontSize: "1.5rem",
+        fontSize: "1rem",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         padding: "1rem 2rem",
         boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+        height:"50px",
+        margin:"20px",
       }}
     >
       {message}

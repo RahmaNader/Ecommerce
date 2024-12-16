@@ -14,8 +14,8 @@ const SuccessAlert: React.FC<{ message: string }> = ({ message }) => {
             borderRadius: "50%",
             padding: "8px",
             color: "#22c55e",
-            width: "48px",
-            height: "48px",
+            width: "32px",
+            height: "32px",
           }}
         />
       }
@@ -23,11 +23,13 @@ const SuccessAlert: React.FC<{ message: string }> = ({ message }) => {
         borderRadius: "9999px",
         backgroundColor: "#22c55e",
         color: "white",
-        fontSize: "1.5rem",
+        fontSize: "1rem",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         padding: "1rem 2rem",
+        height:"50px",
+        margin:"20px",
         boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
       }}
     >
