@@ -1,20 +1,18 @@
 import React from "react";
-import image1 from "@assets/product1.jpg";
 import { ProductCount } from "@components/atoms";
 
-interface Product {
-  id: number;
-  name: string;
-  Price: number;
-  Discount: number;
-  Shipping: number;
-  Color: string;
-  Size: string;
-  quantity: number;
-}
-
 interface CartProductProps {
-  product: Product;
+  product: {
+    id: number;
+    name: string;
+    DisPrice: number;
+    color: string;
+    size: string;
+    quantity: number;
+    src: string;
+    alt: string;
+    NormalPrice: number;
+  };
   onRemove: () => void;
   onQuantityChange: (quantity: number) => void;
 }
@@ -29,50 +27,49 @@ const CartProduct: React.FC<CartProductProps> = ({
   };
 
   return (
-    <div className="border-b border-b-ForthColor/50 py-8 w-full px-4">
-      <div className="flex flex-col md:flex-row gap-4 mx-auto max-w-screen-lg">
-        <div className="w-full md:w-4/12 flex-shrink-0">
+    <div className="border-b border-b-ForthColor/50 py-8 w-full px-2">
+      
+      <div className="flex md:flex-row gap-4">
+        <div className="w-fit md:w-4/12 ">
           <img
-            src={image1}
+            src={product.src}
             alt={product.name}
-            className="w-full h-auto object-cover rounded-md"
+            className="max-w-48 h-52 object-cover rounded-md"
           />
         </div>
 
         <div className="flex flex-col gap-4 w-full md:w-8/12">
-          <h3 className="font-semibold font-playfair text-wine text-lg md:text-xl">
-            {product.name}
-          </h3>
+          <div className="flex flex-row w-full justify-between">
+            <h3 className="font-semibold font-playfair text-wine text-lg md:text-xl">
+              {product.name}
+            </h3>
 
-          <div className="flex flex-row gap-2 items-center">
-            <span className="text-ForthColor text-base font-Poppins">Color:</span>
-            <span className="text-wine text-base font-Poppins">
-              {product.Color}
-            </span>
+            <p className="font-medium text-wine">
+              {(product.DisPrice * product.quantity).toFixed(2)} EGP
+            </p>
           </div>
 
-          <div className="flex flex-row gap-2 items-center">
-            <span className="text-ForthColor text-base font-Poppins">Size:</span>
+          <p className="text-ForthColor text-base font-Poppins">
+            Color:{" "}
             <span className="text-wine text-base font-Poppins">
-              {product.Size}
+              {product.color}
             </span>
-          </div>
-
-          <div className="flex flex-row gap-8 items-center">
+          </p>
+          <p className="text-ForthColor text-base font-Poppins">
+            Size:{" "}
+            <span className="text-wine text-base font-Poppins">
+              {product.size}
+            </span>
+          </p>
+          <div className="flex flex-col md:flex-row place-items-start gap-2 md:items-center w-full justify-between">
             <ProductCount
               initialCount={product.quantity}
               onCountChange={handleCountChange}
             />
-            <button onClick={onRemove} className="text-wine hover:underline">
+            <button onClick={onRemove} className="text-red-500 underline">
               Remove
             </button>
           </div>
-        </div>
-
-        <div className="flex md:justify-end items-center md:w-auto">
-          <span className="text-wine text-base font-Poppins">
-            {(product.Price * product.quantity).toFixed(2)} EGP
-          </span>
         </div>
       </div>
     </div>

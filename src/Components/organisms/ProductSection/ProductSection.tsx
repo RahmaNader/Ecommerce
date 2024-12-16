@@ -191,6 +191,7 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
             </button>
           </div>
         </div>
+        
       </div>
     </div>
   );

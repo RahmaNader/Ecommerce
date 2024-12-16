@@ -4,6 +4,7 @@ import Cookies from "js-cookie";
 import { CardComponent } from "@types";
 import { CustomRating, SuccessAlert } from "@components/atoms";
 import shoppingCart from "@assets/shoppingCart.svg";
+import { ProductPreference } from "@components/molecules";
 
 const Card: React.FC<CardComponent> = ({
   id,
@@ -13,13 +14,15 @@ const Card: React.FC<CardComponent> = ({
   DisPrice,
   NormalPrice,
   rate,
+  color,
+  size,
 }) => {
   const navigate = useNavigate();
-  const [alertVisible, setAlertVisible] = useState(false); // Manage alert visibility
-  const [alertMessage, setAlertMessage] = useState(""); // Dynamic message for the alert
-  const [isInCart, setIsInCart] = useState(false); // Manage cart status
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [isInCart, setIsInCart] = useState(false);
+  const [showPreference, setShowPreference] = useState(false); // Manage ProductPreference visibility
 
-  // Check if the item is already in the cart on component mount
   useEffect(() => {
     const existingCart = Cookies.get("cart")
       ? JSON.parse(Cookies.get("cart") as string)
@@ -34,7 +37,14 @@ const Card: React.FC<CardComponent> = ({
   const handleAddToCartClick = (e: React.MouseEvent) => {
     e.stopPropagation();
 
-    // Get existing cart from cookies or initialize as an empty array
+    // Show the ProductPreference component for selecting size and color
+    setShowPreference(true);
+  };
+
+  const handlePreferenceSubmit = (preferences: { color: string; size: string }) => {
+    setShowPreference(false);
+
+    // Add the item to the cart with preferences
     const existingCart = Cookies.get("cart")
       ? JSON.parse(Cookies.get("cart") as string)
       : [];
@@ -44,17 +54,10 @@ const Card: React.FC<CardComponent> = ({
       const updatedCart = existingCart.filter((item: { id: number }) => item.id !== id);
       Cookies.set("cart", JSON.stringify(updatedCart), { expires: 7 });
 
-      console.log("Item removed from cart:", id);
-
-      // Show success alert
       setAlertMessage("Item was removed successfully from cart");
       setAlertVisible(true);
       setIsInCart(false);
-
-      // Hide alert after 3 seconds
-      setTimeout(() => setAlertVisible(false), 3000);
     } else {
-      // Add the new item to the cart
       const newItem = {
         id,
         name,
@@ -62,21 +65,18 @@ const Card: React.FC<CardComponent> = ({
         NormalPrice,
         src,
         quantity: 1,
+        ...preferences,
       };
 
       const updatedCart = [...existingCart, newItem];
       Cookies.set("cart", JSON.stringify(updatedCart), { expires: 7 });
 
-      console.log("Item added to cart:", newItem);
-
-      // Show success alert
       setAlertMessage("Item added successfully to cart");
       setAlertVisible(true);
       setIsInCart(true);
-
-      // Hide alert after 3 seconds
-      setTimeout(() => setAlertVisible(false), 3000);
     }
+
+    setTimeout(() => setAlertVisible(false), 3000);
   };
 
   return (
@@ -86,6 +86,19 @@ const Card: React.FC<CardComponent> = ({
           <SuccessAlert message={alertMessage} />
         </div>
       )}
+
+      {showPreference && (
+        <div className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <ProductPreference
+              product={{ color, size }}
+              onSubmit={handlePreferenceSubmit}
+              onCancel={() => setShowPreference(false)}
+            />
+          </div>
+        </div>
+      )}
+
       <div
         onClick={handleCardClick}
         className="image-container relative w-auto h-auto overflow-hidden rounded-t-[500px] cursor-pointer"

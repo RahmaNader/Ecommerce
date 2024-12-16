@@ -29,7 +29,7 @@ const Button: React.FC<ButtonProps> = ({
 
   switch (type) {
     case "primary":
-      buttonStyles = "bg-wine text-white rounded rounded-4 hover:bg-sixColor";
+      buttonStyles = "bg-wine font-Playfair text-white rounded rounded-4 hover:bg-sixColor";
       break;
     case "secondary":
       buttonStyles = "bg-skin text-white rounded rounded-4 ";
