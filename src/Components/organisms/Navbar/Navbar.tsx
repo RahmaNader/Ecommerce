@@ -1,18 +1,32 @@
-import React, { useRef, useState } from "react";
-import Logo from "@assets/Logo.png";
+import React, { useEffect, useState } from "react";
+import {  useLocation, Link } from "react-router-dom";
+import Cookies from "js-cookie";
 import { IconSearch, IconMenu2, IconX } from "@tabler/icons-react";
+import Badge, { BadgeProps } from "@mui/material/Badge";
+import { styled } from "@mui/material/styles";
+import IconButton from "@mui/material/IconButton";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import Logo from "@assets/Logo.png";
 import profile from "@assets/Profile.svg";
-import bag from "@assets/Bag.svg";
 import { ShopModal } from "@components/organisms";
 import { NavLink } from "@components/atoms";
-import { useLocation, Link } from "react-router-dom";
+
+const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
+  "& .MuiBadge-badge": {
+    right: -3,
+    top: 13,
+    border: `2px solid ${theme.palette.background.paper}`,
+    padding: "0 4px",
+  },
+}));
 
 const Navbar: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isShopOpen, setIsShopOpen] = useState(false);
-  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [cartCount, setCartCount] = useState(0); // Cart item count
   const location = useLocation();
+  const closeTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   const handleOpenModal = () => {
     if (closeTimeoutRef.current) {
@@ -38,6 +52,20 @@ const Navbar: React.FC = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
+  // Update cart count on component mount and when cookies change
+  useEffect(() => {
+    const updateCartCount = () => {
+      const cart = Cookies.get("cart") ? JSON.parse(Cookies.get("cart") as string) : [];
+      const totalItems = cart.reduce((count: number, item: { quantity: number }) => count + item.quantity, 0);
+      setCartCount(totalItems);
+    };
+
+    updateCartCount();
+    const interval = setInterval(updateCartCount, 1000); // Update periodically to reflect changes
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="w-full flex justify-between items-center bg-mainColor relative px-6 xl:px-44 pt-4">
       <div className="flex items-center gap-4">
@@ -59,11 +87,31 @@ const Navbar: React.FC = () => {
           isActive={isActive("/search")}
         />
         <NavLink
-          label={<img src={bag} alt="Shopping Bag" width={28} height={28} />}
-          to="/cart"
-          variant="navbaricons"
-          isActive={isActive("/cart")}
+  label={
+    <IconButton aria-label="cart"
+    sx={{
+      "&:hover": {
+        color: "#f4eee8", 
+        backgroundColor: "#f4eee8",
+      },
+    }}
+    >
+      <StyledBadge badgeContent={cartCount} color="success" showZero>
+        <ShoppingCartIcon
+          sx={{
+            color: "black", 
+            fontSize: "28px",
+
+          }}
         />
+      </StyledBadge>
+    </IconButton>
+  }
+  to="/cart"
+  variant="navbaricons"
+  isActive={isActive("/cart")}
+/>
+
         <NavLink
           label={<img src={profile} alt="Profile" width={28} height={28} />}
           to="/profile"
@@ -151,7 +199,7 @@ const Navbar: React.FC = () => {
             <div
               className={`flex flex-col transition-max-height duration-300 ease-in-out ${
                 isShopOpen ? "max-h-40" : "max-h-0"
-              } overflow-hidden border-l-4  border-wine`}
+              } overflow-hidden border-l-4 border-wine`}
             >
               <NavLink
                 label="Men"

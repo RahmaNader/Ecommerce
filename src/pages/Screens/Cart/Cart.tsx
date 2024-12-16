@@ -1,66 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Cookies from "js-cookie";
 import icon from "@assets/discount icon.svg";
 import icon2 from "@assets/Vector.svg";
 import { Button, Category, SuccessAlert, ErrorAlert } from "@components/atoms";
 import { CartProduct, Breadcrumb } from "@components/molecules";
-
-const mockProducts = [
-  {
-    id: 1,
-    name: "Cotton T-Shirt",
-    Price: 150,
-    Discount: 20,
-    Shipping: 30,
-    CouponApplied: 0,
-    Color: "Blue",
-    Size: "Medium",
-    quantity: 1,
-  },
-  {
-    id: 2,
-    name: "Jeans",
-    Price: 400,
-    Discount: 50,
-    Shipping: 40,
-    CouponApplied: 0,
-    Color: "Black",
-    Size: "Large",
-    quantity: 1,
-  },
-  {
-    id: 3,
-    name: "Hoodie",
-    Price: 300,
-    Discount: 40,
-    Shipping: 35,
-    CouponApplied: 0,
-    Color: "Gray",
-    Size: "Small",
-    quantity: 1,
-  },
-  {
-    id: 4,
-    name: "Leather Jacket",
-    Price: 1200,
-    Discount: 200,
-    Shipping: 60,
-    CouponApplied: 0,
-    Color: "Brown",
-    Size: "Large",
-    quantity: 1,
-  },
-  {
-    id: 5,
-    name: "Sneakers",
-    Price: 800,
-    Discount: 100,
-    Shipping: 50,
-    CouponApplied: 0,
-    Color: "White",
-    Size: "42",
-    quantity: 1,
-  },
-];
 
 const validCoupons = {
   SAVE10: 0.1, // 10% discount
@@ -68,33 +11,46 @@ const validCoupons = {
 };
 
 const Cart: React.FC = () => {
-  const [products, setProducts] = useState(mockProducts);
+  const [products, setProducts] = useState<{ id: number; quantity: number; DisPrice: number; Shipping: number; name: string; Price: number; Discount: number; Color: string; Size: string }[]>([]);
   const [couponCode, setCouponCode] = useState("");
   const [couponDiscount, setCouponDiscount] = useState(0);
   const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
+  // Load cart items from cookies on component mount
+  useEffect(() => {
+    const cartData = Cookies.get("cart");
+    if (cartData) {
+      setProducts(JSON.parse(cartData));
+    }
+  }, []);
+
+  const saveCartToCookies = (cart: { id: number; quantity: number; DisPrice: number; Shipping: number }[]) => {
+    Cookies.set("cart", JSON.stringify(cart), { expires: 7 });
+  };
+
   const removeProduct = (id: number) => {
-    setProducts(products.filter((product) => product.id !== id));
+    const updatedProducts = products.filter((product: { id: number }) => product.id !== id);
+    setProducts(updatedProducts);
+    saveCartToCookies(updatedProducts);
   };
 
   const updateProductQuantity = (id: number, quantity: number) => {
-    setProducts((prevProducts) =>
-      prevProducts.map((product) =>
-        product.id === id ? { ...product, quantity } : product
-      )
+    const updatedProducts = products.map((product: { id: number; quantity: number; DisPrice: number; Shipping: number; name: string; Price: number; Discount: number; Color: string; Size: string }) =>
+      product.id === id ? { ...product, quantity } : product
     );
+    setProducts(updatedProducts);
+    saveCartToCookies(updatedProducts);
   };
 
   const calculateSummary = () => {
     return products.reduce(
-      (summary, product) => {
-        const totalProductPrice = product.Price * product.quantity;
+      (summary, product: { id: number; quantity: number; DisPrice: number; Shipping: number; name: string; Price: number; Discount: number; Color: string; Size: string }) => {
+        const totalProductPrice = product.DisPrice * product.quantity;
         summary.subTotal += totalProductPrice;
-        summary.discount += product.Discount * product.quantity;
         summary.shipping += product.Shipping;
         return summary;
       },
-      { subTotal: 0, discount: 0, shipping: 0 }
+      { subTotal: 0, shipping: 0 }
     );
   };
 
@@ -113,7 +69,7 @@ const Cart: React.FC = () => {
   };
 
   const summary = calculateSummary();
-  const totalBeforeCoupon = summary.subTotal - summary.discount + summary.shipping;
+  const totalBeforeCoupon = summary.subTotal + summary.shipping;
   const totalAfterCoupon = totalBeforeCoupon * (1 - couponDiscount);
 
   return (
@@ -137,7 +93,7 @@ const Cart: React.FC = () => {
       <div className="flex flex-col md:flex-row justify-between w-full gap-6">
         {/* Cart Items */}
         <div className="md:w-7/12 w-full">
-          {products.map((product) => (
+          {products.map((product: { id: number; quantity: number; DisPrice: number; Shipping: number; name: string; Price: number; Discount: number; Color: string; Size: string }) => (
             <CartProduct
               key={product.id}
               product={product}
@@ -147,6 +103,9 @@ const Cart: React.FC = () => {
               }
             />
           ))}
+          {products.length === 0 && (
+            <p className="text-center text-gray-500">Your cart is empty.</p>
+          )}
         </div>
 
         {/* Order Summary */}
@@ -159,11 +118,6 @@ const Cart: React.FC = () => {
             <div className="flex flex-row w-full justify-between text-wine text-base font-medium font-Poppins">
               <h4>Subtotal</h4>
               <h4>{summary.subTotal.toFixed(2)} EGP</h4>
-            </div>
-
-            <div className="flex flex-row w-full justify-between text-wine text-base font-medium font-Poppins">
-              <h4>Discount</h4>
-              <h4>-{summary.discount.toFixed(2)} EGP</h4>
             </div>
 
             <div className="flex flex-row w-full justify-between text-wine text-base font-medium font-Poppins">
