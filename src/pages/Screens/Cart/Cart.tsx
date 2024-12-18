@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Cookies from "js-cookie";
 import icon from "@assets/discount icon.svg";
 import icon2 from "@assets/Vector.svg";
@@ -28,6 +28,18 @@ const Cart: React.FC = () => {
     type: "success" | "error";
     message: string;
   } | null>(null);
+  const couponInputRef = useRef<HTMLInputElement>(null);
+
+  const getDeliveryDate = () => {
+    const today = new Date();
+    const deliveryDate = new Date(today);
+    deliveryDate.setDate(today.getDate() + 7);
+    return deliveryDate.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
 
   useEffect(() => {
     const cartData = Cookies.get("cart");
@@ -74,6 +86,13 @@ const Cart: React.FC = () => {
       setCouponDiscount(0);
       setAlert({ type: "error", message: "Invalid coupon code!" });
     }
+
+    // Clear the input field
+    if (couponInputRef.current) {
+      couponInputRef.current.value = "";
+      setCouponCode("");
+    }
+
     setTimeout(() => setAlert(null), 3000);
   };
 
@@ -152,12 +171,13 @@ const Cart: React.FC = () => {
 
           <div className="flex justify-between mt-4 text-wine text-base font-medium font-Poppins">
             <h4>Estimated Delivery by</h4>
-            <h4>01 Feb, 2023</h4>
+            <h4>{getDeliveryDate()}</h4>
           </div>
 
           <div className="flex flex-col gap-4 my-4 justify-between w-full">
             <div className="mt-4 relative">
               <input
+                ref={couponInputRef}
                 type="text"
                 value={couponCode}
                 onChange={(e) => setCouponCode(e.target.value)}
