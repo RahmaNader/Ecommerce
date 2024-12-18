@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { CardComponent } from "@types";
+import Cookies from "js-cookie";
 import { calculateDiscountPercentage } from "@utils/calculations";
-import { ProductCount, CustomRating } from "@components/atoms";
+import { ProductCount, CustomRating, SuccessAlert, ErrorAlert } from "@components/atoms";
 import heart from "@assets/heart.svg";
 import filledHeart from "@assets/filledHeart.svg";
 import { FaShareAlt } from "react-icons/fa";
@@ -15,9 +16,46 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [isFavorited, setIsFavorited] = useState(false);
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [alertType, setAlertType] = useState<"success" | "error" | null>(null);
 
   const handleAddToCart = () => {
-    console.log(product.name);
+    if (!selectedColor || !selectedSize) {
+      setAlertMessage("Please select both a color and a size.");
+      setAlertType("error");
+      setTimeout(() => setAlertType(null), 3000);
+      return;
+    }
+
+    const existingCart = Cookies.get("cart")
+      ? JSON.parse(Cookies.get("cart") as string)
+      : [];
+
+    const existingItemIndex = existingCart.findIndex(
+      (item: { id: number; color: string; size: string }) =>
+        item.id === product.id && item.color === selectedColor && item.size === selectedSize
+    );
+
+    if (existingItemIndex !== -1) {
+      existingCart[existingItemIndex].quantity += 1;
+    } else {
+      const newItem = {
+        id: product.id,
+        name: product.name,
+        DisPrice: product.DisPrice,
+        NormalPrice: product.NormalPrice,
+        src: product.src,
+        color: selectedColor,
+        size: selectedSize,
+        quantity: 1,
+      };
+      existingCart.push(newItem);
+    }
+
+    Cookies.set("cart", JSON.stringify(existingCart), { expires: 7 });
+    setAlertMessage("Item added successfully to cart.");
+    setAlertType("success");
+    setTimeout(() => setAlertType(null), 3000);
   };
 
   const handleBuyNow = () => {
@@ -47,14 +85,12 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
     );
 
     if (isProductInWishlist) {
-      // Remove product from wishlist
       const updatedWishlist = wishlist.filter(
         (item: CardComponent) => item.id !== product.id
       );
       localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
       setIsFavorited(false);
     } else {
-      // Add product to wishlist
       wishlist.push(product);
       localStorage.setItem("wishlist", JSON.stringify(wishlist));
       setIsFavorited(true);
@@ -63,6 +99,16 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
 
   return (
     <div className="flex flex-col md:flex-row items-center justify-center w-full gap-8 my-8 px-6">
+      {alertType && alertMessage && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
+          {alertType === "error" ? (
+            <ErrorAlert message={alertMessage} />
+          ) : (
+            <SuccessAlert message={alertMessage} />
+          )}
+        </div>
+      )}
+
       {/* Product Image Section */}
       <div className="flex flex-col justify-center items-center gap-2">
         <div className="image-container w-48 min-h-48 md:w-full h-[100%] relative overflow-hidden rounded-t-[500px]">
@@ -76,7 +122,6 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
 
       {/* Product Details Section */}
       <div className="flex flex-col justify-center space-y-3 md:space-y-6 items-start">
-        {/* Product Title and Wishlist Icon */}
         <div className="flex flex-row w-full justify-between items-center">
           <p className="font-playfair text-wine text-2xl md:text-4xl font-extrabold">
             {product.name}
@@ -90,21 +135,17 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
           />
         </div>
 
-        {/* Product Rating */}
         <div className="flex items-center">
           <CustomRating rate={product.rate} mode="show" />
         </div>
 
-        {/* Product Price */}
         <div className="flex flex-row gap-8 items-center">
           <p className="font-playfair text-lg font-semibold text-wine">
             {product.DisPrice} EGP
           </p>
-
           <p className="font-playfair text-lg font-medium line-through text-FifthColor">
             {product.NormalPrice} EGP
           </p>
-
           <p className="font-Poppins font-normal text-sm text-customRed bg-customRed/10 p-2 rounded-3xl">
             -{discountedPrice}%
           </p>
@@ -112,17 +153,14 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
 
         <hr className="border-t-2 border-ForthColor my-4 w-full" />
 
-        {/* Product Description */}
         <p className="font-Poppins text-base text-ForthColor font-light">
           {product.description}
         </p>
 
-        {/* Choose Color */}
         <div className="flex flex-col gap-4">
           <p className="font-playfair font-semibold text-xl text-wine">
             Select Colors
           </p>
-
           <div className="flex flex-row gap-3 items-center">
             {product.color.map((color, index) => (
               <div
@@ -138,12 +176,10 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
           </div>
         </div>
 
-        {/* Choose Size */}
         <div className="flex flex-col gap-4 w-full">
           <p className="font-playfair font-semibold text-xl text-wine">
             Choose Size
           </p>
-
           <div className="flex flex-row gap-3 items-center">
             {product.size.map((size, index) => (
               <button
@@ -161,12 +197,9 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
           </div>
         </div>
 
-        {/* Action Buttons */}
         <div className="flex gap-2 flex-row justify-between items-center">
           <div className="flex flex-col sm:flex-row gap-2 items-center">
-
             <ProductCount initialCount={1} onCountChange={handleCountChange} />
-            
             <button
               onClick={handleAddToCart}
               className="w-32 h-10 bg-wine text-mainColor rounded-md hover:bg-sixColor"
@@ -191,7 +224,6 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
             </button>
           </div>
         </div>
-        
       </div>
     </div>
   );

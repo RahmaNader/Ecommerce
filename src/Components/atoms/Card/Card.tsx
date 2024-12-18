@@ -46,29 +46,31 @@ const Card: React.FC<CardComponent> = ({
       ? JSON.parse(Cookies.get("cart") as string)
       : [];
 
-    if (isInCart) {
-      const updatedCart = existingCart.filter((item: { id: number }) => item.id !== id);
-      Cookies.set("cart", JSON.stringify(updatedCart), { expires: 7 });
+    const existingItemIndex = existingCart.findIndex(
+      (item: { id: number; color: string; size: string }) =>
+        item.id === id && item.color === preferences.color && item.size === preferences.size
+    );
 
-      setAlertMessage("Item was removed successfully from cart");
-      setIsInCart(false);
+    if (existingItemIndex !== -1) {
+      // Item with the same id, color, and size exists, update its quantity
+      existingCart[existingItemIndex].quantity += preferences.quantity;
     } else {
+      // Add new item to the cart
       const newItem = {
         id,
         name,
         DisPrice,
         NormalPrice,
         src,
-        quantity: 1,
         ...preferences,
       };
-
-      const updatedCart = [...existingCart, newItem];
-      Cookies.set("cart", JSON.stringify(updatedCart), { expires: 7 });
-
-      setAlertMessage("Item added successfully to cart");
-      setIsInCart(true);
+      existingCart.push(newItem);
     }
+
+    Cookies.set("cart", JSON.stringify(existingCart), { expires: 7 });
+
+    setAlertMessage("Item added successfully to cart");
+    setIsInCart(true);
 
     setAlertVisible(true);
     setTimeout(() => setAlertVisible(false), 3000);
@@ -113,7 +115,7 @@ const Card: React.FC<CardComponent> = ({
         </div>
       </div>
 
-      <div className="mt-4  text-center">
+      <div className="mt-4 text-center">
         <p
           onClick={handleCardClick}
           className="font-playfair font-medium text-base md:text-2xl hover:opacity-80 cursor-pointer text-wine"

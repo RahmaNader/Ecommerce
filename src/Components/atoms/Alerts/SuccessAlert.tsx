@@ -30,13 +30,12 @@ const SuccessAlert: React.FC<{ message: string }> = ({ message }) => {
         padding: "1rem 2rem",
         height: "50px",
         maxWidth: "400px",
-        margin: "0 auto",
+        margin: "5px auto",
         boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
         "@media (max-width: 640px)": {
           width: "250px", 
           padding: "0.5rem 1rem", 
           fontSize: "0.6rem", 
-          margin: "5px auto",
         },
       }}
     >
