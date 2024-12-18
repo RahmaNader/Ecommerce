@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import Cookies from 'js-cookie';
 import { ProductsDisplay } from "@components/organisms";
 
 const WishListScreen: React.FC = () => {
   const [wishlist, setWishlist] = useState([]);
 
   useEffect(() => {
-    const storedWishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
+    const storedWishlist = Cookies.get("wishlist")
+      ? JSON.parse(Cookies.get("wishlist") as string)
+      : [];
     setWishlist(storedWishlist);
   }, []);
 

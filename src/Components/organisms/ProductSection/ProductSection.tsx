@@ -71,7 +71,9 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
   };
 
   useEffect(() => {
-    const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
+    const wishlist = Cookies.get("wishlist")
+      ? JSON.parse(Cookies.get("wishlist") as string)
+      : [];
     const isInWishlist = wishlist.some(
       (item: CardComponent) => item.id === product.id
     );
@@ -79,7 +81,9 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
   }, [product.id]);
 
   const toggleWishlist = () => {
-    const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
+    const wishlist = Cookies.get("wishlist")
+      ? JSON.parse(Cookies.get("wishlist") as string)
+      : [];
     const isProductInWishlist = wishlist.some(
       (item: CardComponent) => item.id === product.id
     );
@@ -88,11 +92,11 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
       const updatedWishlist = wishlist.filter(
         (item: CardComponent) => item.id !== product.id
       );
-      localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
+      Cookies.set("wishlist", JSON.stringify(updatedWishlist), { expires: 1 });
       setIsFavorited(false);
     } else {
       wishlist.push(product);
-      localStorage.setItem("wishlist", JSON.stringify(wishlist));
+      Cookies.set("wishlist", JSON.stringify(wishlist), { expires: 1 });
       setIsFavorited(true);
     }
   };
