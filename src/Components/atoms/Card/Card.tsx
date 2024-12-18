@@ -21,7 +21,7 @@ const Card: React.FC<CardComponent> = ({
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [isInCart, setIsInCart] = useState(false);
-  const [showPreference, setShowPreference] = useState(false); // Manage ProductPreference visibility
+  const [showPreference, setShowPreference] = useState(false);
 
   useEffect(() => {
     const existingCart = Cookies.get("cart")
@@ -36,26 +36,21 @@ const Card: React.FC<CardComponent> = ({
 
   const handleAddToCartClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-
-    // Show the ProductPreference component for selecting size and color
     setShowPreference(true);
   };
 
-  const handlePreferenceSubmit = (preferences: { color: string; size: string }) => {
+  const handlePreferenceSubmit = (preferences: { color: string; size: string; quantity: number }) => {
     setShowPreference(false);
 
-    // Add the item to the cart with preferences
     const existingCart = Cookies.get("cart")
       ? JSON.parse(Cookies.get("cart") as string)
       : [];
 
     if (isInCart) {
-      // Remove item from the cart
       const updatedCart = existingCart.filter((item: { id: number }) => item.id !== id);
       Cookies.set("cart", JSON.stringify(updatedCart), { expires: 7 });
 
       setAlertMessage("Item was removed successfully from cart");
-      setAlertVisible(true);
       setIsInCart(false);
     } else {
       const newItem = {
@@ -72,15 +67,15 @@ const Card: React.FC<CardComponent> = ({
       Cookies.set("cart", JSON.stringify(updatedCart), { expires: 7 });
 
       setAlertMessage("Item added successfully to cart");
-      setAlertVisible(true);
       setIsInCart(true);
     }
 
+    setAlertVisible(true);
     setTimeout(() => setAlertVisible(false), 3000);
   };
 
   return (
-    <div className="text-center m-4">
+    <div className="relative m-4">
       {alertVisible && (
         <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
           <SuccessAlert message={alertMessage} />
@@ -88,20 +83,18 @@ const Card: React.FC<CardComponent> = ({
       )}
 
       {showPreference && (
-        <div className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <ProductPreference
-              product={{ color, size }}
-              onSubmit={handlePreferenceSubmit}
-              onCancel={() => setShowPreference(false)}
-            />
-          </div>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <ProductPreference
+            product={{ color, size }}
+            onSubmit={handlePreferenceSubmit}
+            onCancel={() => setShowPreference(false)}
+          />
         </div>
       )}
 
       <div
         onClick={handleCardClick}
-        className="image-container relative w-auto h-auto overflow-hidden rounded-t-[500px] cursor-pointer"
+        className="relative image-container w-auto h-auto overflow-hidden rounded-t-[500px] cursor-pointer"
       >
         <img
           src={src}
@@ -120,7 +113,7 @@ const Card: React.FC<CardComponent> = ({
         </div>
       </div>
 
-      <div className="mt-4">
+      <div className="mt-4  text-center">
         <p
           onClick={handleCardClick}
           className="font-playfair font-medium text-base md:text-2xl hover:opacity-80 cursor-pointer text-wine"

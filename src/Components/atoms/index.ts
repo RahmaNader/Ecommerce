@@ -7,3 +7,5 @@ export { default as ProductCount } from './ProductCount/ProductCount';
 export { default as ReviewCard } from './ReviewCard/ReviewCard'
 export { default as SuccessAlert } from './Alerts/SuccessAlert'
 export { default as ErrorAlert } from './Alerts/ErrorAlert'
+export { default as Confirmed } from './ConfirmationModals/Confirmed'
+export { default as Declined } from './ConfirmationModals/Declined'
