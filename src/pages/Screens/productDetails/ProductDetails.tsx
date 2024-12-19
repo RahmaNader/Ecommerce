@@ -1,0 +1,62 @@
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { CardComponent } from "@types";
+import { Category } from "@components/atoms";
+import { RatingSection, ReviewsSection, ProductSection } from "@components/organisms";
+import { ProductsView, Loading } from "@components/molecules";
+import { productsViewCards , cards} from "@data/cards";
+
+const ProductDetails: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const [loading, setLoading] = useState(true);
+  const [product, setProduct] = useState<CardComponent | null>(null);
+  const ratingsData = [
+    5, 4, 5, 5, 3, 2, 1, 5, 4, 5, 2, 3, 5, 5, 5, 1, 4, 3, 5, 5, 1, 2, 4, 5,
+  ];
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    const timeout = setTimeout(() => {
+      const foundProduct = cards.find((item) => item.id === Number(id)) || null;
+      setProduct(foundProduct);
+      setLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timeout);
+  }, [id]);
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  if (!product) {
+    return (
+      <div className="text-center mt-20">
+        <h1 className="text-2xl font-semibold">Product Not Found</h1>
+        <p className="text-gray-500">
+          The product you're looking for doesn't exist.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-8 px-10 w-full">
+      {/* Product Section */}
+      <ProductSection product={product} />
+
+      {/* Divider */}
+      <Category SectionName={"Rating And Reviews"} />
+
+      {/* Ratings Section */}
+      <RatingSection ratingsData={ratingsData} />
+      {/* reviews section */}
+      <ReviewsSection />
+
+      {/* Related Products Section */}
+      <ProductsView sectionName="Related Products" cards={productsViewCards} />
+    </div>
+  );
+};
+
+export default ProductDetails;

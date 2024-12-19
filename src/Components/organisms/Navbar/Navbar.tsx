@@ -12,7 +12,7 @@ const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isShopOpen, setIsShopOpen] = useState(false);
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const location = useLocation();
+  const location = useLocation(); 
 
   const handleOpenModal = () => {
     if (closeTimeoutRef.current) {
@@ -36,7 +36,7 @@ const Navbar: React.FC = () => {
     setIsShopOpen((prev) => !prev);
   };
 
-  const isOnProductPage = location.pathname.startsWith("/products");
+  const isActive = (path: string) => location.pathname === path;
 
   return (
     <div className="w-full flex justify-between items-center relative px-6 xl:px-44 pt-4">
@@ -46,7 +46,6 @@ const Navbar: React.FC = () => {
             <IconMenu2 size={32} />
           </button>
         </div>
-
         <img src={Logo} alt="Logo" className="h-8 w-auto ml-2" />
       </div>
 
@@ -55,38 +54,61 @@ const Navbar: React.FC = () => {
           label={<IconSearch width={32} height={32} />}
           to="/search"
           variant="navbaricons"
+          isActive={isActive("/search")}
         />
         <NavLink
           label={<img src={bag} alt="Shopping Bag" width={32} height={32} />}
           to="/cart"
           variant="navbaricons"
+          isActive={isActive("/cart")}
         />
         <NavLink
           label={<img src={profile} alt="Profile" width={32} height={32} />}
           to="/profile"
           variant="navbaricons"
+          isActive={isActive("/profile")}
         />
       </div>
 
       <div className="hidden xl:flex items-center space-x-8 absolute left-1/2 transform -translate-x-1/2">
-        <NavLink label="Home" to="/" variant="navbar" />
-
+        <NavLink
+          label="Home"
+          to="/"
+          variant="navbar"
+          isActive={isActive("/")}
+        />
         <NavLink
           label="Shop"
           to="#"
           variant="navbar"
           onMouseEnter={handleOpenModal}
           onMouseLeave={handleCloseModal}
+          isActive={isActive("/shop")}
         />
-
-        <NavLink label="Blogs" to="/blogs" variant="navbar" />
-        <NavLink label="Contact Us" to="/contact-us" variant="navbar" />
-        <NavLink label="About Us" to="/about-us" variant="navbar" />
+        <NavLink
+          label="Blogs"
+          to="/blogs"
+          variant="navbar"
+          isActive={isActive("/blogs")}
+        />
+        <NavLink
+          label="Contact Us"
+          to="/contact-us"
+          variant="navbar"
+          isActive={isActive("/contact-us")}
+        />
+        <NavLink
+          label="About Us"
+          to="/about-us"
+          variant="navbar"
+          isActive={isActive("/about-us")}
+        />
       </div>
 
       {isMenuOpen && (
-        <div
+        <button
           className="fixed inset-0 bg-black bg-opacity-50 z-40"
+          aria-label="Close Menu"
           onClick={toggleMenu}
         />
       )}
@@ -105,13 +127,20 @@ const Navbar: React.FC = () => {
         </div>
 
         <div className="flex flex-col items-center space-y-4 mb-8 ">
-          <NavLink label="Home" to="/" variant="navbar" onClick={toggleMenu} />
+          <NavLink
+            label="Home"
+            to="/"
+            variant="navbar"
+            isActive={isActive("/")}
+            onClick={toggleMenu}
+          />
           <div className="w-full text-center">
             <NavLink
               label="Shop"
               to="#"
               variant="navbar"
               onClick={toggleShopMenu}
+              isActive={isActive("/shop")}
             />
             <div
               className={`overflow-hidden transition-max-height duration-300 ease-in-out ${
@@ -146,18 +175,21 @@ const Navbar: React.FC = () => {
             label="Blogs"
             to="/blogs"
             variant="navbar"
+            isActive={isActive("/blogs")}
             onClick={toggleMenu}
           />
           <NavLink
             label="Contact Us"
             to="/contact-us"
             variant="navbar"
+            isActive={isActive("/contact-us")}
             onClick={toggleMenu}
           />
           <NavLink
             label="About Us"
             to="/about-us"
             variant="navbar"
+            isActive={isActive("/about-us")}
             onClick={toggleMenu}
           />
         </div>

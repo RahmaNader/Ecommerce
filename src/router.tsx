@@ -9,6 +9,8 @@ import {
   HomeScreen,
   Shop,
   SearchScreen as Search,
+  ProductDetails as ProductDetails,
+  AuthPage,
 } from "@pages/Screens";
 import OrderConfirmation from "@components/molecules/OrderConfirmation/OrderConfirmation";
 
@@ -42,13 +44,25 @@ export const router = createBrowserRouter([
         element: <Cart />,
       },
       {
-        path : "checkOut",
-        element: <CheckOut />
+        path: "checkOut",
+        element: <CheckOut />,
       },
       {
-        path : "orderConfirmaton",
-        element : <OrderConfirmation />
-      }
+        path: "orderConfirmaton",
+        element: <OrderConfirmation />,
+      },
+      {
+        path: "authentication",
+        element: <AuthPage />,
+      },
+      {
+        path: "product-details/:id",
+        element: <ProductDetails />,
+      },
+      {
+        path: "search",
+        element: <Search />,
+      },
     ],
   },
 ]);
