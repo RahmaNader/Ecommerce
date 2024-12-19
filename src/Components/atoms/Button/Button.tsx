@@ -78,7 +78,7 @@ const Button: React.FC<ButtonProps> = ({
       style={style}
       type="submit"
     >
-      {label}
+      <p className="font-playfair">{label}</p>
     </button>
   );
 };

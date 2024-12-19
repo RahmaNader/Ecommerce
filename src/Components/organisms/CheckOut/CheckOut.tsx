@@ -12,6 +12,7 @@ import ShippingMethod from "../../molecules/ShippingMethod/ShippingMethod"; // S
 import PaymentMethod from "../../molecules/PaymentMethods/PaymentMethods"; // PaymentMethod component
 import OrderConfirmation from "@components/molecules/OrderConfirmation/OrderConfirmation";
 
+
 interface Address {
   building: string;
   aptNo: string;
@@ -43,15 +44,40 @@ export default function CheckOut() {
     setShowModal(true);
   };
 
+  
+
+  const [editingAddressIndex, setEditingAddressIndex] = useState<number | null>(
+    null
+  );
+
+  const handleEditAddress = (index: number) => {
+    setEditingAddressIndex(index); // Track which address is being edited
+    setShowModal(true);
+  };
+
+  const addAddress = (newAddress: Address) => {
+    setAddresses((prevAddresses) => {
+      if (editingAddressIndex !== null) {
+        // Replace the existing address
+        const updatedAddresses = [...prevAddresses];
+        updatedAddresses[editingAddressIndex] = newAddress;
+        return updatedAddresses;
+      }
+      // Add a new address
+      return [...prevAddresses, newAddress];
+    });
+    setEditingAddressIndex(null); // Reset after editing
+    closeModal();
+  };
+
+  const handleRemoveAddress = (index: number) => {
+    const updatedAddresses = addresses.filter((_, i) => i !== index);
+    setAddresses(updatedAddresses);
+  };
+
   // Function to close the modal
   const closeModal = () => {
     setShowModal(false);
-  };
-
-  // Function to add a new address
-  const addAddress = (newAddress: Address) => {
-    setAddresses((prevAddresses) => [...prevAddresses, newAddress]);
-    closeModal(); // Close modal after adding address
   };
 
   // Function to handle address selection
@@ -112,7 +138,7 @@ export default function CheckOut() {
           <img src={cartIcon2} alt="" className="w-25 mt-2.5" />
         </div>
         <div className="flex justify-between flex-col lg:flex-row px-8 w-full md:flex-row">
-          <div className="lg:w-2/3 md:w-1/2 w-full">
+          <div className="lg:w-3/4 md:w-1/2 w-full">
             {/* Render the address section or shipping methods */}
             {!showShippingMethod && !showPaymentMethod && (
               <>
@@ -124,9 +150,9 @@ export default function CheckOut() {
                     <div className="ms-5 w-full flex justify-between items-center">
                       <div className="w-4/5">
                         <ToggleRadioButton
-                          label={`${address.building}, ${address.city}`} // Example label, adjust as needed
-                          isChecked={selectedAddressIndex === index} // Check if it's selected
-                          onChange={() => handleAddressSelection(index)} // Handle selection
+                          label={`${address.building}, ${address.city}`}
+                          isChecked={selectedAddressIndex === index}
+                          onChange={() => handleAddressSelection(index)}
                         />
                         <div className="text-addressDetails text-lg px-8">
                           <p>
@@ -141,6 +167,22 @@ export default function CheckOut() {
                             <p>{address.additionalDirections}</p>
                           )}
                         </div>
+                      </div>
+                      {/* Add spans for Edit and Remove */}
+                      <div className="address-actions flex gap-4 text-sm text-wine mt-2">
+                        <span
+                          onClick={() => handleEditAddress(index)}
+                          className="cursor-pointer hover:underline"
+                        >
+                          Edit
+                        </span>
+                        <span className="w-0.5 h-5 bg-[#D1D1D8]"></span>
+                        <span
+                          onClick={() => handleRemoveAddress(index)}
+                          className="cursor-pointer hover:underline text-removeButton"
+                        >
+                          Remove
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -175,7 +217,7 @@ export default function CheckOut() {
           </div>
 
           {/* Order Summary Section */}
-          <div className="primary lg:w-1/3 md:w-1/2 w-full my-4 flex flex-col border border-1 border-skin p-12 bg-[#A78E781C] ">
+          <div className="primary lg:w-1/4 md:w-1/2 w-[80%] mx-auto my-4 flex flex-col border border-1 border-skin p-12 bg-[#A78E781C] ">
             <h2 className="pb-4 w-full">Order Summary</h2>
             <div className="flex justify-between w-full border border-b-gray-400border border-b-gray-400">
               <div className="mb-5">
@@ -206,7 +248,7 @@ export default function CheckOut() {
                 type="text"
                 name="discount coupon"
                 placeholder="Coupon Code"
-                className="w-full py-2 px-3.5 rounded-sm placeholder-[#A78E78] border border-[#A78E78]"
+                className="w-full py-2 px-3.5 rounded-sm placeholder-skin border border-skin bg-[#e4d7cb]"
               />
               <div className="absolute right-3.5 bottom-2.5">
                 <img src={icon} alt="" className="relative" />
@@ -220,21 +262,24 @@ export default function CheckOut() {
             <div className="">
               {showPaymentMethod ? (
                 <Button
+                  size="large"
                   label="Confirm Order"
                   onClick={handleConfirmOrder}
-                  className="w-full"
+                  // className="w-full"
                 />
               ) : showShippingMethod ? (
                 <Button
+                  size="large"
                   label="Next"
                   onClick={handlePaymentMethodClick}
-                  className="w-full"
+                  // className="w-full"
                 />
               ) : (
                 <Button
+                  size="large"
                   label="Next"
                   onClick={handleNextClick}
-                  className="w-full"
+                  // className="w-full"
                 />
               )}
             </div>
@@ -247,24 +292,16 @@ export default function CheckOut() {
         <AddressModal
           closeModal={closeModal}
           addAddress={addAddress}
+          prefillData={
+            editingAddressIndex !== null
+              ? addresses[editingAddressIndex]
+              : undefined
+          }
         />
       )}
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // selectedAddress={null} // No address pre-selected in this case
 
