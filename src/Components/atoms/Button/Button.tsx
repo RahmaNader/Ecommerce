@@ -35,7 +35,7 @@ const Button: React.FC<ButtonProps> = ({
       buttonStyles = "bg-skin text-white rounded rounded-4 ";
       break;
     case "outlined":
-      buttonStyles = "border border-mainColor text-mainColor rounded rounded-4";
+      buttonStyles = "border border-skin text-skin rounded rounded-4";
       break;
     case "disabled":
       buttonStyles =
@@ -78,7 +78,7 @@ const Button: React.FC<ButtonProps> = ({
       style={style}
       type="submit"
     >
-      {label}
+      <p className="font-playfair">{label}</p>
     </button>
   );
 };

@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import Cart from "@components/organisms/Cart/Cart";
 import { Layout } from "@components/organisms";
+import CheckOut from "@components/organisms/CheckOut/CheckOut";
 import {
   AboutScreen,
   BlogsScreen,
@@ -9,9 +10,9 @@ import {
   Shop,
   SearchScreen as Search,
   ProductDetails as ProductDetails,
+  AuthPage,
 } from "@pages/Screens";
-
-import AuthPage from '@pages/Screens/Authentication/AuthPage';
+import OrderConfirmation from "@components/molecules/OrderConfirmation/OrderConfirmation";
 
 export const router = createBrowserRouter([
   {
@@ -43,18 +44,25 @@ export const router = createBrowserRouter([
         element: <Cart />,
       },
       {
-        path: "search",
-        element: <Search />,
+        path: "checkOut",
+        element: <CheckOut />,
       },
       {
-        path: 'authentication',
+        path: "orderConfirmaton",
+        element: <OrderConfirmation />,
+      },
+      {
+        path: "authentication",
         element: <AuthPage />,
       },
       {
         path: "product-details/:id",
-        element: <ProductDetails/>,
+        element: <ProductDetails />,
       },
-      
+      {
+        path: "search",
+        element: <Search />,
+      },
     ],
   },
 ]);
