@@ -15,8 +15,8 @@ const ProductDetails: React.FC = () => {
   ];
 
   useEffect(() => {
-    window.scrollTo(0, 0);
     const timeout = setTimeout(() => {
+      window.scrollTo(0, 0);
       const foundProduct = cards.find((item) => item.id === Number(id)) || null;
       setProduct(foundProduct);
       setLoading(false);

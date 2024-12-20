@@ -8,7 +8,7 @@ const ProductsView: React.FC<ProductsViewProps> = ({ sectionName, cards }) => {
       <div>
         <Category SectionName={sectionName} />
 
-        <div className="flex flex-wrap justify-between mx-[50px]">
+        <div className="flex flex-wrap justify-between mx-12">
           {cards.map((card: CardComponent) => (
             <div
               key={card.id}

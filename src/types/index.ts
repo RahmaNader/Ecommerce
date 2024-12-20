@@ -72,10 +72,36 @@ export type Category  = {
 export type NavLinkProps = {
   label: string | JSX.Element;
   to?: string;
-  variant: "navbar" | "footer" | "navbaricons" | "subnavbar" | "breadcrumb";
+  variant: "navbar" | "footer" | "navbaricons" | "subnavbar" | "breadcrumb" | "sidebar" | "sidenavbar" | "sidenavbarsub";
   state?: never;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   onClick?: () => void;
   isActive?: boolean;
+  DefaultIcon?: string;
+  ActiveIcon?: string;
 };
+
+export type PersonalData = {
+  fullName: string;
+  phoneNumber: string;
+  address: string;
+  email: string;
+  password:string;
+};
+
+export type CreditCard = {
+  type: string;
+  number: string;
+  nameOnCard: string;
+  expiry: string;
+  CVV: number;
+}
+
+export type Order = {
+  orderNumber: string;
+  total: string;
+  date: string;
+  status: string;
+}
+

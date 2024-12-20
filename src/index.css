@@ -7,6 +7,7 @@
 :root {
   --main-color: #721013; /* mainColor from tailwind.config.js */
   --six-color: #af754d;  /* sixColor from tailwind.config.js */
+  background-color: #F4EEE8;
 }
 
 /* width */

@@ -1,18 +1,32 @@
-import React, { useRef, useState } from "react";
-import Logo from "@assets/Logo.png";
+import React, { useEffect, useState } from "react";
+import {  useLocation, Link } from "react-router-dom";
+import Cookies from "js-cookie";
 import { IconSearch, IconMenu2, IconX } from "@tabler/icons-react";
+import Badge, { BadgeProps } from "@mui/material/Badge";
+import { styled } from "@mui/material/styles";
+import IconButton from "@mui/material/IconButton";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import Logo from "@assets/Logo.png";
 import profile from "@assets/Profile.svg";
-import bag from "@assets/Bag.svg";
 import { ShopModal } from "@components/organisms";
 import { NavLink } from "@components/atoms";
-import { useLocation } from "react-router-dom";
+
+const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
+  "& .MuiBadge-badge": {
+    right: -3,
+    top: 13,
+    border: `2px solid ${theme.palette.background.paper}`,
+    padding: "0 4px",
+  },
+}));
 
 const Navbar: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isShopOpen, setIsShopOpen] = useState(false);
-  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const location = useLocation(); 
+  const [cartCount, setCartCount] = useState(0); // Cart item count
+  const location = useLocation();
+  const closeTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   const handleOpenModal = () => {
     if (closeTimeoutRef.current) {
@@ -38,32 +52,68 @@ const Navbar: React.FC = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
+  // Update cart count on component mount and when cookies change
+  useEffect(() => {
+    const updateCartCount = () => {
+      const cart = Cookies.get("cart") ? JSON.parse(Cookies.get("cart") as string) : [];
+      const totalItems = cart.reduce((count: number, item: { quantity: number }) => count + item.quantity, 0);
+      setCartCount(totalItems);
+    };
+
+    updateCartCount();
+    const interval = setInterval(updateCartCount, 1000); // Update periodically to reflect changes
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div className="w-full flex justify-between items-center relative px-6 xl:px-44 pt-4">
+    <div className="w-full flex justify-between items-center bg-mainColor relative px-6 xl:px-44 pt-4">
       <div className="flex items-center gap-4">
         <div className="xl:hidden flex items-center">
           <button onClick={toggleMenu} aria-label="Toggle Menu">
-            <IconMenu2 size={32} />
+            <IconMenu2 size={28} />
           </button>
         </div>
-        <img src={Logo} alt="Logo" className="h-8 w-auto ml-2" />
+        <Link to="/">
+          <img src={Logo} alt="Logo" className="h-8 md:h-14 w-auto ml-2" />
+        </Link>
       </div>
 
-      <div className="flex items-center space-x-4 gap-4 md:gap-0 ">
+      <div className="flex items-center space-x-2 gap-0 md:space-x-4">
         <NavLink
-          label={<IconSearch width={32} height={32} />}
+          label={<IconSearch width={28} height={28} />}
           to="/search"
           variant="navbaricons"
           isActive={isActive("/search")}
         />
         <NavLink
-          label={<img src={bag} alt="Shopping Bag" width={32} height={32} />}
-          to="/cart"
-          variant="navbaricons"
-          isActive={isActive("/cart")}
+  label={
+    <IconButton aria-label="cart"
+    sx={{
+      "&:hover": {
+        color: "#f4eee8", 
+        backgroundColor: "#f4eee8",
+      },
+    }}
+    >
+      <StyledBadge badgeContent={cartCount} color="success" showZero>
+        <ShoppingCartIcon
+          sx={{
+            color: "black", 
+            fontSize: "28px",
+
+          }}
         />
+      </StyledBadge>
+    </IconButton>
+  }
+  to="/cart"
+  variant="navbaricons"
+  isActive={isActive("/cart")}
+/>
+
         <NavLink
-          label={<img src={profile} alt="Profile" width={32} height={32} />}
+          label={<img src={profile} alt="Profile" width={28} height={28} />}
           to="/profile"
           variant="navbaricons"
           isActive={isActive("/profile")}
@@ -114,81 +164,82 @@ const Navbar: React.FC = () => {
       )}
 
       <div
-        className={`fixed top-0 left-0 right-0 bg-eightColor z-50 overflow-hidden transition-transform duration-300 ease-in-out transform ${
-          isMenuOpen ? "translate-y-0" : "-translate-y-full"
+        className={`fixed top-0 left-0 w-3/4 max-w-xs bg-mainColor z-50 h-full shadow-md overflow-y-auto transition-transform duration-300 ease-in-out transform ${
+          isMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex justify-between items-center px-4 pt-4">
+        <div className="flex justify-between items-center px-4 py-4">
           <img src={Logo} alt="Logo" className="h-8 w-auto" />
-
-          <button onClick={toggleMenu} aria-label="Close Menu">
-            <IconX size={32} />
+          <button
+            onClick={toggleMenu}
+            aria-label="Close Menu"
+            className="text-wine border-wine border-2 rounded-full"
+          >
+            <IconX size={28} />
           </button>
         </div>
 
-        <div className="flex flex-col items-center space-y-4 mb-8 ">
+        <div className="flex items-center text-center w-full flex-col mt-4">
           <NavLink
             label="Home"
             to="/"
-            variant="navbar"
+            variant="sidenavbar"
             isActive={isActive("/")}
             onClick={toggleMenu}
           />
-          <div className="w-full text-center">
+
+          <div className="relative w-full">
             <NavLink
               label="Shop"
               to="#"
-              variant="navbar"
+              variant="sidenavbar"
               onClick={toggleShopMenu}
               isActive={isActive("/shop")}
             />
             <div
-              className={`overflow-hidden transition-max-height duration-300 ease-in-out ${
+              className={`flex flex-col transition-max-height duration-300 ease-in-out ${
                 isShopOpen ? "max-h-40" : "max-h-0"
-              } flex justify-center items-center`}
+              } overflow-hidden border-l-4 border-wine`}
             >
-              <div className="flex flex-row items-center space-x-4 mt-2">
-                <NavLink
-                  label="Men"
-                  to="/products/men"
-                  variant="subnavbar"
-                  onClick={toggleMenu}
-                />
-                <p>.</p>
-                <NavLink
-                  label="Women"
-                  to="/products/women"
-                  variant="subnavbar"
-                  onClick={toggleMenu}
-                />
-                <p>.</p>
-                <NavLink
-                  label="Kids"
-                  to="/products/kids"
-                  variant="subnavbar"
-                  onClick={toggleMenu}
-                />
-              </div>
+              <NavLink
+                label="Men"
+                to="/products/men"
+                variant="sidenavbarsub"
+                onClick={toggleMenu}
+              />
+              <NavLink
+                label="Women"
+                to="/products/women"
+                variant="sidenavbarsub"
+                onClick={toggleMenu}
+              />
+              <NavLink
+                label="Kids"
+                to="/products/kids"
+                variant="sidenavbarsub"
+                onClick={toggleMenu}
+              />
             </div>
           </div>
+
           <NavLink
             label="Blogs"
             to="/blogs"
-            variant="navbar"
+            variant="sidenavbar"
             isActive={isActive("/blogs")}
             onClick={toggleMenu}
           />
           <NavLink
             label="Contact Us"
             to="/contact-us"
-            variant="navbar"
+            variant="sidenavbar"
             isActive={isActive("/contact-us")}
             onClick={toggleMenu}
           />
           <NavLink
             label="About Us"
             to="/about-us"
-            variant="navbar"
+            variant="sidenavbar"
             isActive={isActive("/about-us")}
             onClick={toggleMenu}
           />

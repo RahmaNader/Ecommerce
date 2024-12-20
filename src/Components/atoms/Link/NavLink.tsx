@@ -1,17 +1,20 @@
 import { NavLink as RouterNavLink, useLocation } from "react-router-dom";
-import { NavLinkProps } from "@types"
+import { NavLinkProps } from "@types";
 
 const NavLink: React.FC<NavLinkProps> = ({
   label,
+  DefaultIcon,
+  ActiveIcon,
   to = "/",
   variant,
   state,
   onMouseEnter,
   onMouseLeave,
   onClick,
-  isActive = false,
 }) => {
   const location = useLocation();
+  const isSidebarActive = variant === "sidebar" && location.pathname === to;
+
   let className = "";
 
   if (variant === "navbar") {
@@ -27,11 +30,17 @@ const NavLink: React.FC<NavLinkProps> = ({
       "font-playfair text-[20px] font-normal leading-[28px] underline-from-font decoration-skip-ink-none hover:text-wine inline text-center";
   } else if (variant === "breadcrumb") {
     className =
-      "font-playfair text-[15px] md:text-[28px] text-ThirdColor inline font-bold";
-  }
-
-  if (isActive) {
-    className += " text-wine";
+      "font-playfair text-base md:text-2xl text-ThirdColor inline font-bold";
+  } else if (variant === "sidebar") {
+    className = `flex items-center space-x-4 p-2 rounded-md font-playfair text-xl font-semibold ${
+      isSidebarActive ? "text-wine" : "text-ForthColor"
+    } `;
+  } else if (variant === "sidenavbar") {
+    className =
+      "text-wine w-full font-playfair font-medium h-16 text-base border-b border-ForthColor bg-[#A78E7821] flex items-center px-4 py-2";
+  } else if (variant === "sidenavbarsub") {
+    className =
+      "text-wine w-full font-playfair font-medium h-12 text-base border-b border-ForthColor bg-[#A78E7821] flex items-center px-4 py-2 pl-6";
   }
 
   return (
@@ -43,7 +52,18 @@ const NavLink: React.FC<NavLinkProps> = ({
       onMouseLeave={onMouseLeave}
       onClick={onClick}
     >
-      {label}
+      <div className="flex flex-row items-center gap-4">
+        {variant === "sidebar" && (
+          <span>
+            {isSidebarActive ? (
+              <img src={ActiveIcon} className="w-8 h-8" alt="Profile Icon" />
+            ) : (
+              <img src={DefaultIcon} className="w-8 h-8" alt="Profile Icon" />
+            )}
+          </span>
+        )}
+        <span>{label}</span>
+      </div>
     </RouterNavLink>
   );
 };

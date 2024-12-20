@@ -1,20 +1,61 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CardComponent } from "@types";
-import {ProductCount, CustomRating} from "@components/atoms";
+import Cookies from "js-cookie";
 import { calculateDiscountPercentage } from "@utils/calculations";
-import { FaShareAlt } from "react-icons/fa";
+import { ProductCount, CustomRating, SuccessAlert, ErrorAlert } from "@components/atoms";
 import heart from "@assets/heart.svg";
+import filledHeart from "@assets/filledHeart.svg";
+import { FaShareAlt } from "react-icons/fa";
 
 const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
   const discountedPrice = calculateDiscountPercentage(
     product.NormalPrice,
     product.DisPrice
   );
+
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [alertType, setAlertType] = useState<"success" | "error" | null>(null);
 
   const handleAddToCart = () => {
-    console.log(product.name);
+    if (!selectedColor || !selectedSize) {
+      setAlertMessage("Please select both a color and a size.");
+      setAlertType("error");
+      setTimeout(() => setAlertType(null), 3000);
+      return;
+    }
+
+    const existingCart = Cookies.get("cart")
+      ? JSON.parse(Cookies.get("cart") as string)
+      : [];
+
+    const existingItemIndex = existingCart.findIndex(
+      (item: { id: number; color: string; size: string }) =>
+        item.id === product.id && item.color === selectedColor && item.size === selectedSize
+    );
+
+    if (existingItemIndex !== -1) {
+      existingCart[existingItemIndex].quantity += 1;
+    } else {
+      const newItem = {
+        id: product.id,
+        name: product.name,
+        DisPrice: product.DisPrice,
+        NormalPrice: product.NormalPrice,
+        src: product.src,
+        color: selectedColor,
+        size: selectedSize,
+        quantity: 1,
+      };
+      existingCart.push(newItem);
+    }
+
+    Cookies.set("cart", JSON.stringify(existingCart), { expires: 7 });
+    setAlertMessage("Item added successfully to cart.");
+    setAlertType("success");
+    setTimeout(() => setAlertType(null), 3000);
   };
 
   const handleBuyNow = () => {
@@ -29,103 +70,120 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
     console.log(`Selected quantity: ${count}`);
   };
 
+  useEffect(() => {
+    const wishlist = Cookies.get("wishlist")
+      ? JSON.parse(Cookies.get("wishlist") as string)
+      : [];
+    const isInWishlist = wishlist.some(
+      (item: CardComponent) => item.id === product.id
+    );
+    setIsFavorited(isInWishlist);
+  }, [product.id]);
+
+  const toggleWishlist = () => {
+    const wishlist = Cookies.get("wishlist")
+      ? JSON.parse(Cookies.get("wishlist") as string)
+      : [];
+    const isProductInWishlist = wishlist.some(
+      (item: CardComponent) => item.id === product.id
+    );
+
+    if (isProductInWishlist) {
+      const updatedWishlist = wishlist.filter(
+        (item: CardComponent) => item.id !== product.id
+      );
+      Cookies.set("wishlist", JSON.stringify(updatedWishlist), { expires: 1 });
+      setIsFavorited(false);
+    } else {
+      wishlist.push(product);
+      Cookies.set("wishlist", JSON.stringify(wishlist), { expires: 1 });
+      setIsFavorited(true);
+    }
+  };
+
   return (
-    <div className="flex flex-col md:flex-row items-center justify-center w-full  gap-8 my-8 px-6">
+    <div className="flex flex-col md:flex-row items-center justify-center w-full gap-8 my-8 px-6">
+      {alertType && alertMessage && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
+          {alertType === "error" ? (
+            <ErrorAlert message={alertMessage} />
+          ) : (
+            <SuccessAlert message={alertMessage} />
+          )}
+        </div>
+      )}
+
+      {/* Product Image Section */}
       <div className="flex flex-col justify-center items-center gap-2">
-        <div className="image-container w-[200px] min-h-[200px]  md:w-full h-[100%] relative overflow-hidden rounded-t-[500px]">
+        <div className="image-container w-48 min-h-48 md:w-full h-[100%] relative overflow-hidden rounded-t-[500px]">
           <img
             src={product.src}
             alt={product.alt}
             className="object-cover w-full h-full cursor-pointer"
           />
-          <div className="absolute top-0 left-0 w-full h-full border-[2px] border-[#E3C174] rounded-t-[500px]" />
-        </div>
-
-        <div className="flex flex-row gap-2 justify-center">
-          {[...Array(3)].map((_, i) => (
-            <div
-              key={i}
-              className="w-[50px] h-[50px] bg-wine rounded-md border-2 border-[#E3C174] cursor-pointer hover:opacity-80"
-            ></div>
-          ))}
         </div>
       </div>
 
-      <div className="flex flex-col justify-center space-y-6 items-start">
-        {/* product title */}
-        <div className="flex flex-row w-full justify-between items-center ">
-          <p className="font-playfair text-wine text-[20px] md:text-[40px] font-extrabold">
+      {/* Product Details Section */}
+      <div className="flex flex-col justify-center space-y-3 md:space-y-6 items-start">
+        <div className="flex flex-row w-full justify-between items-center">
+          <p className="font-playfair text-wine text-2xl md:text-4xl font-extrabold">
             {product.name}
           </p>
 
           <img
-            src={heart}
-            alt="add to favorites"
-            className="w-full h-full cursor-pointer max-w-[30px] max-h-[30px]"
+            src={isFavorited ? filledHeart : heart}
+            alt="Toggle wishlist"
+            className="w-8 h-8 cursor-pointer"
+            onClick={toggleWishlist}
           />
         </div>
 
-        {/* product rating */}
-        <div className="flex items-center space-x-1">
-          <CustomRating rate={product.rate}  mode="show"/>
+        <div className="flex items-center">
+          <CustomRating rate={product.rate} mode="show" />
         </div>
 
-        {/* price */}
         <div className="flex flex-row gap-8 items-center">
           <p className="font-playfair text-lg font-semibold text-wine">
             {product.DisPrice} EGP
           </p>
-
-          <p className="font-playfair text-lg font-medium line-through text-[#E14B4B]">
+          <p className="font-playfair text-lg font-medium line-through text-FifthColor">
             {product.NormalPrice} EGP
           </p>
-
-          <p className="font-Poppins font-normal text-sm text-[#FF3333] bg-[#FF3333]/10 p-2 rounded-3xl">
+          <p className="font-Poppins font-normal text-sm text-customRed bg-customRed/10 p-2 rounded-3xl">
             -{discountedPrice}%
           </p>
         </div>
 
         <hr className="border-t-2 border-ForthColor my-4 w-full" />
 
-        {/* Product Description */}
-        <p className="font-Poppins text-[15px] text-ForthColor font-light">
+        <p className="font-Poppins text-base text-ForthColor font-light">
           {product.description}
         </p>
 
-        {/* choose color */}
         <div className="flex flex-col gap-4">
           <p className="font-playfair font-semibold text-xl text-wine">
             Select Colors
           </p>
-
           <div className="flex flex-row gap-3 items-center">
             {product.color.map((color, index) => (
               <div
                 key={index}
-                className={`w-[35px] h-[35px] rounded-full cursor-pointer border-[3px] ${
-                  selectedColor === color ? "border-wine" : "border-transparent"
+                className={`w-9 h-9 rounded-full cursor-pointer border-2 ${
+                  selectedColor === color ? "border-wine" : "border-golden"
                 }`}
                 style={{ backgroundColor: color }}
                 title={color}
                 onClick={() => setSelectedColor(color)}
-                role="button"
-                tabIndex={0}
-              ></div>
+              />
             ))}
           </div>
         </div>
 
-        {/* choose size */}
         <div className="flex flex-col gap-4 w-full">
-          <div className="flex flex-row justify-between items-center">
-            <p className="font-playfair font-semibold text-xl text-wine">
-              Choose Size
-            </p>
-            <p className="font-playfair underline font-medium text-sm text-ForthColor cursor-pointer">
-              Size Guide
-            </p>
-          </div>
-
+          <p className="font-playfair font-semibold text-xl text-wine">
+            Choose Size
+          </p>
           <div className="flex flex-row gap-3 items-center">
             {product.size.map((size, index) => (
               <button
@@ -143,9 +201,7 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
           </div>
         </div>
 
-        {/* Action Buttons */}
         <div className="flex gap-2 flex-row justify-between items-center">
-          
           <div className="flex flex-col sm:flex-row gap-2 items-center">
             <ProductCount initialCount={1} onCountChange={handleCountChange} />
             <button
@@ -171,7 +227,6 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
               <FaShareAlt size={16} />
             </button>
           </div>
-
         </div>
       </div>
     </div>

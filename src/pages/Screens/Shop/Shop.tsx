@@ -3,6 +3,7 @@ import { useParams, Navigate, useLocation } from "react-router-dom";
 import { Filter, ProductsDisplay } from "@components/organisms";
 import { cards } from "@data/cards";
 import { CardComponent } from "@types";
+import { Breadcrumb } from "@components/molecules";
 import FilterIcon from "@assets/FilterIcon.svg";
 
 type ShopParams = {
@@ -90,31 +91,23 @@ const Shop: React.FC = () => {
   };
 
   return (
-    <div className="bg-customBeige min-h-screen md:p-10">
-      <div className="laptop:flex hidden justify-start m-8">
-        <button onClick={() => setIsFilterOpen(true)}>
-          <img src={FilterIcon} alt="Open Filters" />
-        </button>
-      </div>
-      <div className="flex flex-col  xl:flex-row xl:items-start items-center">
-        {/* Filter Sidebar for screens smaller than laptop size */}
+    <div className="bg-customBeige min-h-screen p-2 md:p-10">
+      <Breadcrumb />
+      {/* Filter Sidebar for screens smaller than laptop size */}
+      <div className="flex flex-col xl:flex-row xl:items-start items-center">
         {showSidebar && (
           <div className="fixed inset-0 z-50 flex">
             <div
               className={`transform ${
                 isFilterOpen ? "translate-x-0" : "-translate-x-full"
-              } transition-transform duration-300 ease-in-out sm:w-3/4 bg-white p-4 overflow-y-auto `}
+              } transition-transform duration-300 ease-in-out sm:w-3/4 bg-mainColor p-4 overflow-y-auto`}
             >
-              <div className="flex flex-row items-center w-[100%] h-[36px] justify-between mt-10">
-                <p className="font-playfair text-[25px] md:text-[30px] lg:text-[35px] font-bold text-wine text-left">
-                  Filters
-                </p>
-                <button onClick={handleCloseSidebar}>
-                  <img src={FilterIcon} alt="Close Filters" />
-                </button>
-              </div>
               <div className="flex w-[100%]">
-                <Filter onFilterChange={handleFilterChange} />
+                {/* onClose passed here, so cursor will be pointer */}
+                <Filter
+                  onFilterChange={handleFilterChange}
+                  onClose={handleCloseSidebar}
+                />
               </div>
             </div>
             {/* Overlay */}
@@ -124,16 +117,27 @@ const Shop: React.FC = () => {
             ></div>
           </div>
         )}
+
         {/* Desktop Filter for screens larger than laptop size */}
         <div className="laptop:hidden w-full md:w-1/4 p-4 md:sticky md:top-0 md:h-screen md:overflow-y-auto">
+          {/* No onClose passed here, so no pointer cursor */}
           <Filter onFilterChange={handleFilterChange} />
         </div>
+
         {/* Products Section */}
         <div className="w-full lg:w-3/4 p-4">
-          <p className="font-playball text-[30px] md:text-[35px]  lg:text-[40px] text-wine text-center md:text-left">
-            {(lastSegment ?? "").charAt(0).toUpperCase() +
-              (lastSegment ?? "").slice(1)}
-          </p>
+          <div className="flex flex-row justify-between w-full px-4 mb-4 md:px-12">
+            <p className="kiwi font-playball text-3xl md:text-4xl text-wine text-left">
+              {(lastSegment ?? "").charAt(0).toUpperCase() +
+                (lastSegment ?? "").slice(1)}
+            </p>
+            <div className="banana laptop:flex hidden justify-start">
+              <button onClick={() => setIsFilterOpen(true)}>
+                <img src={FilterIcon} alt="Open Filters" />
+              </button>
+            </div>
+          </div>
+
           <div className="flex justify-center">
             <ProductsDisplay products={filteredCards} />
           </div>

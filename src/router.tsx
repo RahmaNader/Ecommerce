@@ -1,7 +1,8 @@
 import { createBrowserRouter } from "react-router-dom";
-import Cart from "@components/organisms/Cart/Cart";
-import { Layout } from "@components/organisms";
+import { Layout, ProfileLayout } from "@components/organisms";
+import OrderConfirmation from "@components/molecules/OrderConfirmation/OrderConfirmation";
 import CheckOut from "@components/organisms/CheckOut/CheckOut";
+
 import {
   AboutScreen,
   BlogsScreen,
@@ -9,10 +10,20 @@ import {
   HomeScreen,
   Shop,
   SearchScreen as Search,
-  ProductDetails as ProductDetails,
+  ProductDetails,
+  Logout,
+  Orders,
+  Payment,
+  PersonalData,
+  Returns,
+  Verification,
+  Wishlist,
   AuthPage,
+  OrderDetails,
+  NotFound,
+  Cart,
 } from "@pages/Screens";
-import OrderConfirmation from "@components/molecules/OrderConfirmation/OrderConfirmation";
+
 
 export const router = createBrowserRouter([
   {
@@ -24,9 +35,18 @@ export const router = createBrowserRouter([
         element: <HomeScreen />,
       },
       {
+        path: "*",
+        element: <NotFound />,
+      },
+      {
         path: "blogs",
         element: <BlogsScreen />,
       },
+      {
+        path: "order-details",
+        element: <OrderDetails />,
+      },
+      
       {
         path: "contact-us",
         element: <ContactScreen />,
@@ -63,6 +83,41 @@ export const router = createBrowserRouter([
         path: "search",
         element: <Search />,
       },
+      {
+        path: "profile",
+        element: <ProfileLayout />,
+        children: [
+          {
+            index: true,
+            element: <PersonalData />,
+          },
+          {
+            path: "orders",
+            element: <Orders />,
+          },
+          {
+            path: "returns",
+            element: <Returns />,
+          },
+          {
+            path: "wishlist",
+            element: <Wishlist />,
+          },
+          {
+            path: "verification",
+            element: <Verification />,
+          },
+          {
+            path: "payment-credit-card",
+            element: <Payment />,
+          },
+          {
+            path: "logout",
+            element: <Logout />,
+          },
+        ],
+      },
     ],
+    
   },
 ]);
