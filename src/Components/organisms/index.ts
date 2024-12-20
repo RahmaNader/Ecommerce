@@ -9,3 +9,4 @@ export {default as RatingSection} from './RatingSection/RatingSection'
 export { default as ReviewsSection } from './ReviewsSection/ReviewsSection'
 export { default as ProfileLayout } from './ProfileLayout/ProfileLayout'
 export { default as ProfileSidebar } from './ProfileSidebar/ProfileSidebar'
+export { default as checkOut } from "./CheckOut/CheckOut";

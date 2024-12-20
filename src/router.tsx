@@ -1,5 +1,8 @@
 import { createBrowserRouter } from "react-router-dom";
 import { Layout, ProfileLayout } from "@components/organisms";
+import OrderConfirmation from "@components/molecules/OrderConfirmation/OrderConfirmation";
+import CheckOut from "@components/organisms/CheckOut/CheckOut";
+
 import {
   AboutScreen,
   BlogsScreen,
@@ -18,8 +21,9 @@ import {
   AuthPage,
   OrderDetails,
   NotFound,
-  Cart
+  Cart,
 } from "@pages/Screens";
+
 
 export const router = createBrowserRouter([
   {
@@ -60,8 +64,12 @@ export const router = createBrowserRouter([
         element: <Cart />,
       },
       {
-        path: "search",
-        element: <Search />,
+        path: "checkOut",
+        element: <CheckOut />,
+      },
+      {
+        path: "orderConfirmaton",
+        element: <OrderConfirmation />,
       },
       {
         path: "authentication",
@@ -70,6 +78,10 @@ export const router = createBrowserRouter([
       {
         path: "product-details/:id",
         element: <ProductDetails />,
+      },
+      {
+        path: "search",
+        element: <Search />,
       },
       {
         path: "profile",
