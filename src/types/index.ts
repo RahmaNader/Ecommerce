@@ -1,10 +1,10 @@
 export type SignUpFormInputs = {
-  fullName: string;
+  userName: string;
   email: string;
   phoneNumber: string;
   password: string;
   confirmPassword: string;
-  gender: string;
+  gender: number;
   day: string;
   month: string;
   year: string;

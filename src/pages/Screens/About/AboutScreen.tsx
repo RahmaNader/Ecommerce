@@ -1,15 +1,16 @@
 import React from "react";
+// TODO : use tailwind instead of css
 import "./AboutScreen.css";
-import aboutSectionHero from "../../../assets/lady-good-mood-looks-into-camera-beige-background-beautiful-smiling-woman-with-big-bright-lips-red-beret-earrings-long-coat-posing_197531-18681.svg";
-import AboutImage1 from "../../../assets/AboutImage1.svg";
-import AboutImage2 from "../../../assets/AboutImage2.svg";
-import AboutImage3 from "../../../assets/AboutImage3.svg";
-import TwitterIcon from "../../../assets/Twitter-icon.svg";
-import InstgramIcon from "../../../assets/Instgram-icon.svg";
-import LinkedInIcon from "../../../assets/LinkedIn-icon.svg";
-import DeliveryIcon from "../../../assets/icon-delivery.svg";
-import CustomerServiceIcon from "../../../assets/Icon-Customer service.svg";
-import SecureIcon from "../../../assets/Icon-secure.svg";
+import aboutSectionHero from "@assets/lady-good-mood-looks-into-camera-beige-background-beautiful-smiling-woman-with-big-bright-lips-red-beret-earrings-long-coat-posing_197531-18681.svg";
+import AboutImage1 from "@assets/AboutImage1.svg";
+import AboutImage2 from "@assets/AboutImage2.svg";
+import AboutImage3 from "@assets/AboutImage3.svg";
+import TwitterIcon from "@assets/Twitter-icon.svg";
+import InstgramIcon from "@assets/Instgram-icon.svg";
+import LinkedInIcon from "@assets/LinkedIn-icon.svg";
+import DeliveryIcon from "@assets/icon-delivery.svg";
+import CustomerServiceIcon from "@assets/Icon-Customer service.svg";
+import SecureIcon from "@assets/Icon-secure.svg";
 
 
 const AboutScreen: React.FC = () => {

@@ -1,3 +1,3 @@
 export { AuthProvider } from "./auth/AuthContext";
-export { AuthService } from "./auth/AuthService";
+export { registerUser} from "./AuthService";
 export {useAuth} from "./useAuth";

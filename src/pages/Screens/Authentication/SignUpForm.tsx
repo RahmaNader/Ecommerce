@@ -4,6 +4,8 @@ import "react-phone-input-2/lib/style.css";
 import { SignUpFormInputs } from "@types";
 import { Button } from "@components/atoms";
 import IconGoogle from "@assets/Icon-Google.svg";
+import { registerUser } from "@services/AuthService";
+
 
 interface SignUpFormProps {
   onSwitchToLogin: () => void;
@@ -20,9 +22,27 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
 
   const password = watch("password");
 
-  const onSubmit = (data: SignUpFormInputs) => {
-    console.log("Sign Up Data:", data);
-    alert(`Sign-up successful! Welcome, ${data.fullName}`);
+  const onSubmit = async (formData: SignUpFormInputs) => {
+    try {
+      console.log('Form Data:', formData);
+      const dateOfBirth = `${formData.year}-${formData.month}-${formData.day}`;
+      const result = await registerUser({
+        userName: formData.userName,
+        email: formData.email,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+        phoneNumber: formData.phoneNumber,
+        gender: formData.gender,
+        dateOfBirth: dateOfBirth,
+      });
+      console.log("Registration response:", result);
+      alert("User registered successfully!");
+      // ...additional usage (e.g., store tokens, navigate, etc.)...
+    } catch (error) {
+      console.error(error);
+      alert("Registration failed.");
+      // onSwitchToLogin();
+    }
   };
 
   return (
@@ -31,15 +51,15 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
         {/* Full Name Field */}
         <div>
           <input
-            id="fullName"
+            id="userName"
             type="text"
             placeholder="Full Name"
-            {...register("fullName", { required: "Full name is required" })}
+            {...register("userName", { required: "Full name is required" })}
             className={`w-full px-4 py-2 mt-1 border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none`}
           />
-          {errors.fullName && (
+          {errors.userName && (
             <p className="text-FifthColor text-sm mt-1">
-              {errors.fullName.message}
+              {errors.userName.message}
             </p>
           )}
         </div>
@@ -152,9 +172,8 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
               className="w-full py-2 mt-1 border rounded text-ForthColor text-[15px] border-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none"
             >
               <option value="">Gender</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
+              <option value="0">Male</option>
+              <option value="1">Female</option>
             </select>
             {errors.gender && (
               <p className="text-FifthColor text-sm mt-1">
@@ -195,18 +214,18 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
               >
                 <option value="">MM</option>
                 {[
-                  "January",
-                  "February",
-                  "March",
-                  "April",
-                  "May",
-                  "June",
-                  "July",
-                  "August",
-                  "September",
-                  "October",
-                  "November",
-                  "December",
+                  "1",
+                  "2",
+                  "3",
+                  "4",
+                  "5",
+                  "6",
+                  "7",
+                  "8",
+                  "9",
+                  "10",
+                  "11",
+                  "12",
                 ].map((month, index) => (
                   <option key={index} value={month}>
                     {month}
