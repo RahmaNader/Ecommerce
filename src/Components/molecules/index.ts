@@ -8,3 +8,4 @@ export { default as SearchBar } from "./SearchBar/SearchBar";
 export { default as Loading } from "./LoadingSkeleton/LoadingSkeleton";
 export { default as WriteReview } from "./WriteReview/WriteReview";
 export { default as ProductPreference} from "./ProductPreference/ProductPreference ";
+export { default as PrivateRoute } from "./PrivateRoute/PrivateRoute";

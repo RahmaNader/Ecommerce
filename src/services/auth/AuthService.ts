@@ -1,31 +1,31 @@
 interface User {
   id: string;
-  username: string;
-  email: string;
+  userName: string;
+  password: string
 }
 
 export const AuthService = {
-  login: async (email: string, password: string): Promise<User> => {
+  login: async (userName: string, password: string): Promise<User> => {
     // Mock login logic
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve({ id: "1", username: "JohnDoe", email });
+        resolve({ id: "1", userName, password });
       }, 1000);
     });
   },
 
-  register: async (username: string, email: string, password: string): Promise<User> => {
+  register: async (userName: string, password: string): Promise<User> => {
     // Mock register logic
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve({ id: "2", username, email });
+        resolve({ id: "2", userName, password });
       }, 1000);
     });
   },
 
   logout: async (): Promise<void> => {
     // Mock logout logic
-    console.log("User logged out successfully."); // For debugging
+    console.log("User logged out successfully.");
     return new Promise((resolve) => {
       setTimeout(resolve, 500);
     });
