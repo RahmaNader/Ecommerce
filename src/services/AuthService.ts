@@ -1,5 +1,6 @@
 // src/services/authService.ts
-import apiClient from '../apiClient'
+import axios from 'axios';
+import apiClient from '../apiClient';
 
 export interface RegisterData {
   userName: string;
@@ -9,19 +10,35 @@ export interface RegisterData {
   phoneNumber: string;
   gender: number;
   dateOfBirth: string;
+  model: string,
 }
 
 export interface LoginData {
-  userNameOrEmail: string;
+  userName: string;
   password: string;
 }
 
-export const registerUser = async (data: RegisterData) => {
-  const response = await apiClient.post('/Account/register', data);
-  return response.data;
+export const registerUser = async (userData: RegisterData) => {
+  try {
+    console.log('Request payload:', userData);
+    
+    const response = await apiClient.post('/Account/register', userData);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log('Error response: here', error.response?.data);
+      console.log('Error status:', error.response?.status);
+      console.log('Error headers:', error.response?.headers);
+    }
+    throw error;
+  }
 };
 
 export const loginUser = async (data: LoginData) => {
   const response = await apiClient.post('/Account/login', data);
+  const token = response.data?.token;
+  if (token) {
+    document.cookie = `authToken=${token}; path=/;`;
+  }
   return response.data;
 };

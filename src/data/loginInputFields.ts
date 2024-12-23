@@ -8,15 +8,11 @@ export const loginInputFields: Array<{
   validation: Record<string, unknown>;
 }> = [
   {
-    id: "email",
-    type: "email",
-    placeholder: "Email",
+    id: "userName",
+    type: "userName",
+    placeholder: "User Name",
     validation: {
-      required: "Email is required",
-      pattern: {
-        value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-        message: "Invalid email address",
-      },
+      required: "user name is required",
     },
   },
   {

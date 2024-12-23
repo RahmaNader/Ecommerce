@@ -4,14 +4,14 @@ export type SignUpFormInputs = {
   phoneNumber: string;
   password: string;
   confirmPassword: string;
-  gender: number;
+  gender: string;
   day: string;
   month: string;
   year: string;
 };
 
 export type LoginFormInputs = {
-  email: string;
+  userName: string;
   password: string;
 };
 

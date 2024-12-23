@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
@@ -5,6 +6,8 @@ import { SignUpFormInputs } from "@types";
 import { Button } from "@components/atoms";
 import IconGoogle from "@assets/Icon-Google.svg";
 import { registerUser } from "@services/AuthService";
+import { ErrorAlert, SuccessAlert } from "@components/atoms";
+import axios from "axios";
 
 
 interface SignUpFormProps {
@@ -12,6 +15,11 @@ interface SignUpFormProps {
 }
 
 const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
+  const [alert, setAlert] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
+
   const {
     register,
     handleSubmit,
@@ -24,29 +32,62 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
 
   const onSubmit = async (formData: SignUpFormInputs) => {
     try {
-      console.log('Form Data:', formData);
-      const dateOfBirth = `${formData.year}-${formData.month}-${formData.day}`;
+      const paddedMonth = formData.month.padStart(2, '0');
+      const paddedDay = formData.day.padStart(2, '0');
+      const dateOfBirth = `${formData.year}-${paddedMonth}-${paddedDay}`;
+      const genderValue = parseInt(formData.gender, 10);
       const result = await registerUser({
         userName: formData.userName,
         email: formData.email,
         password: formData.password,
         confirmPassword: formData.confirmPassword,
         phoneNumber: formData.phoneNumber,
-        gender: formData.gender,
+        gender: genderValue,
         dateOfBirth: dateOfBirth,
+        model: 'web',
       });
       console.log("Registration response:", result);
-      alert("User registered successfully!");
-      // ...additional usage (e.g., store tokens, navigate, etc.)...
+      setAlert({
+        type: "success",
+        message: "User registered successfully!"
+      });
+
+      setTimeout(() => {
+        setAlert(null);
+        onSwitchToLogin();
+      }, 3000);
     } catch (error) {
-      console.error(error);
-      alert("Registration failed.");
-      // onSwitchToLogin();
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data;
+          
+        if (errorMessage.toLowerCase().includes('already registered') || 
+            errorMessage.toLowerCase().includes('already exists')) {
+          setAlert({
+            type: "error",
+            message: "This username is already taken. Please choose another one."
+          });
+        } else {
+          setAlert({
+            type: "error",
+            message: errorMessage
+          });
+        }
+      }
+      setTimeout(() => setAlert(null), 3000);
     }
   };
 
   return (
     <div className="bg-mainColor text-secondColor p-6 rounded w-full mx-auto">
+      {alert && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
+          {alert.type === "success" ? (
+            <SuccessAlert message={alert.message} />
+          ) : (
+            <ErrorAlert message={alert.message} />
+          )}
+        </div>
+      )}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Full Name Field */}
         <div>
@@ -91,7 +132,17 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
           <Controller
             name="phoneNumber"
             control={control}
-            rules={{ required: "Phone number is required" }}
+            rules={{ 
+              required: "Phone number is required",
+              pattern: {
+                value: /^[0-9]+$/,
+                message: "Please enter a valid phone number"
+              },
+              minLength: {
+                value: 11,
+                message: "Phone number must be at least 11 digits"
+              }
+            }}
             render={({ field }) => (
               <PhoneInput
                 {...field}
@@ -110,6 +161,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
                 dropdownStyle={{
                   width: "250px",
                 }}
+                onChange={(value) => field.onChange(value)}
               />
             )}
           />

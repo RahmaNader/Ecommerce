@@ -1,31 +1,71 @@
 // src/pages/Auth/LoginForm.tsx
+import React, { useState } from "react";
+import axios from "axios";
 import { useForm } from "react-hook-form";
 import { Button } from "@components/atoms";
 import IconGoogle from "@assets/Icon-Google.svg";
 import { LoginFormInputs } from "@types";
 import loginInputFields from "@data/loginInputFields";
+import { loginUser } from "@services/AuthService";
+import { SuccessAlert, ErrorAlert } from "@components/atoms";
+import { useNavigate } from "react-router-dom";
+
+
 
 interface LoginFormProps {
   onSwitchToSignUp: () => void;
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
+  const [alert, setAlert] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormInputs>();
+  const navigate = useNavigate();
 
-  const onSubmit = (data: LoginFormInputs) => {
-    console.log("Login In data:", data);
-    alert(`Log-in successful! Welcome, ${data.email}`);
+  const onSubmit = async (data: LoginFormInputs) => {
+    try {
+      const result = await loginUser({ userName: data.userName, password: data.password });
+      setAlert({
+        type: "success",
+        message: `Log-in successful! Welcome, ${data.userName}`,
+      });
+      console.log("Login response:", result);
+      setTimeout(() => {
+        setAlert(null);
+        navigate("/");
+      }, 2000);
+    } catch (error) {
+      console.error(error);
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data?.message || "Login failed.";
+        setAlert({ type: "error", message: errorMessage });
+      } else {
+        setAlert({ type: "error", message: "Login failed." });
+      }
+      setTimeout(() => {
+        setAlert(null);
+      }, 3000);
+    }
   };
 
   return (
     <div className="bg-mainColor text-secondColor p-6 rounded w-full mx-auto">
+      {alert && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
+          {alert.type === "success" ? (
+            <SuccessAlert message={alert.message} />
+          ) : (
+            <ErrorAlert message={alert.message} />
+          )}
+        </div>
+      )}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* Mapping Input Fields */}
-
         {loginInputFields.map((field) => (
           <div key={field.id}>
             <input
