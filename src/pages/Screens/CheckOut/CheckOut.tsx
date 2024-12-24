@@ -1,21 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getAddressesForUser, updateSavedAddresses } from '@utils/addressUtils';
 import icon2 from "@assets/Vector.svg";
 import icon from "@assets/discount icon.svg";
 import plusIcon from "@assets/plus.svg";
-import { Button, ToggleRadioButton, AddressModal } from "@components/atoms";
-import { Address, ShippingMethod, PaymentMethod, OrderConfirmation } from "@components/molecules";
+import { AddressProps } from "@types";
+import { Button, ToggleRadioButton, AddressModal, Category, ErrorAlert } from "@components/atoms";
+import { ShippingMethod, PaymentMethod, OrderConfirmation, Breadcrumb } from "@components/molecules";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import Typography from "@mui/material/Typography";
 
-interface Address {
-  building: string;
-  aptNo: string;
-  floor: string;
-  street: string;
-  phoneNumber: string;
-  country: string;
-  city: string;
-  additionalDirections?: string;
-  saveAddress: boolean;
-}
+
 
 interface Product {
   Price: string;
@@ -25,6 +19,8 @@ interface Product {
   TOTAL: string;
   EstimatedDeliveryBy: string;
 }
+
+
 
 const product: Product = {
   Price: "1000 EGP",
@@ -37,7 +33,7 @@ const product: Product = {
 
 export default function CheckOut() {
   const [showModal, setShowModal] = useState(false); 
-  const [addresses, setAddresses] = useState<Address[]>([]); 
+  const [addresses, setAddresses] = useState<AddressProps[]>([]); 
   const [selectedAddressIndex, setSelectedAddressIndex] = useState<number | null>(null); 
   const [showShippingMethod, setShowShippingMethod] = useState(false); 
   const [selectedShippingMethod, setSelectedShippingMethod] = useState<string>(""); 
@@ -45,34 +41,53 @@ export default function CheckOut() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("");
   const [orderConfirmed, setOrderConfirmed] = useState(false);
   const [couponCode, setCouponCode] = useState<string>("");
+  const [editingAddressIndex, setEditingAddressIndex] = useState<number | null>(null);
+  const [alert, setAlert] = useState<{ type: "error"; message: string } | null>(null);
+  const [currentStep, setCurrentStep] = useState<'address' | 'shipping' | 'payment'>('address');
+
 
   const openModal = () => {
     setShowModal(true);
   };
 
-  const [editingAddressIndex, setEditingAddressIndex] = useState<number | null>(null);
+  useEffect(() => {
+    const savedAddresses = getAddressesForUser();
+    setAddresses(savedAddresses);
+  }, []);
+
 
   const handleEditAddress = (index: number) => {
     setEditingAddressIndex(index); 
     setShowModal(true);
   };
 
-  const addAddress = (newAddress: Address) => {
+  const addAddress = (newAddress: AddressProps) => {
     setAddresses((prevAddresses) => {
+      let updatedAddresses;
       if (editingAddressIndex !== null) {
-        const updatedAddresses = [...prevAddresses];
+        updatedAddresses = [...prevAddresses];
         updatedAddresses[editingAddressIndex] = newAddress;
-        return updatedAddresses;
+      } else {
+        updatedAddresses = [...prevAddresses, newAddress];
       }
-      return [...prevAddresses, newAddress];
+      if (newAddress.saveAddress) {
+        updateSavedAddresses(updatedAddresses);
+      }
+      return updatedAddresses;
     });
-    setEditingAddressIndex(null); 
+    setEditingAddressIndex(null);
     closeModal();
   };
 
   const handleRemoveAddress = (index: number) => {
-    const updatedAddresses = addresses.filter((_, i) => i !== index);
-    setAddresses(updatedAddresses);
+    setAddresses((prevAddresses) => {
+      const updatedAddresses = prevAddresses.filter((_, i) => i !== index);
+      updateSavedAddresses(updatedAddresses);
+      return updatedAddresses;
+    });
+    if (selectedAddressIndex === index) {
+      setSelectedAddressIndex(null);
+    }
   };
 
   const closeModal = () => {
@@ -85,9 +100,11 @@ export default function CheckOut() {
 
   const handleNextClick = () => {
     if (selectedAddressIndex !== null) {
-      setShowShippingMethod(true); 
+      setShowShippingMethod(true);
+      setCurrentStep('shipping');
     } else {
-      alert("Please select an address first.");
+      setAlert({ type: "error", message: "Please select an address first." });
+      setTimeout(() => setAlert(null), 3000);
     }
   };
 
@@ -98,10 +115,12 @@ export default function CheckOut() {
 
   const handlePaymentMethodClick = () => {
     if (selectedShippingMethod) {
-      setShowShippingMethod(false); 
-      setShowPaymentMethod(true); 
+      setShowShippingMethod(false);
+      setShowPaymentMethod(true);
+      setCurrentStep('payment');
     } else {
-      alert("Please select a shipping method first.");
+      setAlert({ type: "error", message: "Please select a shipping method first." });
+      setTimeout(() => setAlert(null), 3000);
     }
   };
 
@@ -113,36 +132,77 @@ export default function CheckOut() {
     if (selectedPaymentMethod) {
       setOrderConfirmed(true);
     } else {
-      alert("Please select a payment method.");
+      setAlert({ type: "error", message: "Please select a payment method." });
+      setTimeout(() => setAlert(null), 3000);
     }
   };
 
+  //is this good?
   if (orderConfirmed) {
     return <OrderConfirmation />; 
   }
 
   return (
-    <div className="py-8 lg:px-12 md:px-5 max-sm:px-2.5 relative">
-      <div className="pt-16 w-full">
+    <div className="min-h-screen w-full px-2 md:px-10">
+      <div>
+        <Breadcrumb />
+        <Category SectionName={"CheckOut"} mdMyValue={"mt-2"} />
+        {alert && <ErrorAlert message={alert.message} />}
 
-        {/* <div className="flex flex-col items-center mb-10">
-          <img src={cartIcon} alt="" className="" />
-          <h1 className="text-center w-full text-wine font-playfair text-5xl">
-            Checkout
-          </h1>
-          <img src={cartIcon2} alt="" className="w-25 mt-2.5" />
-        </div> */}
+        
+        <div className="flex items-center w-full">
+          <Typography
+            onClick={() => setCurrentStep("address")}
+            sx={{
+              cursor: "pointer",
+              color: currentStep === "address" ? "#721013" : "#A78E78",
+              fontWeight: currentStep === "address" ? "bold" : "normal",
+              fontSize: "1rem",
+            }}
+          >
+            Address
+          </Typography>
 
-        <div className="flex justify-between flex-col lg:flex-row px-8 w-full md:flex-row">
-          <div className="lg:w-3/4 md:w-1/2 w-full">
-            {!showShippingMethod && !showPaymentMethod && (
+          <NavigateNextIcon fontSize="small" style={{ color: "#A78E78" }} />
+
+          <Typography
+            onClick={() => setCurrentStep("shipping")}
+            sx={{
+              cursor: "pointer",
+              color: currentStep === "shipping" ? "#721013" : "#A78E78",
+              fontWeight: currentStep === "shipping" ? "bold" : "normal",
+              fontSize: "1rem",
+            }}
+          >
+            Shipping
+          </Typography>
+
+          <NavigateNextIcon fontSize="small" style={{ color: "#A78E78" }} />
+
+          <Typography
+            onClick={() => setCurrentStep("payment")}
+            sx={{
+              cursor: "pointer",
+              color: currentStep === "payment" ? "#721013" : "#A78E78",
+              fontWeight: currentStep === "payment" ? "bold" : "normal",
+              fontSize: "1rem",
+            }}
+          >
+            Payment
+          </Typography>
+        </div>
+
+        <div className="flex flex-col md:flex-row justify-between w-full gap-6">
+          
+          <div className="md:w-7/12 w-full">
+          {currentStep === 'address' && (
               <>
                 {addresses.map((address, index) => (
                   <div
                     key={index}
-                    className="py-5 flex border-b border-b-gray-300 text-mainColor w-[95%]"
+                    className="py-8 w-full"
                   >
-                    <div className="ms-5 w-full flex justify-between items-center">
+                    <div className="w-full flex justify-between items-center">
                       <div className="w-4/5">
                         <ToggleRadioButton
                           label={`${address.building}, ${address.city}`}
@@ -183,23 +243,24 @@ export default function CheckOut() {
                 ))}
 
                 <div
-                  className="flex my-4 px-8 cursor-pointer"
-                  onClick={openModal} 
+                  className="flex flex-row border-t border-t-ForthColor/50 py-4 w-full cursor-pointer"
+                  onClick={openModal}
                 >
+
                   <img src={plusIcon} className="w-6" alt="" />
                   <p className="text-wine text-xl ps-2 ">Add New Address</p>
                 </div>
               </>
             )}
 
-            {showShippingMethod && (
+            {currentStep === "shipping" && (
               <ShippingMethod
                 selectedShippingMethod={selectedShippingMethod}
                 onShippingMethodChange={handleShippingMethodChange}
               />
             )}
 
-            {showPaymentMethod && (
+            {currentStep === "payment" && (
               <PaymentMethod
                 selectedPaymentMethod={selectedPaymentMethod}
                 onPaymentMethodChange={handlePaymentMethodChange}
@@ -265,15 +326,12 @@ export default function CheckOut() {
                   onClick={handlePaymentMethodClick}
                 />
               ) : (
-                <Button
-                  size="large"
-                  label="Next"
-                  onClick={handleNextClick}
-                />
+                <Button size="large" label="Next" onClick={handleNextClick} />
               )}
             </div>
           </div>
         </div>
+
       </div>
 
       {showModal && (

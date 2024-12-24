@@ -19,36 +19,34 @@ const PaymentMethod: React.FC<PaymentMethodProps> = ({
   const [savedCards, setSavedCards] = useState<{ cardNumber: string; expirationDate: string }[]>([]);
   const [selectedCard, setSelectedCard] = useState<string>("");
 
-  // Function to open the card modal
+
   const openCardModal = () => {
     setCardModalOpen(true);
   };
 
-  // Function to close the card modal
+
   const closeCardModal = () => {
     setCardModalOpen(false);
   };
 
-  // Function to add a new card to saved cards
   const addSavedCard = (cardNumber: string, expirationDate: string) => {
     setSavedCards((prevCards) => [
       ...prevCards,
       { cardNumber, expirationDate },
     ]);
-    closeCardModal(); // Close modal after saving the card
+    closeCardModal(); 
   };
 
-  // Function to handle selection of a payment card
+
   const handleCardSelect = (cardNumber: string) => {
     setSelectedCard(cardNumber);
-    onPaymentMethodChange("credit"); // When a card is selected, set payment method to 'credit'
+    onPaymentMethodChange("credit"); 
   };
 
   return (
     <div className="space-y-2 my-5 lg:px-12">
       <h2 className="text-xl font-semibold text-wine">Payment Method</h2>
 
-      {/* Cash on Delivery option */}
       <div className="py-5 flex border-b border-b-gray-300 text-wine">
         <div className="w-full flex justify-between items-center">
           <div className="w-full flex justify-between">
@@ -63,7 +61,6 @@ const PaymentMethod: React.FC<PaymentMethodProps> = ({
         </div>
       </div>
 
-      {/* Credit Card option */}
       <div className=" flex text-wine">
         <div className="w-full flex justify-between items-center">
           <div className="w-full flex justify-between items-center">
@@ -82,7 +79,6 @@ const PaymentMethod: React.FC<PaymentMethodProps> = ({
         </div>
       </div>
 
-      {/* Render saved cards if Credit Card is selected */}
       {selectedPaymentMethod === "credit" && savedCards.length > 0 && (
         <div className="mb-4">
           <h3 className="text-sm font-semibold text-wine">Saved Cards</h3>
@@ -98,11 +94,10 @@ const PaymentMethod: React.FC<PaymentMethodProps> = ({
         </div>
       )}
 
-      {/* Only show "Add New Card" option when Credit Card is selected */}
       {selectedPaymentMethod === "credit" && (
         <div
           className="flex justify-between items-center mt-4 rounded-md cursor-pointer w-full bg-[#A78E7833] px-4"
-          onClick={openCardModal} // Opens the modal when clicked
+          onClick={openCardModal} 
         >
           <div className="flex">
             <img
@@ -119,7 +114,6 @@ const PaymentMethod: React.FC<PaymentMethodProps> = ({
         </div>
       )}
 
-      {/* Render the CardModal if it's open */}
       {isCardModalOpen && <CardModal closeModal={closeCardModal} addSavedCard={addSavedCard} />}
     </div>
   );

@@ -44,6 +44,16 @@ export interface AddressProps {
   saveAddress: boolean;
 }
 
+export type Product = {
+  id: number;
+  name: string;
+  DisPrice: number;
+  color: string;
+  size: string;
+  quantity: number;
+  NormalPrice: number;
+}
+
 export type RatingDistributionItem = {
   rating: number;
   percentage: string;
@@ -117,3 +127,7 @@ export type Order = {
   status: string;
 }
 
+export type User = {
+  username: string;
+  token:string;
+}

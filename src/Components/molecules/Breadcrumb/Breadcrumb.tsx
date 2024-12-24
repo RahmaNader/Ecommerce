@@ -12,6 +12,7 @@ const routeNameMap: { [key: string]: string } = {
   "/contact-us": "Contact Us",
   "/about-us": "About Us",
   "/cart": "Cart",
+  "/cart/checkout": "Checkout",
   "/search": "Search",
   "/profile": "Profile",
   "/profile/orders": "Orders",

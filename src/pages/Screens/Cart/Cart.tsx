@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Cookies from "js-cookie";
 import icon from "@assets/discount icon.svg";
 import icon2 from "@assets/Vector.svg";
+import { Product } from "@types";
 import { Button, Category, SuccessAlert, ErrorAlert } from "@components/atoms";
 import { CartProduct, Breadcrumb } from "@components/molecules";
 
@@ -10,16 +11,6 @@ const validCoupons = {
   SAVE10: 0.1,
   SAVE20: 0.2,
 };
-
-interface Product {
-  id: number;
-  name: string;
-  DisPrice: number;
-  color: string;
-  size: string;
-  quantity: number;
-  NormalPrice: number;
-}
 
 const Cart: React.FC = () => {
   const navigate = useNavigate();
@@ -124,7 +115,7 @@ const Cart: React.FC = () => {
       return;
     }
 
-    navigate('/checkout');
+    navigate('/cart/checkout');
   };
 
   return (
@@ -209,7 +200,7 @@ const Cart: React.FC = () => {
                 value={couponCode}
                 onChange={(e) => setCouponCode(e.target.value)}
                 placeholder="Coupon Code"
-                className="w-full px-4 py-2 border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13]"
+                className="w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none"
               />
               <div className="absolute right-3 bottom-2.5">
                 <img src={icon} alt="Coupon Icon" />
@@ -231,6 +222,7 @@ const Cart: React.FC = () => {
             />
           </div>
         </div>
+
       </div>
     </div>
   );

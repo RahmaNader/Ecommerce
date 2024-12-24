@@ -36,9 +36,10 @@ export const registerUser = async (userData: RegisterData) => {
 
 export const loginUser = async (data: LoginData) => {
   const response = await apiClient.post('/Account/login', data);
-  const token = response.data?.token;
+  const { token, username } = response.data;
   if (token) {
     document.cookie = `authToken=${token}; path=/;`;
+    document.cookie = `username=${username}; path=/;`;
   }
   return response.data;
 };

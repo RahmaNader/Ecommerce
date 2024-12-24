@@ -1,4 +1,3 @@
-export { default as Address } from "./Address/Address";
 export { default as ProductsView } from "./ProductsView/ProductsView";
 export { default as Slider } from "./Slider/Slider";
 export { default as Footer } from "./Footer/Footer";

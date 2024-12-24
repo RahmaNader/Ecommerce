@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
 import "./AddressModal.css";
-import {Button} from "@components/atoms";
+import { Button } from "@components/atoms";
+import { saveAddressForUser } from '@utils/addressUtils';
 import { AddressProps } from "@types";
+import Cookies from 'js-cookie';
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 interface AddressModalProps {
   closeModal: () => void;
-  addAddress: (newAddress: AddressProps) => void; 
-  prefillData?: AddressProps; 
+  addAddress: (newAddress: AddressProps) => void;
+  prefillData?: AddressProps;
 }
 
 const AddressModal: React.FC<AddressModalProps> = ({
@@ -56,8 +60,6 @@ const AddressModal: React.FC<AddressModalProps> = ({
       saveAddress: false,
     }
   );
-  
-
 
   const [errors, setErrors] = useState({
     building: "",
@@ -109,7 +111,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
     return error === "";
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
 
     setNewAddress((prev) => ({
@@ -120,8 +124,6 @@ const AddressModal: React.FC<AddressModalProps> = ({
   };
 
   const validateAllInputs = () => {
-    // const newErrors: typeof errors = { ...errors };
-
     let isValid = true;
 
     Object.keys(newAddress).forEach((key) => {
@@ -136,20 +138,22 @@ const AddressModal: React.FC<AddressModalProps> = ({
     return isValid;
   };
 
-
   useEffect(() => {
     if (prefillData) {
       setNewAddress(prefillData);
     }
   }, [prefillData]);
-  
+
   const handleSubmit = () => {
     if (validateAllInputs()) {
+      const username = Cookies.get('username');
+      if (username && newAddress.saveAddress) {
+        saveAddressForUser(newAddress);
+      }
       addAddress(newAddress);
       closeModal();
     }
   };
-  
 
   return (
     <div className="modal-backdrop">
@@ -160,23 +164,28 @@ const AddressModal: React.FC<AddressModalProps> = ({
             X
           </button>
         </div>
+
         <div className="modal-body">
           <h4 className="text-wine">Enter your details</h4>
+
           <div className="input-group">
             <input
-              className="bg-[#A78E7821] border border-skin px-3 py-3 rounded-md placeholder:text-skin lg:w-1/3 md:w-full focus:border-skin focus:text-skin"
+              className="w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none"
               placeholder="Building Name"
               type="text"
               name="building"
               value={newAddress.building}
               onChange={handleChange}
             />
-            {errors.building && <p className="text-red-500">{errors.building}</p>}
+            {errors.building && (
+              <p className="text-red-500">{errors.building}</p>
+            )}
           </div>
+
           <div className="flex justify-between gap-3">
             <div className="input-group w-1/2">
               <input
-                className="bg-[#A78E7821] border border-skin px-3 py-3 rounded-md placeholder:text-skin lg:w-1/3 md:w-full focus:border-skin focus:text-skin"
+                className="w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none"
                 placeholder="Apt. No."
                 type="text"
                 name="aptNo"
@@ -185,9 +194,10 @@ const AddressModal: React.FC<AddressModalProps> = ({
               />
               {errors.aptNo && <p className="text-red-500">{errors.aptNo}</p>}
             </div>
+
             <div className="input-group w-1/2">
               <input
-                className="bg-[#A78E7821] border border-skin px-3 py-3 rounded-md placeholder:text-skin lg:w-1/3 md:w-full focus:border-skin focus:text-skin"
+                className="w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none"
                 placeholder="Floor"
                 type="text"
                 name="floor"
@@ -197,9 +207,10 @@ const AddressModal: React.FC<AddressModalProps> = ({
               {errors.floor && <p className="text-red-500">{errors.floor}</p>}
             </div>
           </div>
+
           <div className="input-group">
             <input
-              className="bg-[#A78E7821] border border-skin px-3 py-3 rounded-md placeholder:text-skin lg:w-1/3 md:w-full focus:border-skin focus:text-skin"
+              className="w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none"
               placeholder="Street"
               type="text"
               name="street"
@@ -208,22 +219,43 @@ const AddressModal: React.FC<AddressModalProps> = ({
             />
             {errors.street && <p className="text-red-500">{errors.street}</p>}
           </div>
+
           <div className="input-group">
-            <input
-              className="bg-[#A78E7821] border border-skin px-3 py-3 rounded-md placeholder:text-skin lg:w-1/3 md:w-full focus:border-skin focus:text-skin"
-              placeholder="Phone Number"
-              type="text"
-              name="phoneNumber"
+            <PhoneInput
+              country={"eg"}
               value={newAddress.phoneNumber}
-              onChange={handleChange}
+              placeholder="Phone Number"
+              containerClass="w-full"
+              inputStyle={{
+                width: "100%",
+                borderColor: "#A78E78",
+                backgroundColor: "rgba(167, 142, 120, 0.13)",
+                color: "#A78E78",
+              }}
+              buttonStyle={{
+                borderColor: "#A78E78",
+              }}
+              dropdownStyle={{
+                width: "250px",
+              }}
+              onChange={(value) => {
+                setNewAddress((prev) => ({
+                  ...prev,
+                  phoneNumber: value,
+                }));
+                validateInput("phoneNumber", value);
+              }}
             />
             {errors.phoneNumber && (
-              <p className="text-red-500">{errors.phoneNumber}</p>
+              <p className="text-FifthColor text-sm mt-1">
+                {errors.phoneNumber}
+              </p>
             )}
           </div>
+
           <div className="input-group">
             <select
-              className="bg-[#A78E7821] border border-skin px-3 py-3 rounded-md placeholder:text-skin lg:w-1/3 md:w-full focus:border-skin focus:text-skin"
+              className="w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none"
               name="city"
               value={newAddress.city}
               onChange={handleChange}
@@ -237,9 +269,10 @@ const AddressModal: React.FC<AddressModalProps> = ({
             </select>
             {errors.city && <p className="text-red-500">{errors.city}</p>}
           </div>
+
           <div className="input-group">
             <input
-              className="bg-[#A78E7821] border border-skin px-3 py-3 rounded-md placeholder:text-skin lg:w-1/3 md:w-full focus:border-skin focus:text-skin"
+              className="w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none"
               placeholder="Additional Directions"
               type="text"
               name="additionalDirections"
@@ -247,6 +280,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
               onChange={handleChange}
             />
           </div>
+
           <div className="checkbox-group">
             <label className="text-wine">
               <input
@@ -264,6 +298,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
             </label>
           </div>
         </div>
+
         <div className="modal-footer">
           <Button
             label="Cancel"
@@ -271,11 +306,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
             size="large"
             type="outlined"
           />
-          <Button
-            label="Next"
-            onClick={handleSubmit}
-            size="large"
-          />
+          <Button label="Next" onClick={handleSubmit} size="large" />
         </div>
       </div>
     </div>

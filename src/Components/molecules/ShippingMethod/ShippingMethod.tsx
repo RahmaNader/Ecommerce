@@ -10,7 +10,7 @@ const ShippingMethod: React.FC<ShippingMethodProps> = ({
   onShippingMethodChange,
 }: ShippingMethodProps) => {
   return (
-    <div className="space-y-2 my-5 lg:px-12 md:w-full">
+    <div className="py-8 w-full">
       <h2 className="text-xl font-semibold text-wine">Shipment Method</h2>
 
       {/* Delivery Regular option */}
