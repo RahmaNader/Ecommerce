@@ -1,8 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import { Layout, ProfileLayout } from "@components/organisms";
 import OrderConfirmation from "@components/molecules/OrderConfirmation/OrderConfirmation";
-import CheckOut from "@components/organisms/CheckOut/CheckOut";
-
 import {
   AboutScreen,
   BlogsScreen,
@@ -22,6 +20,7 @@ import {
   OrderDetails,
   NotFound,
   Cart,
+  CheckOut,
 } from "@pages/Screens";
 
 
@@ -64,7 +63,7 @@ export const router = createBrowserRouter([
         element: <Cart />,
       },
       {
-        path: "checkOut",
+        path: "checkout",
         element: <CheckOut />,
       },
       {

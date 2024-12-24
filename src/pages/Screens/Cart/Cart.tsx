@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from 'react-router-dom';
 import Cookies from "js-cookie";
 import icon from "@assets/discount icon.svg";
 import icon2 from "@assets/Vector.svg";
@@ -21,6 +22,7 @@ interface Product {
 }
 
 const Cart: React.FC = () => {
+  const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [couponCode, setCouponCode] = useState<string>("");
   const [couponDiscount, setCouponDiscount] = useState<number>(0);
@@ -99,6 +101,31 @@ const Cart: React.FC = () => {
   const summary = calculateSummary();
   const totalBeforeCoupon = summary.subTotal + summary.shipping;
   const totalAfterCoupon = totalBeforeCoupon * (1 - couponDiscount);
+
+  const handleCheckoutClick = () => {
+    const authToken = Cookies.get('authToken');
+    const cartItems = Cookies.get('cart') ? JSON.parse(Cookies.get('cart') as string) : [];
+
+    if (!authToken) {
+      setAlert({
+        type: 'error',
+        message: 'Please login to proceed with checkout'
+      });
+      setTimeout(() => setAlert(null), 3000);
+      return;
+    }
+
+    if (cartItems.length === 0) {
+      setAlert({
+        type: 'error',
+        message: 'Your cart is empty'
+      });
+      setTimeout(() => setAlert(null), 3000);
+      return;
+    }
+
+    navigate('/checkout');
+  };
 
   return (
     <div className="min-h-screen w-full px-2 md:px-10">
@@ -200,7 +227,7 @@ const Cart: React.FC = () => {
               label={"Checkout"}
               type="primary"
               size="large"
-              onClick={() => console.log("Checkout clicked!")}
+              onClick={handleCheckoutClick}
             />
           </div>
         </div>

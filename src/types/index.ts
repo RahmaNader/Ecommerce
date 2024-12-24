@@ -32,6 +32,18 @@ export type CardComponent = {
   onClick?: () => void;
 };
 
+export interface AddressProps {
+  building: string;
+  aptNo: string;
+  floor: string;
+  street: string;
+  phoneNumber: string;
+  country: string;
+  city: string;
+  additionalDirections?: string;
+  saveAddress: boolean;
+}
+
 export type RatingDistributionItem = {
   rating: number;
   percentage: string;

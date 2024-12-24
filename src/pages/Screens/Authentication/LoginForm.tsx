@@ -6,7 +6,7 @@ import { Button } from "@components/atoms";
 import IconGoogle from "@assets/Icon-Google.svg";
 import { LoginFormInputs } from "@types";
 import loginInputFields from "@data/loginInputFields";
-import { loginUser } from "@services/AuthService";
+import { loginUser } from "@services/auth/AuthService";
 import { SuccessAlert, ErrorAlert } from "@components/atoms";
 import { useNavigate } from "react-router-dom";
 

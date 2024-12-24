@@ -1,4 +1,4 @@
-import orderConfirmationPhoto from "../../../assets/order-confirmation-photo.svg";
+import orderConfirmationPhoto from "@assets/order-confirmation-photo.svg";
 import { Button } from "@components/atoms";
 
 interface Product {

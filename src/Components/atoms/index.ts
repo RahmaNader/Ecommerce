@@ -10,3 +10,4 @@ export { default as ErrorAlert } from './Alerts/ErrorAlert'
 export { default as Confirmed } from './ConfirmationModals/Confirmed'
 export { default as Declined } from './ConfirmationModals/Declined'
 export { default as ToggleRadioButton } from "./ToggleRadioButton/ToggleRadioButton";
+export { default as AddressModal } from "./AddressModal/AddressModal";

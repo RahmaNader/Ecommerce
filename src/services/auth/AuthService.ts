@@ -1,33 +1,44 @@
-interface User {
-  id: string;
+// src/services/authService.ts
+import axios from 'axios';
+import apiClient from '../../apiClient';
+
+export interface RegisterData {
   userName: string;
-  password: string
+  email: string;
+  password: string;
+  confirmPassword: string;
+  phoneNumber: string;
+  gender: number;
+  dateOfBirth: string;
+  model: string,
 }
 
-export const AuthService = {
-  login: async (userName: string, password: string): Promise<User> => {
-    // Mock login logic
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({ id: "1", userName, password });
-      }, 1000);
-    });
-  },
+export interface LoginData {
+  userName: string;
+  password: string;
+}
 
-  register: async (userName: string, password: string): Promise<User> => {
-    // Mock register logic
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({ id: "2", userName, password });
-      }, 1000);
-    });
-  },
+export const registerUser = async (userData: RegisterData) => {
+  try {
+    console.log('Request payload:', userData);
+    
+    const response = await apiClient.post('/Account/register', userData);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log('Error response: here', error.response?.data);
+      console.log('Error status:', error.response?.status);
+      console.log('Error headers:', error.response?.headers);
+    }
+    throw error;
+  }
+};
 
-  logout: async (): Promise<void> => {
-    // Mock logout logic
-    console.log("User logged out successfully.");
-    return new Promise((resolve) => {
-      setTimeout(resolve, 500);
-    });
-  },
+export const loginUser = async (data: LoginData) => {
+  const response = await apiClient.post('/Account/login', data);
+  const token = response.data?.token;
+  if (token) {
+    document.cookie = `authToken=${token}; path=/;`;
+  }
+  return response.data;
 };

@@ -5,7 +5,7 @@ interface ShippingMethodProps {
   onShippingMethodChange: (method: string) => void;
 }
 
-const ShippingMethod = ({
+const ShippingMethod: React.FC<ShippingMethodProps> = ({
   selectedShippingMethod,
   onShippingMethodChange,
 }: ShippingMethodProps) => {

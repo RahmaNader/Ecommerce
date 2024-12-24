@@ -9,3 +9,6 @@ export { default as Loading } from "./LoadingSkeleton/LoadingSkeleton";
 export { default as WriteReview } from "./WriteReview/WriteReview";
 export { default as ProductPreference} from "./ProductPreference/ProductPreference ";
 export { default as PrivateRoute } from "./PrivateRoute/PrivateRoute";
+export { default as OrderConfirmation } from "./OrderConfirmation/OrderConfirmation";
+export { default as ShippingMethod } from "./ShippingMethod/ShippingMethod";
+export { default as PaymentMethod } from "./PaymentMethod/PaymentMethod";

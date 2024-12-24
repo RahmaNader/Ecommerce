@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { ToggleRadioButton } from "@components/atoms";
-import visaLogo from "../../../assets/visa.svg";
-import masterCardLogo from "../../../assets/master card.svg";
-import CardModal from "../CardModal/CardModal"; // Import the CardModal component
-import addCardPlusIcon from "../../../assets/add-card-plus-icon.svg";
-import PaymentCard from "../PaymentCard/PaymentCard"; // Import the PaymentCard component
+import visaLogo from "@assets/visa.svg";
+import masterCardLogo from "@assets/master card.svg";
+import CardModal from "../CardModal/CardModal"; 
+import addCardPlusIcon from "@assets/add-card-plus-icon.svg";
+import PaymentCard from "../PaymentCard/PaymentCard";
 
 interface PaymentMethodProps {
   selectedPaymentMethod: string;

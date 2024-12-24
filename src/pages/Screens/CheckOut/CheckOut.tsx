@@ -1,15 +1,9 @@
-import React, { useState } from "react";
-import cartIcon from "../../../assets/cart-icon.svg";
-import cartIcon2 from "../../../assets/cart-icon2.png";
-import icon from "../../../assets/discount icon.svg";
-import icon2 from "../../../assets/Vector.svg";
-import plusIcon from "../../../assets/plus.svg";
-import { Button, ToggleRadioButton } from "@components/atoms";
-import { Address } from "@components/molecules";
-import AddressModal from "../../atoms/AddressModal/AddressModal"; // Import the AddressModal component
-import ShippingMethod from "../../molecules/ShippingMethod/ShippingMethod"; // ShippingMethod component
-import PaymentMethod from "../../molecules/PaymentMethods/PaymentMethods"; // PaymentMethod component
-import OrderConfirmation from "@components/molecules/OrderConfirmation/OrderConfirmation";
+import { useState } from "react";
+import icon2 from "@assets/Vector.svg";
+import icon from "@assets/discount icon.svg";
+import plusIcon from "@assets/plus.svg";
+import { Button, ToggleRadioButton, AddressModal } from "@components/atoms";
+import { Address, ShippingMethod, PaymentMethod, OrderConfirmation } from "@components/molecules";
 
 interface Address {
   building: string;
@@ -42,17 +36,16 @@ const product: Product = {
 };
 
 export default function CheckOut() {
-  const [showModal, setShowModal] = useState(false); // Modal visibility
-  const [addresses, setAddresses] = useState<Address[]>([]); // List of addresses
-  const [selectedAddressIndex, setSelectedAddressIndex] = useState<number | null>(null); // Track selected address
-  const [showShippingMethod, setShowShippingMethod] = useState(false); // Track if shipping methods are visible
-  const [selectedShippingMethod, setSelectedShippingMethod] = useState<string>(""); // Track selected shipping method
-  const [showPaymentMethod, setShowPaymentMethod] = useState(false); // Track if payment methods are visible
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>(""); // Track selected payment method
+  const [showModal, setShowModal] = useState(false); 
+  const [addresses, setAddresses] = useState<Address[]>([]); 
+  const [selectedAddressIndex, setSelectedAddressIndex] = useState<number | null>(null); 
+  const [showShippingMethod, setShowShippingMethod] = useState(false); 
+  const [selectedShippingMethod, setSelectedShippingMethod] = useState<string>(""); 
+  const [showPaymentMethod, setShowPaymentMethod] = useState(false); 
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("");
   const [orderConfirmed, setOrderConfirmed] = useState(false);
   const [couponCode, setCouponCode] = useState<string>("");
 
-  // Function to open the modal
   const openModal = () => {
     setShowModal(true);
   };
@@ -60,22 +53,20 @@ export default function CheckOut() {
   const [editingAddressIndex, setEditingAddressIndex] = useState<number | null>(null);
 
   const handleEditAddress = (index: number) => {
-    setEditingAddressIndex(index); // Track which address is being edited
+    setEditingAddressIndex(index); 
     setShowModal(true);
   };
 
   const addAddress = (newAddress: Address) => {
     setAddresses((prevAddresses) => {
       if (editingAddressIndex !== null) {
-        // Replace the existing address
         const updatedAddresses = [...prevAddresses];
         updatedAddresses[editingAddressIndex] = newAddress;
         return updatedAddresses;
       }
-      // Add a new address
       return [...prevAddresses, newAddress];
     });
-    setEditingAddressIndex(null); // Reset after editing
+    setEditingAddressIndex(null); 
     closeModal();
   };
 
@@ -84,71 +75,66 @@ export default function CheckOut() {
     setAddresses(updatedAddresses);
   };
 
-  // Function to close the modal
   const closeModal = () => {
     setShowModal(false);
   };
 
-  // Function to handle address selection
   const handleAddressSelection = (index: number) => {
-    setSelectedAddressIndex(index); // Update selected address index
+    setSelectedAddressIndex(index); 
   };
 
-  // Handle next button click (proceed to shipping method)
   const handleNextClick = () => {
     if (selectedAddressIndex !== null) {
-      setShowShippingMethod(true); // Show the shipping method section
+      setShowShippingMethod(true); 
     } else {
       alert("Please select an address first.");
     }
   };
 
-  // Handle shipping method change
   const handleShippingMethodChange = (method: string) => {
-    setSelectedShippingMethod(method); // Update selected shipping method
+    setSelectedShippingMethod(method); 
   };
 
-  // Handle next button click for shipping method (proceed to payment method)
+
   const handlePaymentMethodClick = () => {
     if (selectedShippingMethod) {
-      setShowShippingMethod(false); // Hide the shipping method section
-      setShowPaymentMethod(true); // Show payment method section
+      setShowShippingMethod(false); 
+      setShowPaymentMethod(true); 
     } else {
       alert("Please select a shipping method first.");
     }
   };
 
-  // Handle payment method change
   const handlePaymentMethodChange = (method: string) => {
-    setSelectedPaymentMethod(method); // Update selected payment method
+    setSelectedPaymentMethod(method); 
   };
 
-  // Handle confirm order (final step)
   const handleConfirmOrder = () => {
     if (selectedPaymentMethod) {
-      setOrderConfirmed(true); // Set order confirmation state to true
+      setOrderConfirmed(true);
     } else {
       alert("Please select a payment method.");
     }
   };
 
   if (orderConfirmed) {
-    return <OrderConfirmation />; // Render OrderConfirmation when the order is confirmed
+    return <OrderConfirmation />; 
   }
 
   return (
     <div className="py-8 lg:px-12 md:px-5 max-sm:px-2.5 relative">
       <div className="pt-16 w-full">
-        <div className="flex flex-col items-center mb-10">
+
+        {/* <div className="flex flex-col items-center mb-10">
           <img src={cartIcon} alt="" className="" />
           <h1 className="text-center w-full text-wine font-playfair text-5xl">
             Checkout
           </h1>
           <img src={cartIcon2} alt="" className="w-25 mt-2.5" />
-        </div>
+        </div> */}
+
         <div className="flex justify-between flex-col lg:flex-row px-8 w-full md:flex-row">
           <div className="lg:w-3/4 md:w-1/2 w-full">
-            {/* Render the address section or shipping methods */}
             {!showShippingMethod && !showPaymentMethod && (
               <>
                 {addresses.map((address, index) => (
@@ -177,7 +163,6 @@ export default function CheckOut() {
                           )}
                         </div>
                       </div>
-                      {/* Add spans for Edit and Remove */}
                       <div className="address-actions flex gap-4 text-sm text-wine mt-2">
                         <span
                           onClick={() => handleEditAddress(index)}
@@ -197,10 +182,9 @@ export default function CheckOut() {
                   </div>
                 ))}
 
-                {/* "Add New Address" Button */}
                 <div
                   className="flex my-4 px-8 cursor-pointer"
-                  onClick={openModal} // Opens the modal when clicked
+                  onClick={openModal} 
                 >
                   <img src={plusIcon} className="w-6" alt="" />
                   <p className="text-wine text-xl ps-2 ">Add New Address</p>
@@ -208,7 +192,6 @@ export default function CheckOut() {
               </>
             )}
 
-            {/* Render the shipping method section */}
             {showShippingMethod && (
               <ShippingMethod
                 selectedShippingMethod={selectedShippingMethod}
@@ -216,7 +199,6 @@ export default function CheckOut() {
               />
             )}
 
-            {/* Render the payment method section */}
             {showPaymentMethod && (
               <PaymentMethod
                 selectedPaymentMethod={selectedPaymentMethod}
@@ -225,7 +207,6 @@ export default function CheckOut() {
             )}
           </div>
 
-          {/* Order Summary Section */}
           <div className="primary lg:w-1/4 md:w-1/2 w-[80%] mx-auto my-4 flex flex-col border border-1 border-skin p-12 bg-[#A78E781C] ">
             <h2 className="pb-4 w-full">Order Summary</h2>
             <div className="flex justify-between w-full border-b border-b-gray-400">
@@ -295,7 +276,6 @@ export default function CheckOut() {
         </div>
       </div>
 
-      {/* Address Modal */}
       {showModal && (
         <AddressModal
           closeModal={closeModal}
