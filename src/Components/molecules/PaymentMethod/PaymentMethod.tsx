@@ -44,10 +44,9 @@ const PaymentMethod: React.FC<PaymentMethodProps> = ({
   };
 
   return (
-    <div className="space-y-2 my-5 lg:px-12">
-      <h2 className="text-xl font-semibold text-wine">Payment Method</h2>
+    <div className="py-8 w-full">
 
-      <div className="py-5 flex border-b border-b-gray-300 text-wine">
+      <div className="py-5 flex text-wine">
         <div className="w-full flex justify-between items-center">
           <div className="w-full flex justify-between">
             <div>

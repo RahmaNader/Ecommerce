@@ -54,6 +54,8 @@ export type Product = {
   NormalPrice: number;
 }
 
+
+
 export type RatingDistributionItem = {
   rating: number;
   percentage: string;
