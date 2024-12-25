@@ -1,13 +1,12 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { getAddressesForUser, updateSavedAddresses } from "@utils/addressUtils";
 import Cookies from "js-cookie";
-import icon2 from "@assets/Vector.svg";
-import icon from "@assets/discount icon.svg";
 import plusIcon from "@assets/plus.svg";
 import { AddressProps } from "@types";
 import { Product } from "@types";
+import { OrderSummary } from "@components/organisms";
+
 import {
-  Button,
   ToggleRadioButton,
   AddressModal,
   Category,
@@ -23,10 +22,7 @@ import {
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import Typography from "@mui/material/Typography";
 
-const validCoupons = {
-  SAVE10: 0.1,
-  SAVE20: 0.2,
-};
+
 
 export default function CheckOut() {
   const [showModal, setShowModal] = useState(false);
@@ -40,19 +36,16 @@ export default function CheckOut() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<string>("");
   const [orderConfirmed, setOrderConfirmed] = useState(false);
-  const [couponCode, setCouponCode] = useState<string>("");
-  const [couponDiscount, setCouponDiscount] = useState<number>(0);
   const [editingAddressIndex, setEditingAddressIndex] = useState<number | null>(
     null
   );
   const [alert, setAlert] = useState<{
-      type: "success" | "error";
-      message: string;
-    } | null>(null);
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
   const [currentStep, setCurrentStep] = useState<
     "address" | "shipping" | "payment"
   >("address");
-  const couponInputRef = useRef<HTMLInputElement>(null);
 
   const openModal = () => {
     setShowModal(true);
@@ -63,57 +56,26 @@ export default function CheckOut() {
     setAddresses(savedAddresses);
   }, []);
 
-  const getDeliveryDate = () => {
-    const today = new Date();
-    const deliveryDate = new Date(today);
-    deliveryDate.setDate(today.getDate() + 7);
-    return deliveryDate.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
-  };
 
-  useEffect(() => {
-    const cartData = Cookies.get("cart");
-    if (cartData) {
-      setProducts(JSON.parse(cartData));
-    }
-  }, []);
 
-  const calculateSummary = () => {
-    return products.reduce(
-      (summary, product) => {
-        summary.Total += product.NormalPrice * product.quantity;
-        summary.subTotal += product.DisPrice * product.quantity;
-        summary.shipping += 50;
-        return summary;
-      },
-      { subTotal: 0, shipping: 0, Total: 0 }
-    );
-  };
+useEffect(() => {
+  const cartData = Cookies.get("cart");
+  // const orderSummary = Cookies.get("orderSummary");
+  
+  if (cartData) {
+    setProducts(JSON.parse(cartData));
+  }
+  
+  // Ensure we have previous cart state
+  if (!Cookies.get('previousCart') && cartData) {
+    Cookies.set('previousCart', JSON.stringify(JSON.parse(cartData).map((p: Product) => ({ 
+      id: p.id, 
+      quantity: p.quantity 
+    }))));
+  }
+}, []);
 
-  const applyCoupon = () => {
-    if (couponCode in validCoupons) {
-      setCouponDiscount(validCoupons[couponCode as keyof typeof validCoupons]);
-      setAlert({ type: "success", message: "Coupon applied successfully!" });
-    } else {
-      setCouponDiscount(0);
-      setAlert({ type: "error", message: "Invalid coupon code!" });
-    }
 
-    // Clear the input field
-    if (couponInputRef.current) {
-      couponInputRef.current.value = "";
-      setCouponCode("");
-    }
-
-    setTimeout(() => setAlert(null), 3000);
-  };
-
-  const summary = calculateSummary();
-  const totalBeforeCoupon = summary.subTotal + summary.shipping;
-  const totalAfterCoupon = totalBeforeCoupon * (1 - couponDiscount);
 
   const handleEditAddress = (index: number) => {
     setEditingAddressIndex(index);
@@ -220,19 +182,19 @@ export default function CheckOut() {
         <Category SectionName={"CheckOut"} mdMyValue={"mt-2"} />
 
         {alert && (
-                <div
-                  className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md"
-                  role="alert"
-                >
-                  {alert.type === "success" ? (
-                    <SuccessAlert message={alert.message} />
-                  ) : (
-                    <ErrorAlert message={alert.message} />
-                  )}
-                </div>
-              )}
+          <div
+            className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md"
+            role="alert"
+          >
+            {alert.type === "success" ? (
+              <SuccessAlert message={alert.message} />
+            ) : (
+              <ErrorAlert message={alert.message} />
+            )}
+          </div>
+        )}
 
-        <div className="flex items-center w-full">
+        <div className="flex  flex-row gap-4 items-center w-full">
           <Typography
             onClick={() => setCurrentStep("address")}
             sx={{
@@ -275,6 +237,7 @@ export default function CheckOut() {
         </div>
 
         <div className="flex flex-col md:flex-row justify-between w-full gap-6">
+          
           <div className="md:w-7/12 w-full">
             {currentStep === "address" && (
               <>
@@ -346,74 +309,11 @@ export default function CheckOut() {
           </div>
 
           {/* Order Summary */}
-          <div className="w-full h-fit md:w-4/12 flex flex-col border border-ForthColor rounded-xl p-6 bg-[#A78E781C]">
-            
-            <h2 className="font-semibold font-playfair mb-4 text-wine text-lg md:text-xl">
-              Order Summary
-            </h2>
-
-            <div className="flex flex-col gap-4 border-b border-b-gray-400 pb-4">
-              <div className="flex justify-between text-wine text-base font-medium font-Poppins">
-                <h4>Price</h4>
-                <h4>{summary.Total.toFixed(2)} EGP</h4>
-              </div>
-
-              <div className="flex justify-between text-wine text-base font-medium font-Poppins">
-                <h4>Discount</h4>
-                <h4>{summary.subTotal.toFixed(2)} EGP</h4>
-              </div>
-
-              <div className="flex justify-between text-wine text-base font-medium font-Poppins">
-                <h4>Shipping</h4>
-                <h4>{summary.shipping.toFixed(2)} EGP</h4>
-              </div>
-              <div className="flex justify-between text-wine text-base font-medium font-Poppins">
-                <h4>Coupon Discount</h4>
-                <h4>
-                  -{(totalBeforeCoupon - totalAfterCoupon).toFixed(2)} EGP
-                </h4>
-              </div>
-            </div>
-
-            <div className="flex justify-between mt-4 text-wine text-base font-medium font-Poppins">
-            <h4>TOTAL</h4>
-            <h4>{totalAfterCoupon.toFixed(2)} EGP</h4>
-          </div>
-
-          <div className="flex justify-between mt-4 text-wine text-base font-medium font-Poppins">
-            <h4>Estimated Delivery by</h4>
-            <h4>{getDeliveryDate()}</h4>
-          </div>
-
-          <div className="flex flex-col gap-4 my-4 justify-between w-full">
-          <div className="mt-4 relative">
-              <input
-                ref={couponInputRef}
-                type="text"
-                value={couponCode}
-                onChange={(e) => setCouponCode(e.target.value)}
-                placeholder="Coupon Code"
-                className="w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none"
-              />
-              <div className="absolute right-3 bottom-2.5">
-                <img src={icon} alt="Coupon Icon" />
-                <img src={icon2} alt="" className="absolute top-1/3 left-1/3" />
-              </div>
-            </div>
-
-              <Button
-                label={"Apply Coupon"}
-                type="secondary"
-                size="medium"
-                onClick={applyCoupon}
-              />
-              <Button
-                size="large"
-                label={currentStep === "payment" ? "Confirm Order" : "Next"}
-                onClick={handleNextClick}
-              />
-              </div>
-          </div>
+          <OrderSummary
+            products={products}
+            currentStep={currentStep}
+            onNextClick={handleNextClick}
+          />
         </div>
       </div>
 

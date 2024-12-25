@@ -54,7 +54,26 @@ export type Product = {
   NormalPrice: number;
 }
 
+export type CouponStatus = 'none' | 'success' | 'already_applied' | 'invalid';
+export interface OrderSummaryData {
+  total: number;
+  subTotal: number;
+  shipping: number;
+  couponDiscount: number;
+  totalBeforeCoupon: number;
+  totalAfterCoupon: number;
+  deliveryDate: string;
+  appliedCoupon?: string;
+  couponStatus?: CouponStatus;
+}
 
+export interface OrderSummaryProps {
+  products: Product[];
+  showCheckoutButton?: boolean;
+  onCheckoutClick?: () => void;
+  currentStep?: "address" | "shipping" | "payment";
+  onNextClick?: () => void;
+}
 
 export type RatingDistributionItem = {
   rating: number;
