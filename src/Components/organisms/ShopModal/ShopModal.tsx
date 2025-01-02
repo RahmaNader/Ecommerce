@@ -1,19 +1,17 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
-// 1. Define an interface (or type) for each category shape:
 interface Category {
   categoryID: number;
   name: string;
   parentCategoryID: number | null;
-  createdAt: string; // if you care about it
+  createdAt: string;
 }
 
 type ShopModalProps = {
   isOpen: boolean;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
-  // 2. Accept categories as a prop
   categories: Category[];
 };
 
@@ -24,8 +22,6 @@ const ShopModal: React.FC<ShopModalProps> = ({
   categories,
 }) => {
   const location = useLocation();
-
-  // 3. Filter out main categories (parentCategoryID === null)
   const mainCategories = categories.filter(
     (cat) => cat.parentCategoryID === null
   );
@@ -39,10 +35,8 @@ const ShopModal: React.FC<ShopModalProps> = ({
       onMouseLeave={onMouseLeave}
     >
       <div className="p-8 rounded-lg w-auto">
-        {/* 4. Create columns for each main category */}
         <div className="grid grid-cols-3 gap-8">
           {mainCategories.map((mainCat) => {
-            // 5. Find subcategories for this main category
             const subcategories = categories.filter(
               (sub) => sub.parentCategoryID === mainCat.categoryID
             );
@@ -53,13 +47,8 @@ const ShopModal: React.FC<ShopModalProps> = ({
                   {mainCat.name}
                 </h2>
                 <ul className="space-y-2">
-                  {/* 6. For each subcategory, build your <Link/> */}
                   {subcategories.map((sub) => {
-                    // Construct a route, e.g. /products/men/pants or /products/women/tops
-                    // Adjust your route strategy as needed
                     const subPath = `/products/${mainCat.name.toLowerCase()}/${sub.name.toLowerCase()}`;
-
-                    // Check if link is active
                     const isActive = location.pathname.includes(subPath);
 
                     return (
@@ -77,8 +66,6 @@ const ShopModal: React.FC<ShopModalProps> = ({
                       </li>
                     );
                   })}
-
-                  {/* If you want to link the main category itself, you could add something here */}
                 </ul>
               </div>
             );

@@ -26,7 +26,7 @@ const Navbar: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isShopOpen, setIsShopOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(0); // Cart item count
+  const [cartCount, setCartCount] = useState(0);
   const location = useLocation();
   const closeTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
@@ -66,7 +66,6 @@ const Navbar: React.FC = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
-  // Update cart count on component mount and when cookies change
   useEffect(() => {
     const updateCartCount = () => {
       const cart = Cookies.get("cart") ? JSON.parse(Cookies.get("cart") as string) : [];
