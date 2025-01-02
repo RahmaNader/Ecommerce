@@ -10,6 +10,8 @@ import Logo from "@assets/Logo.png";
 import profile from "@assets/Profile.svg";
 import { ShopModal } from "@components/organisms";
 import { NavLink } from "@components/atoms";
+import { useQuery } from "react-query";
+import { fetchCategories } from "@services/api/fetchCategories";
 
 const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -27,6 +29,18 @@ const Navbar: React.FC = () => {
   const [cartCount, setCartCount] = useState(0); // Cart item count
   const location = useLocation();
   const closeTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
+
+  const {
+    data: categories,
+    isLoading,
+    isError,
+    error,
+  } = useQuery("categories", fetchCategories);
+
+  const mainCategories = categories?.filter(
+    (cat: any) => cat.parentCategoryID === null
+  ) || [];
 
   const handleOpenModal = () => {
     if (closeTimeoutRef.current) {
@@ -61,7 +75,7 @@ const Navbar: React.FC = () => {
     };
 
     updateCartCount();
-    const interval = setInterval(updateCartCount, 1000); // Update periodically to reflect changes
+    const interval = setInterval(updateCartCount, 1000);
 
     return () => clearInterval(interval);
   }, []);
@@ -87,30 +101,30 @@ const Navbar: React.FC = () => {
           isActive={isActive("/search")}
         />
         <NavLink
-  label={
-    <IconButton aria-label="cart"
-    sx={{
-      "&:hover": {
-        color: "#f4eee8", 
-        backgroundColor: "#f4eee8",
-      },
-    }}
-    >
-      <StyledBadge badgeContent={cartCount} color="success" showZero>
-        <ShoppingCartIcon
-          sx={{
-            color: "black", 
-            fontSize: "28px",
-
-          }}
+          label={
+            <IconButton
+              aria-label="cart"
+              sx={{
+                "&:hover": {
+                  color: "#f4eee8",
+                  backgroundColor: "#f4eee8",
+                },
+              }}
+            >
+              <StyledBadge badgeContent={cartCount} color="success" showZero>
+                <ShoppingCartIcon
+                  sx={{
+                    color: "black",
+                    fontSize: "28px",
+                  }}
+                />
+              </StyledBadge>
+            </IconButton>
+          }
+          to="/cart"
+          variant="navbaricons"
+          isActive={isActive("/cart")}
         />
-      </StyledBadge>
-    </IconButton>
-  }
-  to="/cart"
-  variant="navbaricons"
-  isActive={isActive("/cart")}
-/>
 
         <NavLink
           label={<img src={profile} alt="Profile" width={28} height={28} />}
@@ -201,24 +215,25 @@ const Navbar: React.FC = () => {
                 isShopOpen ? "max-h-40" : "max-h-0"
               } overflow-hidden border-l-4 border-wine`}
             >
-              <NavLink
-                label="Men"
-                to="/products/men"
-                variant="sidenavbarsub"
-                onClick={toggleMenu}
-              />
-              <NavLink
-                label="Women"
-                to="/products/women"
-                variant="sidenavbarsub"
-                onClick={toggleMenu}
-              />
-              <NavLink
-                label="Kids"
-                to="/products/kids"
-                variant="sidenavbarsub"
-                onClick={toggleMenu}
-              />
+              {isLoading && (
+                <p className="text-center p-2">Loading categories...</p>
+              )}
+              {isError && (
+                <p className="text-center p-2 text-red-600">
+                  {(error as Error)?.message}
+                </p>
+              )}
+              {!isLoading &&
+                !isError &&
+                mainCategories.map((category: any) => (
+                  <NavLink
+                    key={category.categoryID}
+                    label={category.name}
+                    to={`/products/${category.name.toLowerCase()}`}
+                    variant="sidenavbarsub"
+                    onClick={toggleMenu}
+                  />
+                ))}
             </div>
           </div>
 
@@ -251,6 +266,7 @@ const Navbar: React.FC = () => {
           isOpen={isModalOpen}
           onMouseEnter={handleOpenModal}
           onMouseLeave={handleCloseModal}
+          categories={categories || []}
         />
       )}
     </div>
