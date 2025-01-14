@@ -12,7 +12,6 @@ const Home: React.FC = () => {
     console.log("Button clicked: " + section);
   };
 
-  // Fetch "New Arrivals" using React Query
   const {
     data: newArrivals,
     isLoading: isLoadingNewArrivals,
