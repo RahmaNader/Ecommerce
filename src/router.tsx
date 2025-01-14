@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import { Layout, ProfileLayout } from "@components/organisms";
-import OrderConfirmation from "@components/molecules/OrderConfirmation/OrderConfirmation";
+import {OrderConfirmation} from "@components/molecules";
 import {
   AboutScreen,
   BlogsScreen,

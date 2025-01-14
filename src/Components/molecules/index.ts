@@ -11,3 +11,8 @@ export { default as PrivateRoute } from "./PrivateRoute/PrivateRoute";
 export { default as OrderConfirmation } from "./OrderConfirmation/OrderConfirmation";
 export { default as ShippingMethod } from "./ShippingMethod/ShippingMethod";
 export { default as PaymentMethod } from "./PaymentMethod/PaymentMethod";
+export { default as UploadID } from "./VerificationStatus/UploadID";
+export { default as VerificationSuccess } from "./VerificationStatus/VerificationSuccess";
+export { default as VerificationFailed } from "./VerificationStatus/VerificationFailed";
+export { default as PendingVerification } from "./VerificationStatus/PendingVerification";
+export { default as ReviewUpload } from "./VerificationStatus/ReviewUpload";

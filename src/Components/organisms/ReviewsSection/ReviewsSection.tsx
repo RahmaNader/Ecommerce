@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ReviewCard } from "@components/atoms";
-import { WriteReview } from "@components/molecules";
+import { WriteRe} from "@components/molecules";
 
 const ReviewsSection: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
