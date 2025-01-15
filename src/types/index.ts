@@ -42,8 +42,49 @@ export interface AddressProps {
   city: string;
   additionalDirections?: string;
   saveAddress: boolean;
+};
+
+export interface ProductImage {
+  $id: string;
+  imageId: number;
+  imageUrl: string;
+  altText: string;
 }
 
+export interface ProductReview {
+  $id: string;
+  $values: string[];
+}
+
+export interface ProductVariant {
+  $id: string;
+  $values: any[]; 
+}
+
+export type FetchProduct = {
+  $id: string;
+  productID: number;
+  name: string;
+  productDescription: string;
+  productPrice: number;
+  averageRate: number;
+  productQuantity: number;
+  categoryID: number;
+  category: null | any; 
+  reviews: ProductReview;
+  productVarients: ProductVariant;
+  productImages: {
+    $id: string;
+    $values: ProductImage[];
+  };
+  created: string;
+  lastUpdated: string;
+  priceAfterDiscount: number;
+  discountPercent: number;
+};
+
+
+////////////////////////////////////////////////////
 export type Product = {
   id: number;
   name: string;

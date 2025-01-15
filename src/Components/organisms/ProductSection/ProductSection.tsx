@@ -1,3 +1,4 @@
+//path: src/Components/organisms/ProductSection/ProductSection.tsx
 import React, { useState, useEffect } from "react";
 import { CardComponent } from "@types";
 import Cookies from "js-cookie";
