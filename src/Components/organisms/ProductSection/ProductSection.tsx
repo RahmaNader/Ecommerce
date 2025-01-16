@@ -7,18 +7,33 @@ import { ProductCount, CustomRating, SuccessAlert, ErrorAlert } from "@component
 import heart from "@assets/heart.svg";
 import filledHeart from "@assets/filledHeart.svg";
 import { FaShareAlt } from "react-icons/fa";
+import { DetailedProduct } from "@services/api/fetchProductDetails";
+
+
+interface ProductSectionProps {
+  product: DetailedProduct;
+}
 
 const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
   const discountedPrice = calculateDiscountPercentage(
-    product.NormalPrice,
-    product.DisPrice
+    product.productPrice,
+    product.priceAfterDiscount
   );
+
+  const availableColors = [...new Set(
+    product.productVarients.map(variant => variant.colorName)
+  )];
+
+  const availableSizes = [...new Set(
+    product.productVarients.map(variant => variant.sizeLabel)
+  )].filter(Boolean);
 
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [isFavorited, setIsFavorited] = useState(false);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [alertType, setAlertType] = useState<"success" | "error" | null>(null);
+  const [quantity, setQuantity] = useState(1);
 
   const handleAddToCart = () => {
     if (!selectedColor || !selectedSize) {
@@ -28,33 +43,36 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
       return;
     }
 
+    const cartItem = {
+      id: product.productID,
+      name: product.name,
+      DisPrice: product.priceAfterDiscount,
+      NormalPrice: product.productPrice,
+      src: product.productImages[0]?.imageUrl || fallbackImage,
+      color: selectedColor,
+      size: selectedSize,
+      quantity: quantity
+    };
+
     const existingCart = Cookies.get("cart")
       ? JSON.parse(Cookies.get("cart") as string)
       : [];
 
     const existingItemIndex = existingCart.findIndex(
-      (item: { id: number; color: string; size: string }) =>
-        item.id === product.id && item.color === selectedColor && item.size === selectedSize
+      (item: any) =>
+        item.id === cartItem.id &&
+        item.color === cartItem.color &&
+        item.size === cartItem.size
     );
 
     if (existingItemIndex !== -1) {
-      existingCart[existingItemIndex].quantity += 1;
+      existingCart[existingItemIndex].quantity += quantity;
     } else {
-      const newItem = {
-        id: product.id,
-        name: product.name,
-        DisPrice: product.DisPrice,
-        NormalPrice: product.NormalPrice,
-        src: product.src,
-        color: selectedColor,
-        size: selectedSize,
-        quantity: 1,
-      };
-      existingCart.push(newItem);
+      existingCart.push(cartItem);
     }
 
     Cookies.set("cart", JSON.stringify(existingCart), { expires: 7 });
-    setAlertMessage("Item added successfully to cart.");
+    setAlertMessage("Product added to cart successfully!");
     setAlertType("success");
     setTimeout(() => setAlertType(null), 3000);
   };
@@ -68,6 +86,7 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
   };
 
   const handleCountChange = (count: number) => {
+    setQuantity(count);
     console.log(`Selected quantity: ${count}`);
   };
 
@@ -185,16 +204,14 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
           <p className="font-playfair font-semibold text-xl text-wine">
             Choose Size
           </p>
-          <div className="flex flex-row gap-3 items-center">
-            {product.size.map((size, index) => (
+          <div className="flex gap-2">
+            {availableSizes.map(size => (
               <button
-                key={index}
-                className={`px-4 py-2 rounded-md border-2 ${
-                  selectedSize === size
-                    ? "bg-wine text-white"
-                    : "border-wine text-wine"
-                }`}
+                key={size}
                 onClick={() => setSelectedSize(size)}
+                className={`px-4 py-2 border rounded ${
+                  selectedSize === size ? 'border-primary bg-primary/10' : ''
+                }`}
               >
                 {size}
               </button>
@@ -204,7 +221,7 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
 
         <div className="flex gap-2 flex-row justify-between items-center">
           <div className="flex flex-col sm:flex-row gap-2 items-center">
-            <ProductCount initialCount={1} onCountChange={handleCountChange} />
+            <ProductCount initialCount={quantity} onCountChange={handleCountChange} />
             <button
               onClick={handleAddToCart}
               className="w-32 h-10 bg-wine text-mainColor rounded-md hover:bg-sixColor"
