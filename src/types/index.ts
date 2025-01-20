@@ -15,22 +15,24 @@ export type LoginFormInputs = {
   password: string;
 };
 
-export type CardComponent = {
+export interface CardComponent {
   id: number;
   src: string;
   alt: string;
   name: string;
-  DisPrice: number;
-  NormalPrice: number;
-  rate: number;
-  size: string[];
-  category: string;
-  collection: number;
-  description: string;
-  color: string[]; 
-  availableQuantity: number; 
+  priceAfterDiscount: number;
+  productPrice: number;
+  averageRate?: number;
+  productDescription?: string;
+  color?: string[]; 
+  size?: string[];   
+  availableQuantity?: number;
+  category?: string;
+  collection?: string;
   onClick?: () => void;
-};
+  discountPercent?: number;
+  productQuantity?: number;
+}
 
 export interface AddressProps {
   building: string;

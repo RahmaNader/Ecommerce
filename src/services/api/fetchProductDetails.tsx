@@ -85,6 +85,7 @@ export async function fetchProductDetails(productId: number): Promise<DetailedPr
       priceAfterDiscount: Number(product.priceAfterDiscount),
       discountPercent: Number(product.discountPercent),
     };
+    console.log(product);
   } catch (error) {
     console.error("Error fetching product details:", error);
     throw new Error("Failed to fetch product details.");

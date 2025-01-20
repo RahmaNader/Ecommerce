@@ -20,7 +20,7 @@ const ProductDetails: React.FC = () => {
         setLoading(true);
         const data = await fetchProductDetails(Number(id));
         setProduct(data);
-      } catch (err) {
+      } catch {
         setError("Failed to load product details");
       } finally {
         setLoading(false);
@@ -36,10 +36,15 @@ const ProductDetails: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-8 px-10 w-full">
+      
       <ProductSection product={product} />
+      
       <Category SectionName={"Rating And Reviews"} />
+      
       <RatingSection ratingsData={product.reviews?.map(review => review.rate) || []} />
+      
       <ReviewsSection reviews={product.reviews} />
+      
       <ProductsView sectionName="Related Products" cards={productsViewCards} />
     </div>
   );

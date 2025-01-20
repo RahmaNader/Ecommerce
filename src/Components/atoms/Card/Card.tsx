@@ -6,6 +6,8 @@ import { CustomRating, SuccessAlert } from "@components/atoms";
 import shoppingCart from "@assets/shoppingCart.svg";
 import { ProductPreference } from "@components/molecules";
 
+
+
 const Card: React.FC<CardComponent> = ({
   id,
   src,
@@ -14,8 +16,8 @@ const Card: React.FC<CardComponent> = ({
   DisPrice,
   NormalPrice,
   rate,
-  color,
-  size,
+  color = [], 
+  size = [],
 }) => {
   const navigate = useNavigate();
   const [alertVisible, setAlertVisible] = useState(false);
@@ -39,8 +41,18 @@ const Card: React.FC<CardComponent> = ({
     setShowPreference(true);
   };
 
-  const handlePreferenceSubmit = (preferences: { color: string; size: string; quantity: number }) => {
+  const handlePreferenceSubmit = (preferences: {
+    color: string;
+    size: string;
+    quantity: number;
+  })  => {
     setShowPreference(false);
+
+
+    if (!color.length || !size.length) {
+      console.error('Product options not available');
+      return;
+    }
 
     const existingCart = Cookies.get("cart")
       ? JSON.parse(Cookies.get("cart") as string)
@@ -52,10 +64,8 @@ const Card: React.FC<CardComponent> = ({
     );
 
     if (existingItemIndex !== -1) {
-      // Item with the same id, color, and size exists, update its quantity
       existingCart[existingItemIndex].quantity += preferences.quantity;
     } else {
-      // Add new item to the cart
       const newItem = {
         id,
         name,
@@ -87,10 +97,13 @@ const Card: React.FC<CardComponent> = ({
       {showPreference && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <ProductPreference
-            product={{ color, size }}
-            onSubmit={handlePreferenceSubmit}
-            onCancel={() => setShowPreference(false)}
-          />
+        product={{ 
+          color: Array.isArray(color) ? color : [], 
+          size: Array.isArray(size) ? size : [] 
+        }}
+        onSubmit={handlePreferenceSubmit}
+        onCancel={() => setShowPreference(false)}
+      />
         </div>
       )}
 
@@ -131,7 +144,7 @@ const Card: React.FC<CardComponent> = ({
       </div>
 
       <div className="flex justify-center mt-2">
-        <CustomRating rate={rate} mode="hide" />
+        <CustomRating rate={rate ?? 0} mode="hide" />
       </div>
     </div>
   );

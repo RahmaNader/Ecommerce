@@ -15,19 +15,9 @@ const ProductsView: React.FC<ProductsViewProps> = ({ sectionName, cards }) => {
               className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 flex justify-center"
             >
               <Card
-                id={card.id}
-                src={card.src}
-                alt={card.alt}
-                name={card.name}
-                DisPrice={card.DisPrice}
-                NormalPrice={card.NormalPrice}
-                rate={card.rate}
-                description={card.description}
-                color={card.color}
-                availableQuantity={card.availableQuantity}
-                size={card.size}
-                category={card.category}
-                collection={card.collection}
+                {...card}
+                color={Array.isArray(card.color) ? card.color : []}
+                size={Array.isArray(card.size) ? card.size : []}
               />
             </div>
           ))}

@@ -1,39 +1,23 @@
-//path: src/Components/organisms/ProductSection/ProductSection.tsx
 import React, { useState, useEffect } from "react";
 import { CardComponent } from "@types";
 import Cookies from "js-cookie";
-import { calculateDiscountPercentage } from "@utils/calculations";
 import { ProductCount, CustomRating, SuccessAlert, ErrorAlert } from "@components/atoms";
 import heart from "@assets/heart.svg";
 import filledHeart from "@assets/filledHeart.svg";
 import { FaShareAlt } from "react-icons/fa";
-import { DetailedProduct } from "@services/api/fetchProductDetails";
-
-
-interface ProductSectionProps {
-  product: DetailedProduct;
-}
 
 const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
-  const discountedPrice = calculateDiscountPercentage(
-    product.productPrice,
-    product.priceAfterDiscount
-  );
-
-  const availableColors = [...new Set(
-    product.productVarients.map(variant => variant.colorName)
-  )];
-
-  const availableSizes = [...new Set(
-    product.productVarients.map(variant => variant.sizeLabel)
-  )].filter(Boolean);
-
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [isFavorited, setIsFavorited] = useState(false);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [alertType, setAlertType] = useState<"success" | "error" | null>(null);
-  const [quantity, setQuantity] = useState(1);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+
+  const images = Array.isArray(product.images?.$values) 
+    ? product.images.$values 
+    : [];
+
 
   const handleAddToCart = () => {
     if (!selectedColor || !selectedSize) {
@@ -43,36 +27,33 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
       return;
     }
 
-    const cartItem = {
-      id: product.productID,
-      name: product.name,
-      DisPrice: product.priceAfterDiscount,
-      NormalPrice: product.productPrice,
-      src: product.productImages[0]?.imageUrl || fallbackImage,
-      color: selectedColor,
-      size: selectedSize,
-      quantity: quantity
-    };
-
     const existingCart = Cookies.get("cart")
       ? JSON.parse(Cookies.get("cart") as string)
       : [];
 
     const existingItemIndex = existingCart.findIndex(
-      (item: any) =>
-        item.id === cartItem.id &&
-        item.color === cartItem.color &&
-        item.size === cartItem.size
+      (item: { id: number; color: string; size: string }) =>
+        item.id === product.id && item.color === selectedColor && item.size === selectedSize
     );
 
     if (existingItemIndex !== -1) {
-      existingCart[existingItemIndex].quantity += quantity;
+      existingCart[existingItemIndex].quantity += 1;
     } else {
-      existingCart.push(cartItem);
+      const newItem = {
+        id: product.id,
+        name: product.name,
+        DisPrice: product.priceAfterDiscount,
+        NormalPrice: product.productPrice,
+        src: product.src,
+        color: selectedColor,
+        size: selectedSize,
+        quantity: 1,
+      };
+      existingCart.push(newItem);
     }
 
     Cookies.set("cart", JSON.stringify(existingCart), { expires: 7 });
-    setAlertMessage("Product added to cart successfully!");
+    setAlertMessage("Item added successfully to cart.");
     setAlertType("success");
     setTimeout(() => setAlertType(null), 3000);
   };
@@ -86,7 +67,6 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
   };
 
   const handleCountChange = (count: number) => {
-    setQuantity(count);
     console.log(`Selected quantity: ${count}`);
   };
 
@@ -160,32 +140,32 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
         </div>
 
         <div className="flex items-center">
-          <CustomRating rate={product.rate} mode="show" />
+          <CustomRating rate={product.averageRate ?? 0} mode="show" />
         </div>
 
         <div className="flex flex-row gap-8 items-center">
           <p className="font-playfair text-lg font-semibold text-wine">
-            {product.DisPrice} EGP
+            {product.priceAfterDiscount} EGP
           </p>
           <p className="font-playfair text-lg font-medium line-through text-FifthColor">
-            {product.NormalPrice} EGP
+            {product.productPrice} EGP
           </p>
           <p className="font-Poppins font-normal text-sm text-customRed bg-customRed/10 p-2 rounded-3xl">
-            -{discountedPrice}%
+            -{product.discountPercent}%
           </p>
         </div>
 
         <hr className="border-t-2 border-ForthColor my-4 w-full" />
 
         <p className="font-Poppins text-base text-ForthColor font-light">
-          {product.description}
+          {product.productDescription}
         </p>
 
         <div className="flex flex-col gap-4">
           <p className="font-playfair font-semibold text-xl text-wine">
             Select Colors
           </p>
-          <div className="flex flex-row gap-3 items-center">
+          {/* <div className="flex flex-row gap-3 items-center">
             {product.color.map((color, index) => (
               <div
                 key={index}
@@ -197,31 +177,33 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
                 onClick={() => setSelectedColor(color)}
               />
             ))}
-          </div>
+          </div> */}
         </div>
 
         <div className="flex flex-col gap-4 w-full">
           <p className="font-playfair font-semibold text-xl text-wine">
             Choose Size
           </p>
-          <div className="flex gap-2">
-            {availableSizes.map(size => (
+          {/* <div className="flex flex-row gap-3 items-center">
+            {product.size.map((size, index) => (
               <button
-                key={size}
-                onClick={() => setSelectedSize(size)}
-                className={`px-4 py-2 border rounded ${
-                  selectedSize === size ? 'border-primary bg-primary/10' : ''
+                key={index}
+                className={`px-4 py-2 rounded-md border-2 ${
+                  selectedSize === size
+                    ? "bg-wine text-white"
+                    : "border-wine text-wine"
                 }`}
+                onClick={() => setSelectedSize(size)}
               >
                 {size}
               </button>
             ))}
-          </div>
+          </div> */}
         </div>
 
         <div className="flex gap-2 flex-row justify-between items-center">
           <div className="flex flex-col sm:flex-row gap-2 items-center">
-            <ProductCount initialCount={quantity} onCountChange={handleCountChange} />
+            <ProductCount initialCount={1} onCountChange={handleCountChange} />
             <button
               onClick={handleAddToCart}
               className="w-32 h-10 bg-wine text-mainColor rounded-md hover:bg-sixColor"

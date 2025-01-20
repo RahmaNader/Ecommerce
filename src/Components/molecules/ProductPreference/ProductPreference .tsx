@@ -2,13 +2,16 @@ import React, { useState, useEffect } from "react";
 import { ErrorAlert, ProductCount } from "@components/atoms";
 
 interface ProductPreferenceProps {
-  product: { color: string[]; size: string[] };
+  product: {
+    color: string[];
+    size: string[];
+  };
   onSubmit: (preferences: { color: string; size: string; quantity: number }) => void;
   onCancel: () => void;
 }
 
 const ProductPreference: React.FC<ProductPreferenceProps> = ({
-  product,
+  product = { color: [], size: [] },
   onSubmit,
   onCancel,
 }) => {
@@ -59,9 +62,12 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
           </svg>
         </button>
 
+      
         <p className="font-playfair font-semibold text-lg text-wine mb-4">
           Choose Color
         </p>
+
+        {Array.isArray(product.color) && product.color.length > 0 && (
         <div className="flex gap-3 mb-4">
           {product.color.map((colorOption, index) => (
             <div
@@ -74,10 +80,13 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
             />
           ))}
         </div>
+        )}
 
         <p className="font-playfair font-semibold text-lg text-wine mb-4">
           Choose Size
         </p>
+
+        {Array.isArray(product.size) && product.size.length > 0 && (
         <div className="flex gap-3 mb-4">
           {product.size.map((sizeOption, index) => (
             <button
@@ -93,6 +102,7 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
             </button>
           ))}
         </div>
+        )}
 
         <div className="flex items-center gap-3 mb-6">
           <p className="font-playfair font-semibold text-lg text-wine">
