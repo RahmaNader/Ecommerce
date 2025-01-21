@@ -7,8 +7,8 @@ import filledHeart from "@assets/filledHeart.svg";
 import { FaShareAlt } from "react-icons/fa";
 
 const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
-  const [selectedColor, setSelectedColor] = useState<string | null>(null);
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  // const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  // const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [isFavorited, setIsFavorited] = useState(false);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [alertType, setAlertType] = useState<"success" | "error" | null>(null);
@@ -20,12 +20,12 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
 
 
   const handleAddToCart = () => {
-    if (!selectedColor || !selectedSize) {
-      setAlertMessage("Please select both a color and a size.");
-      setAlertType("error");
-      setTimeout(() => setAlertType(null), 3000);
-      return;
-    }
+    // if (!selectedColor || !selectedSize) {
+    //   setAlertMessage("Please select both a color and a size.");
+    //   setAlertType("error");
+    //   setTimeout(() => setAlertType(null), 3000);
+    //   return;
+    // }
 
     const existingCart = Cookies.get("cart")
       ? JSON.parse(Cookies.get("cart") as string)
@@ -33,20 +33,21 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
 
     const existingItemIndex = existingCart.findIndex(
       (item: { id: number; color: string; size: string }) =>
-        item.id === product.id && item.color === selectedColor && item.size === selectedSize
+        item.id === product.productID
+      //  && item.color === selectedColor && item.size === selectedSize
     );
 
     if (existingItemIndex !== -1) {
       existingCart[existingItemIndex].quantity += 1;
     } else {
       const newItem = {
-        id: product.id,
+        id: product.productID,
         name: product.name,
         DisPrice: product.priceAfterDiscount,
         NormalPrice: product.productPrice,
         // src: product.src,
-        color: selectedColor,
-        size: selectedSize,
+        // color: selectedColor,
+        // size: selectedSize,
         quantity: 1,
       };
       existingCart.push(newItem);
@@ -75,22 +76,21 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
       ? JSON.parse(Cookies.get("wishlist") as string)
       : [];
     const isInWishlist = wishlist.some(
-      (item: CardComponent) => item.id === product.id
-    );
+      (item: CardComponent) => item.productID === product.productID );
     setIsFavorited(isInWishlist);
-  }, [product.id]);
+  }, [product.productID]);
 
   const toggleWishlist = () => {
     const wishlist = Cookies.get("wishlist")
       ? JSON.parse(Cookies.get("wishlist") as string)
       : [];
     const isProductInWishlist = wishlist.some(
-      (item: CardComponent) => item.id === product.id
+      (item: CardComponent) => item.productID === product.productID
     );
 
     if (isProductInWishlist) {
       const updatedWishlist = wishlist.filter(
-        (item: CardComponent) => item.id !== product.id
+        (item: CardComponent) => item.productID !== product.productID
       );
       Cookies.set("wishlist", JSON.stringify(updatedWishlist), { expires: 1 });
       setIsFavorited(false);

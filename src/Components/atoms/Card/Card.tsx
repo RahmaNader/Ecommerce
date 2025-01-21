@@ -4,9 +4,9 @@ import Cookies from "js-cookie";
 import { CardComponent } from "@types";
 import fallbackImage from '@assets/HP_img2.jpeg';
 import { Image } from '@components/atoms';
-import { CustomRating, SuccessAlert } from "@components/atoms";
+import { CustomRating } from "@components/atoms";
 import shoppingCart from "@assets/shoppingCart.svg";
-import { ProductPreference } from "@components/molecules";
+// import { ProductPreference } from "@components/molecules";
 
 const Card: React.FC<CardComponent> = ({
   productID,
@@ -15,12 +15,12 @@ const Card: React.FC<CardComponent> = ({
   priceAfterDiscount,
   productPrice,
   averageRate,
-  color,
-  size,
+  // color,
+  // size,
 }) => {
   const navigate = useNavigate();
-  const [alertVisible, setAlertVisible] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
+  // const [alertVisible, setAlertVisible] = useState(false);
+  // const [alertMessage, setAlertMessage] = useState("");
   const [isInCart, setIsInCart] = useState(false);
   const [showPreference, setShowPreference] = useState(false);
 
@@ -40,65 +40,65 @@ const Card: React.FC<CardComponent> = ({
     setShowPreference(true);
   };
 
-  const handlePreferenceSubmit = (preferences: { color: string; size: string; quantity: number }) => {
-    setShowPreference(false);
+  // const handlePreferenceSubmit = (preferences: { color: string; size: string; quantity: number }) => {
+  //   setShowPreference(false);
 
-    const existingCart = Cookies.get("cart")
-      ? JSON.parse(Cookies.get("cart") as string)
-      : [];
+  //   const existingCart = Cookies.get("cart")
+  //     ? JSON.parse(Cookies.get("cart") as string)
+  //     : [];
 
-    const existingItemIndex = existingCart.findIndex(
-      (item: { id: number; color: string; size: string }) =>
-        item.id === productID && item.color === preferences.color && item.size === preferences.size
-    );
+  //   const existingItemIndex = existingCart.findIndex(
+  //     (item: { id: number; color: string; size: string }) =>
+  //       item.id === productID && item.color === preferences.color && item.size === preferences.size
+  //   );
 
-    if (existingItemIndex !== -1) {
-      // Item with the same id, color, and size exists, update its quantity
-      existingCart[existingItemIndex].quantity += preferences.quantity;
-    } else {
-      // Add new item to the cart
-      const newItem = {
-        productID,
-        name,
-        priceAfterDiscount,
-        productPrice,
-        productImages,
-        ...preferences,
-      };
-      existingCart.push(newItem);
-    }
+  //   if (existingItemIndex !== -1) {
+  //     // Item with the same id, color, and size exists, update its quantity
+  //     existingCart[existingItemIndex].quantity += preferences.quantity;
+  //   } else {
+  //     // Add new item to the cart
+  //     const newItem = {
+  //       productID,
+  //       name,
+  //       priceAfterDiscount,
+  //       productPrice,
+  //       productImages,
+  //       ...preferences,
+  //     };
+  //     existingCart.push(newItem);
+  //   }
 
-    Cookies.set("cart", JSON.stringify(existingCart), { expires: 7 });
+  //   Cookies.set("cart", JSON.stringify(existingCart), { expires: 7 });
 
-    setAlertMessage("Item added successfully to cart");
-    setIsInCart(true);
+  //   setAlertMessage("Item added successfully to cart");
+  //   setIsInCart(true);
 
-    setAlertVisible(true);
-    setTimeout(() => setAlertVisible(false), 3000);
-  };
+  //   setAlertVisible(true);
+  //   setTimeout(() => setAlertVisible(false), 3000);
+  // };
 
   const getImageUrl = () => {
-    if (productImages && productImages.$values && productImages.$values.length > 0) {
-      return productImages.$values[0].imageUrl;
+    if (productImages && productImages?.[0]?.altText && productImages?.[0]?.imageUrl != null) {
+      return productImages?.[0].imageUrl;
     }
     return fallbackImage;
   };
 
   return (
     <div className="relative m-4">
-      {alertVisible && (
+      {/* {alertVisible && (
         <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
           <SuccessAlert message={alertMessage} />
         </div>
-      )}
+      )} */}
 
       {showPreference && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <ProductPreference
+          {/* <ProductPreference
             product={{ color, size }}
             onSubmit={handlePreferenceSubmit}
             onCancel={() => setShowPreference(false)}
-          />
+          /> */}
         </div>
       )}
 
@@ -108,7 +108,7 @@ const Card: React.FC<CardComponent> = ({
       >
         <Image
           src={getImageUrl()}
-          alt={productImages?.$values[0]?.altText || name}
+          alt={productImages?.[0]?.altText || name}
           className="object-cover w-full h-full cursor-pointer"
         />
         <div className="absolute top-0 left-0 w-full h-full border-2 border-golden rounded-t-[500px]" />

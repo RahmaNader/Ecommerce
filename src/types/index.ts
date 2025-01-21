@@ -97,7 +97,7 @@ export interface CardComponent {
   productID: number;
   name: string;
   productDescription?: string | null;
-  productPrice: number;
+  productPrice: string;
   averageRate?: number;
   productQuantity?: number;
   categoryID: number;
@@ -107,8 +107,8 @@ export interface CardComponent {
   productImages?: ProductImage[]; // Images associated with the product
   created?: string; // ISO string for date
   lastUpdated?: string; // ISO string for date
-  priceAfterDiscount?: number;
-  discountPercent?: number;
+  priceAfterDiscount?: string;
+  discountPercent?: string;
   onClick?: () => void;
 }
 

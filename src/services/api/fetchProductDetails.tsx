@@ -13,8 +13,7 @@ export async function fetchProductDetails(productId: number): Promise<CardCompon
       name: product.name,
       productDescription: product.productDescription ?? null,
       productPrice: Number(product.productPrice).toFixed(2), 
-      averageRate: Number(product.averageRate).toFixed(2) !== undefined ? Number(product.averageRate).toFixed(2) : undefined,
-      productQuantity: product.productQuantity,
+      averageRate: product.averageRate ? Number(Number(product.averageRate).toFixed(2)) : undefined,      productQuantity: product.productQuantity,
       categoryID: product.categoryID,
       category: product.category
         ? {

@@ -22,9 +22,9 @@ const ProductsView: React.FC<ProductsViewProps> = ({ sectionName, cards }) => {
                 productPrice={card.productPrice}
                 averageRate={card.averageRate}
                 productDescription={card.productDescription}
-                color={card.color}
+                // color={card.color}
                 productQuantity={card.productQuantity}
-                size={card.size}
+                // size={card.size}
                 category={card.category}
                 // collection={card.collection}
               />

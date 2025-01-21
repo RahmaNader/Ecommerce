@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { CardComponent } from "@types";
 import { fetchProductDetails } from "@services/api/fetchProductDetails";
 import { Category } from "@components/atoms";
-import { RatingSection, ReviewsSection, ProductSection } from "@components/organisms";
+import { RatingSection, ProductSection } from "@components/organisms";
 import { ProductsView, Loading } from "@components/molecules";
 import { productsViewCards } from "@data/cards";
 
@@ -43,7 +43,7 @@ const ProductDetails: React.FC = () => {
       
       <RatingSection ratingsData={product.reviews?.map(review => review.rate) || []} />
       
-      <ReviewsSection reviews={product.reviews} />
+      {/* <ReviewsSection reviews={product.reviews} /> */}
       
       //this is suppossed to be the related products section using the related products API 
       <ProductsView sectionName="Related Products" cards={productsViewCards} />
