@@ -11,3 +11,4 @@ export { default as Confirmed } from './ConfirmationModals/Confirmed'
 export { default as Declined } from './ConfirmationModals/Declined'
 export { default as ToggleRadioButton } from "./ToggleRadioButton/ToggleRadioButton";
 export { default as AddressModal } from "./AddressModal/AddressModal";
+export { default as Image } from "./Image/Image";

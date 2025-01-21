@@ -12,11 +12,11 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
   const [isFavorited, setIsFavorited] = useState(false);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [alertType, setAlertType] = useState<"success" | "error" | null>(null);
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  // const [activeImageIndex, setActiveImageIndex] = useState(0);
 
-  const images = Array.isArray(product.images?.$values) 
-    ? product.images.$values 
-    : [];
+  // const images = Array.isArray(product.images?.$values) 
+  //   ? product.images.$values 
+  //   : [];
 
 
   const handleAddToCart = () => {
@@ -44,7 +44,7 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
         name: product.name,
         DisPrice: product.priceAfterDiscount,
         NormalPrice: product.productPrice,
-        src: product.src,
+        // src: product.src,
         color: selectedColor,
         size: selectedSize,
         quantity: 1,
@@ -117,8 +117,8 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
       <div className="flex flex-col justify-center items-center gap-2">
         <div className="image-container w-48 min-h-48 md:w-full h-[100%] relative overflow-hidden rounded-t-[500px]">
           <img
-            src={product.src}
-            alt={product.alt}
+            // src={product.src}
+            // alt={product.alt}
             className="object-cover w-full h-full cursor-pointer"
           />
         </div>

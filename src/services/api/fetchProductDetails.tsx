@@ -1,48 +1,9 @@
 // src/services/api/fetchProductDetails.ts
 import axios from "axios";
-
-// Define the interface for detailed product data
-export interface DetailedProduct {
-  productID: number;
-  name: string;
-  productDescription: string | null;
-  productPrice: number;
-  averageRate: number;
-  productQuantity: number;
-  categoryID: number;
-  category: {
-    categoryID: number;
-    name: string;
-    parentCategoryID: number | null;
-    createdAt: string;
-  };
-  reviews: Array<{
-    reviewId: number;
-    reviewContent: string;
-    rate: number;
-    createdAt: string;
-    userName: string;
-  }>;
-  productVarients: Array<{
-    colorId: number;
-    sizeId: number;
-    quantity: number;
-    colorName: string;
-    sizeLabel: string | null;
-  }>;
-  productImages: Array<{
-    imageId: number;
-    imageUrl: string;
-    altText: string;
-  }>;
-  created: string;
-  lastUpdated: string;
-  priceAfterDiscount: number;
-  discountPercent: number;
-}
+import { CardComponent, Review, ProductVariant, ProductImage } from "@types";
 
 // Function to fetch detailed product information
-export async function fetchProductDetails(productId: number): Promise<DetailedProduct> {
+export async function fetchProductDetails(productId: number): Promise<CardComponent> {
   try {
     const response = await axios.get(`https://www.bouraq-mt.com/royalkey/api/Product/${productId}`);
     const product = response.data;
@@ -50,42 +11,44 @@ export async function fetchProductDetails(productId: number): Promise<DetailedPr
     return {
       productID: product.productID,
       name: product.name,
-      productDescription: product.productDescription,
-      productPrice: Number(product.productPrice),
-      averageRate: Number(product.averageRate),
+      productDescription: product.productDescription ?? null,
+      productPrice: Number(product.productPrice).toFixed(2), 
+      averageRate: Number(product.averageRate).toFixed(2) !== undefined ? Number(product.averageRate).toFixed(2) : undefined,
       productQuantity: product.productQuantity,
       categoryID: product.categoryID,
-      category: {
-        categoryID: product.category.categoryID,
-        name: product.category.name,
-        parentCategoryID: product.category.parentCategoryID,
-        createdAt: product.category.createdAt,
-      },
-      reviews: product.reviews?.values?.map((review: any) => ({
+      category: product.category
+        ? {
+            categoryID: product.category.categoryID,
+            name: product.category.name,
+            parentCategoryID: product.category.parentCategoryID ?? null,
+            parentCategory: product.category.parentCategory ?? null,
+            createdAt: product.category.createdAt,
+          }
+        : undefined,
+      reviews: product.reviews?.values?.map((review: Review) => ({
         reviewId: review.reviewId,
         reviewContent: review.reviewContent,
         rate: review.rate,
         createdAt: review.createdAt,
         userName: review.userName,
       })) || [],
-      productVarients: product.productVarients?.values?.map((variant: any) => ({
+      productVarients: product.productVarients?.values?.map((variant: ProductVariant) => ({
         colorId: variant.colorId,
         sizeId: variant.sizeId,
         quantity: variant.quantity,
         colorName: variant.colorName,
-        sizeLabel: variant.sizeLabel,
+        sizeLabel: variant.sizeLabel ?? null,
       })) || [],
-      productImages: product.productImages?.values?.map((image: any) => ({
+      productImages: product.productImages?.values?.map((image: ProductImage) => ({
         imageId: image.imageId,
         imageUrl: image.imageUrl,
         altText: image.altText,
       })) || [],
       created: product.created,
       lastUpdated: product.lastUpdated,
-      priceAfterDiscount: Number(product.priceAfterDiscount),
-      discountPercent: Number(product.discountPercent),
+      priceAfterDiscount: Number(product.priceAfterDiscount).toFixed(2)  !== undefined ? Number(product.priceAfterDiscount).toFixed(2) : undefined,
+      discountPercent: Number(product.discountPercent).toFixed(2) !== undefined ? Number(product.discountPercent).toFixed(2)  : undefined,
     };
-    console.log(product);
   } catch (error) {
     console.error("Error fetching product details:", error);
     throw new Error("Failed to fetch product details.");

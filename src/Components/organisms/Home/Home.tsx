@@ -2,7 +2,7 @@ import React from "react";
 import { ProductsView } from "@components/molecules";
 import { Button } from "@components/atoms";
 import { useQuery } from "react-query";
-import { fetchNewArrivals, fetchBestSelling, fetchHighestDiscount } from "@services/api/fetchCollections";
+import { fetchHomeCategory } from "@services/api/fetchCollections";
 import kids from "@assets/HP_kids.svg";
 import women from "@assets/HP_women.svg";
 import men from "@assets/HP_men.svg";
@@ -16,19 +16,19 @@ const Home: React.FC = () => {
     data: newArrivals,
     isLoading: isLoadingNewArrivals,
     isError: isErrorNewArrivals,
-  } = useQuery("newArrivals", () => fetchNewArrivals(4));
+  } = useQuery("newArrivals", () => fetchHomeCategory(4, "new-arrivals", "New Arrivals"));
 
   const {
     data: bestSellers,
     isLoading: isLoadingBestSellers,
     isError: isErrorBestSellers,
-  } = useQuery("bestSellers", () => fetchBestSelling(4));
+  } = useQuery("bestSellers", () => fetchHomeCategory(4, "best-selling", "Best Sellers"));
 
   const {
     data: highestDiscount,
     isLoading: isLoadingHighestDiscount,
     isError: isErrorHighestDiscount,
-  } = useQuery("highestDiscount", () => fetchHighestDiscount(4));
+  } = useQuery("highestDiscount", () => fetchHomeCategory(4, "best-selling", "Best Sellers"));
 
   return (
     <>

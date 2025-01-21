@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { DetailedProduct } from "@services/api/fetchProductDetails";
+import { CardComponent } from "@types";
 import { fetchProductDetails } from "@services/api/fetchProductDetails";
 import { Category } from "@components/atoms";
 import { RatingSection, ReviewsSection, ProductSection } from "@components/organisms";
@@ -10,7 +10,7 @@ import { productsViewCards } from "@data/cards";
 const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(true);
-  const [product, setProduct] = useState<DetailedProduct | null>(null);
+  const [product, setProduct] = useState<CardComponent | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -45,6 +45,7 @@ const ProductDetails: React.FC = () => {
       
       <ReviewsSection reviews={product.reviews} />
       
+      //this is suppossed to be the related products section using the related products API 
       <ProductsView sectionName="Related Products" cards={productsViewCards} />
     </div>
   );

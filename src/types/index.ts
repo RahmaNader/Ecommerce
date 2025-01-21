@@ -15,24 +15,24 @@ export type LoginFormInputs = {
   password: string;
 };
 
-export interface CardComponent {
-  id: number;
-  src: string;
-  alt: string;
-  name: string;
-  priceAfterDiscount: number;
-  productPrice: number;
-  averageRate?: number;
-  productDescription?: string;
-  color?: string[]; 
-  size?: string[];   
-  availableQuantity?: number;
-  category?: string;
-  collection?: string;
-  onClick?: () => void;
-  discountPercent?: number;
-  productQuantity?: number;
-}
+// export interface CardComponent {
+//   id: number;
+//   src: string;
+//   alt: string;
+//   name: string;
+//   priceAfterDiscount: number;
+//   productPrice: number;
+//   averageRate?: number;
+//   productDescription?: string;
+//   color?: string[]; 
+//   size?: string[];   
+//   availableQuantity?: number;
+//   category?: string;
+//   collection?: string;
+//   onClick?: () => void;
+//   discountPercent?: number;
+//   productQuantity?: number;
+// }
 
 export interface AddressProps {
   building: string;
@@ -53,37 +53,64 @@ export interface ProductImage {
   altText: string;
 }
 
-export interface ProductReview {
-  $id: string;
-  $values: string[];
+// export interface ProductReview {
+//   $id: string;
+//   $values: string[];
+// }
+
+// export interface ProductVariant {
+//   $id: string;
+//   $values: any[]; 
+// }
+
+export interface Review {
+  reviewId: number;
+  reviewContent: string;
+  rate: number;
+  createdAt: string; // ISO string for date
+  userName: string;
 }
 
 export interface ProductVariant {
-  $id: string;
-  $values: any[]; 
+  colorId: number;
+  sizeId: number;
+  quantity: number;
+  colorName: string;
+  sizeLabel?: string | null;
 }
 
-export type FetchProduct = {
-  $id: string;
+export interface ProductImage {
+  imageId: number;
+  imageUrl: string;
+  altText: string;
+}
+
+export interface Category {
+  categoryID: number;
+  name: string;
+  parentCategoryID?: number | null;
+  parentCategory?: Category | null;
+  createdAt: string; // ISO string for date
+}
+
+export interface CardComponent {
   productID: number;
   name: string;
-  productDescription: string;
+  productDescription?: string | null;
   productPrice: number;
-  averageRate: number;
-  productQuantity: number;
+  averageRate?: number;
+  productQuantity?: number;
   categoryID: number;
-  category: null | any; 
-  reviews: ProductReview;
-  productVarients: ProductVariant;
-  productImages: {
-    $id: string;
-    $values: ProductImage[];
-  };
-  created: string;
-  lastUpdated: string;
-  priceAfterDiscount: number;
-  discountPercent: number;
-};
+  category?: Category;
+  reviews?: Review[]; // Array of reviews
+  productVarients?: ProductVariant[]; // Variants for colors and sizes
+  productImages?: ProductImage[]; // Images associated with the product
+  created?: string; // ISO string for date
+  lastUpdated?: string; // ISO string for date
+  priceAfterDiscount?: number;
+  discountPercent?: number;
+  onClick?: () => void;
+}
 
 
 ////////////////////////////////////////////////////
@@ -150,7 +177,8 @@ export type ProductCountProps = {
   onCountChange?: (count: number) => void; 
 };
 
-export type Category  = {
+//renamethis
+export type FilterCategory  = {
   name: string;
   isChecked: boolean;
 }

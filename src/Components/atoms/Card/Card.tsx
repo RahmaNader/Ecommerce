@@ -2,22 +2,21 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { CardComponent } from "@types";
+import fallbackImage from '@assets/HP_img2.jpeg';
+import { Image } from '@components/atoms';
 import { CustomRating, SuccessAlert } from "@components/atoms";
 import shoppingCart from "@assets/shoppingCart.svg";
 import { ProductPreference } from "@components/molecules";
 
-
-
 const Card: React.FC<CardComponent> = ({
-  id,
-  src,
-  alt,
+  productID,
+  productImages,
   name,
-  DisPrice,
-  NormalPrice,
-  rate,
-  color = [], 
-  size = [],
+  priceAfterDiscount,
+  productPrice,
+  averageRate,
+  color,
+  size,
 }) => {
   const navigate = useNavigate();
   const [alertVisible, setAlertVisible] = useState(false);
@@ -29,11 +28,11 @@ const Card: React.FC<CardComponent> = ({
     const existingCart = Cookies.get("cart")
       ? JSON.parse(Cookies.get("cart") as string)
       : [];
-    setIsInCart(existingCart.some((item: { id: number }) => item.id === id));
-  }, [id]);
+    setIsInCart(existingCart.some((item: { id: number }) => item.id === productID));
+  }, [productID]);
 
   const handleCardClick = () => {
-    navigate(`/product-details/${id}`);
+    navigate(`/product-details/${productID}`);
   };
 
   const handleAddToCartClick = (e: React.MouseEvent) => {
@@ -41,18 +40,8 @@ const Card: React.FC<CardComponent> = ({
     setShowPreference(true);
   };
 
-  const handlePreferenceSubmit = (preferences: {
-    color: string;
-    size: string;
-    quantity: number;
-  })  => {
+  const handlePreferenceSubmit = (preferences: { color: string; size: string; quantity: number }) => {
     setShowPreference(false);
-
-
-    if (!color.length || !size.length) {
-      console.error('Product options not available');
-      return;
-    }
 
     const existingCart = Cookies.get("cart")
       ? JSON.parse(Cookies.get("cart") as string)
@@ -60,18 +49,20 @@ const Card: React.FC<CardComponent> = ({
 
     const existingItemIndex = existingCart.findIndex(
       (item: { id: number; color: string; size: string }) =>
-        item.id === id && item.color === preferences.color && item.size === preferences.size
+        item.id === productID && item.color === preferences.color && item.size === preferences.size
     );
 
     if (existingItemIndex !== -1) {
+      // Item with the same id, color, and size exists, update its quantity
       existingCart[existingItemIndex].quantity += preferences.quantity;
     } else {
+      // Add new item to the cart
       const newItem = {
-        id,
+        productID,
         name,
-        DisPrice,
-        NormalPrice,
-        src,
+        priceAfterDiscount,
+        productPrice,
+        productImages,
         ...preferences,
       };
       existingCart.push(newItem);
@@ -86,6 +77,13 @@ const Card: React.FC<CardComponent> = ({
     setTimeout(() => setAlertVisible(false), 3000);
   };
 
+  const getImageUrl = () => {
+    if (productImages && productImages.$values && productImages.$values.length > 0) {
+      return productImages.$values[0].imageUrl;
+    }
+    return fallbackImage;
+  };
+
   return (
     <div className="relative m-4">
       {alertVisible && (
@@ -97,13 +95,10 @@ const Card: React.FC<CardComponent> = ({
       {showPreference && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <ProductPreference
-        product={{ 
-          color: Array.isArray(color) ? color : [], 
-          size: Array.isArray(size) ? size : [] 
-        }}
-        onSubmit={handlePreferenceSubmit}
-        onCancel={() => setShowPreference(false)}
-      />
+            product={{ color, size }}
+            onSubmit={handlePreferenceSubmit}
+            onCancel={() => setShowPreference(false)}
+          />
         </div>
       )}
 
@@ -111,9 +106,9 @@ const Card: React.FC<CardComponent> = ({
         onClick={handleCardClick}
         className="relative image-container w-auto h-auto overflow-hidden rounded-t-[500px] cursor-pointer"
       >
-        <img
-          src={src}
-          alt={alt}
+        <Image
+          src={getImageUrl()}
+          alt={productImages?.$values[0]?.altText || name}
           className="object-cover w-full h-full cursor-pointer"
         />
         <div className="absolute top-0 left-0 w-full h-full border-2 border-golden rounded-t-[500px]" />
@@ -136,15 +131,15 @@ const Card: React.FC<CardComponent> = ({
           {name}
         </p>
         <p className="font-playfair font-semibold text-base md:text-xl text-ForthColor">
-          {DisPrice} EGP
+          {priceAfterDiscount} EGP
         </p>
         <p className="font-playfair font-medium text-base md:text-xl line-through text-FifthColor">
-          {NormalPrice} EGP
+          {productPrice} EGP
         </p>
       </div>
 
       <div className="flex justify-center mt-2">
-        <CustomRating rate={rate ?? 0} mode="hide" />
+        <CustomRating rate={averageRate ?? 0} mode="hide" />
       </div>
     </div>
   );
