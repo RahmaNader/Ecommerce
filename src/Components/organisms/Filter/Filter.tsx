@@ -61,7 +61,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
   );
   const [categoryItems, setCategoryItems] =
     useState<Category[]>(initialCategories);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
 
   const [isCategoriesCollapsed, setIsCategoriesCollapsed] =
     useState<boolean>(true);
@@ -261,8 +261,8 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
             thumbClassName="absolute relative transform -translate-y-1/2 w-4 h-4 bg-wine rounded-full cursor-pointer focus:outline-none focus:ring-wine"
             trackClassName="h-[1px] bg-ThirdColor"
             min={0}
-            max={1000}
-            step={1}
+            max={10000}
+            step={100}
             value={priceRange}
             onChange={(values) => setPriceRange(values as [number, number])}
             withTracks={true}

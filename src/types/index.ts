@@ -110,6 +110,7 @@ export interface CardComponent {
   priceAfterDiscount?: string;
   discountPercent?: string;
   onClick?: () => void;
+  
 }
 
 
@@ -187,7 +188,7 @@ export type NavLinkProps = {
   label: string | JSX.Element;
   to?: string;
   variant: "navbar" | "footer" | "navbaricons" | "subnavbar" | "breadcrumb" | "sidebar" | "sidenavbar" | "sidenavbarsub";
-  state?: never;
+  state?: { categoryId: number };
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   onClick?: () => void;

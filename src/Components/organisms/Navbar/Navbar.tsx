@@ -39,7 +39,7 @@ const Navbar: React.FC = () => {
   } = useQuery("categories", fetchCategories);
 
   const mainCategories = categories?.filter(
-    (cat: any) => cat.parentCategoryID === null
+    (cat: { parentCategoryID: number | null }) => cat.parentCategoryID === null
   ) || [];
 
   const handleOpenModal = () => {
@@ -224,7 +224,7 @@ const Navbar: React.FC = () => {
               )}
               {!isLoading &&
                 !isError &&
-                mainCategories.map((category: any) => (
+                mainCategories.map((category: { categoryID: number; name: string }) => (
                   <NavLink
                     key={category.categoryID}
                     label={category.name}

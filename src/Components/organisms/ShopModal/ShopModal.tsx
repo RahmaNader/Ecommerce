@@ -55,6 +55,7 @@ const ShopModal: React.FC<ShopModalProps> = ({
                       <li key={sub.categoryID}>
                         <Link
                           to={subPath}
+                          state={{ categoryId: sub.categoryID }}
                           className={`text-[16px] ${
                             isActive
                               ? "text-wine font-medium"

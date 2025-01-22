@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect , useMemo } from "react";
+import { useQuery } from "react-query";
+import { fetchCategoryProducts } from "@services/api/fetchCategoryProducts";
 import { useParams, Navigate, useLocation } from "react-router-dom";
 import { Filter, ProductsDisplay } from "@components/organisms";
-import { cards } from "@data/cards";
-import { CardComponent } from "@types";
-import { Breadcrumb } from "@components/molecules";
+import { Breadcrumb , Loading} from "@components/molecules";
 import FilterIcon from "@assets/FilterIcon.svg";
 
 type ShopParams = {
@@ -21,61 +21,59 @@ type FilterCriteria = {
 const Shop: React.FC = () => {
   const { category } = useParams<ShopParams>();
   const location = useLocation();
-  const [filteredCards, setFilteredCards] = useState<CardComponent[]>(cards);
+  const categoryId = location.state?.categoryId;
   const [filterCriteria, setFilterCriteria] = useState<FilterCriteria>({});
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(false); // Controls sidebar visibility with animation
+  const [showSidebar, setShowSidebar] = useState(false);
 
   const lastSegment = location.pathname.split("/").filter(Boolean).pop();
 
-  useEffect(() => {
-    // Filter cards based on filter criteria
-    let newFilteredCards = [...cards];
+  const { data: products, isLoading, error } = useQuery(
+    ['categoryProducts', categoryId],
+    () => fetchCategoryProducts(categoryId),
+    {
+      enabled: !!categoryId,
+      staleTime: 5 * 60 * 1000,
+    }
+  );
 
-    if (Object.keys(filterCriteria).length === 0) {
-      // Reset to all cards if no filters are applied
-      newFilteredCards = cards;
-    } else {
-      if (filterCriteria.size) {
-        newFilteredCards = newFilteredCards.filter((card) =>
-          card.size.includes(filterCriteria.size!)
-        );
+
+    // Handle sidebar visibility with animation
+    useEffect(() => {
+      if (isFilterOpen) {
+        setShowSidebar(true);
+      } else {
+        setShowSidebar(false)
       }
+    }, [isFilterOpen]);
 
-      if (filterCriteria.collection !== undefined) {
-        newFilteredCards = newFilteredCards.filter(
-          (card) => card.collection === filterCriteria.collection
-        );
-      }
+  const filteredProducts = useMemo(() => {
+    if (!products) return [];
 
-      if (filterCriteria.categories && filterCriteria.categories.length > 0) {
-        newFilteredCards = newFilteredCards.filter((card) =>
-          filterCriteria.categories?.includes(card.category)
+    let filtered = [...products];
+
+    if (Object.keys(filterCriteria).length > 0) {
+      if (filterCriteria.categories?.length) {
+        filtered = filtered.filter((product) =>
+          filterCriteria.categories?.includes(product.categoryID.toString())
         );
       }
 
       if (filterCriteria.priceRange) {
-        newFilteredCards = newFilteredCards.filter((card) => {
-          return (
-            card.DisPrice >= filterCriteria.priceRange![0] &&
-            card.DisPrice <= filterCriteria.priceRange![1]
-          );
-        });
+        filtered = filtered.filter((product) =>
+          Number(product.priceAfterDiscount) >= filterCriteria.priceRange![0] &&
+          Number(product.priceAfterDiscount) <= filterCriteria.priceRange![1]
+        );
       }
     }
 
-    setFilteredCards(newFilteredCards);
-  }, [filterCriteria]);
+    return filtered;
+  }, [products, filterCriteria]);
 
-  // Handle sidebar visibility with animation
-  useEffect(() => {
-    if (isFilterOpen) {
-      setShowSidebar(true);
-    } else {
-      const timer = setTimeout(() => setShowSidebar(false), 300); // Match duration with CSS transition
-      return () => clearTimeout(timer);
-    }
-  }, [isFilterOpen]);
+  if (isLoading) return <Loading />;
+  if (error) return <div>Error loading products</div>;
+
+
 
   if (!category) {
     return <Navigate to="/" />;
@@ -87,7 +85,7 @@ const Shop: React.FC = () => {
 
   const handleCloseSidebar = () => {
     setIsFilterOpen(false);
-    setShowSidebar(false); // Hide the overlay immediately
+    setShowSidebar(false); 
   };
 
   return (
@@ -139,7 +137,7 @@ const Shop: React.FC = () => {
           </div>
 
           <div className="flex justify-center">
-            <ProductsDisplay products={filteredCards} />
+            <ProductsDisplay products={filteredProducts} />
           </div>
         </div>
       </div>
