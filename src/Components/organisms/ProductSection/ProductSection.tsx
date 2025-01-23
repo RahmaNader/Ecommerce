@@ -7,8 +7,8 @@ import filledHeart from "@assets/filledHeart.svg";
 import { FaShareAlt } from "react-icons/fa";
 
 const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
-  // const [selectedColor, setSelectedColor] = useState<string | null>(null);
-  // const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [isFavorited, setIsFavorited] = useState(false);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [alertType, setAlertType] = useState<"success" | "error" | null>(null);
@@ -20,12 +20,12 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
 
 
   const handleAddToCart = () => {
-    // if (!selectedColor || !selectedSize) {
-    //   setAlertMessage("Please select both a color and a size.");
-    //   setAlertType("error");
-    //   setTimeout(() => setAlertType(null), 3000);
-    //   return;
-    // }
+    if (!selectedColor || !selectedSize) {
+      setAlertMessage("Please select both a color and a size.");
+      setAlertType("error");
+      setTimeout(() => setAlertType(null), 3000);
+      return;
+    }
 
     const existingCart = Cookies.get("cart")
       ? JSON.parse(Cookies.get("cart") as string)
@@ -34,7 +34,7 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
     const existingItemIndex = existingCart.findIndex(
       (item: { id: number; color: string; size: string }) =>
         item.id === product.productID
-      //  && item.color === selectedColor && item.size === selectedSize
+       && item.color === selectedColor && item.size === selectedSize
     );
 
     if (existingItemIndex !== -1) {
@@ -45,9 +45,9 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
         name: product.name,
         DisPrice: product.priceAfterDiscount,
         NormalPrice: product.productPrice,
-        // src: product.src,
-        // color: selectedColor,
-        // size: selectedSize,
+        src: product.src,
+        color: selectedColor,
+        size: selectedSize,
         quantity: 1,
       };
       existingCart.push(newItem);
@@ -161,25 +161,6 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
           {product.productDescription}
         </p>
 
-        <div className="flex flex-col gap-4">
-          <p className="font-playfair font-semibold text-xl text-wine">
-            Select Colors
-          </p>
-          {/* <div className="flex flex-row gap-3 items-center">
-            {product.color.map((color, index) => (
-              <div
-                key={index}
-                className={`w-9 h-9 rounded-full cursor-pointer border-2 ${
-                  selectedColor === color ? "border-wine" : "border-golden"
-                }`}
-                style={{ backgroundColor: color }}
-                title={color}
-                onClick={() => setSelectedColor(color)}
-              />
-            ))}
-          </div> */}
-        </div>
-
         <div className="flex flex-col gap-4 w-full">
           <p className="font-playfair font-semibold text-xl text-wine">
             Choose Size
@@ -200,6 +181,27 @@ const ProductSection: React.FC<{ product: CardComponent }> = ({ product }) => {
             ))}
           </div> */}
         </div>
+
+        <div className="flex flex-col gap-4">
+          <p className="font-playfair font-semibold text-xl text-wine">
+            Select Colors
+          </p>
+          {/* <div className="flex flex-row gap-3 items-center">
+            {product.color.map((color, index) => (
+              <div
+                key={index}
+                className={`w-9 h-9 rounded-full cursor-pointer border-2 ${
+                  selectedColor === color ? "border-wine" : "border-golden"
+                }`}
+                style={{ backgroundColor: color }}
+                title={color}
+                onClick={() => setSelectedColor(color)}
+              />
+            ))}
+          </div> */}
+        </div>
+
+
 
         <div className="flex gap-2 flex-row justify-between items-center">
           <div className="flex flex-col sm:flex-row gap-2 items-center">

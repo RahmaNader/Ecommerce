@@ -1,13 +1,11 @@
-// src/services/api/fetchProductDetails.ts
 import axios from "axios";
 import { CardComponent, Review, ProductVariant, ProductImage } from "@types";
 
-// Function to fetch detailed product information
 export async function fetchProductDetails(productId: number): Promise<CardComponent> {
   try {
     const response = await axios.get(`https://www.bouraq-mt.com/royalkey/api/Product/${productId}`);
     const product = response.data;
-
+    console.log(product.productVarients);
     return {
       productID: product.productID,
       name: product.name,
@@ -48,6 +46,7 @@ export async function fetchProductDetails(productId: number): Promise<CardCompon
       priceAfterDiscount: Number(product.priceAfterDiscount).toFixed(2)  !== undefined ? Number(product.priceAfterDiscount).toFixed(2) : undefined,
       discountPercent: Number(product.discountPercent).toFixed(2) !== undefined ? Number(product.discountPercent).toFixed(2)  : undefined,
     };
+    
   } catch (error) {
     console.error("Error fetching product details:", error);
     throw new Error("Failed to fetch product details.");
