@@ -1,4 +1,6 @@
 import React from "react";
+import './i18n';
+import { LanguageProvider } from "./context/LanguageProvider"; // Import the provider
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import { RouterProvider } from "react-router-dom";
@@ -19,7 +21,9 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <App />
+      <LanguageProvider> 
+        <App />
+      </LanguageProvider>
     </QueryClientProvider>
   </React.StrictMode>
 );

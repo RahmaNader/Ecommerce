@@ -6,6 +6,8 @@ import React from "react";
 import { Button } from "@components/atoms";
 import RightArrow from "@assets/RightArrow.svg";
 import LeftArrow from "@assets/LeftArrow.svg";
+import { useTranslation } from "react-i18next";
+
 // import { useQuery } from "react-query";
 // import axios from "axios";
 
@@ -15,23 +17,23 @@ interface Item {
   line: string;
 }
 
-const items: Item[] = [
-  {
-    text: "Find Your Perfect Blend of Our Traditional and Modern Fashion.",
-    img: x,
-    line: line,
-  },
-  {
-    text: "Unite Timeless Traditions with Fresh, Modern Styles Today.",
-    img: x,
-    line: line,
-  },
-  {
-    text: "Uncover the Perfect Balance of Tradition and Trendy Pieces.",
-    img: x,
-    line: line,
-  },
-];
+// const items: Item[] = [
+//   {
+//     text: "Find Your Perfect Blend of Our Traditional and Modern Fashion.",
+//     img: x,
+//     line: line,
+//   },
+//   {
+//     text: "Unite Timeless Traditions with Fresh, Modern Styles Today.",
+//     img: x,
+//     line: line,
+//   },
+//   {
+//     text: "Uncover the Perfect Balance of Tradition and Trendy Pieces.",
+//     img: x,
+//     line: line,
+//   },
+// ];
 
 //code preparation for fetching from backend
 {
@@ -44,6 +46,12 @@ const items: Item[] = [
 }
 
 const Slider: React.FC = () => {
+  const { t } = useTranslation();
+  const items: Item[] = [
+    { text: t("slider.slide1"), img: x, line: line },
+    { text: t("slider.slide2"), img: x, line: line },
+    { text: t("slider.slide3"), img: x, line: line },
+  ];
   //code preparation for fetching from backend
   {
     /*
@@ -103,7 +111,7 @@ const Slider: React.FC = () => {
           NextIcon={<img src={RightArrow} alt="right-arrow" />}
           PrevIcon={<img src={LeftArrow} alt="left-arrow" />}
         >
-          {combinedItems.map((item, i) => (
+          {combinedItems.map((item) => (
             <SliderItem key={item.text} {...item} isMobile={isMobile} />
           ))}
         </Carousel>
@@ -117,6 +125,7 @@ interface SliderItemProps extends Item {
 }
 
 const SliderItem: React.FC<SliderItemProps> = React.memo(({ text, img, line, isMobile }) => {
+  const { t } = useTranslation();
   return (
     <div className={`flex ${isMobile ? 'flex-col' : 'flex-col md:flex-row'} justify-center relative z-10`}>
       <div className={`${isMobile ? 'w-full text-center' : 'mt-6 md:w-[55%]'}`}>
@@ -134,9 +143,7 @@ const SliderItem: React.FC<SliderItemProps> = React.memo(({ text, img, line, isM
           {!isMobile && (
             <div className="mt-8 md:mt-12">
               <img src={line} alt="Line" className="mb-9 md:w-auto" />
-              <Button label="View Collection" onClick={function (): void {
-                throw new Error("Function not implemented.");
-              }} />
+              <Button label={t("slider.viewCollection")} onClick={() => console.log("View Collection clicked")} />
             </div>
           )}
         </div>

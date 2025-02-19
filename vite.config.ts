@@ -20,6 +20,13 @@ export default defineConfig({
       '@assets': path.resolve(__dirname, './src/assets'),
       '@data': path.resolve(__dirname, 'src/data'),
       '@types': path.resolve(__dirname, 'src/types/index.ts'),
+      '@context': path.resolve(__dirname, 'src/context'),
+    },
+  },
+  publicDir: 'public',
+  server: {
+    watch: {
+      usePolling: true,
     },
   },
 });

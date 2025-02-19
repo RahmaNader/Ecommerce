@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {  useLocation, Link } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import Cookies from "js-cookie";
 import { IconSearch, IconMenu2, IconX } from "@tabler/icons-react";
 import Badge, { BadgeProps } from "@mui/material/Badge";
@@ -12,6 +12,10 @@ import { ShopModal } from "@components/organisms";
 import { NavLink } from "@components/atoms";
 import { useQuery } from "react-query";
 import { fetchCategories } from "@services/api/fetchCategories";
+import { useTranslation } from "react-i18next";
+import { useLanguage } from "@context/useLanguage";
+
+
 
 const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -23,13 +27,18 @@ const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
 }));
 
 const Navbar: React.FC = () => {
+  const { t } = useTranslation();
+  const { language, changeLanguage } = useLanguage();
+  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    changeLanguage(e.target.value as "en" | "ar");
+  };
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isShopOpen, setIsShopOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const location = useLocation();
   const closeTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
-
 
   const {
     data: categories,
@@ -69,7 +78,10 @@ const Navbar: React.FC = () => {
   useEffect(() => {
     const updateCartCount = () => {
       const cart = Cookies.get("cart") ? JSON.parse(Cookies.get("cart") as string) : [];
-      const totalItems = cart.reduce((count: number, item: { quantity: number }) => count + item.quantity, 0);
+      const totalItems = cart.reduce(
+        (count: number, item: { quantity: number }) => count + item.quantity,
+        0
+      );
       setCartCount(totalItems);
     };
 
@@ -77,13 +89,13 @@ const Navbar: React.FC = () => {
     const interval = setInterval(updateCartCount, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  });
 
   return (
     <div className="w-full flex justify-between items-center bg-mainColor relative px-6 xl:px-44 pt-4">
       <div className="flex items-center gap-4">
         <div className="xl:hidden flex items-center">
-          <button onClick={toggleMenu} aria-label="Toggle Menu">
+          <button onClick={toggleMenu} aria-label={t("navbar.toggleMenu")}>
             <IconMenu2 size={28} />
           </button>
         </div>
@@ -99,6 +111,21 @@ const Navbar: React.FC = () => {
           variant="navbaricons"
           isActive={isActive("/search")}
         />
+
+        <label htmlFor="language-select" className="sr-only">
+          {t("language")}
+        </label>
+
+        <select
+          title={t("language")}
+          value={language}
+          onChange={handleLanguageChange}
+          className="bg-gray-700 text-white px-2 py-1 rounded"
+        >
+          <option value="en">English</option>
+          <option value="ar">العربية</option>
+        </select>
+
         <NavLink
           label={
             <IconButton
@@ -133,15 +160,15 @@ const Navbar: React.FC = () => {
         />
       </div>
 
-      <div className="hidden xl:flex items-center space-x-8 absolute left-1/2 transform -translate-x-1/2">
+      <div className="hidden xl:flex items-center space-x-8 absolute left-1/2 transform -translate-x-1/2 ltr:gap-4 rtl:gap-4">
         <NavLink
-          label="Home"
+          label={t("navbar.home")}
           to="/"
           variant="navbar"
           isActive={isActive("/")}
         />
         <NavLink
-          label="Shop"
+          label={t("navbar.shop")}
           to="#"
           variant="navbar"
           onMouseEnter={handleOpenModal}
@@ -149,19 +176,19 @@ const Navbar: React.FC = () => {
           isActive={isActive("/shop")}
         />
         <NavLink
-          label="Blogs"
+          label={t("navbar.blogs")}
           to="/blogs"
           variant="navbar"
           isActive={isActive("/blogs")}
         />
         <NavLink
-          label="Contact Us"
+          label={t("navbar.contactUs")}
           to="/contact-us"
           variant="navbar"
           isActive={isActive("/contact-us")}
         />
         <NavLink
-          label="About Us"
+          label={t("navbar.aboutUs")}
           to="/about-us"
           variant="navbar"
           isActive={isActive("/about-us")}
@@ -194,7 +221,7 @@ const Navbar: React.FC = () => {
 
         <div className="flex items-center text-center w-full flex-col mt-4">
           <NavLink
-            label="Home"
+            label={t("navbar.home")}
             to="/"
             variant="sidenavbar"
             isActive={isActive("/")}
@@ -203,7 +230,7 @@ const Navbar: React.FC = () => {
 
           <div className="relative w-full">
             <NavLink
-              label="Shop"
+              label={t("navbar.shop")}
               to="#"
               variant="sidenavbar"
               onClick={toggleShopMenu}
@@ -211,47 +238,49 @@ const Navbar: React.FC = () => {
             />
             <div
               className={`flex flex-col transition-max-height duration-300 ease-in-out ${
-                isShopOpen ? "max-h-40" : "max-h-0"
+          isShopOpen ? "max-h-40" : "max-h-0"
               } overflow-hidden border-l-4 border-wine`}
             >
               {isLoading && (
-                <p className="text-center p-2">Loading categories...</p>
+          <p className="text-center p-2">{t("loadingCategories")}</p>
               )}
               {isError && (
-                <p className="text-center p-2 text-red-600">
-                  {(error as Error)?.message}
-                </p>
+          <p className="text-center p-2 text-red-600">
+            {(error as Error)?.message}
+          </p>
               )}
               {!isLoading &&
-                !isError &&
-                mainCategories.map((category: { categoryID: number; name: string }) => (
-                  <NavLink
-                    key={category.categoryID}
-                    label={category.name}
-                    to={`/products/${category.name.toLowerCase()}`}
-                    variant="sidenavbarsub"
-                    onClick={toggleMenu}
-                  />
-                ))}
+          !isError &&
+          mainCategories.map(
+            (category: { categoryID: number; name: string }) => (
+              <NavLink
+                key={category.categoryID}
+                label={category.name}
+                to={`/products/${category.name.toLowerCase()}`}
+                variant="sidenavbarsub"
+                onClick={toggleMenu}
+              />
+            )
+          )}
             </div>
           </div>
 
           <NavLink
-            label="Blogs"
+            label={t("navbar.blogs")}
             to="/blogs"
             variant="sidenavbar"
             isActive={isActive("/blogs")}
             onClick={toggleMenu}
           />
           <NavLink
-            label="Contact Us"
+            label={t("navbar.contactUs")}
             to="/contact-us"
             variant="sidenavbar"
             isActive={isActive("/contact-us")}
             onClick={toggleMenu}
           />
           <NavLink
-            label="About Us"
+            label={t("navbar.aboutUs")}
             to="/about-us"
             variant="sidenavbar"
             isActive={isActive("/about-us")}

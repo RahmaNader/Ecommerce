@@ -5,8 +5,12 @@ import {
   IconBrandLinkedin,
 } from "@tabler/icons-react";
 import NavLink from "@components/atoms/Link/NavLink";
+import { useTranslation } from "react-i18next";
+
 
 const Footer: React.FC = () => {
+  const { t } = useTranslation();
+
   const socialLinks = [
     {
       id: "facebook",
@@ -40,9 +44,9 @@ const Footer: React.FC = () => {
       <div className="flex flex-col md:flex-row p-9">
         {/* Section 1: Brand and Social Links */}
         <div className="mt-8 md:w-1/3 lg:w-1/3">
-          <p className="text-2xl">Royal Key</p>
+          <p className="text-2xl">{t("footer.brandName")}</p>
           <p className="text-[16px] mt-3 font-normal">
-            2024 Royal Key. All Rights Reserved
+            {t("footer.copyright")}
           </p>
 
           <div className="flex space-x-3 mt-14">
@@ -52,7 +56,7 @@ const Footer: React.FC = () => {
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={`Visit us on ${link.id}`}
+                aria-label={`${t("footer.visitUs")} ${link.id}`}
                 className="hover:text-eightColor"
               >
                 {link.icon}
@@ -61,31 +65,29 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex flex-col mt-8 space-y-3 font-medium mr-60">
-          <NavLink label="Collection" to="#" variant="footer" />
-          <NavLink label="Brands" to="#" variant="footer" />
-          <NavLink label="About Us" to="/about-us" variant="footer" />
+        <div className="flex flex-col mt-8 space-y-3 font-medium ltr:mr-60 rtl:ml-60">
+        <NavLink label={t("footer.collection")} to="#" variant="footer" />
+          <NavLink label={t("footer.brands")} to="#" variant="footer" />
+          <NavLink label={t("footer.aboutUs")} to="/about-us" variant="footer" />
         </div>
 
         {/* Section 3: Contact Information */}
         <div className="flex flex-col  mt-8 space-y-3 font-medium ">
-          <h4>Contact Us:</h4>
+        <h4>{t("footer.contactUs")}:</h4>
           <NavLink
-            label={contactInfo.phone}
+            label={`${t("footer.phone")}: ${contactInfo.phone}`}
             to={`tel:${contactInfo.phone}`}
             variant="footer"
           />
           <NavLink
-            label={contactInfo.email}
+            label={`${t("footer.email")}: ${contactInfo.email}`}
             to={`mailto:${contactInfo.email}`}
             variant="footer"
           />
           <NavLink
-            label="www.RoyalKey.com"
+            label={`${t("footer.website")}: www.RoyalKey.com`}
             to="/"
             variant="footer"
-            target="_blank"
-            rel="noopener noreferrer"
           />
         </div>
       </div>

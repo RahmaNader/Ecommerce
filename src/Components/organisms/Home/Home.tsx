@@ -6,8 +6,11 @@ import { fetchHomeCategory } from "@services/api/fetchCollections";
 import kids from "@assets/HP_kids.svg";
 import women from "@assets/HP_women.svg";
 import men from "@assets/HP_men.svg";
+import { useTranslation } from "react-i18next";
+
 
 const Home: React.FC = () => {
+  const { t } = useTranslation();
   const handleButtonClick = (section: string) => {
     console.log("Button clicked: " + section);
   };
@@ -45,35 +48,35 @@ const Home: React.FC = () => {
       </div>
 
       <div className="flex flex-col">
-        {isLoadingNewArrivals && <p>Loading New Collection...</p>}
-        {isErrorNewArrivals && <p>Error fetching New Collection.</p>}
+        {isLoadingNewArrivals &&<p>{t("home.loadingNewCollection")}</p>}
+        {isErrorNewArrivals && <p>{t("home.errorNewCollection")}</p>}
         {newArrivals && newArrivals.length > 0 && (
           <>
-            <ProductsView sectionName="New Collection" cards={newArrivals} />
+            <ProductsView sectionName={t("home.newCollection")} cards={newArrivals} />
             <div className="flex justify-center mt-12">
-              <Button label="View Collection" onClick={() => handleButtonClick("New Collection")} />
+            <Button label={t("home.viewCollection")} onClick={() => handleButtonClick("Best Seller")} />
             </div>
           </>
         )}
 
-        {isLoadingBestSellers && <p>Loading Best Sellers...</p>}
-        {isErrorBestSellers && <p>Error fetching Best Sellers.</p>}
+        {isLoadingBestSellers && <p>{t("home.loadingBestSellers")}</p>}
+        {isErrorBestSellers && <p>{t("home.errorBestSellers")}</p>}
         {bestSellers && bestSellers.length > 0 && (
           <>
-            <ProductsView sectionName="Best Seller" cards={bestSellers} />
+            <ProductsView sectionName={t("home.bestSellers")} cards={bestSellers} />
             <div className="flex justify-center mt-12">
-              <Button label="View Best Sellers" onClick={() => handleButtonClick("Best Seller")} />
+              <Button label={t("home.viewBestSellers")} onClick={() => handleButtonClick("Best Seller")} />
             </div>
           </>
         )}
 
-        {isLoadingHighestDiscount && <p>Loading Highest Discount...</p>}
-        {isErrorHighestDiscount && <p>Error fetching Highest Discount.</p>}
+        {isLoadingHighestDiscount && <p>{t("home.loadingHighestDiscount")}</p>}
+        {isErrorHighestDiscount && <p>{t("home.errorHighestDiscount")}</p>}
         {highestDiscount && highestDiscount.length > 0 && (
           <>
-            <ProductsView sectionName="Highest Discount" cards={highestDiscount} />
+            <ProductsView sectionName={t("home.highestDiscount")} cards={highestDiscount} />
             <div className="flex justify-center mt-12">
-              <Button label="View Discounts" onClick={() => handleButtonClick("Highest Discount")} />
+              <Button label={t("home.viewDiscounts")} onClick={() => handleButtonClick("Highest Discount")} />
             </div>
           </>
         )}
