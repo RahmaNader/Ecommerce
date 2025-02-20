@@ -2,7 +2,9 @@ import React from "react";
 import { useLocation, Link } from "react-router-dom";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import Typography from "@mui/material/Typography";
+import { useTranslation } from "react-i18next";
 
 
 const routeNameMap: { [key: string]: string } = {
@@ -31,9 +33,11 @@ const capitalizeWords = (text: string): string =>
     .join(" ");
 
 const Breadcrumb: React.FC = () => {
+  const { i18n } = useTranslation();
   const location = useLocation();
 
   const pathnames = location.pathname.split("/").filter((x) => x);
+  const isRTL = i18n.language === "ar";
 
   const breadcrumbs = pathnames
     .map((value, index) => {
@@ -75,12 +79,21 @@ const Breadcrumb: React.FC = () => {
 
   return (
     <Breadcrumbs
-      separator={<NavigateNextIcon fontSize="small" style={{ color: "#A78E78" }} />}
+    separator={
+      isRTL ? (
+        <NavigateBeforeIcon fontSize="small" style={{ color: "#A78E78" }} />
+      ) : (
+        <NavigateNextIcon fontSize="small" style={{ color: "#A78E78" }} />
+      )
+    }
       aria-label="breadcrumb"
       sx={{
         margin: "1rem 0",
         padding: "0.5rem 1rem",
         color: "#A78E78",
+        display: "flex",
+        flexDirection: isRTL ? "row-reverse" : "row",
+        justifyContent: isRTL ? "flex-end" : "flex-start",
       }}
     >
       <Link to="/" style={{ textDecoration: "none", color: "#A78E78" }}>

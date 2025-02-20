@@ -6,6 +6,8 @@ import FilterArrow from "@assets/FilterArrow.svg";
 import { Button } from "@components/atoms";
 import Checkbox from "@mui/material/Checkbox";
 import { styled } from "@mui/material/styles";
+import { useTranslation } from "react-i18next";
+
 
 interface Category {
   name: string;
@@ -34,24 +36,27 @@ const CustomCheckbox = styled(Checkbox)(() => ({
 }));
 
 const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
+  const { t } = useTranslation();
+
   const sizes = ["S", "M", "L", "XL", "XXL"];
 
   const initialCategories: Category[] = [
-    { name: "Jackets", isChecked: false },
-    { name: "Coats", isChecked: false },
-    { name: "Shirts", isChecked: false },
-    { name: "Accessories", isChecked: false },
-    { name: "Pants", isChecked: false },
-    { name: "Shoes", isChecked: false },
-    { name: "Hats", isChecked: false },
+    { name: t("filter.categories.jackets"), isChecked: false },
+    { name: t("filter.categories.coats"), isChecked: false },
+    { name: t("filter.categories.shirts"), isChecked: false },
+    { name: t("filter.categories.accessories"), isChecked: false },
+    { name: t("filter.categories.pants"), isChecked: false },
+    { name: t("filter.categories.shoes"), isChecked: false },
+    { name: t("filter.categories.hats"), isChecked: false },
   ];
 
   const collections = [
-    "All products",
-    "Best sellers",
-    "New arrivals",
-    "Accessories",
+    t("filter.collections.allProducts"),
+    t("filter.collections.bestSellers"),
+    t("filter.collections.newArrivals"),
+    t("filter.collections.accessories"),
   ];
+
 
   const ALL_PRODUCTS_INDEX = 0;
 
@@ -114,7 +119,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
           <div className="absolute right-2">
             <button
               onClick={onClose}
-              aria-label="Close Filters"
+              aria-label={t("filter.close")}
               className="text-wine border-wine border-2 rounded-full cursor-pointer"
             >
               <IconX size={28} />
@@ -124,7 +129,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
 
         <div className="absolute bottom-4 flex flex-row justify-between w-full items-center mt-2">
           <p className="font-playfair text-2xl font-bold text-wine text-left">
-            Filters
+          {t("filter.title")}
           </p>
           <img src={FilterIcon} alt="Filter icon" className="h-6 w-6" />
         </div>
@@ -134,13 +139,13 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
       <div className="px-4 gap-9 w-full flex flex-col">
         {/* Size Filter */}
         <div className="flex flex-col w-full">
-          <p className="font-playfair text-2xl text-wine text-left font-semibold">
-            Size
+          <p className="font-playfair text-2xl text-wine ltr:text-left rtl:text-right font-semibold">
+          {t("filter.size")}
           </p>
           <div
             className="flex gap-3 sm:gap-4 mt-2 w-full items-center justify-evenly"
             role="group"
-            aria-label="Size selection"
+            aria-label={t("filter.sizeSelection")}
           >
             {sizes.map((size, index) => (
               <div
@@ -168,7 +173,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
             onClick={() => setIsCategoriesCollapsed(!isCategoriesCollapsed)}
           >
             <p className="font-playfair text-2xl text-wine text-left font-semibold">
-              Categories
+            {t("filter.categoriestitle")}
             </p>
             <img
               src={FilterArrow}
@@ -213,7 +218,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
             onClick={() => setIsCollectionsCollapsed(!isCollectionsCollapsed)}
           >
             <p className="font-playfair text-2xl text-wine text-left font-semibold">
-              Collections
+            {t("filter.collectionstitle")}
             </p>
             <img
               src={FilterArrow}
@@ -245,8 +250,8 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
 
         {/* Price Range Filter */}
         <div className="w-[100%] flex flex-col">
-          <p className="font-playfair text-2xl text-wine text-left font-semibold">
-            Price Range
+          <p className="font-playfair text-2xl text-wine ltr:text-left rtl:text-right font-semibold">
+          {t("filter.priceRange")}
           </p>
           <div className="flex justify-between mt-2">
             <span className="font-Poppins text-base text-wine">
@@ -273,7 +278,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
 
         {/* Filter Button */}
         <Button
-          label="Filter"
+          label={t("filter.apply")}
           type="primary"
           onClick={handleFilterClick}
           style={{

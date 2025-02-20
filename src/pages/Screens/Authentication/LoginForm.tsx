@@ -9,14 +9,14 @@ import loginInputFields from "@data/loginInputFields";
 import { loginUser } from "@services/auth/AuthService";
 import { SuccessAlert, ErrorAlert } from "@components/atoms";
 import { useNavigate } from "react-router-dom";
-
-
+import { useTranslation } from "react-i18next";
 
 interface LoginFormProps {
   onSwitchToSignUp: () => void;
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
+  const { t } = useTranslation();
   const [alert, setAlert] = useState<{
     type: "success" | "error";
     message: string;
@@ -33,7 +33,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
       const result = await loginUser({ userName: data.userName, password: data.password });
       setAlert({
         type: "success",
-        message: `Log-in successful! Welcome, ${data.userName}`,
+        message: t("auth.successLogin", { userName: data.userName }),
       });
       console.log("Login response:", result);
       setTimeout(() => {
@@ -43,10 +43,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
     } catch (error) {
       console.error(error);
       if (axios.isAxiosError(error)) {
-        const errorMessage = error.response?.data?.message || "Login failed.";
+        const errorMessage = error.response?.data?.message || t("auth.loginFailed");
         setAlert({ type: "error", message: errorMessage });
       } else {
-        setAlert({ type: "error", message: "Login failed." });
+        setAlert({ type: "error", message: t("auth.loginFailed") });
       }
       setTimeout(() => {
         setAlert(null);
@@ -71,13 +71,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
             <input
               id={field.id}
               type={field.type}
-              placeholder={field.placeholder}
+              placeholder={t(`${field.placeholder}`)}
               {...register(field.id, field.validation)}
               className={`w-full px-4 py-2 mt-1 border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none`}
             />
             {errors[field.id] && (
               <p className="text-FifthColor text-sm mt-1">
-                {errors[field.id]?.message as string}
+               {t(errors[field.id]?.message as string)}
               </p>
             )}
           </div>
@@ -86,7 +86,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
         {/* Forgot Password Link */}
         <div className="flex justify-end mx-auto">
           <a href="/forgot-password" className="text-blue-600 text-sm mt-2">
-            Forgot password?
+            {t("auth.forgotPassword")}
           </a>
         </div>
 
@@ -95,7 +95,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
           <Button
             type="primary"
             size="login-register"
-            label="Login"
+            label={t("auth.loginButton")}
             onClick={() => {}}
           />
         </div>
@@ -107,7 +107,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
           </div>
           <div className="relative flex justify-center">
             <span className="bg-mainColor px-2 text-ForthColor">
-              Or Log In With{" "}
+              {t("auth.orLoginWith")}
             </span>
           </div>
         </div>
@@ -119,18 +119,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
           onClick={() => {}}
         >
           <img src={IconGoogle} alt="Google Icon" className="w-4 h-4 mr-2" />
-          Log In with Google
+          {t("auth.loginWithGoogle")}
         </button>
 
         {/* Sign Up Link */}
         <div className="relative flex items-center justify-center w-3/4 mx-auto">
           <p className="font-playfair text-[10px] md:text-[28px] text-sixColor flex justify-center">
-            Don't have an account? &nbsp;
+            {t("auth.noAccount")} &nbsp;
             <button
               onClick={onSwitchToSignUp}
               className="text-wine border-b-2 border-wine text-[10px] md:text-[28px]"
             >
-              Sign Up
+              {t("auth.signUp")}
             </button>
           </p>
         </div>

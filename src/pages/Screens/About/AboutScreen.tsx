@@ -11,9 +11,12 @@ import LinkedInIcon from "@assets/LinkedIn-icon.svg";
 import DeliveryIcon from "@assets/icon-delivery.svg";
 import CustomerServiceIcon from "@assets/Icon-Customer service.svg";
 import SecureIcon from "@assets/Icon-secure.svg";
+import { useTranslation } from "react-i18next";
+
 
 
 const AboutScreen: React.FC = () => {
+  const { t } = useTranslation();
   return (
     <div className="bg-customBeige min-h-screen">
       <div className="bg-customBeige min-h-screen flex-col xl:w-[85%] lg:w-full mx-auto">
@@ -21,7 +24,7 @@ const AboutScreen: React.FC = () => {
           <div className="flex justify-between items-center sm:flex-col xs:flex-col lg:flex-row">
             <div className="lg:w-1/2 md:w-full">
               <h1 className="text-5xl mb-10 text-wine font-playfair sm:w-full xs:w-full font-bold">
-                Our Story
+                {t("about.ourStory")}
               </h1>
               <p className="text-md mb-5 text-wine font-Poppins">
                 Launched in 2015, Exclusive is South Asia’s premier online

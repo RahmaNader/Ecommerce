@@ -1,10 +1,11 @@
-// AuthPage.tsx
 import React, { useState } from "react";
 import LoginForm from "./LoginForm";
 import SignUpForm from "./SignUpForm";
 import { Breadcrumb } from "@components/molecules";
+import { useTranslation } from "react-i18next";
 
 const AuthPage: React.FC = () => {
+  const { t } = useTranslation();
   const [isLogin, setIsLogin] = useState(true);
 
   const handleLoginClick = () => {
@@ -30,7 +31,7 @@ const AuthPage: React.FC = () => {
               : "text-ThirdColor border-b-2 border-ThirdColor"
           }`}
         >
-          Log in
+          {t("auth.login")}
         </button>
         <button
           onClick={handleRegisterClick}
@@ -40,7 +41,7 @@ const AuthPage: React.FC = () => {
               : "text-ThirdColor border-b-2 border-ThirdColor"
           }`}
         >
-          Create Account
+          {t("auth.createAccount")}
         </button>
       </div>
 

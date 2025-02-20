@@ -15,8 +15,6 @@ import { fetchCategories } from "@services/api/fetchCategories";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@context/useLanguage";
 
-
-
 const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
   "& .MuiBadge-badge": {
     right: -3,
@@ -47,9 +45,11 @@ const Navbar: React.FC = () => {
     error,
   } = useQuery("categories", fetchCategories);
 
-  const mainCategories = categories?.filter(
-    (cat: { parentCategoryID: number | null }) => cat.parentCategoryID === null
-  ) || [];
+  const mainCategories =
+    categories?.filter(
+      (cat: { parentCategoryID: number | null }) =>
+        cat.parentCategoryID === null
+    ) || [];
 
   const handleOpenModal = () => {
     if (closeTimeoutRef.current) {
@@ -77,7 +77,9 @@ const Navbar: React.FC = () => {
 
   useEffect(() => {
     const updateCartCount = () => {
-      const cart = Cookies.get("cart") ? JSON.parse(Cookies.get("cart") as string) : [];
+      const cart = Cookies.get("cart")
+        ? JSON.parse(Cookies.get("cart") as string)
+        : [];
       const totalItems = cart.reduce(
         (count: number, item: { quantity: number }) => count + item.quantity,
         0
@@ -104,7 +106,7 @@ const Navbar: React.FC = () => {
         </Link>
       </div>
 
-      <div className="flex items-center space-x-2 gap-0 md:space-x-4">
+      <div className="flex items-center space-x-2 rtl:gap-2 gap-0 md:space-x-4">
         <NavLink
           label={<IconSearch width={28} height={28} />}
           to="/search"
@@ -112,7 +114,7 @@ const Navbar: React.FC = () => {
           isActive={isActive("/search")}
         />
 
-        <label htmlFor="language-select" className="sr-only">
+        <label htmlFor="language-select" className="sr-only ">
           {t("language")}
         </label>
 
@@ -120,10 +122,14 @@ const Navbar: React.FC = () => {
           title={t("language")}
           value={language}
           onChange={handleLanguageChange}
-          className="bg-gray-700 text-white px-2 py-1 rounded"
+          className="bg-wine text-white px-1 py-1 rounded-lg outline-none focus:ring-2 focus:ring-wine"
         >
-          <option value="en">English</option>
-          <option value="ar">العربية</option>
+          <option value="en" >
+            English
+          </option>
+          <option value="ar">
+            العربية
+          </option>
         </select>
 
         <NavLink
@@ -238,30 +244,30 @@ const Navbar: React.FC = () => {
             />
             <div
               className={`flex flex-col transition-max-height duration-300 ease-in-out ${
-          isShopOpen ? "max-h-40" : "max-h-0"
+                isShopOpen ? "max-h-40" : "max-h-0"
               } overflow-hidden border-l-4 border-wine`}
             >
               {isLoading && (
-          <p className="text-center p-2">{t("loadingCategories")}</p>
+                <p className="text-center p-2">{t("loadingCategories")}</p>
               )}
               {isError && (
-          <p className="text-center p-2 text-red-600">
-            {(error as Error)?.message}
-          </p>
+                <p className="text-center p-2 text-red-600">
+                  {(error as Error)?.message}
+                </p>
               )}
               {!isLoading &&
-          !isError &&
-          mainCategories.map(
-            (category: { categoryID: number; name: string }) => (
-              <NavLink
-                key={category.categoryID}
-                label={category.name}
-                to={`/products/${category.name.toLowerCase()}`}
-                variant="sidenavbarsub"
-                onClick={toggleMenu}
-              />
-            )
-          )}
+                !isError &&
+                mainCategories.map(
+                  (category: { categoryID: number; name: string }) => (
+                    <NavLink
+                      key={category.categoryID}
+                      label={category.name}
+                      to={`/products/${category.name.toLowerCase()}`}
+                      variant="sidenavbarsub"
+                      onClick={toggleMenu}
+                    />
+                  )
+                )}
             </div>
           </div>
 

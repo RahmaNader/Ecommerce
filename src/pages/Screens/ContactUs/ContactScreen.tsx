@@ -1,7 +1,9 @@
 import React from "react";
-import phoneIcon from "../../../assets/PhoneIcon.svg";
-import letterIcon from "../../../assets/LetterIcon.svg";
+import phoneIcon from "@assets/PhoneIcon.svg";
+import letterIcon from "@assets/LetterIcon.svg";
 import { Button } from "@components/atoms";
+import { useTranslation } from "react-i18next";
+
 import {
   useForm,
   Controller,
@@ -17,6 +19,7 @@ type formFields = {
 };
 
 const ContactScreen: React.FC = () => {
+  const { t } = useTranslation();
   const {
     control,
     handleSubmit,
@@ -40,13 +43,13 @@ const ContactScreen: React.FC = () => {
               <span className="w-10 h-10 flex justify-center items-center rounded-3xl bg-wine">
                 <img src={phoneIcon} alt="" />
               </span>
-              <span className="ms-4">Call To Us</span>
+              <span className="ms-4">{t("contact.callUs")}</span>
             </div>
             <div className="mt-4">
-              <p>We are available 24/7, 7 days a week.</p>
+              <p>{t("contact.callUsInfo")}</p>
             </div>
             <div className="mt-4 mb-4">
-              <p>Phone: +8801611112222</p>
+              <p>{t("contact.phone")}: +8801611112222</p>
             </div>
           </div>
           <div>
@@ -55,18 +58,18 @@ const ContactScreen: React.FC = () => {
                 <span className="w-10 h-10 flex justify-center items-center rounded-3xl bg-wine">
                   <img src={letterIcon} alt="" />
                 </span>
-                <span className="ms-4">Write To US</span>
+                <span className="ms-4">{t("contact.writeToUs")}</span>
               </div>
               <div className="mt-4 ">
                 <p>
-                  Fill out our form and we will contact you within 24 hours.
+                {t("contact.writeToUsInfo")}
                 </p>
               </div>
               <div className="mt-4">
-                <p>Emails: customer@exclusive.com</p>
+                <p>{t("contact.emailCustomer")}: customer@exclusive.com</p>
               </div>
               <div className="mt-4">
-                <p>Emails: support@exclusive.com</p>
+                <p>{t("contact.emailSupport")}: support@exclusive.com</p>
               </div>
             </div>
           </div>
@@ -78,12 +81,12 @@ const ContactScreen: React.FC = () => {
                 <Controller
                   name="name"
                   control={control}
-                  rules={{ required: "Name is required" }}
+                  rules={{ required: t("contact.validation.requiredName") }}
                   render={({ field }) => (
                     <input
                       {...field}
                       id="name"
-                      placeholder="Your Name"
+                      placeholder={t("contact.namePlaceholder")}
                       className="bg-[#A78E7821] border border-skin px-3 py-3 rounded-md placeholder:text-skin md:w-full xs:w-full sm:w-full focus:border-skin focus:text-skin"
                     />
                   )}
@@ -97,17 +100,17 @@ const ContactScreen: React.FC = () => {
                   name="email"
                   control={control}
                   rules={{
-                    required: "Email is required",
+                    required: t("contact.validation.requiredEmail"),
                     pattern: {
                       value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                      message: "Invalid email address",
+                      message: t("contact.validation.invalidEmail"),
                     },
                   }}
                   render={({ field }) => (
                     <input
                       {...field}
                       id="email"
-                      placeholder="Your Email"
+                      placeholder={t("contact.emailPlaceholder")}
                       className="bg-[#A78E7821] border border-skin px-3 py-3 rounded-md placeholder:text-skin md:w-full xs:w-full sm:w-full focus:border-skin focus:text-skin"
                     />
                   )}
@@ -120,12 +123,12 @@ const ContactScreen: React.FC = () => {
                 <Controller
                   name="phone"
                   control={control}
-                  rules={{ required: "Phone number is required" }}
+                  rules={{ required: t("contact.validation.requiredPhone") }}
                   render={({ field }) => (
                     <input
                       {...field}
                       id="phone"
-                      placeholder="Your Phone"
+                      placeholder={t("contact.phonePlaceholder")}
                       className="bg-[#A78E7821] border border-skin px-3 py-3 rounded-md placeholder:text-skin xs:w-full sm:w-full  md:w-full focus:border-skin focus:text-skin"
                     />
                   )}
@@ -141,12 +144,12 @@ const ContactScreen: React.FC = () => {
               <Controller
                 name="message"
                 control={control}
-                rules={{ required: "Message is required" }}
+                rules={{ required: t("contact.validation.requiredMessage") }}
                 render={({ field }) => (
                   <textarea
                     {...field}
                     id="message"
-                    placeholder="Message"
+                    placeholder={t("contact.messagePlaceholder")}
                     className="w-full h-[200px] bg-[#A78E7821] border border-skin p-5 mt-5 placeholder:text-skin focus:text-skin focus:border-skin "
                   />
                 )}
@@ -155,11 +158,11 @@ const ContactScreen: React.FC = () => {
                 <span>{getErrorMessage(errors.message as FieldError)}</span>
               )}
             </div>
-            <div className="float-right pt-5">
+            <div className="ltr:float-right rtl:float-left pt-5">
               <Button
                 type="primary"
                 size="medium"
-                label="Send"
+                label={t("contact.sendButton")}
                 onClick={handleSubmit(onSubmit)}
               />
             </div>
@@ -171,38 +174,3 @@ const ContactScreen: React.FC = () => {
 };
 
 export default ContactScreen;
-
-{
-  /* <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex justify-between gap-3 max-md:flex-col md:flex-col lg:flex-row xl:flex-row xl:justify-between">
-              <Input {...register("name", {
-                required: true
-              })} placeholder="Your Name" />
-              <Input {...register("email",{
-                required: true,
-                validate : (value) => value.includes("@")
-              })} placeholder="Your Email" />
-              <Input {...register("phone",{
-                required: true,
-                pattern: /^01[0125][0-9]{8}$/
-              })} placeholder="Your Phone" />
-            </div>
-            <div className="mb-4">
-              <textarea placeholder="Your Message" className="w-full h-[200px] bg-[#A78E7821] border border-skin p-5 mt-5 placeholder:text-skin focus:text-skin focus:border-skin "  ></textarea>
-            </div>
-            <div
-              className="float-right pt-5">
-              <Button
-                type="primary"
-                size="medium"
-                label="Send"
-                onClick={
-                  handleSubmit(onSubmit)
-                 } />
-            </div>
-          </form> */
-}
-
-{
-  /* <button className="float-right pt-5" type="submit">Submit</button> */
-}

@@ -1,4 +1,3 @@
-
 import { LoginFormInputs } from "@types";
 
 export const loginInputFields: Array<{
@@ -9,21 +8,21 @@ export const loginInputFields: Array<{
 }> = [
   {
     id: "userName",
-    type: "userName",
-    placeholder: "User Name",
+    type: "text", // "userName" is not a valid type, so changing it to "text"
+    placeholder: "auth.userName", // Using translation key
     validation: {
-      required: "user name is required",
+      required: "auth.userNameRequired", // Translation key for validation
     },
   },
   {
     id: "password",
     type: "password",
-    placeholder: "Password",
+    placeholder: "auth.password",
     validation: {
-      required: "Password is required",
+      required: "auth.passwordRequired",
       minLength: {
         value: 6,
-        message: "Password must be at least 6 characters",
+        message: "auth.passwordMinLength",
       },
     },
   },
