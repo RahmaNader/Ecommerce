@@ -5,10 +5,9 @@ import "react-phone-input-2/lib/style.css";
 import { SignUpFormInputs } from "@types";
 import IconGoogle from "@assets/Icon-Google.svg";
 import { registerUser } from "@services/auth/AuthService";
-import { ErrorAlert, SuccessAlert,Button } from "@components/atoms";
+import { ErrorAlert, SuccessAlert, Button } from "@components/atoms";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
-
 
 interface SignUpFormProps {
   onSwitchToLogin: () => void;
@@ -50,7 +49,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
       console.log("Registration response:", result);
       setAlert({
         type: "success",
-        message: "auth.successRegister"
+        message: t("auth.successRegister"),
       });
 
       setTimeout(() => {
@@ -65,12 +64,12 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
             errorMessage.toLowerCase().includes('already exists')) {
           setAlert({
             type: "error",
-            message: "auth.usernameTaken"
+            message: t("auth.usernameTaken"),
           });
         } else {
           setAlert({
             type: "error",
-            message: errorMessage
+            message: errorMessage,
           });
         }
       }
@@ -142,13 +141,13 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
               minLength: {
                 value: 11,
                 message: t("auth.phoneMinLength"),
-              }
+              },
             }}
             render={({ field }) => (
               <PhoneInput
                 {...field}
                 country={"eg"}
-                placeholder="Phone Number"
+                placeholder={t("auth.phoneNumber")}
                 containerClass="w-full"
                 inputStyle={{
                   width: "100%",
@@ -178,12 +177,12 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
           <input
             id="password"
             type="password"
-            placeholder="Password"
+            placeholder={t("auth.password")}
             {...register("password", {
-              required: "Password is required",
+              required: t("auth.passwordRequired"),
               minLength: {
                 value: 6,
-                message: "Password must be at least 6 characters",
+                message: t("auth.passwordMinLength"),
               },
             })}
             className={`w-full px-4 py-2 mt-1 border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none`}
@@ -200,11 +199,11 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
           <input
             id="confirmPassword"
             type="password"
-            placeholder="Confirm Password"
+            placeholder={t("auth.confirmPassword")}
             {...register("confirmPassword", {
-              required: "Confirm password is required",
+              required: t("auth.confirmPasswordRequired"),
               validate: (value) =>
-                value === password || "Passwords do not match",
+                value === password || t("auth.passwordsNotMatch"),
             })}
             className={`w-full px-4 py-2 mt-1 border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none`}
           />
@@ -221,12 +220,12 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
           <div className="w-full md:w-1/2">
             <select
               id="gender"
-              {...register("gender", { required: "Gender is required" })}
+              {...register("gender", { required: t("auth.genderRequired") })}
               className="w-full py-2 mt-1 border rounded text-ForthColor text-[15px] border-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none"
             >
-              <option value="">Gender</option>
-              <option value="0">Male</option>
-              <option value="1">Female</option>
+              <option value="">{t("auth.gender")}</option>
+              <option value="0">{t("auth.male")}</option>
+              <option value="1">{t("auth.female")}</option>
             </select>
             {errors.gender && (
               <p className="text-FifthColor text-sm mt-1">
@@ -241,10 +240,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
             <div className="w-1/4">
               <select
                 id="day"
-                {...register("day", { required: "Day is required" })}
+                {...register("day", { required: t("auth.dayRequired") })}
                 className="w-full py-2 mt-1 border rounded text-ForthColor text-[15px] border-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none"
               >
-                <option value="">DD</option>
+                <option value="">{t("auth.day")}</option>
                 {[...Array(31)].map((_, i) => (
                   <option key={i} value={i + 1}>
                     {i + 1}
@@ -262,10 +261,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
             <div className="w-1/4">
               <select
                 id="month"
-                {...register("month", { required: "Month is required" })}
+                {...register("month", { required: t("auth.monthRequired") })}
                 className="w-full py-2 mt-1 border rounded text-ForthColor text-[15px] border-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none"
               >
-                <option value="">MM</option>
+                <option value="">{t("auth.month")}</option>
                 {[
                   "1",
                   "2",
@@ -296,10 +295,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
             <div className="w-1/4">
               <select
                 id="year"
-                {...register("year", { required: "Year is required" })}
+                {...register("year", { required: t("auth.yearRequired") })}
                 className="w-full py-2 mt-1 border rounded text-ForthColor text-[15px] border-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none"
               >
-                <option value="">YYYY</option>
+                <option value="">{t("auth.year")}</option>
                 {Array.from(
                   { length: 100 },
                   (_, i) => new Date().getFullYear() - i
@@ -323,7 +322,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
           <Button
             type="primary"
             size="login-register"
-            label="Register"
+            label={t("auth.register")}
             onClick={() => {}}
           />
         </div>
@@ -335,7 +334,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
           </div>
           <div className="relative flex justify-center">
             <span className="bg-mainColor px-2 text-ForthColor">
-              Or Sign Up With{" "}
+              {t("auth.orSignUpWith")}
             </span>
           </div>
         </div>
@@ -347,17 +346,17 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
           onClick={() => {}}
         >
           <img src={IconGoogle} alt="Google Icon" className="w-4 h-4 mr-2" />
-          Sign Up with Google
+          {t("auth.signUpWithGoogle")}
         </button>
 
         <div className="relative flex items-center justify-center w-3/4 mx-auto">
           <p className="font-playfair text-[10px] md:text-[28px] text-sixColor flex justify-center">
-            Already have an account? &nbsp;
+            {t("auth.haveAccount")} &nbsp;
             <button
               onClick={onSwitchToLogin}
               className="text-wine border-b-2 border-wine text-[10px] md:text-[28px]"
             >
-              Log in
+              {t("auth.login")}
             </button>
           </p>
         </div>

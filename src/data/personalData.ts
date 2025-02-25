@@ -9,60 +9,48 @@ export const personalDataFields: Array<{
   {
     id: "fullName",
     type: "text",
-    placeholder: "Rahma Nader",
+    placeholder: "profile.fullName",
     validation: {
-      required: "Full Name is required",
+      required: "profile.fullNameRequired",
       minLength: {
         value: 3,
-        message: "Full Name must be at least 3 characters",
+        message: "profile.fullNameMinLength",
       },
     },
   },
   {
     id: "phoneNumber",
     type: "tel",
-    placeholder: "012345678912",
+    placeholder: "profile.phoneNumber",
     validation: {
-      required: "Phone Number is required",
+      required: "profile.phoneNumberRequired",
       pattern: {
         value: /^\+?[1-9]\d{1,14}$/,
-        message: "Invalid phone number format",
+        message: "profile.invalidPhoneNumber",
       },
     },
   },
   {
     id: "address",
     type: "text",
-    placeholder: "Cairo",
+    placeholder: "profile.address",
     validation: {
-      required: "Address is required",
+      required: "profile.addressRequired",
       minLength: {
         value: 5,
-        message: "Address must be at least 5 characters",
+        message: "profile.addressMinLength",
       },
     },
   },
   {
     id: "email",
     type: "email",
-    placeholder: "r@gmail.com",
+    placeholder: "profile.email",
     validation: {
-      required: "Email is required",
+      required: "profile.emailRequired",
       pattern: {
         value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-        message: "Invalid email address",
-      },
-    },
-  },
-  {
-    id: "password",
-    type: "password",
-    placeholder: "Password",
-    validation: {
-      required: "Password is required",
-      minLength: {
-        value: 6,
-        message: "Password must be at least 6 characters",
+        message: "profile.invalidEmail",
       },
     },
   },

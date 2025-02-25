@@ -30,10 +30,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
 
   const onSubmit = async (data: LoginFormInputs) => {
     try {
-      const result = await loginUser({ userName: data.userName, password: data.password });
+      const result = await loginUser({ email: data.email, password: data.password });
       setAlert({
         type: "success",
-        message: t("auth.successLogin", { userName: data.userName }),
+        message: t("auth.successLogin", { userName: data.email }),
       });
       console.log("Login response:", result);
       setTimeout(() => {
@@ -77,7 +77,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
             />
             {errors[field.id] && (
               <p className="text-FifthColor text-sm mt-1">
-               {t(errors[field.id]?.message as string)}
+                {t(errors[field.id]?.message as string)}
               </p>
             )}
           </div>

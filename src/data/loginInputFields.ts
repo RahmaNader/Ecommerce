@@ -7,11 +7,15 @@ export const loginInputFields: Array<{
   validation: Record<string, unknown>;
 }> = [
   {
-    id: "userName",
-    type: "text", // "userName" is not a valid type, so changing it to "text"
-    placeholder: "auth.userName", // Using translation key
+    id: "email",
+    type: "email",
+    placeholder: "auth.email",
     validation: {
-      required: "auth.userNameRequired", // Translation key for validation
+      required: "auth.emailRequired",
+      pattern: {
+        value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+        message: "auth.invalidEmail",
+      },
     },
   },
   {
