@@ -29,7 +29,7 @@ export const fetchPersonalData = async () => {
       if (error.response && error.response.status === 401) {
         console.error("401 Unauthorized - Token might be invalid or expired");
         Cookies.remove("authToken");
-        window.location.href = "/login";
+        window.location.href = "/authentication";
       } else {
         console.error("Error fetching personal data:", error.response || error);
       }

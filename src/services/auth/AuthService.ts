@@ -36,10 +36,25 @@ export const registerUser = async (userData: RegisterData) => {
 
 export const loginUser = async (data: LoginData) => {
   const response = await apiClient.post('/Account/login', data);
-  const { token, username } = response.data;
+  const { token, username, refreshToken } = response.data;
   if (token) {
     document.cookie = `authToken=${token}; path=/;`;
     document.cookie = `username=${username}; path=/;`;
+    document.cookie = `refreshToken=${refreshToken}; path=/;`;
   }
   return response.data;
+};
+
+export const requestPasswordReset = async (data: PasswordResetData) => {
+  try {
+    const response = await apiClient.post('/Account/requestPasswordReset', data);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log('Error response:', error.response?.data);
+      console.log('Error status:', error.response?.status);
+      console.log('Error headers:', error.response?.headers);
+    }
+    throw error;
+  }
 };

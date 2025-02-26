@@ -1,7 +1,10 @@
 import React from "react";
 import fallbackImage from "@assets/HP_img1.jpeg";
+import { useTranslation } from "react-i18next";
+
 
 const ReturnsScreen: React.FC = () => {
+  const { t } = useTranslation();
   // Mock data for product details
   const products = [
     {
@@ -33,10 +36,10 @@ const ReturnsScreen: React.FC = () => {
   return (
     <div className="flex flex-col mt-8 md:mt-16 justify-center">
       <h1 className="text-2xl font-semibold text-wine font-playfair md:self-start mx-auto md:mx-0">
-        Return
+        {t("returns.title")}
       </h1>
       <p className="text-ForthColor font-playfair text-xl mb-4 md:self-start mx-auto md:mx-0">
-        Return your order
+        {t("returns.subtitle")}
       </p>
 
       {products.map((product, index) => (
@@ -63,9 +66,9 @@ const ReturnsScreen: React.FC = () => {
           {/* Price and Action Section */}
           <div className="flex flex-col items-end justify-between h-full">
             <span className="font-playfair text-wine font-bold text-lg">{product.price}</span>
-            <span className="text-sm text-ForthColor">{`Qty: ${product.quantity}`}</span>
+            <span className="text-sm text-ForthColor">{`${t("returns.quantity")}: ${product.quantity}`}</span>
             <button className="text-ForthColor underline text-l font-semibold mt-2">
-              Details ➔
+               {t("returns.details")} 
             </button>
           </div>
         </div>

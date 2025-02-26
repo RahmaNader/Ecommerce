@@ -17,3 +17,4 @@ export { default as OrderDetails } from "./OrderDetails/OrderDetails";
 export { default as NotFound } from "./NotFound/NotFound";
 export { default as Cart } from "./Cart/Cart";
 export { default as CheckOut } from "./CheckOut/CheckOut";
+export { default as ForgotPassword } from "./Authentication/ForgotPassword";

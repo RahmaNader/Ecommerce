@@ -21,6 +21,7 @@ import {
   NotFound,
   Cart,
   CheckOut,
+  ForgotPassword,
 } from "@pages/Screens";
 
 
@@ -73,6 +74,10 @@ export const router = createBrowserRouter([
       {
         path: "authentication",
         element: <AuthPage />,
+      },
+      {
+        path:"forgot-password",
+        element:<ForgotPassword />,
       },
       {
         path: "product-details/:id",

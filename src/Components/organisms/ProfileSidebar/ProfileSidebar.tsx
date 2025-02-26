@@ -13,6 +13,8 @@ import PersonalData1 from "@assets/PersonalData1.svg";
 import ProfilePhoto from "@assets/ProfilePhoto.svg";
 import { useTranslation } from "react-i18next";
 import { fetchPersonalData } from "@services/api/personaldetails";
+import LogoutIcon from "@assets/Logout.svg";
+import Cookies from "js-cookie"; 
 
 
 const ProfileSidebar: React.FC = () => {
@@ -30,6 +32,66 @@ const ProfileSidebar: React.FC = () => {
 
     loadUserData();
   }, []);
+
+  // const handleLogout = async () => {
+  //   try {
+  //     // Retrieve tokens from cookies
+  //     const authToken = Cookies.get("authToken");
+  //     const refreshToken = Cookies.get("refreshToken");
+  
+  //     if (!authToken || !refreshToken) {
+  //       console.warn("No tokens found. User may already be logged out.");
+  //       return;
+  //     }
+  
+  //     // Logout API request (sending both tokens in the request body)
+  //     const response = await fetch("https://www.bouraq-mt.com/royalkey/api/Account/logout", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         "Authorization": `Bearer ${authToken}`
+  //       },
+  //       body: JSON.stringify({
+  //         refreshToken: refreshToken
+  //       })
+  //     });
+  
+  //     if (!response.ok) {
+  //       const errorResponse = await response.json();
+  //       throw new Error(`Logout failed: ${errorResponse.message || response.status}`);
+  //     }
+  
+  //     // Clear cookies after successful logout
+  //     Cookies.remove("authToken");
+  //     Cookies.remove("refreshToken");
+  //     Cookies.remove("username");
+  
+  //     console.log("User successfully logged out");
+  
+  //     // Redirect user to login page (or homepage)
+  //     window.location.href = "/authentication"; 
+  
+  //   } catch (error) {
+  //     console.error("Logout error:", error);
+  //   }
+  // };
+  
+const handleLogout = async () => {
+    try {
+      // Clear cookies
+      Cookies.remove("authToken");
+      Cookies.remove("refreshToken");
+      Cookies.remove("username");
+
+      console.log("User successfully logged out");
+
+      // Redirect user to login page
+      window.location.href = "/authentication";
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+
   const navItems = [
     { label: t("profileSidebar.personalData"), path: "/profile", DefaultIcon: PersonalData, ActiveIcon: PersonalData1 },
     { label: t("profileSidebar.paymentAndCC"), path: "/profile/payment-credit-card", DefaultIcon: PaymentAndCC, ActiveIcon: PaymentAndCC1 },
@@ -58,6 +120,16 @@ const ProfileSidebar: React.FC = () => {
           />
         ))}
       </nav>
+
+
+      <button
+        onClick={handleLogout}
+        className="flex items-center mt-6 text-ForthColor font-semibold"
+      >
+        <img src={LogoutIcon} alt="Logout Icon" className="w-8 h-8 mr-2 " />
+        <p className="space-x-4 p-2 rounded-md font-playfair text-xl font-semibold"> {t("profileSidebar.logout")} </p>
+      </button>
+
     </div>
   );
 };

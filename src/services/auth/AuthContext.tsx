@@ -36,11 +36,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     const authToken = getCookie("authToken");
-    if (authToken) {
-      // Optionally, fetch the user from an endpoint using the token
-      // Example: fetchUser(authToken).then(setUser);
+    if (authToken) {;
       console.log("Token exists:", authToken);
-      // Mock: Populate user directly from a dummy response for demonstration
       setUser({ id: "1", userName: "demoUser", email: "demo@example.com" });
     }
   }, []);

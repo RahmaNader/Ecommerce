@@ -13,7 +13,8 @@ const resources = {
         toggleMenu: "Toggle Menu",
       },
       slider: {
-        slide1: "Find Your Perfect Blend of Our Traditional and Modern Fashion.",
+        slide1:
+          "Find Your Perfect Blend of Our Traditional and Modern Fashion.",
         slide2: "Unite Timeless Traditions with Fresh, Modern Styles Today.",
         slide3: "Uncover the Perfect Balance of Tradition and Trendy Pieces.",
         viewCollection: "View Collection",
@@ -57,7 +58,8 @@ const resources = {
         callUsInfo: "We are available 24/7, 7 days a week.",
         phone: "Phone",
         writeToUs: "Write To Us",
-        writeToUsInfo: "Fill out our form and we will contact you within 24 hours.",
+        writeToUsInfo:
+          "Fill out our form and we will contact you within 24 hours.",
         emailSupport: "Support Email",
         emailCustomer: "Customer Service Email",
         namePlaceholder: "Your Name",
@@ -75,8 +77,10 @@ const resources = {
       },
       about: {
         ourStory: "Our Story",
-        ourStoryParagraph1: "Launched in 2015, Exclusive is South Asia’s premier online shopping marketplace...",
-        ourStoryParagraph2: "Exclusive has more than 1 Million products to offer, growing at a very fast rate...",
+        ourStoryParagraph1:
+          "Launched in 2015, Exclusive is South Asia’s premier online shopping marketplace...",
+        ourStoryParagraph2:
+          "Exclusive has more than 1 Million products to offer, growing at a very fast rate...",
         teamMemberName: "John Salem",
         teamMemberTitle: "Manager Director",
         fastDelivery: "FREE AND FAST DELIVERY",
@@ -127,7 +131,8 @@ const resources = {
         noAccount: "Don't have an account?",
         signUp: "Sign Up",
         successRegister: "User registered successfully!",
-        usernameTaken: "This username is already taken. Please choose another one.",
+        usernameTaken:
+          "This username is already taken. Please choose another one.",
         userName: "Full Name",
         userNameRequired: "Full name is required",
         email: "Email",
@@ -157,6 +162,14 @@ const resources = {
         orSignUpWith: "Or Sign Up With",
         signUpWithGoogle: "Sign Up with Google",
         haveAccount: "Already have an account?",
+        registersuccess: "Account created successfully",
+        resetPasswordSuccess: "Password reset link sent successfully",
+        resetPasswordFailed: "Failed to send password reset link",
+        forgotPasswordTitle: "Forgot Password?",
+        forgotPasswordInstructions: "Enter your email address to receive a password reset link.",
+        enterEmail: "Enter your email",
+        sendResetLink: "Send Reset Link",
+        backToLogin: "Back to Login",
       },
       profile: {
         identification: "Identification",
@@ -187,8 +200,15 @@ const resources = {
         returns: "Returns",
         wishList: "Wish List",
         verification: "Verification",
+        logout: "Log Out",
       },
-    }
+      returns: {
+        title: "Return",
+        subtitle: "Return your order",
+        quantity: "Qty",
+        details: "Details ➔",
+      },
+    },
   },
   ar: {
     translation: {
@@ -263,12 +283,15 @@ const resources = {
       },
       about: {
         ourStory: "قصتنا",
-        ourStoryParagraph1: "تم إطلاق Exclusive في عام 2015، وهو السوق الرائد للتسوق عبر الإنترنت في جنوب آسيا...",
-        ourStoryParagraph2: "تقدم Exclusive أكثر من مليون منتج، وتنمو بوتيرة سريعة جدًا...",
+        ourStoryParagraph1:
+          "تم إطلاق Exclusive في عام 2015، وهو السوق الرائد للتسوق عبر الإنترنت في جنوب آسيا...",
+        ourStoryParagraph2:
+          "تقدم Exclusive أكثر من مليون منتج، وتنمو بوتيرة سريعة جدًا...",
         teamMemberName: "جون سالم",
         teamMemberTitle: "المدير العام",
         fastDelivery: "توصيل مجاني وسريع",
-        fastDeliveryDescription: "توصيل مجاني لجميع الطلبات التي تزيد عن 140 دولارًا",
+        fastDeliveryDescription:
+          "توصيل مجاني لجميع الطلبات التي تزيد عن 140 دولارًا",
         customerService: "خدمة العملاء 24/7",
         customerServiceDescription: "دعم عملاء ودود على مدار الساعة",
         moneyBack: "ضمان استرداد الأموال",
@@ -345,6 +368,14 @@ const resources = {
         orSignUpWith: "أو إنشاء حساب عبر",
         signUpWithGoogle: "التسجيل عبر جوجل",
         haveAccount: "لديك حساب بالفعل؟",
+        registersuccess:"تم إنشاء الحساب بنجاح",
+        resetPasswordSuccess: "تم إرسال رابط إعادة تعيين كلمة المرور بنجاح",
+        resetPasswordFailed: "فشل في إرسال رابط إعادة تعيين كلمة المرور",
+        forgotPasswordTitle: "نسيت كلمة المرور؟",
+        forgotPasswordInstructions: "أدخل عنوان بريدك الإلكتروني لتلقي رابط إعادة تعيين كلمة المرور.",
+        enterEmail: "أدخل بريدك الإلكتروني",
+        sendResetLink: "إرسال رابط إعادة التعيين",
+        backToLogin: "العودة إلى تسجيل الدخول",
       },
       profile: {
         identification: "الهوية",
@@ -365,7 +396,7 @@ const resources = {
         passwordRequired: "كلمة المرور مطلوبة",
         passwordMinLength: "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل",
         submit: "تأكيد",
-        edit:"تعديل",
+        edit: "تعديل",
         fillAllFields: "يرجى ملء جميع الحقول قبل التقديم.",
       },
       profileSidebar: {
@@ -375,20 +406,25 @@ const resources = {
         returns: "الإرجاع",
         wishList: "قائمة الرغبات",
         verification: "التحقق",
+        logout: "تسجيل الخروج",
       },
-    }
-  }
+      returns: {
+        title: "الإرجاع",
+        subtitle: "إرجاع طلبك",
+        quantity: "الكمية",
+        details: "التفاصيل ➔",
+      },
+    },
+  },
 };
 
-i18next
-  .use(initReactI18next)
-  .init({
-    resources,
-    fallbackLng: "en",
-    lng: localStorage.getItem("lng") || "en",
-    supportedLngs: ["en", "ar"],
-    interpolation: { escapeValue: false },
-    react: { useSuspense: false },
-  });
+i18next.use(initReactI18next).init({
+  resources,
+  fallbackLng: "en",
+  lng: localStorage.getItem("lng") || "en",
+  supportedLngs: ["en", "ar"],
+  interpolation: { escapeValue: false },
+  react: { useSuspense: false },
+});
 
 export default i18next;

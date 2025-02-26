@@ -50,7 +50,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
       console.log("Registration response:", result);
       setAlert({
         type: "success",
-        message: "auth.successRegister"
+        message: t("auth.registersuccess")
       });
 
       setTimeout(() => {
@@ -65,7 +65,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
             errorMessage.toLowerCase().includes('already exists')) {
           setAlert({
             type: "error",
-            message: "auth.usernameTaken"
+            message: t("auth.usernameTaken")
           });
         } else {
           setAlert({
