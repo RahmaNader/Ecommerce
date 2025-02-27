@@ -6,6 +6,7 @@ import fallbackImage from '@assets/HP_img2.jpeg';
 import { Image } from '@components/atoms';
 import { CustomRating } from "@components/atoms";
 import shoppingCart from "@assets/shoppingCart.svg";
+import { fetchProductImages } from "@services/api/fetchProductImages";
 // import { ProductPreference } from "@components/molecules";
 
 const Card: React.FC<CardComponent> = ({
@@ -23,12 +24,26 @@ const Card: React.FC<CardComponent> = ({
   // const [alertMessage, setAlertMessage] = useState("");
   const [isInCart, setIsInCart] = useState(false);
   const [showPreference, setShowPreference] = useState(false);
+  const [fetchedImages, setFetchedImages] = useState<{ imageId: number; imageUrl: string; altText: string }[]>([]);
 
   useEffect(() => {
     const existingCart = Cookies.get("cart")
       ? JSON.parse(Cookies.get("cart") as string)
       : [];
     setIsInCart(existingCart.some((item: { id: number }) => item.id === productID));
+  }, [productID]);
+
+  useEffect(() => {
+    const loadImages = async () => {
+      try {
+        const images = await fetchProductImages(productID);
+        setFetchedImages(images);
+      } catch (error) {
+        console.error("Error fetching product images:", error);
+      }
+    };
+
+    loadImages();
   }, [productID]);
 
   const handleCardClick = () => {
@@ -78,10 +93,13 @@ const Card: React.FC<CardComponent> = ({
   // };
 
   const getImageUrl = () => {
-    if (productImages && productImages?.[0]?.altText && productImages?.[0]?.imageUrl != null) {
-      return productImages?.[0].imageUrl;
+    if (fetchedImages.length > 0) {
+      return fetchedImages[0].imageUrl; // Use first fetched image
     }
-    return fallbackImage;
+    if (productImages && productImages.length > 0) {
+      return productImages[0].imageUrl; // Fallback to passed prop
+    }
+    return fallbackImage; // Fallback image if no images exist
   };
 
   return (
@@ -108,7 +126,7 @@ const Card: React.FC<CardComponent> = ({
       >
         <Image
           src={getImageUrl()}
-          alt={productImages?.[0]?.altText || name}
+          alt={fetchedImages[0]?.altText || productImages?.[0]?.altText || name}
           className="object-cover w-full h-full cursor-pointer"
         />
         <div className="absolute top-0 left-0 w-full h-full border-2 border-golden rounded-t-[500px]" />

@@ -6,22 +6,7 @@ import trash from "@assets/trash.svg";
 import { CreditCard } from "@types";
 
 const PaymentCreditCardScreen: React.FC = () => {
-  const [cards, setCards] = useState<CreditCard[]>([
-    {
-      type: "Visa",
-      number: "**** **** **** 1234",
-      nameOnCard: "J SMITH",
-      expiry: "10/27",
-      CVV: 123,
-    },
-    {
-      type: "MasterCard",
-      number: "**** **** **** 3456",
-      nameOnCard: "J SMITH",
-      expiry: "10/27",
-      CVV: 456,
-    },
-  ]);
+  const [cards, setCards] = useState<CreditCard[]>([]);
 
   const cardLogos: Record<string, string> = {
     visa: visaLogo,
