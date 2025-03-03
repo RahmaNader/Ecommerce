@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ReviewCard } from "@components/atoms";
-import { WriteRe} from "@components/molecules";
+import { WriteReview } from "@components/molecules";
 
 const ReviewsSection: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,18 +28,18 @@ const ReviewsSection: React.FC = () => {
     },
   ];
 
-  const [reviews, setReviews] = useState(initialReviews); 
+  const [reviews, setReviews] = useState(initialReviews);
 
   const handleReviewSubmit = (rating: number, review: string) => {
     const newReview = {
       reviewerName: "Anonymous",
-      datePosted: new Date().toLocaleDateString(), 
+      datePosted: new Date().toLocaleDateString(),
       reviewText: review,
       rating: rating,
     };
 
     setReviews([newReview, ...reviews]);
-    setIsModalOpen(false); 
+    setIsModalOpen(false);
   };
 
   return (
@@ -53,7 +53,7 @@ const ReviewsSection: React.FC = () => {
         </h2>
         <button
           className="bg-wine text-mainColor p-2 rounded-md text-xl font-playfair hover:bg-ForthColor"
-          onClick={() => setIsModalOpen(true)} 
+          onClick={() => setIsModalOpen(true)}
         >
           Write a review
         </button>
@@ -63,16 +63,17 @@ const ReviewsSection: React.FC = () => {
           <ReviewCard key={index} {...review} />
         ))}
       </div>
-      <div className="flex justify-center mt-8">
-        <button className="bg-wine text-mainColor font-playfair text-2xl rounded-md w-[50%] py-3 px-8 hover:bg-ForthColor transition duration-300">
-          See All
-        </button>
-      </div>
-
+      {reviews.length > 3 && (
+        <div className="flex justify-center mt-8">
+          <button className="bg-wine text-mainColor font-playfair text-2xl rounded-md w-[50%] py-3 px-8 hover:bg-ForthColor transition duration-300">
+            See All
+          </button>
+        </div>
+      )}
       {isModalOpen && (
         <WriteReview
-          onClose={() => setIsModalOpen(false)} 
-          onSubmit={handleReviewSubmit} 
+          onClose={() => setIsModalOpen(false)}
+          onSubmit={handleReviewSubmit}
           deliveryInfo="Jonah Noah delivered your order from Nanica Homemade Pies, today at 19:47 (7 min ahead schedule)."
         />
       )}

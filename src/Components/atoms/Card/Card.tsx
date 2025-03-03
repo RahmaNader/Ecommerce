@@ -24,7 +24,9 @@ const Card: React.FC<CardComponent> = ({
   // const [alertMessage, setAlertMessage] = useState("");
   const [isInCart, setIsInCart] = useState(false);
   const [showPreference, setShowPreference] = useState(false);
-  const [fetchedImages, setFetchedImages] = useState<{ imageId: number; imageUrl: string; altText: string }[]>([]);
+  const [imageUrl, setImageUrl] = useState<string>(fallbackImage);
+  const [imageAlt, setImageAlt] = useState<string>("Product Image");
+  
 
   useEffect(() => {
     const existingCart = Cookies.get("cart")
@@ -34,17 +36,27 @@ const Card: React.FC<CardComponent> = ({
   }, [productID]);
 
   useEffect(() => {
-    const loadImages = async () => {
+    const loadImage = async () => {
       try {
-        const images = await fetchProductImages(productID);
-        setFetchedImages(images);
+        const fetchedImage = await fetchProductImages(productID);
+        console.log("Fetched Image:", fetchedImage);
+  
+        if (fetchedImage) {
+          setImageUrl(fetchedImage.imageUrl);
+          setImageAlt(fetchedImage.altText || name);
+        } else if (productImages && productImages.length > 0) {
+          setImageUrl(productImages[0].imageUrl);
+          setImageAlt(productImages[0].altText || name);
+        }
       } catch (error) {
-        console.error("Error fetching product images:", error);
+        console.error("Error fetching product image:", error);
       }
     };
-
-    loadImages();
-  }, [productID]);
+  
+    loadImage();
+  }, [productID, productImages, name]);
+  
+  
 
   const handleCardClick = () => {
     navigate(`/product-details/${productID}`);
@@ -92,15 +104,15 @@ const Card: React.FC<CardComponent> = ({
   //   setTimeout(() => setAlertVisible(false), 3000);
   // };
 
-  const getImageUrl = () => {
-    if (fetchedImages.length > 0) {
-      return fetchedImages[0].imageUrl; // Use first fetched image
-    }
-    if (productImages && productImages.length > 0) {
-      return productImages[0].imageUrl; // Fallback to passed prop
-    }
-    return fallbackImage; // Fallback image if no images exist
-  };
+  // const getImageUrl = () => {
+  //   if (fetchedImages.length > 0) {
+  //     return fetchedImages[0].imageUrl; // Use first fetched image
+  //   }
+  //   if (productImages && productImages.length > 0) {
+  //     return productImages[0].imageUrl; // Fallback to passed prop
+  //   }
+  //   return fallbackImage; // Fallback image if no images exist
+  // };
 
   return (
     <div className="relative m-4">
@@ -125,8 +137,8 @@ const Card: React.FC<CardComponent> = ({
         className="relative image-container w-auto h-auto overflow-hidden rounded-t-[500px] cursor-pointer"
       >
         <Image
-          src={getImageUrl()}
-          alt={fetchedImages[0]?.altText || productImages?.[0]?.altText || name}
+          src={imageUrl}
+          alt={imageAlt}
           className="object-cover w-full h-full cursor-pointer"
         />
         <div className="absolute top-0 left-0 w-full h-full border-2 border-golden rounded-t-[500px]" />
@@ -135,7 +147,7 @@ const Card: React.FC<CardComponent> = ({
           onClick={handleAddToCartClick}
           className={`absolute bottom-4 right-4 w-10 h-10 flex items-center justify-center cursor-pointer hover:scale-110 transition-transform duration-300 rounded-full ${
             isInCart ? "bg-ForthColor" : "bg-wine"
-          }`}
+            }`}
         >
           <img src={shoppingCart} alt="Add to Cart" className="w-5 h-5" />
         </div>

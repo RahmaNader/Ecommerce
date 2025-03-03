@@ -2,28 +2,51 @@ import React, { useState, useEffect } from 'react';
 import { Box, Typography } from '@mui/material';
 import {CustomRating} from "@components/atoms";
 import { RatingDistributionItem } from "@types";
-import { calculateRatingDistribution, getColorForRating } from '@utils/calculations';
+import {getColorForRating } from '@utils/calculations';
 
 interface RatingSectionProps {
-  ratingsData: number[];
+  reviewPercentages: Record<string, number>;
 };
 
-const RatingSection: React.FC<RatingSectionProps> = ({ ratingsData }) => {
+const RatingSection: React.FC<RatingSectionProps> = ({ reviewPercentages }) => {
   const [ratingDistribution, setRatingDistribution] = useState<RatingDistributionItem[]>([]);
   const [averageRating, setAverageRating] = useState(0);
   const [totalRatings, setTotalRatings] = useState(0);
 
   useEffect(() => {
-    const distribution = calculateRatingDistribution(ratingsData);
+    // Filter out the "$id" key
+    const ratingEntries = Object.entries(reviewPercentages).filter(
+      ([key]) => key !== "$id"
+    );
+  
+    // Calculate total ratings count from the remaining keys,
+    // ensuring that each count is a number.
+    const total = ratingEntries.reduce((sum, [, count]) => sum + Number(count), 0);
+    setTotalRatings(total);
+  
+    // Calculate weighted average rating
+    const weightedSum = ratingEntries.reduce((acc, [rating, count]) => {
+      return acc + Number(rating) * Number(count);
+    }, 0);
+    setAverageRating(total > 0 ? weightedSum / total : 0);
+  
+    // Build rating distribution array
+    const distribution = ratingEntries
+      .map(([rating, count]) => {
+        const numericRating = Number(rating);
+        const percentage = total > 0 ? (Number(count) / total) * 100 : 0;
+        return {
+          rating: numericRating,
+          percentage,
+          color: getColorForRating(numericRating),
+        } as RatingDistributionItem;
+      })
+      .sort((a, b) => a.rating - b.rating);
     setRatingDistribution(distribution);
+  }, [reviewPercentages]);
+  
 
-    const total = ratingsData.reduce((sum, rating) => sum + rating, 0);
-    const average = total / ratingsData.length;
-    setAverageRating(average);
-
-    setTotalRatings(ratingsData.length);
-  }, [ratingsData]);
-
+  
   return (
     <Box className="flex flex-col md:flex-row md:mx-8 gap-8 p-2 justify-between md:items-center bg-mainColor rounded-lg">
       <Box className="flex flex-col items-center md:items-start">

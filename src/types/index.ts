@@ -71,12 +71,19 @@ export interface Review {
   userName: string;
 }
 
-export interface ProductVariant {
-  colorId: number;
+export interface SizeQuantity {
   sizeId: number;
   quantity: number;
-  colorName: string;
   sizeLabel?: string | null;
+}
+
+export interface ProductVariant {
+  productVarientId: number;
+  colorNameEn: string;
+  colorNameAr: string;
+  colorName?: string | null;
+  colorCode: string;
+  sizeQuantities: SizeQuantity[];
 }
 
 export interface ProductImage {
@@ -96,22 +103,27 @@ export interface Category {
 export interface CardComponent {
   productID: number;
   name: string;
-  productDescription?: string | null;
-  productPrice: string;
-  averageRate?: number;
-  productQuantity?: number;
+  nameEn: string;
+  nameAr: string;
+  productDescription: string;
+  productDescriptionEn: string;
+  productDescriptionAr: string;
+  productCode: string | null;
+  productPrice: number;
+  averageRate: number | null;
+  productQuantity: number;
   categoryID: number;
-  category?: Category;
-  reviews?: Review[]; // Array of reviews
-  productVarients?: ProductVariant[]; // Variants for colors and sizes
-  productImages?: ProductImage[]; // Images associated with the product
-  created?: string; // ISO string for date
-  lastUpdated?: string; // ISO string for date
-  priceAfterDiscount?: string;
-  discountPercent?: string;
-  onClick?: () => void;
-  
+  category: Category;
+  reviews: Review[];
+  productVarients: ProductVariant[];
+  productImages: ProductImage[];
+  reviewPercentages: Record<string, number>;
+  created: string;
+  lastUpdated: string;
+  priceAfterDiscount: number;
+  discountPercent: number;
 }
+
 
 
 ////////////////////////////////////////////////////
