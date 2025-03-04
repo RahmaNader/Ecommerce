@@ -88,7 +88,8 @@ Done-- [15:20:29.321] src/pages/Screens/Authentication/LoginForm.tsx(36,58): err
 
 [15:20:29.322] src/pages/Screens/Cart/Cart.tsx(100,17): error TS2739: Type 'Product' is missing the following properties from type '{ id: number; name: string; DisPrice: number; color: string; size: string; quantity: number; src: string; alt: string; NormalPrice: number; }': src, alt
 
-[15:20:29.322] src/pages/Screens/Profile/PaymentCreditCard/AddCreditCardModal.tsx(20,5): error TS2322: Type 'string' is not assignable to type 'number'.
+Done-- [15:20:29.322] src/pages/Screens/Profile/PaymentCreditCard/AddCreditCardModal.tsx(20,5): error TS2322: Type 'string' is not assignable to type 'number'.
+
 [15:20:29.322] src/pages/Screens/Profile/PersonalData/PersonalDataScreen.tsx(62,49): error TS2304: Cannot find name 'initialData'.
 
 [15:20:29.322] src/services/api/personaldetails.ts(43,56): error TS2304: Cannot find name 'PersonalData'.
