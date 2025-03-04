@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const apiClient = axios.create({
   baseURL: 'https://www.bouraq-mt.com/royalkey/api',
@@ -6,7 +7,7 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('authToken');
+    const token = Cookies.get('authToken');
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }

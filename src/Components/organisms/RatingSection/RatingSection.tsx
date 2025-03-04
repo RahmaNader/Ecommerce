@@ -14,13 +14,10 @@ const RatingSection: React.FC<RatingSectionProps> = ({ reviewPercentages }) => {
   const [totalRatings, setTotalRatings] = useState(0);
 
   useEffect(() => {
-    // Filter out the "$id" key
     const ratingEntries = Object.entries(reviewPercentages).filter(
       ([key]) => key !== "$id"
     );
   
-    // Calculate total ratings count from the remaining keys,
-    // ensuring that each count is a number.
     const total = ratingEntries.reduce((sum, [, count]) => sum + Number(count), 0);
     setTotalRatings(total);
   
@@ -29,7 +26,7 @@ const RatingSection: React.FC<RatingSectionProps> = ({ reviewPercentages }) => {
       return acc + Number(rating) * Number(count);
     }, 0);
     setAverageRating(total > 0 ? weightedSum / total : 0);
-  
+    console.log(totalRatings);
     // Build rating distribution array
     const distribution = ratingEntries
       .map(([rating, count]) => {
@@ -43,7 +40,7 @@ const RatingSection: React.FC<RatingSectionProps> = ({ reviewPercentages }) => {
       })
       .sort((a, b) => a.rating - b.rating);
     setRatingDistribution(distribution);
-  }, [reviewPercentages]);
+  }, [reviewPercentages, totalRatings]);
   
 
   
@@ -63,7 +60,7 @@ const RatingSection: React.FC<RatingSectionProps> = ({ reviewPercentages }) => {
           sx={{ fontSize: "1em", color: "#7c1d1d" }} 
           className="font-Poppins font-medium"
         >
-          Based on {totalRatings} ratings
+          {/* Based on {totalRatings} ratings */}
         </Typography>
       </Box>
 

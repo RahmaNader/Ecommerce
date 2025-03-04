@@ -33,3 +33,34 @@ export async function fetchHomeCategory(count: number , category: string, collec
   }
 }
 
+
+export async function fetchRelatedProducts(productID: number, count: number): Promise<CardComponent[]> {
+  try {
+    const response = await axios.get(
+      `https://www.bouraq-mt.com/royalkey/api/Product/${productID}/related?count=${count}`
+    );
+    
+    return response.data.$values.map((product: CardComponent) => ({
+      productID: product.productID,
+      src: product.productImages?.$values?.[0]?.imageUrl || fallbackImage,
+      alt: product.name,
+      name: product.name,
+      priceAfterDiscount: Number(product.priceAfterDiscount).toFixed(2),
+      productPrice: Number(product.productPrice).toFixed(2),
+      averageRate: product.averageRate ? Number(product.averageRate).toFixed(2) : "0.00",
+      productDescription: product.productDescription,
+      productQuantity: product.productQuantity,
+      size: "Default",
+      category: product.categoryID,
+      collection: "related",
+    }));
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error fetching related products:", error.message);
+      throw new Error(error.message || "Failed to fetch related products.");
+    } else {
+      console.error("Error fetching related products:", error);
+      throw new Error("Failed to fetch related products.");
+    }
+  }
+}

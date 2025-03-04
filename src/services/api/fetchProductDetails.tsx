@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CardComponent } from "@types";
+import { CardComponent, Review, ProductImage } from "@types";
 
 export async function fetchProductDetails(productId: number): Promise<CardComponent> {
   try {
@@ -28,7 +28,7 @@ export async function fetchProductDetails(productId: number): Promise<CardCompon
             createdAt: product.category.createdAt,
           }
         : { categoryID: 0, name: "", createdAt: "" },
-      reviews: product.reviews?.$values?.map((review: any) => ({
+      reviews: product.reviews?.$values?.map((review: Review) => ({
         reviewId: review.reviewId,
         reviewContent: review.reviewContent,
         rate: review.rate,
@@ -43,7 +43,7 @@ export async function fetchProductDetails(productId: number): Promise<CardCompon
         colorCode: variant.colorCode,
         sizeQuantities: variant.sizeQuantities?.$values || [],
       })) || [],
-      productImages: product.productImages?.$values?.map((image: any) => ({
+      productImages: product.productImages?.$values?.map((image: ProductImage) => ({
         imageId: image.imageId,
         imageUrl: image.imageUrl,
         altText: image.altText,

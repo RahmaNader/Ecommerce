@@ -11,7 +11,7 @@ export type SignUpFormInputs = {
 };
 
 export type LoginFormInputs = {
-  userName: string;
+  email: string;
   password: string;
 };
 
@@ -53,15 +53,6 @@ export interface ProductImage {
   altText: string;
 }
 
-// export interface ProductReview {
-//   $id: string;
-//   $values: string[];
-// }
-
-// export interface ProductVariant {
-//   $id: string;
-//   $values: any[]; 
-// }
 
 export interface Review {
   reviewId: number;

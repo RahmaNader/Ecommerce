@@ -26,6 +26,7 @@ const ProductsView: React.FC<ProductsViewProps> = ({ sectionName, cards }) => {
                 productQuantity={card.productQuantity}
                 // size={card.size}
                 category={card.category}
+                categoryID={card.categoryID}
                 // collection={card.collection}
               />
             </div>

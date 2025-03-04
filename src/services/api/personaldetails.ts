@@ -25,7 +25,7 @@ export const fetchPersonalData = async () => {
         withCredentials: true, 
       });
       return response.data;
-    } catch (error: any) {
+    } catch {
       if (error.response && error.response.status === 401) {
         console.error("401 Unauthorized - Token might be invalid or expired");
         Cookies.remove("authToken");
@@ -57,7 +57,7 @@ export const updatePersonalData = async (data: Partial<PersonalData>) => {
         withCredentials: true,
       });
       return response.data;
-    } catch (error: any) {
+    } catch {
       if (error.response) {
         console.error("API Response Error:", error.response.data);
       } else {

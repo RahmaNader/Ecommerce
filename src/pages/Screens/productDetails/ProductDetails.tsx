@@ -2,16 +2,17 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { CardComponent } from "@types";
 import { fetchProductDetails } from "@services/api/fetchProductDetails";
+import { fetchRelatedProducts } from "@services/api/fetchCollections";
 import { Category } from "@components/atoms";
 import { RatingSection, ProductSection, ReviewsSection } from "@components/organisms";
 import { ProductsView, Loading } from "@components/molecules";
-import { productsViewCards } from "@data/cards";
 
 const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(true);
   const [product, setProduct] = useState<CardComponent | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null); 
+  const [relatedProducts, setRelatedProducts] = useState<CardComponent[]>([]);
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -30,6 +31,20 @@ const ProductDetails: React.FC = () => {
     loadProduct();
   }, [id]);
 
+  useEffect(() => {
+    const loadRelatedProducts = async () => {
+      try {
+        if (!id) return;
+        const relatedCards = await fetchRelatedProducts(Number(id), 4);
+        setRelatedProducts(relatedCards);
+      } catch (error) {
+        console.error("Failed to load related products", error);
+      }
+    };
+
+    loadRelatedProducts();
+  }, [id]);
+
   if (loading) return <Loading />;
   if (error) return <div className="text-center mt-20">{error}</div>;
   if (!product) return <div className="text-center mt-20">Product not found</div>;
@@ -45,8 +60,7 @@ const ProductDetails: React.FC = () => {
       
       <ReviewsSection reviews={product.reviews} />
       
-      {/* //this is suppossed to be the related products section using the related products API  */}
-      <ProductsView sectionName="Related Products" cards={productsViewCards} />
+      <ProductsView sectionName="Related Products" cards={relatedProducts} />
     </div>
   );
 };

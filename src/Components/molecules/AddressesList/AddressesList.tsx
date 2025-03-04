@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ToggleRadioButton from "../../atoms/ToggleRadioButton/ToggleRadioButton";
 import AddressModal from "@components/atoms/AddressModal/AddressModal";
-import { AddressProps } from "../../molecules/Address/Address"; // Shared AddressProps
+import { AddressProps } from "@types";
 
 const AddressList = () => {
   const [addresses, setAddresses] = useState<AddressProps[]>([]);
