@@ -5,14 +5,9 @@ import { IconX } from "@tabler/icons-react";
 import FilterArrow from "@assets/FilterArrow.svg";
 import { Button } from "@components/atoms";
 import Checkbox from "@mui/material/Checkbox";
+import { FilterCategory } from "@types";
 import { styled } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
-
-
-interface Category {
-  name: string;
-  isChecked: boolean;
-}
 
 type FilterProps = {
   onFilterChange: (filters: {
@@ -21,10 +16,9 @@ type FilterProps = {
     categories?: string[];
     priceRange?: [number, number];
   }) => void;
-  onClose?: () => void; // Optional onClose prop
+  onClose?: () => void;
 };
 
-// Create a custom styled checkbox
 const CustomCheckbox = styled(Checkbox)(() => ({
   color: "#721013",
   "&.Mui-checked": {
@@ -40,7 +34,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
 
   const sizes = ["S", "M", "L", "XL", "XXL"];
 
-  const initialCategories: Category[] = [
+  const initialCategories: FilterCategory[] = [
     { name: t("filter.categories.jackets"), isChecked: false },
     { name: t("filter.categories.coats"), isChecked: false },
     { name: t("filter.categories.shirts"), isChecked: false },
@@ -57,7 +51,6 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
     t("filter.collections.accessories"),
   ];
 
-
   const ALL_PRODUCTS_INDEX = 0;
 
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
@@ -65,7 +58,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
     null
   );
   const [categoryItems, setCategoryItems] =
-    useState<Category[]>(initialCategories);
+    useState<FilterCategory[]>(initialCategories);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
 
   const [isCategoriesCollapsed, setIsCategoriesCollapsed] =
@@ -129,7 +122,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
 
         <div className="absolute bottom-4 flex flex-row justify-between w-full items-center mt-2">
           <p className="font-playfair text-2xl font-bold text-wine text-left">
-          {t("filter.title")}
+            {t("filter.title")}
           </p>
           <img src={FilterIcon} alt="Filter icon" className="h-6 w-6" />
         </div>
@@ -140,7 +133,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
         {/* Size Filter */}
         <div className="flex flex-col w-full">
           <p className="font-playfair text-2xl text-wine ltr:text-left rtl:text-right font-semibold">
-          {t("filter.size")}
+            {t("filter.size")}
           </p>
           <div
             className="flex gap-3 sm:gap-4 mt-2 w-full items-center justify-evenly"
@@ -173,7 +166,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
             onClick={() => setIsCategoriesCollapsed(!isCategoriesCollapsed)}
           >
             <p className="font-playfair text-2xl text-wine text-left font-semibold">
-            {t("filter.categoriestitle")}
+              {t("filter.categoriestitle")}
             </p>
             <img
               src={FilterArrow}
@@ -218,7 +211,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
             onClick={() => setIsCollectionsCollapsed(!isCollectionsCollapsed)}
           >
             <p className="font-playfair text-2xl text-wine text-left font-semibold">
-            {t("filter.collectionstitle")}
+              {t("filter.collectionstitle")}
             </p>
             <img
               src={FilterArrow}
@@ -251,7 +244,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
         {/* Price Range Filter */}
         <div className="w-[100%] flex flex-col">
           <p className="font-playfair text-2xl text-wine ltr:text-left rtl:text-right font-semibold">
-          {t("filter.priceRange")}
+            {t("filter.priceRange")}
           </p>
           <div className="flex justify-between mt-2">
             <span className="font-Poppins text-base text-wine">
