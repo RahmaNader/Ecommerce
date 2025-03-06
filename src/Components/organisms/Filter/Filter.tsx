@@ -5,14 +5,9 @@ import { IconX } from "@tabler/icons-react";
 import FilterArrow from "@assets/FilterArrow.svg";
 import { Button } from "@components/atoms";
 import Checkbox from "@mui/material/Checkbox";
+import { FilterCategory } from '@types';
 import { styled } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
-
-
-interface Category {
-  name: string;
-  isChecked: boolean;
-}
 
 type FilterProps = {
   onFilterChange: (filters: {
@@ -21,10 +16,10 @@ type FilterProps = {
     categories?: string[];
     priceRange?: [number, number];
   }) => void;
-  onClose?: () => void; // Optional onClose prop
+  onClose?: () => void;
 };
 
-// Create a custom styled checkbox
+
 const CustomCheckbox = styled(Checkbox)(() => ({
   color: "#721013",
   "&.Mui-checked": {
@@ -40,7 +35,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
 
   const sizes = ["S", "M", "L", "XL", "XXL"];
 
-  const initialCategories: Category[] = [
+  const initialCategories: FilterCategory[] = [
     { name: t("filter.categories.jackets"), isChecked: false },
     { name: t("filter.categories.coats"), isChecked: false },
     { name: t("filter.categories.shirts"), isChecked: false },
@@ -65,7 +60,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
     null
   );
   const [categoryItems, setCategoryItems] =
-    useState<Category[]>(initialCategories);
+    useState<FilterCategory[]>(initialCategories);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
 
   const [isCategoriesCollapsed, setIsCategoriesCollapsed] =
