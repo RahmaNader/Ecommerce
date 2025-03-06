@@ -254,7 +254,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
           </div>
 
           <div className="input-group">
+            <label htmlFor="city" className="text-wine">City</label>
             <select
+              id="city"
               className="w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none"
               name="city"
               value={newAddress.city}

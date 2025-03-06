@@ -15,7 +15,8 @@ const Card: React.FC<CardComponent> = ({
   priceAfterDiscount,
   productPrice,
   averageRate,
-  productVarients, // Make sure this is provided
+  productVarients, 
+  
 }) => {
   const navigate = useNavigate();
   const [alertVisible, setAlertVisible] = useState(false);

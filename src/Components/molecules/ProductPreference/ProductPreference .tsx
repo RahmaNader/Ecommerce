@@ -47,7 +47,7 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
     ? variants
         .filter((variant) => (variant.colorNameEn || "Unknown") === selectedColor)
         .flatMap((variant) =>
-          variant.sizeQuantities?.map((sq) => sq.sizeLabel) || []
+          variant.sizeQuantities?.$values?.map((sq:SizeQuantity) => sq.sizeLabel).filter((size): size is string | null => size !== undefined) || []
         )
     : [];
 
@@ -65,6 +65,7 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
       {error && <ErrorAlert message={error} />}
       <div className="bg-mainColor p-6 rounded-lg shadow-lg relative md:w-96">
         <button
+          title="Cancel"
           onClick={onCancel}
           className="rounded-full border-2 p-1 my-2 border-wine absolute right-4 top-2 text-wine hover:text-ForthColor hover:border-ForthColor"
         >

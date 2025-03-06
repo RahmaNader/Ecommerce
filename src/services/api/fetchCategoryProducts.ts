@@ -1,14 +1,8 @@
 import axios from "axios";
 import fallbackImage from "@assets/HP_img2.jpeg";
-import { CardComponent } from "@types";
+import { CardComponent, ProductImage, ProductVariant,  Review, Category } from "@types";
 
-interface ProductImage {
-  $id: string;
-  imageId: number;
-  imageUrl: string;
-  altText: string;
-}
-
+// Exact structure matching backend response
 interface CategoryProductResponse {
   $id: string;
   products: {
@@ -17,15 +11,23 @@ interface CategoryProductResponse {
       $id: string;
       productID: number;
       name: string;
+      nameEn: string;
+      nameAr: string;
       productDescription: string | null;
+      productDescriptionEn: string | null;
+      productDescriptionAr: string | null;
+      productCode: string | null;
       productPrice: number;
       averageRate: number | null;
       productQuantity: number;
       categoryID: number;
-      productImages: {
-        $id: string;
-        $values: ProductImage[];
-      };
+      category: Category;
+      reviews: { $id: string; $values: Review[] };
+      productVarients: { $id: string; $values: ProductVariant[] };
+      productImages: { $id: string; $values: Array<ProductImage & { $id: string }> };
+      reviewPercentages: Record<string, number>;
+      created: string;
+      lastUpdated: string;
       priceAfterDiscount: number;
       discountPercent: number;
     }>;
@@ -33,26 +35,70 @@ interface CategoryProductResponse {
   totalCount: number;
 }
 
-export const fetchCategoryProducts = async (parentCategoryId: number): Promise<CardComponent[]> => {
+export const fetchCategoryProducts = async (
+  parentCategoryId: number
+): Promise<CardComponent[]> => {
   try {
-    const response = await axios.get<CategoryProductResponse>(
+    const { data } = await axios.get<CategoryProductResponse>(
       `https://www.bouraq-mt.com/royalkey/api/Product/?parentCategory=${parentCategoryId}`
     );
-    console.log(response.data.products.$values);
-    return response.data.products.$values.map(product => ({
+
+    // Transform backend response to match CardComponent exactly
+    return data.products.$values.map((product): CardComponent => ({
       productID: product.productID,
-      src: product.productImages?.$values[0]?.imageUrl || fallbackImage,
-      alt: product.productImages?.$values[0]?.altText || product.name,
       name: product.name,
-      priceAfterDiscount: Number(product.priceAfterDiscount).toFixed(2), 
-      rate: product.averageRate ? Number(product.averageRate.toFixed(2)) : undefined,
-      description: product.productDescription || undefined,
+      nameEn: product.nameEn,
+      nameAr: product.nameAr,
+      productDescription: product.productDescription || "",
+      productDescriptionEn: product.productDescriptionEn || "",
+      productDescriptionAr: product.productDescriptionAr || "",
+      productCode: product.productCode || null,
+      productPrice: product.productPrice,
+      averageRate: product.averageRate ?? null,
       productQuantity: product.productQuantity,
       categoryID: product.categoryID,
-      productPrice: Number(product.productPrice).toFixed(2),
-      collection: undefined,
-      color: [],
-      size: []
+      category: {
+        categoryID: product.category.categoryID,
+        name: product.category.name,
+        nameEn: product.category.nameEn,
+        nameAr: product.category.nameAr,
+        parentCategoryID: product.category.parentCategoryID || null,
+        createdAt: product.category.createdAt,
+      },
+      reviews: product.reviews.$values.map(review => ({
+        reviewId: review.reviewId,
+        reviewContent: review.reviewContent,
+        rate: review.rate,
+        createdAt: review.createdAt,
+        userName: review.userName,
+      })),
+      productVarients: product.productVarients.$values.map((variant): ProductVariant => ({
+        productVarientId: variant.productVarientId,
+        colorNameEn: variant.colorNameEn,
+        colorNameAr: variant.colorNameAr,
+        colorName: variant.colorName || null,
+        colorCode: variant.colorCode,
+        sizeQuantities: variant.sizeQuantities,
+})),
+      productImages:
+        product.productImages.$values.length > 0
+          ? product.productImages.$values.map(({ imageId, imageUrl, altText }): ProductImage => ({
+              imageId,
+              imageUrl: imageUrl || fallbackImage,
+              altText: altText || product.name,
+            }))
+          : [
+              {
+                imageId: 0,
+                imageUrl: fallbackImage,
+                altText: product.name,
+              },
+            ],
+      reviewPercentages: product.reviewPercentages,
+      created: product.created,
+      lastUpdated: product.lastUpdated,
+      priceAfterDiscount: product.priceAfterDiscount,
+      discountPercent: product.discountPercent,
     }));
   } catch (error) {
     console.error("Error fetching category products:", error);
