@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Card, Button } from "@components/atoms";
 import { CardComponent } from "@types";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 
@@ -66,7 +65,7 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products }) => {
     return pageNumbers;
   };
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   return (
     <div className="flex flex-col items-center w-full">
       {/* Display Cards */}
@@ -75,9 +74,6 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products }) => {
           <div className="flex justify-center mx-auto w-full md:w-[70%]" key={card.productID}>
             <Card
               {...card}
-              onClick={() => {
-                navigate(`/product-details/${card.productID}`);
-              }}
             />
           </div>
         ))}

@@ -48,7 +48,6 @@ export interface AddressProps {
 ////////////////////////////////////////////////////
 
 export interface ProductImage {
-  $id: string;
   imageId: number;
   imageUrl: string;
   altText: string;
@@ -87,8 +86,9 @@ export interface ProductImage {
 export interface Category {
   categoryID: number;
   name: string;
+  nameAr: string;
+  nameEn: string;
   parentCategoryID?: number | null;
-  parentCategory?: Category | null;
   createdAt: string; 
 }
 

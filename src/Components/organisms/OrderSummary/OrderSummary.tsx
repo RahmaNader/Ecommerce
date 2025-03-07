@@ -76,6 +76,10 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
     }
   };
 
+  const formatNumber = (num: number | null | undefined) => {
+    return num !== null && num !== undefined ? num.toFixed(2) : "0.00";
+  };
+
   return (
     <div className="w-full h-fit md:w-4/12 flex flex-col border border-ForthColor rounded-xl p-6 bg-[#A78E781C]">
       <h2 className="font-semibold font-playfair mb-4 text-wine text-lg md:text-xl">
@@ -85,17 +89,17 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
       <div className="flex flex-col gap-4 border-b border-b-gray-400 pb-4">
         <div className="flex justify-between text-wine text-base font-medium font-Poppins">
           <h4>Price</h4>
-          <h4>{summary.total.toFixed(2)} EGP</h4>
+          <h4>{formatNumber(summary.total)} EGP</h4>
         </div>
 
         <div className="flex justify-between text-wine text-base font-medium font-Poppins">
           <h4>Discount</h4>
-          <h4>{(summary.total - summary.subTotal).toFixed(2)} EGP</h4>
+          <h4>{formatNumber(summary.total - summary.subTotal)} EGP</h4>
         </div>
 
         <div className="flex justify-between text-wine text-base font-medium font-Poppins">
           <h4>Shipping</h4>
-          <h4>{summary.shipping.toFixed(2)} EGP</h4>
+          <h4>{formatNumber(summary.shipping)} EGP</h4>
         </div>
 
         {summary.couponDiscount > 0 && (
@@ -103,9 +107,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
             <h4>Coupon Discount</h4>
             <h4>
               -
-              {(summary.totalBeforeCoupon - summary.totalAfterCoupon).toFixed(
-                2
-              )}{" "}
+              {formatNumber(summary.totalBeforeCoupon - summary.totalAfterCoupon)}{" "}
               EGP
             </h4>
           </div>
@@ -114,7 +116,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
 
       <div className="flex justify-between mt-4 text-wine text-base font-medium font-Poppins">
         <h4>TOTAL</h4>
-        <h4>{summary.totalAfterCoupon.toFixed(2)} EGP</h4>
+        <h4> { formatNumber(summary.totalAfterCoupon) } EGP</h4>
       </div>
 
       <div className="flex justify-between mt-4 text-wine text-base font-medium font-Poppins">
