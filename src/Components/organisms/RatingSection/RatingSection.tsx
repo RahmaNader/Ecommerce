@@ -11,7 +11,7 @@ interface RatingSectionProps {
 const RatingSection: React.FC<RatingSectionProps> = ({ reviewPercentages }) => {
   const [ratingDistribution, setRatingDistribution] = useState<RatingDistributionItem[]>([]);
   const [averageRating, setAverageRating] = useState(0);
-  const [totalRatings, setTotalRatings] = useState(0);
+  // const [totalRatings, setTotalRatings] = useState(0);
 
   useEffect(() => {
     const ratingEntries = Object.entries(reviewPercentages).filter(
@@ -19,28 +19,29 @@ const RatingSection: React.FC<RatingSectionProps> = ({ reviewPercentages }) => {
     );
   
     const total = ratingEntries.reduce((sum, [, count]) => sum + Number(count), 0);
-    setTotalRatings(total);
+    // setTotalRatings(total);
   
     // Calculate weighted average rating
     const weightedSum = ratingEntries.reduce((acc, [rating, count]) => {
       return acc + Number(rating) * Number(count);
     }, 0);
     setAverageRating(total > 0 ? weightedSum / total : 0);
-    console.log(totalRatings);
+    
     // Build rating distribution array
     const distribution = ratingEntries
       .map(([rating, count]) => {
         const numericRating = Number(rating);
-        const percentage = total > 0 ? (Number(count) / total) * 100 : 0;
+        const percentageValue = total > 0 ? (Number(count) / total) * 100 : 0;
         return {
           rating: numericRating,
-          percentage,
+          percentage: percentageValue.toFixed(2), // Convert to string with 2 decimal places
           color: getColorForRating(numericRating),
         } as RatingDistributionItem;
       })
       .sort((a, b) => a.rating - b.rating);
+      // console.log(totalRatings)
     setRatingDistribution(distribution);
-  }, [reviewPercentages, totalRatings]);
+  }, [reviewPercentages]);
   
 
   

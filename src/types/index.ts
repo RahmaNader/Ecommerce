@@ -210,6 +210,10 @@ export type PersonalData = {
   password:string;
 };
 
+export interface PasswordResetData {
+  email: string;
+}
+
 export type CreditCard = {
   type: string;
   number: string;
