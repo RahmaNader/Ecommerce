@@ -6,7 +6,6 @@ import FilterArrow from "@assets/FilterArrow.svg";
 import { Button } from "@components/atoms";
 import Checkbox from "@mui/material/Checkbox";
 import { FilterCategory } from '@types';
-import { FilterCategory } from "@types";
 import { styled } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 
