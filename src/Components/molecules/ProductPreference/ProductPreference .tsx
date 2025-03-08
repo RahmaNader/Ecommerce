@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ErrorAlert, ProductCount } from "@components/atoms";
-import { ProductVariant } from "@types";
+import { ProductVariant, SizeQuantity } from "@types";
 
 interface ProductPreferenceProps {
   product: {
@@ -47,7 +47,7 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
     ? variants
         .filter((variant) => (variant.colorNameEn || "Unknown") === selectedColor)
         .flatMap((variant) =>
-          variant.sizeQuantities?.$values?.map((sq:SizeQuantity) => sq.sizeLabel).filter((size): size is string | null => size !== undefined) || []
+          Array.isArray(variant.sizeQuantities?.values) ? [...variant.sizeQuantities.values()].map((sq: SizeQuantity) => sq.sizeLabel).filter((size): size is string | null => size !== undefined) : []
         )
     : [];
 

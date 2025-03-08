@@ -42,7 +42,7 @@ export async function fetchRelatedProducts(productID: number, count: number): Pr
     
     return response.data.$values.map((product: CardComponent) => ({
       productID: product.productID,
-      src: product.productImages?.$values?.[0]?.imageUrl || fallbackImage,
+      src: product.productImages?.[0]?.imageUrl || fallbackImage,
       alt: product.name,
       name: product.name,
       priceAfterDiscount: Number(product.priceAfterDiscount).toFixed(2),

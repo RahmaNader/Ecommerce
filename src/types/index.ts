@@ -119,7 +119,7 @@ export interface CardComponent {
 
 
 ////////////////////////////////////////////////////
-export type Product = {
+export interface Product {
   id: number;
   name: string;
   DisPrice: number;
@@ -127,6 +127,8 @@ export type Product = {
   size: string;
   quantity: number;
   NormalPrice: number;
+  src: string;
+  alt: string;
 }
 
 export type CouponStatus = 'none' | 'success' | 'already_applied' | 'invalid';
