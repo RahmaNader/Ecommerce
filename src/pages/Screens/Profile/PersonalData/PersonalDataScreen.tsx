@@ -7,6 +7,7 @@ import personalDataFields from "@data/personalData";
 import addPhoto from "@assets/addPhoto.svg";
 import editIcon from "@assets/edit.svg";
 import { useTranslation } from "react-i18next";
+import axios from 'axios';
 
 const PersonalDataScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -19,6 +20,9 @@ const PersonalDataScreen: React.FC = () => {
     mode: "onBlur",
     reValidateMode: "onChange",
   });
+
+    // Add state to store initial data
+    const [initialData, setInitialData] = useState<PersonalData | null>(null);
 
   const [isEditable, setIsEditable] = useState<{ [key: string]: boolean }>(
     personalDataFields.reduce((acc, field) => {
@@ -35,6 +39,8 @@ const PersonalDataScreen: React.FC = () => {
     const loadUserData = async () => {
       try {
         const data = await fetchPersonalData();
+        // Store the initial data
+        setInitialData(data);
         // Set form values
         Object.keys(data).forEach((key) => {
           setValue(key as keyof PersonalData, data[key]);
@@ -59,7 +65,8 @@ const PersonalDataScreen: React.FC = () => {
     try {
       // Prepare the data with only the fields that have changed
       const formattedData = Object.keys(data).reduce((acc, key) => {
-        if (data[key as keyof PersonalData] !== initialData?.[key as keyof PersonalData]) {
+        // Only check against initialData if it exists
+        if (initialData && data[key as keyof PersonalData] !== initialData[key as keyof PersonalData]) {
           acc[key as keyof PersonalData] = data[key as keyof PersonalData];
         }
         return acc;
@@ -70,11 +77,14 @@ const PersonalDataScreen: React.FC = () => {
         return;
       }
 
-      console.log("Sending full form data to API:", JSON.stringify(formattedData, null, 2));
+      console.log("Sending changes to API:", JSON.stringify(formattedData, null, 2));
 
-      // Send all fields to the API using PUT
+      // Send changed fields to the API
       await updatePersonalData(formattedData);
 
+      // Update initialData to reflect the new values
+      setInitialData({ ...initialData, ...formattedData } as PersonalData);
+      
       alert("Data updated successfully!");
 
       // Turn off edit mode after successful submission
@@ -85,16 +95,17 @@ const PersonalDataScreen: React.FC = () => {
           return acc;
         }, {} as { [key: string]: boolean })
       );
-    } catch (error: any) {
-      if (error.response) {
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response) {
         console.error("API Response Error:", error.response.data);
+      } else if (error instanceof Error) {
+        console.error("Error updating personal data:", error.message);
       } else {
-        console.error("Error updating personal data:", error);
+        console.error("Unknown error occurred");
       }
       alert("Failed to update data. Please try again.");
     }
   };
-
   // Toggle form edit mode
   const onToggleEditMode = () => {
     if (editMode) {

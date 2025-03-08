@@ -32,6 +32,7 @@ const WriteReview: React.FC<WriteReviewProps> = ({
       <div className="bg-mainColor rounded-xl p-8 w-[90%] max-w-lg relative shadow-lg">
         <button
           onClick={onClose}
+          aria-label="Close"
           className="rounded-full border-[2px] p-[5px] my-2 border-wine absolute right-4 top-2 text-wine hover:text-ForthColor hover:border-ForthColor"
         >
           <svg

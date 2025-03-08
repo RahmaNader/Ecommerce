@@ -45,9 +45,9 @@ export interface AddressProps {
   additionalDirections?: string;
   saveAddress: boolean;
 };
+////////////////////////////////////////////////////
 
 export interface ProductImage {
-  $id: string;
   imageId: number;
   imageUrl: string;
   altText: string;
@@ -58,7 +58,7 @@ export interface Review {
   reviewId: number;
   reviewContent: string;
   rate: number;
-  createdAt: string; // ISO string for date
+  createdAt: string;
   userName: string;
 }
 
@@ -86,9 +86,10 @@ export interface ProductImage {
 export interface Category {
   categoryID: number;
   name: string;
+  nameAr: string;
+  nameEn: string;
   parentCategoryID?: number | null;
-  parentCategory?: Category | null;
-  createdAt: string; // ISO string for date
+  createdAt: string; 
 }
 
 export interface CardComponent {
@@ -118,7 +119,7 @@ export interface CardComponent {
 
 
 ////////////////////////////////////////////////////
-export type Product = {
+export interface Product {
   id: number;
   name: string;
   DisPrice: number;
@@ -126,9 +127,12 @@ export type Product = {
   size: string;
   quantity: number;
   NormalPrice: number;
+  src: string;
+  alt: string;
 }
 
 export type CouponStatus = 'none' | 'success' | 'already_applied' | 'invalid';
+
 export interface OrderSummaryData {
   total: number;
   subTotal: number;
@@ -181,7 +185,7 @@ export type ProductCountProps = {
   onCountChange?: (count: number) => void; 
 };
 
-//renamethis
+
 export type FilterCategory  = {
   name: string;
   isChecked: boolean;
@@ -208,12 +212,16 @@ export type PersonalData = {
   password:string;
 };
 
+export interface PasswordResetData {
+  email: string;
+}
+
 export type CreditCard = {
   type: string;
   number: string;
   nameOnCard: string;
   expiry: string;
-  CVV: number;
+  CVV: string;
 }
 
 export type Order = {

@@ -1,6 +1,7 @@
 // src/services/authService.ts
 import axios from 'axios';
 import apiClient from '../../apiClient';
+import { PasswordResetData } from '@types';
 
 export interface RegisterData {
   userName: string;
@@ -14,7 +15,7 @@ export interface RegisterData {
 }
 
 export interface LoginData {
-  userName: string;
+  email: string;
   password: string;
 }
 

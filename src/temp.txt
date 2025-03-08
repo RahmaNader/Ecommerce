@@ -1,98 +1,39 @@
-[15:19:54.620] Cloning github.com/hisham415/web-ecommerce (Branch: main, Commit: 9798522)
-[15:19:54.844] Previous build caches not available
-[15:19:55.161] Cloning completed: 540.000ms
-[15:19:55.413] Running build in Washington, D.C., USA (East) – iad1
-[15:19:55.595] Running "vercel build"
-[15:19:56.045] Vercel CLI 41.2.2
-[15:19:56.718] Installing dependencies...
-[15:19:59.555] npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
-[15:20:00.177] npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
-[15:20:01.738] npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
-[15:20:04.779] npm warn deprecated core-js@1.2.7: core-js@<3.23.3 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Some versions have web compatibility issues. Please, upgrade your dependencies to the actual version of core-js.
-[15:20:14.288] 
-[15:20:14.289] added 436 packages in 17s
-[15:20:14.290] 
-[15:20:14.290] 83 packages are looking for funding
-[15:20:14.290]   run `npm fund` for details
-[15:20:14.356] Running "npm run build"
-[15:20:14.491] 
-[15:20:14.491] > web-ecommerce@0.0.0 build
-[15:20:14.491] > tsc -b && vite build
-[15:20:14.492] 
+[15:22:51.567] npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+[15:22:51.976] npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+[15:22:53.209] npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+[15:22:55.751] npm warn deprecated core-js@1.2.7: core-js@<3.23.3 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Some versions have web compatibility issues. Please, upgrade your dependencies to the actual version of core-js.
 
-Done-- [15:20:29.304] src/Components/molecules/AddressesList/AddressesList.tsx(4,30): error TS2307: Cannot find module '../../molecules/Address/Address' or its corresponding type declarations.
-
---> [15:20:29.307] src/Components/molecules/ProductsView/ProductsView.tsx(17,16): error TS2741: Property 'categoryID' is missing in type '{ productImages: ProductImage[] | undefined; productID: number; name: string; priceAfterDiscount: string | undefined; productPrice: string; averageRate: number | undefined; productDescription: string | ... 1 more ... | undefined; productQuantity: number | undefined; category: Category | undefined; }' but required in type 'CardComponent'.
---> [15:20:29.309] src/Components/organisms/ProductSection/ProductSection.tsx(10,25): error TS6133: 'setSelectedColor' is declared but its value is never read.
---> [15:20:29.310] src/Components/organisms/ProductSection/ProductSection.tsx(11,24): error TS6133: 'setSelectedSize' is declared but its value is never read.
---> [15:20:29.311] src/Components/organisms/ProductSection/ProductSection.tsx(48,22): error TS2339: Property 'src' does not exist on type 'CardComponent'.
-
-Done-- [15:20:29.311] src/Components/organisms/ReviewsSection/ReviewsSection.tsx(3,1): error TS6133: 'WriteRe' is declared but its value is never read.
-Done-- [15:20:29.312] src/Components/organisms/ReviewsSection/ReviewsSection.tsx(3,10): error TS2305: Module '"@components/molecules"' has no exported member 'WriteRe'.
-Done-- [15:20:29.312] src/Components/organisms/ReviewsSection/ReviewsSection.tsx(73,10): error TS2304: Cannot find name 'WriteReview'.
-
-Done-- [15:20:29.313] src/apiClient.ts(24,28): error TS2686: 'Cookies' refers to a UMD global, but the current file is a module. Consider adding an import instead.
-Done-- [15:20:29.314] src/apiClient.ts(33,11): error TS2686: 'Cookies' refers to a UMD global, but the current file is a module. Consider adding an import instead.
-Done-- [15:20:29.315] src/apiClient.ts(38,11): error TS2686: 'Cookies' refers to a UMD global, but the current file is a module. Consider adding an import instead.
-Done-- [15:20:29.315] src/apiClient.ts(39,11): error TS2686: 'Cookies' refers to a UMD global, but the current file is a module. Consider adding an import instead.
-
-Done-- [15:20:29.318] src/data/cards.ts(16,5): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.319] src/data/cards.ts(31,5): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.319] src/data/cards.ts(46,5): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.319] src/data/cards.ts(61,5): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.319] src/data/cards.ts(76,5): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.319] src/data/cards.ts(91,5): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.319] src/data/cards.ts(106,5): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.319] src/data/cards.ts(121,5): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.319] src/data/cards.ts(136,5): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.319] src/data/cards.ts(151,5): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.319] src/data/cards.ts(166,6): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.319] src/data/cards.ts(181,6): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.319] src/data/cards.ts(196,6): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.319] src/data/cards.ts(211,6): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.319] src/data/cards.ts(226,6): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.320] src/data/cards.ts(241,5): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.320] src/data/cards.ts(256,5): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.320] src/data/cards.ts(271,5): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.320] src/data/cards.ts(286,5): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.320] src/data/cards.ts(301,5): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.320] src/data/cards.ts(316,5): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.320] src/data/cards.ts(331,5): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.320] src/data/cards.ts(346,5): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.320] src/data/cards.ts(361,5): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.320] src/data/cards.ts(376,5): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.320] src/data/cards.ts(391,6): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.320] src/data/cards.ts(406,6): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.320] src/data/cards.ts(421,6): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.320] src/data/cards.ts(436,6): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.320] src/data/cards.ts(451,6): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.320] src/data/cards.ts(470,6): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.320] src/data/cards.ts(485,6): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.321] src/data/cards.ts(500,6): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.321] src/data/cards.ts(515,6): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.321] src/data/cards.ts(534,5): error TS2322: Type 'string' is not assignable to type 'Category'.
-Done-- [15:20:29.321] src/data/cards.ts(549,5): error TS2322: Type 'string' is not assignable to type 'Category'.
-
-Done-- [15:20:29.321] src/data/filterdata.ts(6,22): error TS2353: Object literal may only specify known properties, and 'isChecked' does not exist in type 'Category'.
-Done-- [15:20:29.321] src/data/filterdata.ts(7,20): error TS2353: Object literal may only specify known properties, and 'isChecked' does not exist in type 'Category'.
-Done-- [15:20:29.321] src/data/filterdata.ts(8,21): error TS2353: Object literal may only specify known properties, and 'isChecked' does not exist in type 'Category'.
-Done-- [15:20:29.321] src/data/filterdata.ts(9,26): error TS2353: Object literal may only specify known properties, and 'isChecked' does not exist in type 'Category'.
-Done-- [15:20:29.321] src/data/filterdata.ts(10,20): error TS2353: Object literal may only specify known properties, and 'isChecked' does not exist in type 'Category'.
-Done-- [15:20:29.321] src/data/filterdata.ts(11,20): error TS2353: Object literal may only specify known properties, and 'isChecked' does not exist in type 'Category'.
-Done-- [15:20:29.321] src/data/filterdata.ts(12,19): error TS2353: Object literal may only specify known properties, and 'isChecked' does not exist in type 'Category'.
-
-Done-- [15:20:29.321] src/data/loginInputFields.ts(10,5): error TS2322: Type '"email"' is not assignable to type 'keyof LoginFormInputs'.
-Done-- [15:20:29.321] src/pages/Screens/Authentication/LoginForm.tsx(33,40): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'LoginData'.
-Done-- [15:20:29.321] src/pages/Screens/Authentication/LoginForm.tsx(33,52): error TS2339: Property 'email' does not exist on type 'LoginFormInputs'.
-Done-- [15:20:29.321] src/pages/Screens/Authentication/LoginForm.tsx(36,58): error TS2339: Property 'email' does not exist on type 'LoginFormInputs'.
-
-[15:20:29.322] src/pages/Screens/Cart/Cart.tsx(100,17): error TS2739: Type 'Product' is missing the following properties from type '{ id: number; name: string; DisPrice: number; color: string; size: string; quantity: number; src: string; alt: string; NormalPrice: number; }': src, alt
-
-[15:20:29.322] src/pages/Screens/Profile/PaymentCreditCard/AddCreditCardModal.tsx(20,5): error TS2322: Type 'string' is not assignable to type 'number'.
-[15:20:29.322] src/pages/Screens/Profile/PersonalData/PersonalDataScreen.tsx(62,49): error TS2304: Cannot find name 'initialData'.
-
-[15:20:29.322] src/services/api/personaldetails.ts(43,56): error TS2304: Cannot find name 'PersonalData'.
-
-[15:20:29.322] src/services/auth/AuthService.ts(48,50): error TS2304: Cannot find name 'PasswordResetData'.
-
-[15:20:29.765] Error: Command "npm run build" exited with 2
+[15:23:03.413] 
+[15:23:15.163] src/Components/molecules/ProductsView/ProductsView.tsx(17,16): error TS2740: Type '{ productImages: ProductImage[]; productID: number; name: string; priceAfterDiscount: number; productPrice: number; averageRate: number | null; productDescription: string; productQuantity: number; category: Category; categoryID: number; }' is missing the following properties from type 'CardComponent': nameEn, nameAr, productDescriptionEn, productDescriptionAr, and 7 more.
+[15:23:15.166] src/Components/organisms/ProductSection/ProductSection.tsx(10,25): error TS6133: 'setSelectedColor' is declared but its value is never read.
+[15:23:15.167] src/Components/organisms/ProductSection/ProductSection.tsx(11,24): error TS6133: 'setSelectedSize' is declared but its value is never read.
+[15:23:15.167] src/Components/organisms/ProductSection/ProductSection.tsx(48,22): error TS2339: Property 'src' does not exist on type 'CardComponent'.
+[15:23:15.167] src/Components/organisms/ProductsDisplay/ProductsDisplay.tsx(78,15): error TS2322: Type '{ onClick: () => void; productID: number; name: string; nameEn: string; nameAr: string; productDescription: string; productDescriptionEn: string; productDescriptionAr: string; productCode: string | null; ... 12 more ...; discountPercent: number; }' is not assignable to type 'IntrinsicAttributes & CardComponent'.
+[15:23:15.167]   Property 'onClick' does not exist on type 'IntrinsicAttributes & CardComponent'.
+[15:23:15.167] src/Components/organisms/RatingSection/RatingSection.tsx(35,16): error TS2352: Conversion of type '{ rating: number; percentage: number; color: string; }' to type 'RatingDistributionItem' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+[15:23:15.167]   Types of property 'percentage' are incompatible.
+[15:23:15.167]     Type 'number' is not comparable to type 'string'.
+[15:23:15.167] src/Components/organisms/ReviewsSection/ReviewsSection.tsx(49,21): error TS2304: Cannot find name 'userName'.
+[15:23:15.167] src/Components/organisms/ReviewsSection/ReviewsSection.tsx(57,43): error TS2304: Cannot find name 'result'.
+[15:23:15.168] src/Components/organisms/ReviewsSection/ReviewsSection.tsx(129,10): error TS2741: Property 'deliveryInfo' is missing in type '{ onClose: () => void; onSubmit: (rating: number, reviewText: string) => Promise<void>; }' but required in type 'WriteReviewProps'.
+[15:23:15.168] src/pages/Screens/Authentication/LoginForm.tsx(33,40): error TS2353: Object literal may only specify known properties, and 'email' does not exist in type 'LoginData'.
+[15:23:15.168] src/pages/Screens/Cart/Cart.tsx(100,17): error TS2739: Type 'Product' is missing the following properties from type '{ id: number; name: string; DisPrice: number; color: string; size: string; quantity: number; src: string; alt: string; NormalPrice: number; }': src, alt
+[15:23:15.168] src/pages/Screens/Profile/PaymentCreditCard/AddCreditCardModal.tsx(20,5): error TS2322: Type 'string' is not assignable to type 'number'.
+[15:23:15.168] src/pages/Screens/Profile/PersonalData/PersonalDataScreen.tsx(62,49): error TS2304: Cannot find name 'initialData'.
+[15:23:15.168] src/pages/Screens/productDetails/ProductDetails.tsx(61,23): error TS2322: Type '{ reviews: Review[]; }' is not assignable to type 'IntrinsicAttributes'.
+[15:23:15.168]   Property 'reviews' does not exist on type 'IntrinsicAttributes'.
+[15:23:15.168] src/services/api/fetchCategoryProducts.ts(42,5): error TS2322: Type '{ productID: number; src: string; alt: string; name: string; priceAfterDiscount: string; rate: number | undefined; description: string | undefined; productQuantity: number; categoryID: number; productPrice: string; collection: undefined; color: never[]; size: never[]; }[]' is not assignable to type 'CardComponent[]'.
+[15:23:15.168]   Type '{ productID: number; src: string; alt: string; name: string; priceAfterDiscount: string; rate: number | undefined; description: string | undefined; productQuantity: number; categoryID: number; productPrice: string; collection: undefined; color: never[]; size: never[]; }' is missing the following properties from type 'CardComponent': nameEn, nameAr, productDescription, productDescriptionEn, and 11 more.
+[15:23:15.168] src/services/api/fetchCollections.ts(45,35): error TS2551: Property '$values' does not exist on type 'ProductImage[]'. Did you mean 'values'?
+[15:23:15.168] src/services/api/personaldetails.ts(29,11): error TS2552: Cannot find name 'error'. Did you mean 'Error'?
+[15:23:15.168] src/services/api/personaldetails.ts(29,29): error TS2552: Cannot find name 'error'. Did you mean 'Error'?
+[15:23:15.169] src/services/api/personaldetails.ts(34,56): error TS2552: Cannot find name 'error'. Did you mean 'Error'?
+[15:23:15.169] src/services/api/personaldetails.ts(34,74): error TS2552: Cannot find name 'error'. Did you mean 'Error'?
+[15:23:15.169] src/services/api/personaldetails.ts(36,13): error TS2552: Cannot find name 'error'. Did you mean 'Error'?
+[15:23:15.169] src/services/api/personaldetails.ts(43,56): error TS2304: Cannot find name 'PersonalData'.
+[15:23:15.169] src/services/api/personaldetails.ts(61,11): error TS2552: Cannot find name 'error'. Did you mean 'Error'?
+[15:23:15.169] src/services/api/personaldetails.ts(62,46): error TS2552: Cannot find name 'error'. Did you mean 'Error'?
+[15:23:15.169] src/services/api/personaldetails.ts(64,56): error TS2304: Cannot find name 'error'.
+[15:23:15.169] src/services/api/personaldetails.ts(66,13): error TS2304: Cannot find name 'error'.
+[15:23:15.169] src/services/auth/AuthService.ts(48,50): error TS2304: Cannot find name 'PasswordResetData'.
+[15:23:15.500] Error: Command "npm run build" exited with 2

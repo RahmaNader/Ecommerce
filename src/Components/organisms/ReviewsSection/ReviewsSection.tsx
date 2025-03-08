@@ -7,10 +7,14 @@ import { fetchReviews, writeReview } from "@services/api/fetchReviews";
 import { Review } from "@types";
 import { SuccessAlert, ErrorAlert } from "@components/atoms";
 
-const ReviewsSection: React.FC = () => {
+interface ReviewsSectionProps {
+  reviews: Review[];
+}
+
+const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews: initialReviews }) => {
   const { id } = useParams<{ id: string }>(); 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviews, setReviews] = useState<Review[]>(initialReviews);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null);
@@ -40,6 +44,7 @@ const ReviewsSection: React.FC = () => {
     try {
       const productID = Number(id);
       const result = await writeReview(reviewText, rating, productID);
+      const userName = "Anonymous"; // Define userName here
       if (result.success) {
         const newReview: Review = {
           reviewId: Date.now(), 
@@ -53,8 +58,8 @@ const ReviewsSection: React.FC = () => {
       } else {
         setAlert({ type: "error", message: result.message });
       }
-    } catch {
-       setAlert({ type: "error", message: result.message });
+    } catch  {
+       setAlert({ type: "error", message: "Failed to submit review" });
     } finally {
       setTimeout(() => {
         window.location.reload();
@@ -129,6 +134,7 @@ const ReviewsSection: React.FC = () => {
         <WriteReview
           onClose={() => setIsModalOpen(false)}
           onSubmit={handleReviewSubmit}
+          deliveryInfo=""
         />
       )}
     </div>

@@ -1,4 +1,5 @@
 import axios from "axios";
+import {PersonalData} from "@types"
 import Cookies from "js-cookie";
 
 const API_BASE_URL = "https://www.bouraq-mt.com/royalkey/api/PersonalData/personal-data";
@@ -25,13 +26,17 @@ export const fetchPersonalData = async () => {
         withCredentials: true, 
       });
       return response.data;
-    } catch {
-      if (error.response && error.response.status === 401) {
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
         console.error("401 Unauthorized - Token might be invalid or expired");
         Cookies.remove("authToken");
         window.location.href = "/authentication";
       } else {
-        console.error("Error fetching personal data:", error.response || error);
+        if (axios.isAxiosError(error)) {
+          console.error("Error fetching personal data:", error.response || error);
+        } else {
+          console.error("Error fetching personal data:", error);
+        }
       }
       throw error;
     }
@@ -57,8 +62,8 @@ export const updatePersonalData = async (data: Partial<PersonalData>) => {
         withCredentials: true,
       });
       return response.data;
-    } catch {
-      if (error.response) {
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
         console.error("API Response Error:", error.response.data);
       } else {
         console.error("Error updating personal data:", error);

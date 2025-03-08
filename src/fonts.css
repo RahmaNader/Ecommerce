@@ -24,25 +24,6 @@
     font-weight: 400; /* Regular weight in Italic style */
     font-style: italic;
 }
-@font-face {
-  font-family: 'IncrementSerif';
-  src: url('@assets/fonts/IncrementSerif-Regular.ttf') format('truetype');
-  font-weight: 400; /* Regular weight */
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'IncrementSerif';
-  src: url('@assets/fonts/IncrementSerif-Italic.ttf') format('truetype');
-  font-weight: 400; /* Italic style */
-  font-style: italic;
-}
-@font-face {
-  font-family: 'IncrementSans';
-  src: url('@assets/fonts/IncrementSans-VariableFont_wght.ttf.ttf') format('truetype');
-  font-weight:100 900; /* Regular weight */
-  font-style: normal;
-}
 
 
 @font-face {

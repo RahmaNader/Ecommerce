@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CardComponent, Review, ProductImage } from "@types";
+import { CardComponent, Review, ProductImage, ProductVariant } from "@types";
 
 export async function fetchProductDetails(productId: number): Promise<CardComponent> {
   try {
@@ -23,11 +23,12 @@ export async function fetchProductDetails(productId: number): Promise<CardCompon
         ? {
             categoryID: product.category.categoryID,
             name: product.category.name,
+            nameAr: product.category.nameAr,
+            nameEn: product.category.nameEn,
             parentCategoryID: product.category.parentCategoryID ?? null,
-            parentCategory: product.category.parentCategory ?? null,
             createdAt: product.category.createdAt,
           }
-        : { categoryID: 0, name: "", createdAt: "" },
+        : { categoryID: 0, name: "", nameAr: "", nameEn: "", createdAt: "" },
       reviews: product.reviews?.$values?.map((review: Review) => ({
         reviewId: review.reviewId,
         reviewContent: review.reviewContent,
@@ -35,13 +36,13 @@ export async function fetchProductDetails(productId: number): Promise<CardCompon
         createdAt: review.createdAt,
         userName: review.userName,
       })) || [],
-      productVarients: product.productVarients?.$values?.map((variant: any) => ({
+      productVarients: product.productVarients?.$values?.map((variant: ProductVariant) => ({
         productVarientId: variant.productVarientId,
         colorNameEn: variant.colorNameEn,
         colorNameAr: variant.colorNameAr,
         colorName: variant.colorName,
         colorCode: variant.colorCode,
-        sizeQuantities: variant.sizeQuantities?.$values || [],
+        sizeQuantities: variant.sizeQuantities?.values || [],
       })) || [],
       productImages: product.productImages?.$values?.map((image: ProductImage) => ({
         imageId: image.imageId,
