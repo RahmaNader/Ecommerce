@@ -5,7 +5,7 @@ import { CardComponent } from "@types";
 import fallbackImage from "@assets/HP_img2.jpeg";
 import { Image, CustomRating, SuccessAlert } from "@components/atoms";
 import shoppingCart from "@assets/shoppingCart.svg";
-import { fetchProductImages } from "@services/api/fetchProductImages";
+// import { fetchProductImages } from "@services/api/fetchProductImages";
 import { ProductPreference } from "@components/molecules";
 
 const Card: React.FC<CardComponent> = ({
@@ -37,23 +37,28 @@ const Card: React.FC<CardComponent> = ({
 
   // Load product image: try fetching a new image, fallback to productImages if needed.
   useEffect(() => {
-    const loadImage = async () => {
-      try {
-        const fetchedImage = await fetchProductImages(productID);
-        console.log("Fetched Image:", fetchedImage);
-        if (fetchedImage) {
-          setImageUrl(fetchedImage.imageUrl);
-          setImageAlt(fetchedImage.altText || name);
-        } else if (productImages && productImages.length > 0) {
-          setImageUrl(productImages[0].imageUrl);
-          setImageAlt(productImages[0].altText || name);
+    // Add more debugging to see exactly what's coming in
+    console.log("Product Images Type:", typeof productImages);
+    console.log("Is Array:", Array.isArray(productImages));
+    
+    if (productImages) {
+      // Check for array format first
+      if (Array.isArray(productImages) && productImages.length > 0) {
+        const firstImage = productImages[0];
+        console.log("First image in array:", firstImage);
+        
+        if (firstImage && firstImage.imageUrl) {
+          setImageUrl(firstImage.imageUrl);
+          setImageAlt(firstImage.altText || name);
+          return;
         }
-      } catch (error) {
-        console.error("Error fetching product image:", error);
       }
-    };
-    loadImage();
-  }, [productID, productImages, name]);
+    
+      
+      // If we got here, no valid images were found
+      console.warn("No valid images found for product:", productID);
+    }
+  }, [productImages, name, productID]);
 
   const handleCardClick = () => {
     navigate(`/product-details/${productID}`);
@@ -131,8 +136,8 @@ const Card: React.FC<CardComponent> = ({
         className="relative image-container w-auto h-auto overflow-hidden rounded-t-[500px] cursor-pointer"
       >
         <Image
-          src={imageUrl}
-          alt={imageAlt}
+            src={imageUrl}
+            alt={imageAlt}
           className="object-cover w-full h-full cursor-pointer"
         />
         <div className="absolute top-0 left-0 w-full h-full border-2 border-golden rounded-t-[500px]" />

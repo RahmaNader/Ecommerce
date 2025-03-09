@@ -2,7 +2,7 @@ import axios from "axios";
 import fallbackImage from "@assets/HP_img2.jpeg";
 import {CardComponent} from "@types"
 
-export async function fetchHomeCategory(count: number , category: string, collection: string) {
+export async function fetchHomeCategory(count: number , category: string) {
   try {
     const response = await axios.get(
       `https://www.bouraq-mt.com/royalkey/api/Product/${category}?count=${count}`
@@ -20,7 +20,6 @@ export async function fetchHomeCategory(count: number , category: string, collec
       productQuantity: product.productQuantity,
       size: "Default",
       category: product.categoryID,
-      collection: collection,
     }));
   } catch (error) {
     if (error instanceof Error) {

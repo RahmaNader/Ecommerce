@@ -19,19 +19,19 @@ const Home: React.FC = () => {
     data: newArrivals,
     isLoading: isLoadingNewArrivals,
     isError: isErrorNewArrivals,
-  } = useQuery("newArrivals", () => fetchHomeCategory(4, "new-arrivals", "New Arrivals"));
+  } = useQuery("newArrivals", () => fetchHomeCategory(4, "new-arrivals"));
 
   const {
     data: bestSellers,
     isLoading: isLoadingBestSellers,
     isError: isErrorBestSellers,
-  } = useQuery("bestSellers", () => fetchHomeCategory(4, "best-selling", "Best Sellers"));
+  } = useQuery("bestSellers", () => fetchHomeCategory(4, "best-selling"));
 
   const {
     data: highestDiscount,
     isLoading: isLoadingHighestDiscount,
     isError: isErrorHighestDiscount,
-  } = useQuery("highestDiscount", () => fetchHomeCategory(4, "best-selling", "Best Sellers"));
+  } = useQuery("highestDiscount", () => fetchHomeCategory(4, "best-selling"));
 
   return (
     <>

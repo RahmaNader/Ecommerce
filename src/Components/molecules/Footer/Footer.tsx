@@ -40,7 +40,7 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="bg-secondColor text-white font-playfair font-semibold mt-20">
+    <footer className="bg-secondColor text-white font-playfair font-semibold mt-20 bottom-0">
       <div className="flex flex-col md:flex-row p-9">
         {/* Section 1: Brand and Social Links */}
         <div className="mt-8 md:w-1/3 lg:w-1/3">

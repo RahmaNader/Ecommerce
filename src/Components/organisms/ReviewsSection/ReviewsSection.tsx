@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next"; // Add this import
 import Cookies from "js-cookie";
 import { ReviewCard } from "@components/atoms";
 import { WriteReview } from "@components/molecules";
@@ -12,7 +13,10 @@ interface ReviewsSectionProps {
 }
 
 const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews: initialReviews }) => {
-  const { id } = useParams<{ id: string }>(); 
+  const { id } = useParams<{ id: string }>();
+  const { t, i18n } = useTranslation(); // Add translation hook
+  const isRTL = i18n.language === 'ar'; // Check if Arabic
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [reviews, setReviews] = useState<Review[]>(initialReviews);
   const [isLoading, setIsLoading] = useState(true);
@@ -30,14 +34,14 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews: initialReviews
         const fetchedReviews = await fetchReviews(Number(id));
         setReviews(fetchedReviews);
       } catch {
-        setError("Failed to load reviews");
+        setError(t("reviews.failedToLoad"));
       } finally {
         setIsLoading(false);
       }
     };
 
     loadReviews();
-  }, [id]);
+  }, [id, t]);
 
   const handleReviewSubmit = async (rating: number, reviewText: string) => {
     if (!id) return;
@@ -54,12 +58,12 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews: initialReviews
           userName: userName,
         };
         setReviews([newReview, ...reviews]);
-        setAlert({ type: "success", message: "Review submitted successfully." });
+        setAlert({ type: "success", message: t("reviews.submitSuccess") });
       } else {
         setAlert({ type: "error", message: result.message });
       }
-    } catch  {
-       setAlert({ type: "error", message: "Failed to submit review" });
+    } catch {
+       setAlert({ type: "error", message: t("reviews.submitFailed") });
     } finally {
       setTimeout(() => {
         window.location.reload();
@@ -68,11 +72,9 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews: initialReviews
     }
   };
   
-
-
   const handleWriteReviewClick = () => {
     if (!isAuthenticated) {
-      setAlert({ type: "error", message: "Please log in to write a review." });
+      setAlert({ type: "error", message: t("reviews.loginRequired") });
       setTimeout(() => setAlert(null), 3000);
     } else {
       setIsModalOpen(true);
@@ -80,7 +82,7 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews: initialReviews
   };
 
   if (isLoading) {
-    return <div className="text-center py-8">Loading reviews...</div>;
+    return <div className="text-center py-8">{t("reviews.loading")}</div>;
   }
 
   if (error) {
@@ -88,7 +90,7 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews: initialReviews
   }
 
   return (
-    <div className="w-full mx-auto px-4 py-8">
+    <div className={`w-full mx-auto px-4 py-8 ${isRTL ? 'rtl' : 'ltr'}`}>
       {alert && (
         <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
           {alert.type === "error" ? (
@@ -98,9 +100,9 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews: initialReviews
           )}
         </div>
       )}
-      <div className="flex flex-wrap w-full justify-between mb-4">
+      <div className={`flex flex-wrap w-full justify-between mb-4 `}>
         <h2 className="text-3xl font-bold text-wine font-playfair mb-4">
-          All Reviews{" "}
+          {t("reviews.allReviews")}{" "}
           <span className="text-base font-Poppins font-normal text-ForthColor">
             ({reviews.length})
           </span>
@@ -109,7 +111,7 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews: initialReviews
           className="bg-wine text-mainColor p-2 rounded-md text-xl font-playfair hover:bg-ForthColor"
           onClick={handleWriteReviewClick}
         >
-          Write a review
+          {t("reviews.writeReview")}
         </button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -117,7 +119,7 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews: initialReviews
           <ReviewCard
             key={review.reviewId}
             reviewerName={review.userName}
-            datePosted={new Date(review.createdAt).toLocaleDateString()}
+            datePosted={new Date(review.createdAt).toLocaleDateString(isRTL ? 'ar-EG' : 'en-US')}
             reviewText={review.reviewContent}
             rating={review.rate}
           />
@@ -126,7 +128,7 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews: initialReviews
       {reviews.length > 3 && (
         <div className="flex justify-center mt-8">
           <button className="bg-wine text-mainColor font-playfair text-2xl rounded-md w-[50%] py-3 px-8 hover:bg-ForthColor transition duration-300">
-            See All
+            {t("reviews.seeAll")}
           </button>
         </div>
       )}
