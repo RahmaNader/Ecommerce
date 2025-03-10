@@ -151,6 +151,10 @@ export interface OrderSummaryProps {
   onCheckoutClick?: () => void;
   currentStep?: "address" | "shipping" | "payment";
   onNextClick?: () => void;
+  selectedPaymentMethod?: string;
+  selectedAddress?: AddressProps | null;
+  selectedShippingMethod?: string;
+  isArabic?: boolean;
 }
 
 export type RatingDistributionItem = {
