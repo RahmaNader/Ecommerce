@@ -226,7 +226,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
             type="primary"
             size="large"
             onClick={onCheckoutClick}
-            disabled={isPlacingOrder}
+            isDisabled={isPlacingOrder}
           />
         ) : (
           <Button
@@ -239,7 +239,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
                   : t("orderSummary.next")
             }
             onClick={handleConfirmOrder}
-            disabled={isPlacingOrder}
+            isDisabled={isPlacingOrder}
           />
         )}
       </div>
