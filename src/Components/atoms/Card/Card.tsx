@@ -3,9 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { CardComponent } from "@types";
 import fallbackImage from "@assets/HP_img2.jpeg";
-import { Image, CustomRating, SuccessAlert } from "@components/atoms";
+import {  CustomRating, SuccessAlert } from "@components/atoms";
 import shoppingCart from "@assets/shoppingCart.svg";
-// import { fetchProductImages } from "@services/api/fetchProductImages";
 import { ProductPreference } from "@components/molecules";
 
 const Card: React.FC<CardComponent> = ({
@@ -25,7 +24,7 @@ const Card: React.FC<CardComponent> = ({
   const [imageUrl, setImageUrl] = useState<string>(fallbackImage);
   const [imageAlt, setImageAlt] = useState<string>("Product Image");
 
-  // Check if the product is already in the cart
+
   useEffect(() => {
     const existingCart = Cookies.get("cart")
       ? JSON.parse(Cookies.get("cart") as string)
@@ -35,27 +34,18 @@ const Card: React.FC<CardComponent> = ({
     );
   }, [productID]);
 
-  // Load product image: try fetching a new image, fallback to productImages if needed.
   useEffect(() => {
-    // Add more debugging to see exactly what's coming in
-    console.log("Product Images Type:", typeof productImages);
-    console.log("Is Array:", Array.isArray(productImages));
-    
+
     if (productImages) {
-      // Check for array format first
       if (Array.isArray(productImages) && productImages.length > 0) {
         const firstImage = productImages[0];
-        console.log("First image in array:", firstImage);
-        
         if (firstImage && firstImage.imageUrl) {
           setImageUrl(firstImage.imageUrl);
           setImageAlt(firstImage.altText || name);
           return;
         }
       }
-    
-      
-      // If we got here, no valid images were found
+
       console.warn("No valid images found for product:", productID);
     }
   }, [productImages, name, productID]);
@@ -69,7 +59,6 @@ const Card: React.FC<CardComponent> = ({
     setShowPreference(true);
   };
 
-  // This function will be passed to the ProductPreference component.
   const handlePreferenceSubmit = (preferences: {
     color: string;
     size: string;
@@ -89,7 +78,6 @@ const Card: React.FC<CardComponent> = ({
     );
 
     if (existingItemIndex !== -1) {
-      // If an item with the same productID, color, and size exists, update its quantity.
       existingCart[existingItemIndex].quantity += preferences.quantity;
     } else {
       // Otherwise, add a new item to the cart.
@@ -133,11 +121,11 @@ const Card: React.FC<CardComponent> = ({
 
       <div
         onClick={handleCardClick}
-        className="relative image-container w-auto h-auto overflow-hidden rounded-t-[500px] cursor-pointer"
+        className="relative image-container w-auto h-auto min-h-[200px] overflow-hidden rounded-t-[500px] cursor-pointer"
       >
-        <Image
-            src={imageUrl}
-            alt={imageAlt}
+        <img
+          src={imageUrl}
+          alt={imageAlt}
           className="object-cover w-full h-full cursor-pointer"
         />
         <div className="absolute top-0 left-0 w-full h-full border-2 border-golden rounded-t-[500px]" />

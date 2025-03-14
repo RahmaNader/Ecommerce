@@ -1,8 +1,19 @@
 import axios from "axios";
 import fallbackImage from "@assets/HP_img2.jpeg";
-import { CardComponent, ProductImage, ProductVariant,  Review, Category } from "@types";
+import { CardComponent, ProductImage, ProductVariant,  Review, Category, SizeQuantityResponse } from "@types";
 
 // Exact structure matching backend response
+interface ProductVariantResponse {
+  $id: string;
+  productVarientId: number;
+  colorNameEn: string;
+  colorNameAr: string;
+  colorName?: string | null;
+  colorCode: string;
+  sizeQuantities: SizeQuantityResponse;
+}
+
+
 interface CategoryProductResponse {
   $id: string;
   products: {
@@ -23,7 +34,7 @@ interface CategoryProductResponse {
       categoryID: number;
       category: Category;
       reviews: { $id: string; $values: Review[] };
-      productVarients: { $id: string; $values: ProductVariant[] };
+      productVarients: { $id: string; $values: ProductVariantResponse[] };
       productImages: { $id: string; $values: Array<ProductImage & { $id: string }> };
       reviewPercentages: Record<string, number>;
       created: string;
@@ -34,6 +45,8 @@ interface CategoryProductResponse {
   };
   totalCount: number;
 }
+
+
 
 export const fetchCategoryProducts = async (
   parentCategoryId: number
@@ -78,7 +91,11 @@ export const fetchCategoryProducts = async (
         colorNameAr: variant.colorNameAr,
         colorName: variant.colorName || null,
         colorCode: variant.colorCode,
-        sizeQuantities: variant.sizeQuantities,
+        sizeQuantities: variant.sizeQuantities.$values.map((size) => ({
+          sizeId: size.sizeId || 0, 
+          sizeLabel: size.sizeLabel || null,
+          quantity: size.quantity
+        })),
 })),
       productImages:
         product.productImages.$values.length > 0

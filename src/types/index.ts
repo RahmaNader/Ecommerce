@@ -68,6 +68,11 @@ export interface SizeQuantity {
   sizeLabel?: string | null;
 }
 
+export interface SizeQuantityResponse {
+  $id: string;
+  $values: SizeQuantity[];
+}
+
 export interface ProductVariant {
   productVarientId: number;
   colorNameEn: string;

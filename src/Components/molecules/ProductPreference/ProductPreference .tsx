@@ -5,8 +5,22 @@ import { ProductVariant, SizeQuantity } from "@types";
 interface ProductPreferenceProps {
   product: {
     productVarients?: { $id: string; $values: ProductVariant[] } | ProductVariant[];
+    productPrice?: number;
+    priceAfterDiscount?: number;
+    productImages?: Array<{ imageUrl: string }> | { $values: Array<{ imageUrl: string }> };
+    name?: string;
+    productID?: number;
   };
-  onSubmit: (preferences: { color: string; size: string; quantity: number }) => void;
+  onSubmit: (preferences: {
+    color: string;
+    size: string;
+    quantity: number;
+    price: number;
+    priceAfterDiscount: number;
+    imageUrl: string;
+    name: string;
+    productId: number;
+  }) => void;
   onCancel: () => void;
 }
 
@@ -27,8 +41,7 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
     }
   }, [error]);
 
-  // Extract variants: if product.productVarients is an array, use it.
-  // Otherwise, if it has a $values property, use that array.
+  // Extract variants correctly
   let variants: ProductVariant[] = [];
   if (Array.isArray(product.productVarients)) {
     variants = product.productVarients;
@@ -36,24 +49,30 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
     variants = product.productVarients.$values;
   }
 
-  // Map every variant to its color option (do not filter for uniqueness).
-  const colors = variants.map((variant) => ({
-    name: variant.colorNameEn || "Unknown",
-    code: variant.colorCode,
-  }));
+  // Extract unique colors from variants
+  const colors = Array.from(
+    new Map(
+      variants.map((variant) => [variant.colorNameEn, { name: variant.colorNameEn || "Unknown", code: variant.colorCode }])
+    ).values()
+  );
 
-  // Once a color is selected, find available sizes for that color.
-  const availableSizes: (string | null)[] = selectedColor
-    ? variants
-        .filter((variant) => (variant.colorNameEn || "Unknown") === selectedColor)
-        .flatMap((variant) =>
-          Array.isArray(variant.sizeQuantities?.values) ? [...variant.sizeQuantities.values()].map((sq: SizeQuantity) => sq.sizeLabel).filter((size): size is string | null => size !== undefined) : []
-        )
-    : [];
+  // Extract available sizes for the selected color
+  const availableSizes = variants.find(
+    (v) => v.colorNameEn === selectedColor
+  )?.sizeQuantities ?? [];
 
   const handleSubmit = () => {
     if (selectedColor && selectedSize && quantity > 0) {
-      onSubmit({ color: selectedColor, size: selectedSize, quantity });
+      onSubmit({
+        color: selectedColor,
+        size: selectedSize,
+        quantity,
+        price: product.productPrice || 0,
+        priceAfterDiscount: product.priceAfterDiscount || 0,
+        imageUrl: product.productImages ? (Array.isArray(product.productImages) ? product.productImages[0].imageUrl : product.productImages.$values[0].imageUrl) : "",
+        name: product.name || "",
+        productId: product.productID || 0,
+      });
       setError(null);
     } else {
       setError("Please select a color, size, and quantity!");
@@ -81,9 +100,8 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
           </svg>
         </button>
 
-        <p className="font-playfair font-semibold text-lg text-wine mb-4">
-          Choose Color
-        </p>
+        {/* Color Selection */}
+        <p className="font-playfair font-semibold text-lg text-wine mb-4">Choose Color</p>
         <div className="flex gap-3 mb-4">
           {colors.map((colorOption, index) => (
             <div key={index} className="flex flex-col items-center">
@@ -104,22 +122,20 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
           ))}
         </div>
 
-        <p className="font-playfair font-semibold text-lg text-wine mb-4">
-          Choose Size
-        </p>
+        {/* Size Selection */}
+        <p className="font-playfair font-semibold text-lg text-wine mb-4">Choose Size</p>
         <div className="flex gap-3 mb-4">
-          {availableSizes && availableSizes.length > 0 ? (
-            availableSizes.map((sizeOption, index) => (
+          {availableSizes.length > 0 ? (
+            availableSizes.map((sizeOption: SizeQuantity, index: number) => (
               <button
                 key={index}
                 className={`px-3 py-1 rounded-md border ${
-                  selectedSize === sizeOption
-                    ? "bg-wine text-white"
-                    : "border-ForthColor text-ForthColor"
+                  selectedSize === sizeOption.sizeLabel ? "bg-wine text-white" : "border-ForthColor text-ForthColor"
                 }`}
-                onClick={() => setSelectedSize(sizeOption!)}
+                onClick={() => setSelectedSize(sizeOption.sizeLabel || null)}
+                disabled={sizeOption.quantity <= 0}
               >
-                {sizeOption}
+                {sizeOption.sizeLabel || 'Unknown'}
               </button>
             ))
           ) : (
@@ -127,6 +143,7 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
           )}
         </div>
 
+        {/* Quantity Selection */}
         <div className="flex items-center gap-3 mb-6">
           <p className="font-playfair font-semibold text-lg text-wine">Quantity:</p>
           <ProductCount
@@ -135,17 +152,12 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
           />
         </div>
 
+        {/* Action Buttons */}
         <div className="flex justify-between gap-3">
-          <button
-            onClick={onCancel}
-            className="px-4 py-2 bg-ForthColor text-white rounded-md"
-          >
+          <button onClick={onCancel} className="px-4 py-2 bg-ForthColor text-white rounded-md">
             Cancel
           </button>
-          <button
-            onClick={handleSubmit}
-            className="px-4 py-2 bg-wine text-white rounded-md"
-          >
+          <button onClick={handleSubmit} className="px-4 py-2 bg-wine text-white rounded-md">
             Confirm
           </button>
         </div>

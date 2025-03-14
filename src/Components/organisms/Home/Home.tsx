@@ -31,7 +31,7 @@ const Home: React.FC = () => {
     data: highestDiscount,
     isLoading: isLoadingHighestDiscount,
     isError: isErrorHighestDiscount,
-  } = useQuery("highestDiscount", () => fetchHomeCategory(4, "best-selling"));
+  } = useQuery("highestDiscount", () => fetchHomeCategory(4, "highest-discount"));
 
   return (
     <>
