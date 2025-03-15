@@ -13,16 +13,16 @@ const Home: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  // Updated to handle navigation
+  // Navigate to category pages
   const handleCategoryClick = (category: string, categoryId: number) => {
     navigate(`/products/${category.toLowerCase()}`, {
       state: { categoryId }
     });
   };
 
-  // Collection buttons can still just log - or you can update them to navigate too
-  const handleButtonClick = (section: string) => {
-    console.log("Button clicked: " + section);
+  // Updated to navigate to collection pages
+  const handleButtonClick = (collectionType: string) => {
+    navigate(`/collection/${collectionType.toLowerCase().replace(/\s+/g, '-')}`);
   };
 
   const {
@@ -73,7 +73,7 @@ const Home: React.FC = () => {
           <>
             <ProductsView sectionName={t("home.newCollection")} cards={newArrivals} />
             <div className="flex justify-center mt-12">
-            <Button label={t("home.viewCollection")} onClick={() => handleButtonClick("Best Seller")} />
+              <Button label={t("home.viewCollection")} onClick={() => handleButtonClick("new-arrivals")} />
             </div>
           </>
         )}
@@ -84,7 +84,7 @@ const Home: React.FC = () => {
           <>
             <ProductsView sectionName={t("home.bestSellers")} cards={bestSellers} />
             <div className="flex justify-center mt-12">
-              <Button label={t("home.viewBestSellers")} onClick={() => handleButtonClick("Best Seller")} />
+              <Button label={t("home.viewBestSellers")} onClick={() => handleButtonClick("best-selling")} />
             </div>
           </>
         )}
@@ -95,7 +95,7 @@ const Home: React.FC = () => {
           <>
             <ProductsView sectionName={t("home.highestDiscount")} cards={highestDiscount} />
             <div className="flex justify-center mt-12">
-              <Button label={t("home.viewDiscounts")} onClick={() => handleButtonClick("Highest Discount")} />
+              <Button label={t("home.viewDiscounts")} onClick={() => handleButtonClick("highest-discount")} />
             </div>
           </>
         )}

@@ -2,6 +2,7 @@ import React from "react";
 import { ProductCount } from "@components/atoms";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@context/useLanguage";
+import { Link } from "react-router-dom"; // Add this import
 
 interface CartProductProps {
   product: {
@@ -42,20 +43,26 @@ const CartProduct: React.FC<CartProductProps> = ({
 
   return (
     <div className="border-b border-b-ForthColor/50 py-8 w-full px-2">
-      {/* Rest of the component using displayName where appropriate */}
       <div className={`flex md:flex-row gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
         <div className="w-fit md:w-4/12">
-          <img
-            src={product.src}
-            alt={product.alt || displayName}
-            className="max-w-48 h-52 object-cover rounded-md"
-          />
+          <Link to={`/product-details/${product.id}`}>
+            <img
+              src={product.src}
+              alt={product.alt || displayName}
+              className="max-w-48 h-52 object-cover rounded-md cursor-pointer"
+            />
+          </Link>
         </div>
 
         <div className={`flex flex-col gap-4 w-full md:w-8/12`}>
           <div className={`flex flex-row w-full justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
             <h3 className="font-semibold font-playfair text-wine text-lg md:text-xl">
-              {displayName}
+              <Link 
+                to={`/product-details/${product.id}`}
+                className="hover:text-sixColor transition-colors cursor-pointer"
+              >
+                {displayName}
+              </Link>
             </h3>
 
             <p className="font-medium text-wine">

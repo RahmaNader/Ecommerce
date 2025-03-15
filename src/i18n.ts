@@ -278,7 +278,8 @@ const resources = {
         confirmOrder: "Confirm Order",
         couponSuccess: "Coupon applied successfully!",
         couponAlreadyApplied: "Coupon has already been applied",
-        couponInvalid: "Invalid coupon code"
+        couponInvalid: "Invalid coupon code",
+        checking: "Checking...",
       },
       checkout: {
         title: "CheckOut",
@@ -323,8 +324,8 @@ const resources = {
         title: "Shipment Method",
         regularDelivery: "Delivery Regular",
         fastDelivery: "Fast Delivery +50 EGP",
-        regularDate: "01 Feb, 2023",
-        fastDate: "28 Jan, 2023"
+        regularDatePrefix: "By {{date}}",
+        fastDatePrefix: "By {{date}}",
       },
       productPreference: {
         chooseColor: "Choose Color",
@@ -335,6 +336,47 @@ const resources = {
         selectionRequired: "Please select a color, size, and quantity!",
         noSizesAvailable: "No sizes available for this color",
         unknown: "Unknown"
+      },
+      collection: {
+        newArrivals: "New Arrivals",
+        bestSellers: "Best Sellers",
+        highestDiscounts: "Highest Discounts",
+        products: "Products",
+        errorLoading: "Failed to load products. Please try again.",
+        noProducts: "No products found in this collection."
+      },
+      orderConfirmation: {
+        title: "Order Confirmed",
+        subtitle: "Your order has been confirmed, please wait and track your order",
+        trackOrder: "Tracking order",
+        goHome: "Go to home",
+        summary: "Order Summary",
+        price: "Price",
+        discount: "Discount",
+        shipping: "Shipping",
+        coupon: "Coupon Applied",
+        total: "TOTAL",
+        delivery: "Estimated Delivery by"
+      },
+      common: {
+        currency: "EGP"
+      },
+      orders: {
+        orderHistory: "Order History",
+        trackOrder: "Track your order",
+        noOrders: "No orders",
+        noOrdersPlaced: "You have not placed any orders yet",
+        orderNumber: "Order Number",
+        total: "Total",
+        date: "Date",
+        status: "Status",
+        status_active: "Active",
+        status_completed: "Completed",
+        status_cancelled: "Cancelled",
+        status_pending: "Pending",
+        status_processing: "Processing",
+        status_shipped: "Shipped",
+        status_delivered: "Delivered"
       },
     },
   },
@@ -612,7 +654,8 @@ const resources = {
         confirmOrder: "تأكيد الطلب",
         couponSuccess: "تم تطبيق القسيمة بنجاح!",
         couponAlreadyApplied: "تم تطبيق القسيمة بالفعل",
-        couponInvalid: "رمز القسيمة غير صالح"
+        couponInvalid: "رمز القسيمة غير صالح",
+        checking: "جارٍ التحقق...",
       },
       checkout: {
         title: "الدفع",
@@ -657,8 +700,8 @@ const resources = {
         title: "طريقة الشحن",
         regularDelivery: "شحن عادي",
         fastDelivery: "شحن سريع +٥٠ جنيه",
-        regularDate: "١ فبراير، ٢٠٢٣",
-        fastDate: "٢٨ يناير، ٢٠٢٣"
+        regularDatePrefix: "بتاريخ {{date}}",
+        fastDatePrefix: "بتاريخ {{date}}",
       },
       productPreference: {
         chooseColor: "اختر اللون",
@@ -669,6 +712,47 @@ const resources = {
         selectionRequired: "الرجاء اختيار اللون والمقاس والكمية!",
         noSizesAvailable: "لا توجد مقاسات متاحة لهذا اللون",
         unknown: "غير معروف"
+      },
+      collection: {
+        newArrivals: "وصل حديثاً",
+        bestSellers: "الأكثر مبيعاً",
+        highestDiscount: "أعلى الخصومات",
+        products: "المنتجات",
+        errorLoading: "فشل في تحميل المنتجات. يرجى المحاولة مرة أخرى.",
+        noProducts: "لم يتم العثور على منتجات في هذه المجموعة."
+      },
+      orderConfirmation: {
+        title: "تم تأكيد الطلب",
+        subtitle: "تم تأكيد طلبك، يرجى الانتظار وتتبع طلبك",
+        trackOrder: "تتبع الطلب",
+        goHome: "الذهاب إلى الرئيسية",
+        summary: "ملخص الطلب",
+        price: "السعر",
+        discount: "الخصم",
+        shipping: "الشحن",
+        coupon: "الكوبون المطبق",
+        total: "المجموع",
+        delivery: "التسليم المتوقع بتاريخ"
+      },
+      common: {
+        currency: "جنيه"
+      },
+      orders: {
+        orderHistory: "سجل الطلبات",
+        trackOrder: "تتبع طلبك",
+        noOrders: "لا توجد طلبات",
+        noOrdersPlaced: "لم تقم بإجراء أي طلبات بعد",
+        orderNumber: "رقم الطلب",
+        total: "المجموع",
+        date: "التاريخ",
+        status: "الحالة",
+        status_active: "نشط",
+        status_completed: "مكتمل",
+        status_cancelled: "ملغي",
+        status_pending: "قيد الانتظار",
+        status_processing: "قيد المعالجة",
+        status_shipped: "تم الشحن",
+        status_delivered: "تم التوصيل"
       },
     },
   },

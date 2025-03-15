@@ -7,6 +7,7 @@ import { Button } from "@components/atoms";
 import RightArrow from "@assets/RightArrow.svg";
 import LeftArrow from "@assets/LeftArrow.svg";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom"; // Add this import
 
 interface Item {
   text: string;
@@ -16,6 +17,7 @@ interface Item {
 
 const Slider: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate(); // Add navigate hook
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   
@@ -28,6 +30,11 @@ const Slider: React.FC = () => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+  
+  // Function to navigate to new-arrivals collection
+  const handleViewCollection = () => {
+    navigate('/collection/new-arrivals');
+  };
   
   // Responsive breakpoints
   const isMobile = windowWidth <= 640;
@@ -45,7 +52,7 @@ const Slider: React.FC = () => {
   ];
 
   return (
-    <div className="relative mx-4 sm:mx-8 md:mx-12 lg:mx-16 mt-4 sm:mt-6 md:mt-8 mb-10 md:mb-20">
+    <div className="relative max-w-[1200px] justify-center mx-auto">
       <div className="absolute inset-0 bg-cover bg-center filter blur-md z-0 bg-[url('@assets/Blur.svg')]"></div>
 
       <Container 
@@ -94,6 +101,7 @@ const Slider: React.FC = () => {
               maxHeight={maxSliderHeight}
               isMobile={isMobile}
               isTablet={isTablet}
+              onViewCollection={handleViewCollection} // Pass the function to SliderItem
             />
           ))}
         </Carousel>
@@ -106,10 +114,11 @@ interface SliderItemProps extends Item {
   maxHeight: string;
   isMobile: boolean;
   isTablet: boolean;
+  onViewCollection: () => void; // Add this prop
 }
 
 const SliderItem: React.FC<SliderItemProps> = React.memo(
-  ({ text, img, line, maxHeight, isMobile, isTablet }) => {
+  ({ text, img, line, maxHeight, isMobile, isTablet, onViewCollection }) => {
     const { t } = useTranslation();
     
     return (
@@ -138,7 +147,7 @@ const SliderItem: React.FC<SliderItemProps> = React.memo(
             />
             <Button 
               label={t("slider.viewCollection")} 
-              onClick={() => console.log("View Collection clicked")}
+              onClick={onViewCollection} // Use the navigation function
             />
           </div>
         </div>
@@ -161,7 +170,7 @@ const SliderItem: React.FC<SliderItemProps> = React.memo(
         <div className="mt-4 text-center md:hidden">
           <Button 
             label={t("slider.viewCollection")} 
-            onClick={() => console.log("View Collection clicked")}
+            onClick={onViewCollection} // Use the navigation function
           />
         </div>
       </div>

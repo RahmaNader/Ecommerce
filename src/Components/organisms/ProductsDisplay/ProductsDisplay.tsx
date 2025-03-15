@@ -91,7 +91,7 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products, language })
 
       {/* Pagination with RTL support */}
       {products.length > cardsPerPage && (
-        <div className={`mt-8 flex items-center w-full justify-between md:px-10 ${isRTL ? 'flex-row-reverse space-x-reverse' : 'space-x-2'}`}>
+        <div className={`mt-8 flex items-center w-full justify-between md:px-10 `}>
           <Button
             label={t("pagination.previous")}
             onClick={handlePrevious}
@@ -100,7 +100,7 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products, language })
             className="flex items-center justify-center leading-none"
           />
 
-          <div className={`flex ${isRTL ? 'space-x-reverse flex-row-reverse' : 'space-x-2'}`}>
+          <div className={`flex gap-2`}>
             {getPageNumbers().map((item, index) =>
               typeof item === "number" ? (
                 <button

@@ -1,5 +1,7 @@
 import { ToggleRadioButton } from "@components/atoms";
 import { useTranslation } from "react-i18next";
+import { format, addDays } from "date-fns";
+import { arDZ, enUS } from "date-fns/locale";
 
 interface ShippingMethodProps {
   selectedShippingMethod: string;
@@ -12,8 +14,20 @@ const ShippingMethod: React.FC<ShippingMethodProps> = ({
   onShippingMethodChange,
   isArabic = false,
 }: ShippingMethodProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   
+  // Calculate delivery dates
+  const today = new Date();
+  const regularDeliveryDate = addDays(today, 5);
+  const fastDeliveryDate = addDays(today, 2);
+  
+  // Format dates based on language
+  const locale = isArabic || i18n.language === 'ar' ? arDZ : enUS;
+  const dateFormat = isArabic || i18n.language === 'ar' ? "d MMMM، yyyy" : "d MMM, yyyy";
+  
+  const formattedRegularDate = format(regularDeliveryDate, dateFormat, { locale });
+  const formattedFastDate = format(fastDeliveryDate, dateFormat, { locale });
+
   return (
     <div className={`py-8 w-full ${isArabic ? 'rtl' : 'ltr'}`}>
       <h2 className="text-xl font-semibold text-wine">
@@ -32,7 +46,7 @@ const ShippingMethod: React.FC<ShippingMethodProps> = ({
               />
             </div>
             <div className="text-lg text-wine px-8 font-semibold">
-              <p>{t("shipping.regularDate")}</p>
+              <p>{t("shipping.regularDatePrefix", { date: formattedRegularDate })}</p>
             </div>
           </div>
         </div>
@@ -50,7 +64,7 @@ const ShippingMethod: React.FC<ShippingMethodProps> = ({
               />
             </div>
             <div className="text-lg text-wine px-8 font-semibold">
-              <p>{t("shipping.fastDate")}</p>
+              <p>{t("shipping.fastDatePrefix", { date: formattedFastDate })}</p>
             </div>
           </div>
         </div>
