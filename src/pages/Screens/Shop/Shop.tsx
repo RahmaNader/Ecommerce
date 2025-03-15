@@ -1,10 +1,12 @@
-import React, { useState, useEffect , useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useQuery } from "react-query";
 import { fetchCategoryProducts } from "@services/api/fetchCategoryProducts";
 import { useParams, Navigate, useLocation } from "react-router-dom";
 import { Filter, ProductsDisplay } from "@components/organisms";
-import { Breadcrumb , Loading} from "@components/molecules";
+import { Breadcrumb, Loading } from "@components/molecules";
 import FilterIcon from "@assets/FilterIcon.svg";
+import { useTranslation } from "react-i18next";
+import { useLanguage } from "@context/useLanguage";
 
 type ShopParams = {
   category: string;
@@ -19,6 +21,10 @@ type FilterCriteria = {
 };
 
 const Shop: React.FC = () => {
+  const { t } = useTranslation();
+  const { language } = useLanguage();
+  const isRTL = language === "ar";
+  
   const { category } = useParams<ShopParams>();
   const location = useLocation();
   const categoryId = location.state?.categoryId;
@@ -37,15 +43,14 @@ const Shop: React.FC = () => {
     }
   );
 
-
-    // Handle sidebar visibility with animation
-    useEffect(() => {
-      if (isFilterOpen) {
-        setShowSidebar(true);
-      } else {
-        setShowSidebar(false)
-      }
-    }, [isFilterOpen]);
+  // Handle sidebar visibility with animation
+  useEffect(() => {
+    if (isFilterOpen) {
+      setShowSidebar(true);
+    } else {
+      setShowSidebar(false)
+    }
+  }, [isFilterOpen]);
 
   const filteredProducts = useMemo(() => {
     if (!products) return [];
@@ -71,9 +76,7 @@ const Shop: React.FC = () => {
   }, [products, filterCriteria]);
 
   if (isLoading) return <Loading />;
-  if (error) return <div>Error loading products</div>;
-
-
+  if (error) return <div>{t("common.errorLoading")}</div>;
 
   if (!category) {
     return <Navigate to="/" />;
@@ -88,8 +91,23 @@ const Shop: React.FC = () => {
     setShowSidebar(false); 
   };
 
+  // Get category name in the correct language
+  const getCategoryDisplayName = () => {
+    if (!products || products.length === 0) {
+      return (lastSegment ?? "").charAt(0).toUpperCase() + (lastSegment ?? "").slice(1);
+    }
+    
+    // Try to get category name from the products data
+    const firstProduct = products[0];
+    if (isRTL) {
+      return firstProduct.category.nameAr || firstProduct.category.name;
+    } else {
+      return firstProduct.category.nameEn || firstProduct.category.name;
+    }
+  };
+
   return (
-    <div className="bg-customBeige min-h-screen p-2 md:p-10">
+    <div className={`bg-customBeige min-h-screen p-2 md:p-10 ${isRTL ? 'rtl' : 'ltr'}`}>
       <Breadcrumb />
       {/* Filter Sidebar for screens smaller than laptop size */}
       <div className="flex flex-col xl:flex-row xl:items-start items-center">
@@ -97,11 +115,12 @@ const Shop: React.FC = () => {
           <div className="fixed inset-0 z-50 flex">
             <div
               className={`transform ${
-                isFilterOpen ? "translate-x-0" : "-translate-x-full"
-              } transition-transform duration-300 ease-in-out sm:w-3/4 bg-mainColor p-4 overflow-y-auto`}
+                isFilterOpen ? "translate-x-0" : isRTL ? "translate-x-full" : "-translate-x-full"
+              } transition-transform duration-300 ease-in-out sm:w-3/4 bg-mainColor p-4 overflow-y-auto ${
+                isRTL ? "right-0" : "left-0"
+              }`}
             >
               <div className="flex w-[100%]">
-                {/* onClose passed here, so cursor will be pointer */}
                 <Filter
                   onFilterChange={handleFilterChange}
                   onClose={handleCloseSidebar}
@@ -118,7 +137,6 @@ const Shop: React.FC = () => {
 
         {/* Desktop Filter for screens larger than laptop size */}
         <div className="laptop:hidden w-full md:w-1/4 p-4 md:sticky md:top-0 md:h-screen md:overflow-y-auto">
-          {/* No onClose passed here, so no pointer cursor */}
           <Filter onFilterChange={handleFilterChange} />
         </div>
 
@@ -126,18 +144,20 @@ const Shop: React.FC = () => {
         <div className="w-full lg:w-3/4 p-4">
           <div className="flex flex-row justify-between w-full px-4 mb-4 md:px-12">
             <p className="kiwi font-playball text-3xl md:text-4xl text-wine text-left">
-              {(lastSegment ?? "").charAt(0).toUpperCase() +
-                (lastSegment ?? "").slice(1)}
+              {getCategoryDisplayName()}
             </p>
             <div className="banana laptop:flex hidden justify-start">
               <button onClick={() => setIsFilterOpen(true)}>
-                <img src={FilterIcon} alt="Open Filters" />
+                <img src={FilterIcon} alt={t("filter.title")} />
               </button>
             </div>
           </div>
 
           <div className="flex justify-center">
-            <ProductsDisplay products={filteredProducts} />
+            <ProductsDisplay 
+              products={filteredProducts} 
+              language={language} 
+            />
           </div>
         </div>
       </div>

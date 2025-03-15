@@ -1,8 +1,19 @@
 import axios from "axios";
 import fallbackImage from "@assets/HP_img2.jpeg";
-import { CardComponent, ProductImage, ProductVariant,  Review, Category } from "@types";
+import { CardComponent, ProductImage, ProductVariant,  Review, Category, SizeQuantityResponse } from "@types";
 
 // Exact structure matching backend response
+interface ProductVariantResponse {
+  $id: string;
+  productVarientId: number;
+  colorNameEn: string;
+  colorNameAr: string;
+  colorName?: string | null;
+  colorCode: string;
+  sizeQuantities: SizeQuantityResponse;
+}
+
+
 interface CategoryProductResponse {
   $id: string;
   products: {
@@ -23,7 +34,7 @@ interface CategoryProductResponse {
       categoryID: number;
       category: Category;
       reviews: { $id: string; $values: Review[] };
-      productVarients: { $id: string; $values: ProductVariant[] };
+      productVarients: { $id: string; $values: ProductVariantResponse[] };
       productImages: { $id: string; $values: Array<ProductImage & { $id: string }> };
       reviewPercentages: Record<string, number>;
       created: string;
@@ -35,12 +46,14 @@ interface CategoryProductResponse {
   totalCount: number;
 }
 
+
+//fetches all products in a category
 export const fetchCategoryProducts = async (
   parentCategoryId: number
 ): Promise<CardComponent[]> => {
   try {
     const { data } = await axios.get<CategoryProductResponse>(
-      `https://www.bouraq-mt.com/royalkey/api/Product/?parentCategory=${parentCategoryId}`
+      `https://www.bouraq-mt.com/royalkey/api/Product?parentCategories=${parentCategoryId}&pageNumber=1&pageSize=100`
     );
 
     // Transform backend response to match CardComponent exactly
@@ -78,7 +91,11 @@ export const fetchCategoryProducts = async (
         colorNameAr: variant.colorNameAr,
         colorName: variant.colorName || null,
         colorCode: variant.colorCode,
-        sizeQuantities: variant.sizeQuantities,
+        sizeQuantities: variant.sizeQuantities.$values.map((size) => ({
+          sizeId: size.sizeId || 0, 
+          sizeLabel: size.sizeLabel || null,
+          quantity: size.quantity
+        })),
 })),
       productImages:
         product.productImages.$values.length > 0
@@ -105,3 +122,7 @@ export const fetchCategoryProducts = async (
     throw new Error(`Failed to fetch products for category ${parentCategoryId}`);
   }
 };
+
+//return ids of subcategories of a main ctagory , that could be used later for filtering
+//men : 1 , women : 2 , kids : 3 
+//https://www.bouraq-mt.com/royalkey/api/Categories/2?isEnglish=true

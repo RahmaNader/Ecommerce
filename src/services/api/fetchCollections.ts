@@ -1,66 +1,312 @@
 import axios from "axios";
 import fallbackImage from "@assets/HP_img2.jpeg";
-import {CardComponent} from "@types"
+import { CardComponent, ProductImage, ProductVariant,  Review, Category, SizeQuantityResponse } from "@types";
 
-export async function fetchHomeCategory(count: number , category: string, collection: string) {
-  try {
-    const response = await axios.get(
-      `https://www.bouraq-mt.com/royalkey/api/Product/${category}?count=${count}`
-    );
+// interface FetchProductsParams {
+//   parentCategories: number;
+//   pageNumber: number;
+//   pageSize: number;
+// }
 
-    return response.data.$values.map((product: CardComponent) => ({
-      productID: product.productID,
-      src: product.productImages?.[0]?.imageUrl || fallbackImage,
-      alt: product.name,
-      name: product.name,
-      priceAfterDiscount: Number(product.priceAfterDiscount).toFixed(2), 
-      productPrice: Number(product.productPrice).toFixed(2), 
-      averageRate: Number(product.averageRate).toFixed(2), 
-      productDescription: product.productDescription,
-      productQuantity: product.productQuantity,
-      size: "Default",
-      category: product.categoryID,
-      collection: collection,
-    }));
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error("Error fetching new arrivals:", error.message);
-      throw new Error(error.message || "Failed to fetch new arrivals.");
-    } else {
-      console.error("Error fetching new arrivals:", error);
-      throw new Error("Failed to fetch new arrivals.");
-    }
-  }
+interface ProductVariantResponse {
+  $id: string;
+  productVarientId: number;
+  colorNameEn: string;
+  colorNameAr: string;
+  colorName?: string | null;
+  colorCode: string;
+  sizeQuantities: SizeQuantityResponse;
 }
 
 
-export async function fetchRelatedProducts(productID: number, count: number): Promise<CardComponent[]> {
+interface HomeCategoryResponse {
+  $id: string;
+  $values: Array<{
+    $id: string;
+    productID: number;
+    name: string;
+    nameEn: string;
+    nameAr: string;
+    productDescription: string | null;
+    productDescriptionEn: string | null;
+    productDescriptionAr: string | null;
+    productCode: string | null;
+    productPrice: number;
+    averageRate: number | null;
+    productQuantity: number;
+    categoryID: number;
+    category: Category | null;
+    reviews: { $id: string; $values: Review[] };
+    productVarients: { $id: string; $values: ProductVariantResponse[] };
+    productImages: { $id: string; $values: Array<ProductImage & { $id: string }> };
+    reviewPercentages: Record<string, number>;
+    created: string;
+    lastUpdated: string;
+    priceAfterDiscount: number;
+    discountPercent: number;
+  }>;
+}
+
+
+export async function fetchHomeCategory(
+  count: number,
+  category: string
+): Promise<CardComponent[]> {
   try {
-    const response = await axios.get(
-      `https://www.bouraq-mt.com/royalkey/api/Product/${productID}/related?count=${count}`
+    const { data } = await axios.get<HomeCategoryResponse>(
+      `https://www.bouraq-mt.com/royalkey/api/Product/${category}?count=${count}`
     );
-    
-    return response.data.$values.map((product: CardComponent) => ({
+
+    // Transform backend response to match CardComponent structure
+    return data.$values.map((product): CardComponent => ({
       productID: product.productID,
-      src: product.productImages?.[0]?.imageUrl || fallbackImage,
-      alt: product.name,
       name: product.name,
-      priceAfterDiscount: Number(product.priceAfterDiscount).toFixed(2),
-      productPrice: Number(product.productPrice).toFixed(2),
-      averageRate: product.averageRate ? Number(product.averageRate).toFixed(2) : "0.00",
-      productDescription: product.productDescription,
+      nameEn: product.nameEn,
+      nameAr: product.nameAr,
+      productDescription: product.productDescription || "",
+      productDescriptionEn: product.productDescriptionEn || "",
+      productDescriptionAr: product.productDescriptionAr || "",
+      productCode: product.productCode || null,
+      productPrice: product.productPrice,
+      averageRate: product.averageRate ?? null,
       productQuantity: product.productQuantity,
-      size: "Default",
-      category: product.categoryID,
-      collection: "related",
+      categoryID: product.categoryID,
+      category: product.category
+        ? {
+            categoryID: product.category.categoryID,
+            name: product.category.name,
+            nameEn: product.category.nameEn,
+            nameAr: product.category.nameAr,
+            parentCategoryID: product.category.parentCategoryID || null,
+            createdAt: product.category.createdAt,
+          }
+        : { categoryID: 0, name: "", nameEn: "", nameAr: "", createdAt: "" },
+      reviews: product.reviews.$values.map((review) => ({
+        reviewId: review.reviewId,
+        reviewContent: review.reviewContent,
+        rate: review.rate,
+        createdAt: review.createdAt,
+        userName: review.userName,
+      })),
+      productVarients: product.productVarients.$values.map((variant): ProductVariant => ({
+        productVarientId: variant.productVarientId,
+        colorNameEn: variant.colorNameEn,
+        colorNameAr: variant.colorNameAr,
+        colorName: variant.colorName || null,
+        colorCode: variant.colorCode,
+        sizeQuantities: variant.sizeQuantities?.$values?.map((size) => ({
+          sizeId: size.sizeId || 0,
+          sizeLabel: size.sizeLabel || null,
+          quantity: size.quantity,
+        })) || [],
+      })),
+      productImages:
+        product.productImages.$values.length > 0
+          ? product.productImages.$values.map(({ imageId, imageUrl, altText }): ProductImage => ({
+              imageId,
+              imageUrl: imageUrl || fallbackImage,
+              altText: altText || product.name,
+            }))
+          : [
+              {
+                imageId: 0,
+                imageUrl: fallbackImage,
+                altText: product.name,
+              },
+            ],
+      reviewPercentages: product.reviewPercentages,
+      created: product.created,
+      lastUpdated: product.lastUpdated,
+      priceAfterDiscount: product.priceAfterDiscount,
+      discountPercent: product.discountPercent,
     }));
   } catch (error) {
-    if (error instanceof Error) {
-      console.error("Error fetching related products:", error.message);
-      throw new Error(error.message || "Failed to fetch related products.");
-    } else {
-      console.error("Error fetching related products:", error);
-      throw new Error("Failed to fetch related products.");
+    console.error("Error fetching home category products:", error);
+    throw new Error(`Failed to fetch products for category ${category}`);
+  }
+}
+
+export async function fetchRelatedProducts(
+  productID: number,
+  count: number
+): Promise<CardComponent[]> {
+  try {
+    const { data } = await axios.get<RelatedProductsResponse>(
+      `https://www.bouraq-mt.com/royalkey/api/Product/${productID}/related?count=${count}`
+    );
+
+    // Transform backend response to match CardComponent structure
+    interface RelatedProductResponse {
+      $id: string;
+      productID: number;
+      name: string;
+      nameEn: string;
+      nameAr: string;
+      productDescription: string | null;
+      productDescriptionEn: string | null;
+      productDescriptionAr: string | null;
+      productCode: string | null;
+      productPrice: number;
+      averageRate: number | null;
+      productQuantity: number;
+      categoryID: number;
+      category: Category | null;
+      reviews: { $id: string; $values: Review[] };
+      productVarients: { $id: string; $values: ProductVariantResponse[] };
+      productImages: { $id: string; $values: Array<ProductImage & { $id: string }> };
+      reviewPercentages: Record<string, number>;
+      created: string;
+      lastUpdated: string;
+      priceAfterDiscount: number;
+      discountPercent: number;
     }
+
+    interface RelatedProductsResponse {
+      $id: string;
+      $values: RelatedProductResponse[];
+    }
+
+    return data.$values.map((product): CardComponent => ({
+      productID: product.productID,
+      name: product.name,
+      nameEn: product.nameEn,
+      nameAr: product.nameAr,
+      productDescription: product.productDescription || "",
+      productDescriptionEn: product.productDescriptionEn || "",
+      productDescriptionAr: product.productDescriptionAr || "",
+      productCode: product.productCode || null,
+      productPrice: product.productPrice,
+      averageRate: product.averageRate ?? null,
+      productQuantity: product.productQuantity,
+      categoryID: product.categoryID,
+      category: product.category
+        ? {
+            categoryID: product.category.categoryID,
+            name: product.category.name,
+            nameEn: product.category.nameEn,
+            nameAr: product.category.nameAr,
+            parentCategoryID: product.category.parentCategoryID || null,
+            createdAt: product.category.createdAt,
+          }
+        : { categoryID: 0, name: "", nameEn: "", nameAr: "", createdAt: "" },
+      reviews: product.reviews.$values.map((review) => ({
+        reviewId: review.reviewId,
+        reviewContent: review.reviewContent,
+        rate: review.rate,
+        createdAt: review.createdAt,
+        userName: review.userName,
+      })),
+      productVarients: product.productVarients.$values.map((variant): ProductVariant => ({
+        productVarientId: variant.productVarientId,
+        colorNameEn: variant.colorNameEn,
+        colorNameAr: variant.colorNameAr,
+        colorName: variant.colorName || null,
+        colorCode: variant.colorCode,
+        sizeQuantities: variant.sizeQuantities?.$values?.map((size) => ({
+          sizeId: size.sizeId || 0,
+          sizeLabel: size.sizeLabel || null,
+          quantity: size.quantity,
+        })) || [],
+      })),
+      productImages:
+        product.productImages.$values.length > 0
+          ? product.productImages.$values.map(({ imageId, imageUrl, altText }): ProductImage => ({
+              imageId,
+              imageUrl: imageUrl || fallbackImage,
+              altText: altText || product.name,
+            }))
+          : [
+              {
+                imageId: 0,
+                imageUrl: fallbackImage,
+                altText: product.name,
+              },
+            ],
+      reviewPercentages: product.reviewPercentages,
+      created: product.created,
+      lastUpdated: product.lastUpdated,
+      priceAfterDiscount: product.priceAfterDiscount,
+      discountPercent: product.discountPercent,
+    }));
+  } catch (error) {
+    console.error("Error fetching related products:", error);
+    throw new Error(`Failed to fetch related products for product ID ${productID}`);
+  }
+}
+
+export async function fetchCollection(
+  category: string
+): Promise<CardComponent[]> {
+  try {
+    const { data } = await axios.get<HomeCategoryResponse>(
+      `https://www.bouraq-mt.com/royalkey/api/Product/${category}`
+    );
+
+    // Transform backend response to match CardComponent structure
+    return data.$values.map((product): CardComponent => ({
+      productID: product.productID,
+      name: product.name,
+      nameEn: product.nameEn,
+      nameAr: product.nameAr,
+      productDescription: product.productDescription || "",
+      productDescriptionEn: product.productDescriptionEn || "",
+      productDescriptionAr: product.productDescriptionAr || "",
+      productCode: product.productCode || null,
+      productPrice: product.productPrice,
+      averageRate: product.averageRate ?? null,
+      productQuantity: product.productQuantity,
+      categoryID: product.categoryID,
+      category: product.category
+        ? {
+            categoryID: product.category.categoryID,
+            name: product.category.name,
+            nameEn: product.category.nameEn,
+            nameAr: product.category.nameAr,
+            parentCategoryID: product.category.parentCategoryID || null,
+            createdAt: product.category.createdAt,
+          }
+        : { categoryID: 0, name: "", nameEn: "", nameAr: "", createdAt: "" },
+      reviews: product.reviews.$values.map((review) => ({
+        reviewId: review.reviewId,
+        reviewContent: review.reviewContent,
+        rate: review.rate,
+        createdAt: review.createdAt,
+        userName: review.userName,
+      })),
+      productVarients: product.productVarients.$values.map((variant): ProductVariant => ({
+        productVarientId: variant.productVarientId,
+        colorNameEn: variant.colorNameEn,
+        colorNameAr: variant.colorNameAr,
+        colorName: variant.colorName || null,
+        colorCode: variant.colorCode,
+        sizeQuantities: variant.sizeQuantities?.$values?.map((size) => ({
+          sizeId: size.sizeId || 0,
+          sizeLabel: size.sizeLabel || null,
+          quantity: size.quantity,
+        })) || [],
+      })),
+      productImages:
+        product.productImages.$values.length > 0
+          ? product.productImages.$values.map(({ imageId, imageUrl, altText }): ProductImage => ({
+              imageId,
+              imageUrl: imageUrl || fallbackImage,
+              altText: altText || product.name,
+            }))
+          : [
+              {
+                imageId: 0,
+                imageUrl: fallbackImage,
+                altText: product.name,
+              },
+            ],
+      reviewPercentages: product.reviewPercentages,
+      created: product.created,
+      lastUpdated: product.lastUpdated,
+      priceAfterDiscount: product.priceAfterDiscount,
+      discountPercent: product.discountPercent,
+    }));
+  } catch (error) {
+    console.error("Error fetching home category products:", error);
+    throw new Error(`Failed to fetch products for category ${category}`);
   }
 }

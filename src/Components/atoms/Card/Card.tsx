@@ -3,19 +3,21 @@ import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { CardComponent } from "@types";
 import fallbackImage from "@assets/HP_img2.jpeg";
-import { Image, CustomRating, SuccessAlert } from "@components/atoms";
+import {  CustomRating, SuccessAlert } from "@components/atoms";
 import shoppingCart from "@assets/shoppingCart.svg";
-import { fetchProductImages } from "@services/api/fetchProductImages";
 import { ProductPreference } from "@components/molecules";
 
 const Card: React.FC<CardComponent> = ({
   productID,
   productImages,
   name,
+  nameEn,
+  nameAr,
   priceAfterDiscount,
   productPrice,
   averageRate,
   productVarients,
+  discountPercent,
 }) => {
   const navigate = useNavigate();
   const [alertVisible, setAlertVisible] = useState(false);
@@ -25,7 +27,7 @@ const Card: React.FC<CardComponent> = ({
   const [imageUrl, setImageUrl] = useState<string>(fallbackImage);
   const [imageAlt, setImageAlt] = useState<string>("Product Image");
 
-  // Check if the product is already in the cart
+
   useEffect(() => {
     const existingCart = Cookies.get("cart")
       ? JSON.parse(Cookies.get("cart") as string)
@@ -35,25 +37,21 @@ const Card: React.FC<CardComponent> = ({
     );
   }, [productID]);
 
-  // Load product image: try fetching a new image, fallback to productImages if needed.
   useEffect(() => {
-    const loadImage = async () => {
-      try {
-        const fetchedImage = await fetchProductImages(productID);
-        console.log("Fetched Image:", fetchedImage);
-        if (fetchedImage) {
-          setImageUrl(fetchedImage.imageUrl);
-          setImageAlt(fetchedImage.altText || name);
-        } else if (productImages && productImages.length > 0) {
-          setImageUrl(productImages[0].imageUrl);
-          setImageAlt(productImages[0].altText || name);
+
+    if (productImages) {
+      if (Array.isArray(productImages) && productImages.length > 0) {
+        const firstImage = productImages[0];
+        if (firstImage && firstImage.imageUrl) {
+          setImageUrl(firstImage.imageUrl);
+          setImageAlt(firstImage.altText || name);
+          return;
         }
-      } catch (error) {
-        console.error("Error fetching product image:", error);
       }
-    };
-    loadImage();
-  }, [productID, productImages, name]);
+
+      console.warn("No valid images found for product:", productID);
+    }
+  }, [productImages, name, productID]);
 
   const handleCardClick = () => {
     navigate(`/product-details/${productID}`);
@@ -64,46 +62,59 @@ const Card: React.FC<CardComponent> = ({
     setShowPreference(true);
   };
 
-  // This function will be passed to the ProductPreference component.
   const handlePreferenceSubmit = (preferences: {
     color: string;
     size: string;
     quantity: number;
+    price: number;
+    priceAfterDiscount: number;
+    imageUrl: string;
+    name: string;
+    productId: number;
   }) => {
     setShowPreference(false);
-
+  
     const existingCart = Cookies.get("cart")
       ? JSON.parse(Cookies.get("cart") as string)
       : [];
-
+  
+    // Create a comprehensive cart item
+    const cartItem = {
+      id: productID,
+      name: name,
+      DisPrice: priceAfterDiscount,
+      NormalPrice: productPrice,
+      src: preferences.imageUrl || (productImages[0]?.imageUrl || ""),
+      alt: name,
+      color: preferences.color,
+      size: preferences.size,
+      quantity: preferences.quantity,
+      // Additional properties
+      productID: productID,
+      nameEn: nameEn,
+      nameAr: nameAr,
+      discountPercent: discountPercent,
+      language: document.documentElement.lang || "en",
+      // Add the product variant ID!
+      productVarientId: productVarients.find(v => v.colorNameEn === preferences.color)?.productVarientId,
+    };
+  
     const existingItemIndex = existingCart.findIndex(
       (item: { id: number; color: string; size: string }) =>
-        item.id === productID &&
-        item.color === preferences.color &&
-        item.size === preferences.size
+        item.id === cartItem.id &&
+        item.color === cartItem.color &&
+        item.size === cartItem.size
     );
-
+  
     if (existingItemIndex !== -1) {
-      // If an item with the same productID, color, and size exists, update its quantity.
-      existingCart[existingItemIndex].quantity += preferences.quantity;
+      existingCart[existingItemIndex].quantity += cartItem.quantity;
     } else {
-      // Otherwise, add a new item to the cart.
-      const newItem = {
-        id: productID,
-        name,
-        priceAfterDiscount,
-        productPrice,
-        productImages,
-        ...preferences,
-      };
-      existingCart.push(newItem);
+      existingCart.push(cartItem);
     }
-
+  
     Cookies.set("cart", JSON.stringify(existingCart), { expires: 7 });
-
     setAlertMessage("Item added successfully to cart");
     setIsInCart(true);
-
     setAlertVisible(true);
     setTimeout(() => setAlertVisible(false), 3000);
   };
@@ -128,9 +139,9 @@ const Card: React.FC<CardComponent> = ({
 
       <div
         onClick={handleCardClick}
-        className="relative image-container w-auto h-auto overflow-hidden rounded-t-[500px] cursor-pointer"
+        className="relative image-container w-auto h-auto min-h-[200px] overflow-hidden rounded-t-[500px] cursor-pointer"
       >
-        <Image
+        <img
           src={imageUrl}
           alt={imageAlt}
           className="object-cover w-full h-full cursor-pointer"

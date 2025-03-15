@@ -35,6 +35,7 @@ export type LoginFormInputs = {
 // }
 
 export interface AddressProps {
+  id: string;
   building: string;
   aptNo: string;
   floor: string;
@@ -44,6 +45,7 @@ export interface AddressProps {
   city: string;
   additionalDirections?: string;
   saveAddress: boolean;
+   shippingAddressId: string;
 };
 ////////////////////////////////////////////////////
 
@@ -66,6 +68,11 @@ export interface SizeQuantity {
   sizeId: number;
   quantity: number;
   sizeLabel?: string | null;
+}
+
+export interface SizeQuantityResponse {
+  $id: string;
+  $values: SizeQuantity[];
 }
 
 export interface ProductVariant {
@@ -114,21 +121,32 @@ export interface CardComponent {
   lastUpdated: string;
   priceAfterDiscount: number;
   discountPercent: number;
+  currentLanguage?: string; // Add this line
 }
 
 
 
 ////////////////////////////////////////////////////
+// Update your Product interface
 export interface Product {
   id: number;
   name: string;
   DisPrice: number;
+  NormalPrice: number;
   color: string;
   size: string;
   quantity: number;
-  NormalPrice: number;
-  src: string;
-  alt: string;
+  src?: string;
+  alt?: string;
+  // Add this property
+  productVarientId?: number;
+  // Other existing properties
+  nameEn?: string;
+  nameAr?: string;
+  language?: string;
+  productID?: number;
+  discountPercent?: number;
+  // Include any other properties that might be in your cart items
 }
 
 export type CouponStatus = 'none' | 'success' | 'already_applied' | 'invalid';
@@ -151,6 +169,12 @@ export interface OrderSummaryProps {
   onCheckoutClick?: () => void;
   currentStep?: "address" | "shipping" | "payment";
   onNextClick?: () => void;
+  selectedPaymentMethod?: string;
+  selectedAddress?: AddressProps | null;
+  selectedShippingMethod?: string;
+  isArabic?: boolean;
+  isPlacingOrder?: boolean; 
+  orderError?: string | null;
 }
 
 export type RatingDistributionItem = {

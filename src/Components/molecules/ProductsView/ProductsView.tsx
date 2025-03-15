@@ -4,8 +4,7 @@ import { CardComponent, ProductsViewProps } from '@types';
 
 const ProductsView: React.FC<ProductsViewProps> = ({ sectionName, cards }) => {
   return (
-    <>
-      <div>
+      <div className='max-w-[1200px] justify-center mx-auto'>
         <Category SectionName={sectionName} />
 
         <div className="flex flex-wrap justify-between mx-12">
@@ -41,7 +40,6 @@ const ProductsView: React.FC<ProductsViewProps> = ({ sectionName, cards }) => {
           ))}
         </div>
       </div>
-    </>
   );
 };
 

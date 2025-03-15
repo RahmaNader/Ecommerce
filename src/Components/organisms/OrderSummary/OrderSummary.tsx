@@ -4,11 +4,12 @@ import Cookies from "js-cookie";
 import { OrderSummaryProps, CouponStatus } from "@types";
 import {
   calculateSummary,
-  applyCoupon,
   saveOrderSummary,
 } from "@utils/OrderSummaryUtils";
+import { validateCoupon, Coupon } from "@services/api/fetchCoupons"; // Import the API function
 import icon from "@assets/discount icon.svg";
 import icon2 from "@assets/Vector.svg";
+import { useTranslation } from "react-i18next";
 
 const OrderSummary: React.FC<OrderSummaryProps> = ({
   products,
@@ -16,42 +17,168 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
   onCheckoutClick,
   currentStep,
   onNextClick,
+  selectedPaymentMethod,
+  selectedAddress,
+  selectedShippingMethod,
+  isArabic = false,
+  isPlacingOrder = false,
+  orderError = null,
 }) => {
+  const { t } = useTranslation(); 
+  
   const [couponCode, setCouponCode] = useState<string>("");
   const [summary, setSummary] = useState(() => {
     const saved = Cookies.get("orderSummary");
-    return saved ? JSON.parse(saved) : calculateSummary(products);
+    console.log("[OrderSummary] Initial cookie summary:", saved);
+    const initialSummary = saved ? JSON.parse(saved) : calculateSummary(products);
+    console.log("[OrderSummary] Initial summary state:", initialSummary);
+    return initialSummary;
   });
+  
   const [couponStatus, setCouponStatus] = useState<CouponStatus>(() => {
-    return Cookies.get("appliedCoupon") ? "success" : "none";
+    const appliedCoupon = Cookies.get("appliedCoupon");
+    console.log("[OrderSummary] Initial coupon status:", appliedCoupon ? "success" : "none");
+    return appliedCoupon ? "success" : "none";
   });
+  
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
   const couponInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    console.log("[OrderSummary] Component mounted with props:", { 
+      productsCount: products.length, 
+      currentStep, 
+      selectedPaymentMethod,
+      selectedAddress: selectedAddress ? "Present" : "Missing",
+      selectedShippingMethod
+    });
+  }, [products.length, currentStep, selectedPaymentMethod, selectedAddress, selectedShippingMethod]);
+
+  useEffect(() => {
+    console.log("[OrderSummary] Products changed:", products);
     const newSummary = calculateSummary(products);
+    console.log("[OrderSummary] Recalculated summary:", newSummary);
     setSummary(newSummary);
+    
     const existingCoupon = Cookies.get('appliedCoupon');
+    console.log("[OrderSummary] Existing coupon:", existingCoupon || "None");
     if (existingCoupon) {
       setCouponStatus('success');
-    }
-    else{
-        setCouponStatus('none');
+    } else {
+      setCouponStatus('none');
     }
   }, [products]);
 
   useEffect(() => {
+    console.log("[OrderSummary] Saving summary to cookies:", summary);
     saveOrderSummary(summary);
   }, [summary]);
 
-  const handleApplyCoupon = () => {
-    if (!couponCode) return;
+  // Apply coupon discount to the summary
+  const applyDiscount = (validCoupon: Coupon) => {
+    const newSummary = {...summary};
+    
+    // Store the pre-coupon total
+    newSummary.totalBeforeCoupon = newSummary.totalAfterCoupon || newSummary.total;
+    
+    // Apply discount based on coupon type
+    if (validCoupon.type === 0) {
+      // Fixed amount
+      newSummary.couponDiscount = validCoupon.value;
+    } else {
+      // Percentage discount
+      newSummary.couponDiscount = (newSummary.totalBeforeCoupon * validCoupon.value) / 100;
+    }
+    
+    // Calculate total after coupon
+    newSummary.totalAfterCoupon = Math.max(0, newSummary.totalBeforeCoupon - newSummary.couponDiscount);
+    
+    // Free shipping if allowed
+    if (validCoupon.allowFreeShipping) {
+      newSummary.shipping = 0;
+    }
+    
+    // Save the applied coupon
+    const couponData = {
+      code: validCoupon.couponCode,
+      value: validCoupon.value,
+      type: validCoupon.type,
+      freeShipping: validCoupon.allowFreeShipping
+    };
+    
+    Cookies.set('appliedCoupon', JSON.stringify(couponData), { expires: 1 });
+    
+    return newSummary;
+  };
 
-    const result = applyCoupon(couponCode.toUpperCase());
-    setCouponStatus(result);
+  const handleApplyCoupon = async () => {
+    console.log("[OrderSummary] Attempting to apply coupon:", couponCode);
+    if (!couponCode) {
+      console.log("[OrderSummary] No coupon code entered");
+      return;
+    }
+  
+    // Check if a coupon is already applied
+    const existingCouponJson = Cookies.get('appliedCoupon');
+    if (existingCouponJson) {
+      try {
+        const existingCoupon = JSON.parse(existingCouponJson);
+        console.log("[OrderSummary] Found existing coupon:", existingCoupon);
+        
+        // Check if the user is trying to apply the same coupon again
+        if (existingCoupon.code && existingCoupon.code.toLowerCase() === couponCode.toLowerCase()) {
+          console.log("[OrderSummary] User tried to apply same coupon again");
+          setCouponStatus("already_applied");
+          return;
+        }
+        
+        // If different coupon, show message that one is already applied
+        setCouponStatus("already_applied");
+        return;
+      } catch (e) {
+        console.error("[OrderSummary] Error parsing existing coupon:", e);
+        // If there's an error parsing the coupon, we'll remove it and continue
+        Cookies.remove('appliedCoupon');
+      }
+    }
+  
+    setIsApplyingCoupon(true);
+    
+    try {
+      // Fetch all coupons for debugging
+      const { fetchCoupons } = await import("@services/api/fetchCoupons");
+      const allCoupons = await fetchCoupons();
+      console.log("[OrderSummary] Available coupons:", allCoupons);
+      console.log("[OrderSummary] Entered coupon code:", couponCode);
+      
+      // Validate entered coupon against available ones
+      const validCoupon = await validateCoupon(couponCode);
+      console.log("[OrderSummary] Coupon validation result:", validCoupon);
+      
+      if (validCoupon) {
+        console.log("[OrderSummary] Valid coupon found:", validCoupon);
+        setCouponStatus("success");
+        
+        // Apply the coupon discount
+        const updatedSummary = applyDiscount(validCoupon);
+        console.log("[OrderSummary] Updated summary after coupon:", updatedSummary);
+        setSummary(updatedSummary);
+        setCouponCode("");
+      } else {
+        console.log("[OrderSummary] Invalid coupon - not found in available coupons");
+        setCouponStatus("invalid");
+      }
+    } catch (error) {
+      console.error("[OrderSummary] Error validating coupon:", error);
+      setCouponStatus("invalid");
+    } finally {
+      setIsApplyingCoupon(false);
+    }
+  };
 
-    if (result === "success") {
-      setSummary(calculateSummary(products));
-      setCouponCode("");
+  const handleConfirmOrder = () => {
+    if (onNextClick) {
+      onNextClick();
     }
   };
 
@@ -60,17 +187,17 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
       case "success":
         return (
           <p className="text-green-600 text-sm mt-2">
-            Coupon applied successfully!
+            {t("orderSummary.couponSuccess")}
           </p>
         );
       case "already_applied":
         return (
           <p className="text-red-600 text-sm mt-2">
-            Coupon has already been applied
+            {t("orderSummary.couponAlreadyApplied")}
           </p>
         );
       case "invalid":
-        return <p className="text-red-600 text-sm mt-2">Invalid coupon code</p>;
+        return <p className="text-red-600 text-sm mt-2">{t("orderSummary.couponInvalid")}</p>;
       default:
         return null;
     }
@@ -81,49 +208,48 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
   };
 
   return (
-    <div className="w-full h-fit md:w-4/12 flex flex-col border border-ForthColor rounded-xl p-6 bg-[#A78E781C]">
+    <div className={`w-full h-fit md:w-4/12 flex flex-col border border-ForthColor rounded-xl p-6 bg-[#A78E781C] ${isArabic ? 'rtl' : 'ltr'}`}>
       <h2 className="font-semibold font-playfair mb-4 text-wine text-lg md:text-xl">
-        Order Summary
+        {t("orderSummary.title")}
       </h2>
 
       <div className="flex flex-col gap-4 border-b border-b-gray-400 pb-4">
-        <div className="flex justify-between text-wine text-base font-medium font-Poppins">
-          <h4>Price</h4>
-          <h4>{formatNumber(summary.total)} EGP</h4>
+        <div className={`flex justify-between text-wine text-base font-medium font-Poppins ${isArabic ? 'flex-row-reverse' : ''}`}>
+          <h4>{t("orderSummary.price")}</h4>
+          <h4>{formatNumber(summary.total)} {t("product.currency")}</h4>
         </div>
 
-        <div className="flex justify-between text-wine text-base font-medium font-Poppins">
-          <h4>Discount</h4>
-          <h4>{formatNumber(summary.total - summary.subTotal)} EGP</h4>
+        <div className={`flex justify-between text-wine text-base font-medium font-Poppins ${isArabic ? 'flex-row-reverse' : ''}`}>
+          <h4>{t("orderSummary.discount")}</h4>
+          <h4>{formatNumber(summary.total - summary.subTotal)} {t("product.currency")}</h4>
         </div>
 
-        <div className="flex justify-between text-wine text-base font-medium font-Poppins">
-          <h4>Shipping</h4>
-          <h4>{formatNumber(summary.shipping)} EGP</h4>
+        <div className={`flex justify-between text-wine text-base font-medium font-Poppins ${isArabic ? 'flex-row-reverse' : ''}`}>
+          <h4>{t("orderSummary.shipping")}</h4>
+          <h4>{formatNumber(summary.shipping)} {t("product.currency")}</h4>
         </div>
 
         {summary.couponDiscount > 0 && (
-          <div className="flex justify-between text-wine text-base font-medium font-Poppins">
-            <h4>Coupon Discount</h4>
+          <div className={`flex justify-between text-wine text-base font-medium font-Poppins ${isArabic ? 'flex-row-reverse' : ''}`}>
+            <h4>{t("orderSummary.couponDiscount")}</h4>
             <h4>
               -
               {formatNumber(summary.totalBeforeCoupon - summary.totalAfterCoupon)}{" "}
-              EGP
+              {t("product.currency")}
             </h4>
           </div>
         )}
       </div>
 
-      <div className="flex justify-between mt-4 text-wine text-base font-medium font-Poppins">
-        <h4>TOTAL</h4>
-        <h4> { formatNumber(summary.totalAfterCoupon) } EGP</h4>
+      <div className={`flex justify-between mt-4 text-wine text-base font-medium font-Poppins ${isArabic ? 'flex-row-reverse' : ''}`}>
+        <h4>{t("orderSummary.total")}</h4>
+        <h4>{formatNumber(summary.totalAfterCoupon)} {t("product.currency")}</h4>
       </div>
 
-      <div className="flex justify-between mt-4 text-wine text-base font-medium font-Poppins">
-        <h4>Estimated Delivery by</h4>
-        <h4>{summary.deliveryDate}</h4>
-      </div>
-
+      {orderError && (
+        <p className="text-red-600 text-sm mt-2">{orderError}</p>
+      )}
+      
       <div className="flex flex-col gap-4 my-4 justify-between w-full">
         <div className="mt-4 relative">
           <input
@@ -131,8 +257,9 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
             type="text"
             value={couponCode}
             onChange={(e) => setCouponCode(e.target.value)}
-            placeholder="Coupon Code"
-            className="w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none"
+            placeholder={t("orderSummary.couponPlaceholder")}
+            className={`w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none text-center ${isArabic ? 'text-right' : 'text-left'}`}
+            dir={isArabic ? "rtl" : "ltr"}
           />
           <div className="absolute right-3 bottom-2.5">
             <img src={icon} alt="Coupon Icon" />
@@ -142,24 +269,33 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
         {getCouponMessage()}
 
         <Button
-          label="Apply Coupon"
+          label={isApplyingCoupon ? t("orderSummary.checking") : t("orderSummary.applyCoupon")}
           type="secondary"
           size="medium"
           onClick={handleApplyCoupon}
+          isDisabled={isApplyingCoupon || !couponCode}
         />
 
         {showCheckoutButton ? (
           <Button
-            label="Checkout"
+            label={t("orderSummary.checkout")}
             type="primary"
             size="large"
             onClick={onCheckoutClick}
+            isDisabled={isPlacingOrder}
           />
         ) : (
           <Button
             size="large"
-            label={currentStep === "payment" ? "Confirm Order" : "Next"}
-            onClick={onNextClick}
+            label={
+              isPlacingOrder 
+                ? t("orderSummary.processing") 
+                : currentStep === "payment" 
+                  ? t("orderSummary.confirmOrder") 
+                  : t("orderSummary.next")
+            }
+            onClick={handleConfirmOrder}
+            isDisabled={isPlacingOrder}
           />
         )}
       </div>

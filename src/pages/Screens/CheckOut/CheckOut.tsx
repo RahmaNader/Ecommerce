@@ -1,10 +1,14 @@
 import { useState, useEffect } from "react";
 import { getAddressesForUser, updateSavedAddresses } from "@utils/addressUtils";
+import { getAllShippingAddresses, convertApiAddressToAddressProps, deleteAddress } from "@services/api/address";
 import Cookies from "js-cookie";
 import plusIcon from "@assets/plus.svg";
 import { AddressProps } from "@types";
 import { Product } from "@types";
 import { OrderSummary } from "@components/organisms";
+import { useTranslation } from "react-i18next"; 
+import placeOrder from "@services/api/placeOrder";
+import { fetchProductVariant } from "@services/api/fetchVariants";
 
 import {
   ToggleRadioButton,
@@ -22,9 +26,10 @@ import {
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import Typography from "@mui/material/Typography";
 
-
-
 export default function CheckOut() {
+  const { t, i18n } = useTranslation(); 
+  const isRTL = i18n.language === 'ar'; 
+  
   const [showModal, setShowModal] = useState(false);
   const [addresses, setAddresses] = useState<AddressProps[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -47,35 +52,53 @@ export default function CheckOut() {
     "address" | "shipping" | "payment"
   >("address");
 
+  // Add these new states
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const [orderSuccess, setOrderSuccess] = useState(false);
+
   const openModal = () => {
     setShowModal(true);
   };
 
   useEffect(() => {
-    const savedAddresses = getAddressesForUser();
-    setAddresses(savedAddresses);
+    const loadAddresses = async () => {
+      const savedAddresses = getAddressesForUser();
+      setAddresses(savedAddresses);
+
+      try {
+        const apiAddresses = await getAllShippingAddresses();
+        
+        if (apiAddresses && apiAddresses.length > 0) {
+          const convertedAddresses = apiAddresses.map(convertApiAddressToAddressProps);
+          console.log("[CheckOut] Fetched addresses from API:", convertedAddresses);
+
+          setAddresses(convertedAddresses);
+        } else {
+          console.log("[CheckOut] No addresses found in API, using local addresses");
+        }
+      } catch (error) {
+        console.log("[CheckOut] Error fetching addresses:", error);
+      } 
+    };
+    
+    loadAddresses();
   }, []);
 
-
-
-useEffect(() => {
-  const cartData = Cookies.get("cart");
-  // const orderSummary = Cookies.get("orderSummary");
-  
-  if (cartData) {
-    setProducts(JSON.parse(cartData));
-  }
-  
-  // Ensure we have previous cart state
-  if (!Cookies.get('previousCart') && cartData) {
-    Cookies.set('previousCart', JSON.stringify(JSON.parse(cartData).map((p: Product) => ({ 
-      id: p.id, 
-      quantity: p.quantity 
-    }))));
-  }
-}, []);
-
-
+  useEffect(() => {
+    const cartData = Cookies.get("cart");
+    
+    if (cartData) {
+      setProducts(JSON.parse(cartData));
+    }
+    
+    // Ensure we have previous cart state
+    if (!Cookies.get('previousCart') && cartData) {
+      Cookies.set('previousCart', JSON.stringify(JSON.parse(cartData).map((p: Product) => ({ 
+        id: p.id, 
+        quantity: p.quantity 
+      }))));
+    }
+  }, []);
 
   const handleEditAddress = (index: number) => {
     setEditingAddressIndex(index);
@@ -100,12 +123,33 @@ useEffect(() => {
     closeModal();
   };
 
-  const handleRemoveAddress = (index: number) => {
+  const handleRemoveAddress = async (index: number) => {
+    const addressToDelete = addresses[index];
+    
+    // If the address has a shippingAddressId, try to delete it from the backend
+    if (addressToDelete.shippingAddressId) {
+      try {
+        const success = await deleteAddress(addressToDelete.shippingAddressId);
+        
+        if (success) {
+          console.log(`[CheckOut] Successfully deleted address with ID: ${addressToDelete.shippingAddressId} from backend`);
+        } else {
+          console.log(`[CheckOut] Failed to delete address with ID: ${addressToDelete.shippingAddressId} from backend`);
+          // Even if backend deletion fails, continue with UI update
+        }
+      } catch (error) {
+        console.error(`[CheckOut] Error when deleting address:`, error);
+        // Continue with UI update despite the error
+      }
+    }
+    
+    // Update the local state
     setAddresses((prevAddresses) => {
       const updatedAddresses = prevAddresses.filter((_, i) => i !== index);
       updateSavedAddresses(updatedAddresses);
       return updatedAddresses;
     });
+    
     if (selectedAddressIndex === index) {
       setSelectedAddressIndex(null);
     }
@@ -124,7 +168,7 @@ useEffect(() => {
       if (selectedAddressIndex !== null) {
         setCurrentStep("shipping");
       } else {
-        setAlert({ type: "error", message: "Please select an address first." });
+        setAlert({ type: "error", message: t("checkout.selectAddress") });
         setTimeout(() => setAlert(null), 3000);
       }
     } else if (currentStep === "shipping") {
@@ -133,12 +177,12 @@ useEffect(() => {
       } else {
         setAlert({
           type: "error",
-          message: "Please select a shipping method.",
+          message: t("checkout.selectShipping"),
         });
         setTimeout(() => setAlert(null), 3000);
       }
     } else if (currentStep === "payment") {
-      handleConfirmOrder();
+      handlePlaceOrder();
     }
   };
 
@@ -150,36 +194,99 @@ useEffect(() => {
     setSelectedPaymentMethod(method);
   };
 
-  const handleConfirmOrder = () => {
+  const handlePlaceOrder = async () => {
     if (selectedAddressIndex === null) {
-      setAlert({ type: "error", message: "Please select an address first." });
+      setAlert({ type: "error", message: t("checkout.selectAddress") });
       setTimeout(() => setAlert(null), 3000);
       return;
     }
     if (!selectedShippingMethod) {
-      setAlert({ type: "error", message: "Please select a shipping method." });
+      setAlert({ type: "error", message: t("checkout.selectShipping") });
       setTimeout(() => setAlert(null), 3000);
       return;
     }
     if (!selectedPaymentMethod) {
-      setAlert({ type: "error", message: "Please select a payment method." });
+      setAlert({ type: "error", message: t("checkout.selectPayment") });
       setTimeout(() => setAlert(null), 3000);
       return;
     }
-
-    setOrderConfirmed(true);
+    
+    const selectedAddress = addresses[selectedAddressIndex];
+    setIsPlacingOrder(true);
+    console.log("[CheckOut] Starting order placement...");
+    
+    try {
+      const shoppingItems = await Promise.all(products.map(async (product) => {
+        let variantId = product.productVarientId;
+        if (!variantId) {
+          try {
+            const variants = await fetchProductVariant(product.productID || product.id);
+            if (variants && variants.length > 0) {
+              // Optionally, you can refine your selection by matching color/size
+              variantId = variants[0].productVarientId;
+            }
+          } catch (fetchError) {
+            console.error(`[CheckOut] Failed to fetch variant for product ${product.id}:`, fetchError);
+          }
+        }
+        // If still missing, throw an error to avoid sending invalid data
+        if (!variantId) {
+          throw new Error(`Missing variant ID for product ${product.id}`);
+        }
+        const item = {
+          productId: typeof variantId === "string" ? parseInt(variantId, 10) : variantId,
+          quantity: product.quantity,
+          color: product.color || "Default",
+          sizeLabel: product.size || "Default",
+        };
+        console.log(`[CheckOut] Formatted order item for product ${product.id}:`, item);
+        return item;
+      }));
+      
+      const orderData = {
+        city: selectedAddress.city,
+        shippingAddressId: String(selectedAddress.shippingAddressId || selectedAddress.id || Date.now().toString()),
+        isFastShipping: selectedShippingMethod === 'fast',
+        couponCode: Cookies.get('appliedCoupon') || "",
+        shoppingItems: shoppingItems
+      };
+      
+      console.log("[CheckOut] Prepared order data:", JSON.stringify(orderData, null, 2));
+      console.log("[CheckOut] Sending order to API...");
+      const response = await placeOrder(orderData);
+      console.log("[CheckOut] Order API response:", response);
+      
+      if (response && response.success) {
+        console.log("[CheckOut] Order successful - clearing cookies and navigating");
+        Cookies.remove('cart');
+        Cookies.remove('appliedCoupon');
+        Cookies.remove('orderSummary');
+        setOrderSuccess(true);
+        setOrderConfirmed(true);
+      } else {
+        console.error("[CheckOut] Order placement failed:", response?.message || "Unknown error");
+        setAlert({ type: "error", message: response?.message || t("checkout.orderError") });
+        setTimeout(() => setAlert(null), 5000);
+      }
+    } catch (error) {
+      console.error("[CheckOut] Order error:", error);
+      setAlert({ type: "error", message: t("checkout.orderError") });
+      setTimeout(() => setAlert(null), 5000);
+    } finally {
+      setIsPlacingOrder(false);
+    }
   };
 
-  //is this good?
-  if (orderConfirmed) {
+
+  if (orderConfirmed && orderSuccess) {
     return <OrderConfirmation />;
   }
 
   return (
-    <div className="min-h-screen w-full px-2 md:px-10">
+    <div className={`min-h-screen w-full px-2 md:px-10`}>
       <div>
         <Breadcrumb />
-        <Category SectionName={"CheckOut"} mdMyValue={"mt-2"} />
+        <Category SectionName={t("checkout.title")} mdMyValue={"mt-2"} />
 
         {alert && (
           <div
@@ -194,7 +301,7 @@ useEffect(() => {
           </div>
         )}
 
-        <div className="flex  flex-row gap-4 items-center w-full">
+        <div className={`flex flex-row gap-4 items-center w-full `}>
           <Typography
             onClick={() => setCurrentStep("address")}
             sx={{
@@ -204,10 +311,13 @@ useEffect(() => {
               fontSize: "1rem",
             }}
           >
-            Address
+            {t("checkout.address")}
           </Typography>
 
-          <NavigateNextIcon fontSize="small" style={{ color: "#A78E78" }} />
+          <NavigateNextIcon fontSize="small" style={{ 
+            color: "#A78E78", 
+            transform: isRTL ? 'rotate(180deg)' : 'none' 
+          }} />
 
           <Typography
             onClick={() => setCurrentStep("shipping")}
@@ -218,10 +328,13 @@ useEffect(() => {
               fontSize: "1rem",
             }}
           >
-            Shipping
+            {t("checkout.shipping")}
           </Typography>
 
-          <NavigateNextIcon fontSize="small" style={{ color: "#A78E78" }} />
+          <NavigateNextIcon fontSize="small" style={{ 
+            color: "#A78E78",
+            transform: isRTL ? 'rotate(180deg)' : 'none'
+          }} />
 
           <Typography
             onClick={() => setCurrentStep("payment")}
@@ -232,30 +345,29 @@ useEffect(() => {
               fontSize: "1rem",
             }}
           >
-            Payment
+            {t("checkout.payment")}
           </Typography>
         </div>
 
-        <div className="flex flex-col md:flex-row justify-between w-full gap-6">
-          
+        <div className={`flex flex-col md:flex-row justify-between w-full gap-6 `}>
           <div className="md:w-7/12 w-full">
             {currentStep === "address" && (
               <>
                 {addresses.map((address, index) => (
                   <div key={index} className="py-8 w-full">
-                    <div className="w-full flex justify-between items-center">
-                      <div className="w-4/5">
+                    <div className={`w-full flex justify-between items-center `}>
+                      <div className={`w-4/5 ${isRTL ? 'text-right' : 'text-left'}`}>
                         <ToggleRadioButton
                           label={`${address.building}, ${address.city}`}
                           isChecked={selectedAddressIndex === index}
                           onChange={() => handleAddressSelection(index)}
                         />
-                        <div className="text-addressDetails text-lg px-8">
+                        <div className={`text-addressDetails text-lg px-8 `}>
                           <p>
                             {address.building} {address.aptNo}, {address.floor}{" "}
-                            Floor, {address.street}
+                            {isRTL ? t("checkout.floor") : "Floor"}, {address.street}
                           </p>
-                          <p>Contact - {address.phoneNumber}</p>
+                          <p>{t("checkout.contact")} - {address.phoneNumber}</p>
                           <p>
                             {address.city}, {address.country}
                           </p>
@@ -264,19 +376,19 @@ useEffect(() => {
                           )}
                         </div>
                       </div>
-                      <div className="address-actions flex gap-4 text-sm text-wine mt-2">
+                      <div className={`address-actions flex gap-4 text-sm text-wine mt-2`}>
                         <span
                           onClick={() => handleEditAddress(index)}
                           className="cursor-pointer hover:underline"
                         >
-                          Edit
+                          {t("checkout.edit")}
                         </span>
                         <span className="w-0.5 h-5 bg-[#D1D1D8]"></span>
                         <span
                           onClick={() => handleRemoveAddress(index)}
                           className="cursor-pointer hover:underline text-removeButton"
                         >
-                          Remove
+                          {t("checkout.remove")}
                         </span>
                       </div>
                     </div>
@@ -284,11 +396,13 @@ useEffect(() => {
                 ))}
 
                 <div
-                  className="flex flex-row border-t border-t-ForthColor/50 py-4 w-full cursor-pointer"
+                  className={`flex flex-row border-t border-t-ForthColor/50 py-4 w-full cursor-pointer `}
                   onClick={openModal}
                 >
                   <img src={plusIcon} className="w-6" alt="" />
-                  <p className="text-wine text-xl ps-2 ">Add New Address</p>
+                  <p className={`text-wine text-xl ${isRTL ? 'pr-2' : 'ps-2'}`}>
+                    {t("checkout.addAddress")}
+                  </p>
                 </div>
               </>
             )}
@@ -297,6 +411,7 @@ useEffect(() => {
               <ShippingMethod
                 selectedShippingMethod={selectedShippingMethod}
                 onShippingMethodChange={handleShippingMethodChange}
+                // isArabic={isRTL}
               />
             )}
 
@@ -304,6 +419,7 @@ useEffect(() => {
               <PaymentMethod
                 selectedPaymentMethod={selectedPaymentMethod}
                 onPaymentMethodChange={handlePaymentMethodChange}
+                // isArabic={isRTL}
               />
             )}
           </div>
@@ -313,6 +429,10 @@ useEffect(() => {
             products={products}
             currentStep={currentStep}
             onNextClick={handleNextClick}
+            selectedPaymentMethod={selectedPaymentMethod}
+            selectedAddress={selectedAddressIndex !== null ? addresses[selectedAddressIndex] : null}
+            selectedShippingMethod={selectedShippingMethod}
+            isPlacingOrder={isPlacingOrder}
           />
         </div>
       </div>
@@ -326,6 +446,7 @@ useEffect(() => {
               ? addresses[editingAddressIndex]
               : undefined
           }
+          isArabic={isRTL}
         />
       )}
     </div>

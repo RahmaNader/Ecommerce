@@ -22,6 +22,7 @@ import {
   Cart,
   CheckOut,
   ForgotPassword,
+  CollectionScreen,
 } from "@pages/Screens";
 
 
@@ -58,6 +59,10 @@ export const router = createBrowserRouter([
       {
         path: "products/:category/:item?",
         element: <Shop />,
+      },
+      {
+        path:"/collection/:collectionType",
+        element:<CollectionScreen />,
       },
       {
         path: "cart",

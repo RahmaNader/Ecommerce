@@ -1,31 +1,52 @@
 import { ToggleRadioButton } from "@components/atoms";
+import { useTranslation } from "react-i18next";
+import { format, addDays } from "date-fns";
+import { arDZ, enUS } from "date-fns/locale";
 
 interface ShippingMethodProps {
   selectedShippingMethod: string;
   onShippingMethodChange: (method: string) => void;
+  isArabic?: boolean;
 }
 
 const ShippingMethod: React.FC<ShippingMethodProps> = ({
   selectedShippingMethod,
   onShippingMethodChange,
+  isArabic = false,
 }: ShippingMethodProps) => {
+  const { t, i18n } = useTranslation();
+  
+  // Calculate delivery dates
+  const today = new Date();
+  const regularDeliveryDate = addDays(today, 5);
+  const fastDeliveryDate = addDays(today, 2);
+  
+  // Format dates based on language
+  const locale = isArabic || i18n.language === 'ar' ? arDZ : enUS;
+  const dateFormat = isArabic || i18n.language === 'ar' ? "d MMMM، yyyy" : "d MMM, yyyy";
+  
+  const formattedRegularDate = format(regularDeliveryDate, dateFormat, { locale });
+  const formattedFastDate = format(fastDeliveryDate, dateFormat, { locale });
+
   return (
-    <div className="py-8 w-full">
-      <h2 className="text-xl font-semibold text-wine">Shipment Method</h2>
+    <div className={`py-8 w-full ${isArabic ? 'rtl' : 'ltr'}`}>
+      <h2 className="text-xl font-semibold text-wine">
+        {t("shipping.title")}
+      </h2>
 
       {/* Delivery Regular option */}
       <div className="py-5 flex border-b border-b-gray-300 text-wine">
         <div className="w-full flex justify-between items-center">
-          <div className="w-full flex justify-between">
+          <div className={`w-full flex justify-between ${isArabic ? 'flex-row-reverse' : ''}`}>
             <div>
               <ToggleRadioButton
-                label="Delivery Regular"
-                isChecked={selectedShippingMethod === "regular"} // Check if this is the selected option
-                onChange={() => onShippingMethodChange("regular")} // Update shipping method selection
+                label={t("shipping.regularDelivery")}
+                isChecked={selectedShippingMethod === "regular"}
+                onChange={() => onShippingMethodChange("regular")}
               />
             </div>
             <div className="text-lg text-wine px-8 font-semibold">
-              <p>01 Feb, 2023</p>
+              <p>{t("shipping.regularDatePrefix", { date: formattedRegularDate })}</p>
             </div>
           </div>
         </div>
@@ -33,17 +54,17 @@ const ShippingMethod: React.FC<ShippingMethodProps> = ({
 
       {/* Fast Delivery option */}
       <div className="py-5 flex text-wine">
-        <div className=" w-full flex justify-between items-center">
-          <div className="w-full flex justify-between">
+        <div className="w-full flex justify-between items-center">
+          <div className={`w-full flex justify-between ${isArabic ? 'flex-row-reverse' : ''}`}>
             <div>
               <ToggleRadioButton
-                label="Fast Delivery +50 EGP"
-                isChecked={selectedShippingMethod === "fast"} // Check if this is the selected option
-                onChange={() => onShippingMethodChange("fast")} // Update shipping method selection
+                label={t("shipping.fastDelivery")}
+                isChecked={selectedShippingMethod === "fast"}
+                onChange={() => onShippingMethodChange("fast")}
               />
             </div>
             <div className="text-lg text-wine px-8 font-semibold">
-              <p>28 Jan, 2023</p>
+              <p>{t("shipping.fastDatePrefix", { date: formattedFastDate })}</p>
             </div>
           </div>
         </div>

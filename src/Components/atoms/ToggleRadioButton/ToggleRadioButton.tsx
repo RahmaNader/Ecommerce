@@ -34,7 +34,8 @@ const ToggleRadioButton: React.FC<ToggleRadioButtonProps> = ({
                     borderRadius: '50%',
                     backgroundColor: isChecked ? 'transparent' : 'transparent',
                     position: 'relative',
-                    marginRight: '8px', // Space between circle and label
+                    marginRight: '10px', // Space between circle and label
+                    marginLeft: '10px',
                     flexShrink: 0 // Prevent shrinking of the radio button
                 }}
             >

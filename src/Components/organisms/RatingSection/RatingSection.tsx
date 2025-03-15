@@ -46,7 +46,7 @@ const RatingSection: React.FC<RatingSectionProps> = ({ reviewPercentages }) => {
 
   
   return (
-    <Box className="flex flex-col md:flex-row md:mx-8 gap-8 p-2 justify-between md:items-center bg-mainColor rounded-lg">
+    <Box className="flex flex-col md:flex-row md:mx-8 gap-8 p-2 md:px-20 justify-between md:items-center bg-mainColor rounded-lg">
       <Box className="flex flex-col items-center md:items-start">
         <Typography
           variant="h2"

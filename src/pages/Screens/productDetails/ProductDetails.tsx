@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next"; // Add this import
 import { CardComponent } from "@types";
 import { fetchProductDetails } from "@services/api/fetchProductDetails";
 import { fetchRelatedProducts } from "@services/api/fetchCollections";
@@ -9,6 +10,9 @@ import { ProductsView, Loading } from "@components/molecules";
 
 const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const { i18n } = useTranslation(); // Add this hook
+  const isArabic = i18n.language === 'ar'; // Check if language is Arabic
+  
   const [loading, setLoading] = useState(true);
   const [product, setProduct] = useState<CardComponent | null>(null);
   const [error, setError] = useState<string | null>(null); 
@@ -50,17 +54,20 @@ const ProductDetails: React.FC = () => {
   if (!product) return <div className="text-center mt-20">Product not found</div>;
 
   return (
-    <div className="flex flex-col gap-8 px-10 w-full">
+    <div className={`flex flex-col gap-8 px-10 w-full ${isArabic ? 'rtl' : 'ltr'}`}>
+      {/* Pass isArabic to child components */}
+      <ProductSection product={product} isArabic={isArabic} />
       
-      <ProductSection product={product} />
-      
-      <Category SectionName={"Rating And Reviews"} />
+      <Category SectionName={isArabic ? "التقييمات والمراجعات" : "Rating And Reviews"} />
       
       <RatingSection reviewPercentages={product.reviewPercentages} />
       
       <ReviewsSection reviews={product.reviews} />
       
-      <ProductsView sectionName="Related Products" cards={relatedProducts} />
+      <ProductsView 
+        sectionName={isArabic ? "المنتجات ذات الصلة" : "Related Products"} 
+        cards={relatedProducts} 
+      />
     </div>
   );
 };

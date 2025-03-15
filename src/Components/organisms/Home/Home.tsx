@@ -7,42 +7,61 @@ import kids from "@assets/HP_kids.svg";
 import women from "@assets/HP_women.svg";
 import men from "@assets/HP_men.svg";
 import { useTranslation } from "react-i18next";
-
+import { useNavigate } from "react-router-dom";
 
 const Home: React.FC = () => {
   const { t } = useTranslation();
-  const handleButtonClick = (section: string) => {
-    console.log("Button clicked: " + section);
+  const navigate = useNavigate();
+
+  // Navigate to category pages
+  const handleCategoryClick = (category: string, categoryId: number) => {
+    navigate(`/products/${category.toLowerCase()}`, {
+      state: { categoryId }
+    });
+  };
+
+  // Updated to navigate to collection pages
+  const handleButtonClick = (collectionType: string) => {
+    navigate(`/collection/${collectionType.toLowerCase().replace(/\s+/g, '-')}`);
   };
 
   const {
     data: newArrivals,
     isLoading: isLoadingNewArrivals,
     isError: isErrorNewArrivals,
-  } = useQuery("newArrivals", () => fetchHomeCategory(4, "new-arrivals", "New Arrivals"));
+  } = useQuery("newArrivals", () => fetchHomeCategory(3, "new-arrivals"));
 
   const {
     data: bestSellers,
     isLoading: isLoadingBestSellers,
     isError: isErrorBestSellers,
-  } = useQuery("bestSellers", () => fetchHomeCategory(4, "best-selling", "Best Sellers"));
+  } = useQuery("bestSellers", () => fetchHomeCategory(3, "best-selling"));
 
   const {
     data: highestDiscount,
     isLoading: isLoadingHighestDiscount,
     isError: isErrorHighestDiscount,
-  } = useQuery("highestDiscount", () => fetchHomeCategory(4, "best-selling", "Best Sellers"));
+  } = useQuery("highestDiscount", () => fetchHomeCategory(3, "highest-discount"));
 
   return (
     <>
       <div className="flex flex-wrap md:flex-row justify-center items-center md:justify-between my-20 mx-8 md:mx-32">
-        <button onClick={() => handleButtonClick("kids")} className="cursor-pointer hover:opacity-80 mb-8 md:mb-0">
+        <button 
+          onClick={() => handleCategoryClick("kids", 3)} 
+          className="cursor-pointer hover:opacity-80 mb-8 md:mb-0"
+        >
           <img src={kids} alt="kids-image" />
         </button>
-        <button onClick={() => handleButtonClick("women")} className="cursor-pointer hover:opacity-80 mb-8 md:mb-0">
+        <button 
+          onClick={() => handleCategoryClick("women", 2)} 
+          className="cursor-pointer hover:opacity-80 mb-8 md:mb-0"
+        >
           <img src={women} alt="women-image" />
         </button>
-        <button onClick={() => handleButtonClick("men")} className="cursor-pointer hover:opacity-80">
+        <button 
+          onClick={() => handleCategoryClick("men", 1)} 
+          className="cursor-pointer hover:opacity-80"
+        >
           <img src={men} alt="men-image" />
         </button>
       </div>
@@ -54,7 +73,7 @@ const Home: React.FC = () => {
           <>
             <ProductsView sectionName={t("home.newCollection")} cards={newArrivals} />
             <div className="flex justify-center mt-12">
-            <Button label={t("home.viewCollection")} onClick={() => handleButtonClick("Best Seller")} />
+              <Button label={t("home.viewCollection")} onClick={() => handleButtonClick("new-arrivals")} />
             </div>
           </>
         )}
@@ -65,7 +84,7 @@ const Home: React.FC = () => {
           <>
             <ProductsView sectionName={t("home.bestSellers")} cards={bestSellers} />
             <div className="flex justify-center mt-12">
-              <Button label={t("home.viewBestSellers")} onClick={() => handleButtonClick("Best Seller")} />
+              <Button label={t("home.viewBestSellers")} onClick={() => handleButtonClick("best-selling")} />
             </div>
           </>
         )}
@@ -76,7 +95,7 @@ const Home: React.FC = () => {
           <>
             <ProductsView sectionName={t("home.highestDiscount")} cards={highestDiscount} />
             <div className="flex justify-center mt-12">
-              <Button label={t("home.viewDiscounts")} onClick={() => handleButtonClick("Highest Discount")} />
+              <Button label={t("home.viewDiscounts")} onClick={() => handleButtonClick("highest-discount")} />
             </div>
           </>
         )}

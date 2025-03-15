@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type WriteReviewProps = {
   onClose: () => void;
@@ -11,6 +12,8 @@ const WriteReview: React.FC<WriteReviewProps> = ({
   onSubmit,
   deliveryInfo,
 }) => {
+  const { t } = useTranslation(); 
+  
   const [rating, setRating] = useState<number>(0);
   const [review, setReview] = useState<string>("");
 
@@ -29,10 +32,10 @@ const WriteReview: React.FC<WriteReviewProps> = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-mainColor rounded-xl p-8 w-[90%] max-w-lg relative shadow-lg">
+      <div className={`bg-mainColor rounded-xl p-8 w-[90%] max-w-lg relative shadow-lg `}>
         <button
           onClick={onClose}
-          aria-label="Close"
+          aria-label={t("writeReview.close")}
           className="rounded-full border-[2px] p-[5px] my-2 border-wine absolute right-4 top-2 text-wine hover:text-ForthColor hover:border-ForthColor"
         >
           <svg
@@ -52,11 +55,11 @@ const WriteReview: React.FC<WriteReviewProps> = ({
         </button>
 
         <h2 className="text-2xl font-semibold font-playfair text-wine text-center mt-8">
-          How many stars would you give to them?
+          {t("writeReview.rateProduct")}
         </h2>
         <p className="text-center font-normal font-playfair text-ForthColor text-sm my-3">{deliveryInfo}</p>
         
-        <div className="flex justify-center items-center space-x-4 mb-6">
+        <div className="flex justify-center items-center gap-4 mb-6">
           {[1, 2, 3, 4, 5].map((star) => (
             <button
               key={star}
@@ -69,24 +72,24 @@ const WriteReview: React.FC<WriteReviewProps> = ({
             </button>
           ))}
         </div>
-        <div className="flex items-center bg-[#A78E788A] rounded-full px-4 py-2">
+        <div className={`flex items-center bg-[#A78E788A] rounded-full px-4 py-2 `}>
           <input
             type="text"
-            placeholder="Add review...."
+            placeholder={t("writeReview.reviewPlaceholder")}
             value={review}
             onChange={(e) => setReview(e.target.value)}
-            className="flex-1 bg-transparent text-sm text-wine placeholder-mainColor focus:outline-none"
+            className={`flex-1 bg-transparent text-sm text-wine placeholder-mainColor focus:outline-none `}
           />
           <button
             onClick={handleReviewSubmit}
             disabled={rating === 0 || review.trim() === ""}
-            className={`ml-4 px-6 py-1 rounded-full text-sm font-semibold ${
+            className={` px-6 py-1 rounded-full text-sm font-semibold ${
               rating === 0 || review.trim() === ""
                 ? "bg-mainColor text-ForthColor cursor-not-allowed"
                 : "bg-wine text-white hover:bg-ForthColor"
             }`}
           >
-            Add
+            {t("writeReview.addButton")}
           </button>
         </div>
       </div>
