@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getAddressesForUser, updateSavedAddresses } from "@utils/addressUtils";
+import { getAllShippingAddresses, convertApiAddressToAddressProps, deleteAddress } from "@services/api/address";
 import Cookies from "js-cookie";
 import plusIcon from "@assets/plus.svg";
 import { AddressProps } from "@types";
@@ -60,8 +61,27 @@ export default function CheckOut() {
   };
 
   useEffect(() => {
-    const savedAddresses = getAddressesForUser();
-    setAddresses(savedAddresses);
+    const loadAddresses = async () => {
+      const savedAddresses = getAddressesForUser();
+      setAddresses(savedAddresses);
+
+      try {
+        const apiAddresses = await getAllShippingAddresses();
+        
+        if (apiAddresses && apiAddresses.length > 0) {
+          const convertedAddresses = apiAddresses.map(convertApiAddressToAddressProps);
+          console.log("[CheckOut] Fetched addresses from API:", convertedAddresses);
+
+          setAddresses(convertedAddresses);
+        } else {
+          console.log("[CheckOut] No addresses found in API, using local addresses");
+        }
+      } catch (error) {
+        console.log("[CheckOut] Error fetching addresses:", error);
+      } 
+    };
+    
+    loadAddresses();
   }, []);
 
   useEffect(() => {
@@ -103,12 +123,33 @@ export default function CheckOut() {
     closeModal();
   };
 
-  const handleRemoveAddress = (index: number) => {
+  const handleRemoveAddress = async (index: number) => {
+    const addressToDelete = addresses[index];
+    
+    // If the address has a shippingAddressId, try to delete it from the backend
+    if (addressToDelete.shippingAddressId) {
+      try {
+        const success = await deleteAddress(addressToDelete.shippingAddressId);
+        
+        if (success) {
+          console.log(`[CheckOut] Successfully deleted address with ID: ${addressToDelete.shippingAddressId} from backend`);
+        } else {
+          console.log(`[CheckOut] Failed to delete address with ID: ${addressToDelete.shippingAddressId} from backend`);
+          // Even if backend deletion fails, continue with UI update
+        }
+      } catch (error) {
+        console.error(`[CheckOut] Error when deleting address:`, error);
+        // Continue with UI update despite the error
+      }
+    }
+    
+    // Update the local state
     setAddresses((prevAddresses) => {
       const updatedAddresses = prevAddresses.filter((_, i) => i !== index);
       updateSavedAddresses(updatedAddresses);
       return updatedAddresses;
     });
+    
     if (selectedAddressIndex === index) {
       setSelectedAddressIndex(null);
     }
@@ -175,10 +216,8 @@ export default function CheckOut() {
     console.log("[CheckOut] Starting order placement...");
     
     try {
-      // Format the shopping items ensuring we have a valid variant ID
       const shoppingItems = await Promise.all(products.map(async (product) => {
         let variantId = product.productVarientId;
-        // If missing, try fetching details to pick a variant (fallback to first available variant)
         if (!variantId) {
           try {
             const variants = await fetchProductVariant(product.productID || product.id);
@@ -204,12 +243,11 @@ export default function CheckOut() {
         return item;
       }));
       
-      const addressId = selectedAddress.id || Date.now().toString();
       const orderData = {
         city: selectedAddress.city,
-        shippingAddressId: String(addressId),
+        shippingAddressId: String(selectedAddress.shippingAddressId || selectedAddress.id || Date.now().toString()),
         isFastShipping: selectedShippingMethod === 'fast',
-        couponCode: Cookies.get('appliedCoupon') || undefined,
+        couponCode: Cookies.get('appliedCoupon') || "",
         shoppingItems: shoppingItems
       };
       
@@ -239,9 +277,6 @@ export default function CheckOut() {
     }
   };
 
-  const handleConfirmOrder = () => {
-    handlePlaceOrder();
-  };
 
   if (orderConfirmed && orderSuccess) {
     return <OrderConfirmation />;

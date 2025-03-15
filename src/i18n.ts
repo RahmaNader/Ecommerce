@@ -308,6 +308,9 @@ const resources = {
         saveAddress: "Save Address",
         cancel: "Cancel",
         next: "Next",
+        savedAddresses: "Your saved addresses",
+        enterNewAddress: "Enter a new address",
+        useThisAddress: "Use this address",
         validation: {
           buildingInvalid: "Enter a Valid Building name",
           numberInvalid: "This field must be a valid number.",
@@ -629,6 +632,9 @@ const resources = {
         saveAddress: "حفظ العنوان",
         cancel: "إلغاء",
         next: "التالي",
+        savedAddresses: "العناوين المحفوظة",
+        enterNewAddress: "أدخل عنوانًا جديدًا",
+        useThisAddress: "استخدم هذا العنوان",
         validation: {
           buildingInvalid: "أدخل اسم مبنى صالح",
           numberInvalid: "يجب أن يكون هذا الحقل رقمًا صالحًا",

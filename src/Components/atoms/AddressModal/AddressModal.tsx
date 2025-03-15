@@ -7,6 +7,7 @@ import Cookies from 'js-cookie';
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { useTranslation } from "react-i18next";
+import { postAddress, getCityId } from "@services/api/address"; // Import our new function
 
 interface AddressModalProps {
   closeModal: () => void;
@@ -95,6 +96,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
       city: "",
       additionalDirections: "",
       saveAddress: false,
+      shippingAddressId: "",
     }
   );
 
@@ -127,7 +129,8 @@ const AddressModal: React.FC<AddressModalProps> = ({
         }
         break;
       case "phoneNumber":
-        if (!/^\d{7,15}$/.test(value)) {
+        // Accept international format with + and country code
+        if (!/^\+?[0-9]{13}$/.test(value)) {
           error = t("addressModal.validation.phoneInvalid");
         }
         break;
@@ -181,14 +184,95 @@ const AddressModal: React.FC<AddressModalProps> = ({
     }
   }, [prefillData]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (validateAllInputs()) {
-      const username = Cookies.get('username');
-      if (username && newAddress.saveAddress) {
-        saveAddressForUser(newAddress);
+      try {
+        // Fix the phone number format - ensure +20 isn't duplicated
+        let phoneNumber = newAddress.phoneNumber.trim();
+        
+        // First remove the + if present
+        if (phoneNumber.startsWith('+')) {
+          phoneNumber = phoneNumber.substring(1);
+        }
+        
+        // Check specifically for '200' at the beginning (the issue mentioned)
+        if (phoneNumber.startsWith('200')) {
+          // Remove the extra '0' after '20'
+          phoneNumber = '2' + phoneNumber.substring(2);
+          console.log("[AddressModal] Fixed +200 prefix issue:", phoneNumber);
+        }
+        // Check for duplicate country code (2020)
+        else if (phoneNumber.startsWith('2020')) {
+          // Remove the duplicate 20
+          phoneNumber = '20' + phoneNumber.substring(4);
+        } 
+        // Add country code if missing
+        else if (!phoneNumber.startsWith('20')) {
+          phoneNumber = '20' + phoneNumber;
+        }
+        
+        // Add the + back
+        phoneNumber = '+' + phoneNumber;
+        
+        console.log("[AddressModal] Formatted phone number:", phoneNumber);
+        
+        // Prepare API format - EXACTLY match the Swagger format
+        const apiAddressData = {
+          buildingName: newAddress.building,
+          street: newAddress.street,
+          city: getCityId(newAddress.city),
+          additionalDirections: newAddress.additionalDirections || "",
+          flatNumber: parseInt(newAddress.aptNo) || 0,
+          floorNumber: parseInt(newAddress.floor) || 0,
+          phoneNumber: phoneNumber, // Use the fixed phone number
+          isSaved: newAddress.saveAddress
+        };
+        
+        console.log("[AddressModal] Sending address data:", JSON.stringify(apiAddressData, null, 2));
+        
+        // Send to API
+        const response = await postAddress(apiAddressData);
+        
+        if (response) {
+          console.log("[AddressModal] Address saved successfully to API:", response);
+          
+          // Create enriched address with API ID
+          const enrichedAddress: AddressProps = {
+            ...newAddress,
+            id: response.shippingAddressId, // Use the API-generated ID
+            shippingAddressId: response.shippingAddressId // Also store in the dedicated field
+          };
+          
+          // Save to cookies if needed
+          const username = Cookies.get('username');
+          if (username && newAddress.saveAddress) {
+            saveAddressForUser(enrichedAddress);
+          }
+          
+          // Call the parent callback with the enriched address
+          addAddress(enrichedAddress);
+          closeModal();
+        } else {
+          console.log("[AddressModal] Failed to save address to API, falling back to local storage");
+          
+          // Fall back to local storage only
+          const username = Cookies.get('username');
+          if (username && newAddress.saveAddress) {
+            saveAddressForUser(newAddress);
+          }
+          addAddress(newAddress);
+          closeModal();
+        }
+      } catch (e) {
+        console.log("[AddressModal] Exception when saving address:", e);
+        // Fall back to local storage
+        const username = Cookies.get('username');
+        if (username && newAddress.saveAddress) {
+          saveAddressForUser(newAddress);
+        }
+        addAddress(newAddress);
+        closeModal();
       }
-      addAddress(newAddress);
-      closeModal();
     }
   };
 
@@ -283,18 +367,28 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 width: "250px",
               }}
               onChange={(value) => {
+                // PhoneInput returns the value with the country code
+                console.log("Phone input value:", value);
                 setNewAddress((prev) => ({
                   ...prev,
                   phoneNumber: value,
                 }));
                 validateInput("phoneNumber", value);
               }}
+              // Make sure it outputs international format with + sign
+              enableSearch={true}
+              disableSearchIcon={false}
+              countryCodeEditable={false}
             />
             {errors.phoneNumber && (
               <p className="text-FifthColor text-sm mt-1">
                 {errors.phoneNumber}
               </p>
             )}
+            {/* Add helper text for phone format */}
+            <p className="text-gray-500 text-xs mt-1">
+              {t("addressModal.phoneFormatHelp", "Phone number should be in format +201XXXXXXXX")}
+            </p>
           </div>
 
           <div className="input-group">

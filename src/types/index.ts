@@ -45,6 +45,7 @@ export interface AddressProps {
   city: string;
   additionalDirections?: string;
   saveAddress: boolean;
+   shippingAddressId: string;
 };
 ////////////////////////////////////////////////////
 
@@ -137,7 +138,9 @@ export interface Product {
   quantity: number;
   src?: string;
   alt?: string;
-  // Additional properties that might be present
+  // Add this property
+  productVarientId?: number;
+  // Other existing properties
   nameEn?: string;
   nameAr?: string;
   language?: string;
@@ -171,6 +174,7 @@ export interface OrderSummaryProps {
   selectedShippingMethod?: string;
   isArabic?: boolean;
   isPlacingOrder?: boolean; 
+  orderError?: string | null;
 }
 
 export type RatingDistributionItem = {

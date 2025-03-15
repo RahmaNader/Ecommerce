@@ -12,6 +12,7 @@ import heart from "@assets/heart.svg";
 import filledHeart from "@assets/filledHeart.svg";
 import { FaShareAlt } from "react-icons/fa";
 import { fetchProductVariant } from "src/services/api/fetchVariants";
+import { useNavigate } from 'react-router-dom';
 
 interface ProductSectionProps {
   product: CardComponent;
@@ -20,7 +21,7 @@ interface ProductSectionProps {
 
 const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = false }) => {
   const { t, i18n } = useTranslation();
-  // If isArabic prop isn't provided, determine from i18n
+  const navigate = useNavigate(); // Add this line
   const isRTL = isArabic || i18n.language === 'ar';
   
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
@@ -131,9 +132,28 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
   };
 
   const handleBuyNow = () => {
-    // First add to cart, then navigate to checkout
+    // Only proceed if color and size are selected
+    if (!selectedColor || !selectedSize) {
+      setAlertMessage(t("product.selectColorAndSize"));
+      setAlertType("error");
+      setTimeout(() => setAlertType(null), 3000);
+      return;
+    }
+
+    // Check if user is logged in
+    const authToken = Cookies.get("authToken");
+    if (!authToken) {
+      setAlertMessage(t("product.loginToAddCart"));
+      setAlertType("error");
+      setTimeout(() => setAlertType(null), 3000);
+      return;
+    }
+
+    // Add to cart first
     handleAddToCart();
-    // Navigate to checkout would go here
+    
+    // Navigate to cart page
+    navigate('/cart');
   };
 
   const handleShare = () => {

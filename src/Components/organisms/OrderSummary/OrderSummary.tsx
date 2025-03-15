@@ -22,10 +22,9 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
   selectedShippingMethod,
   isArabic = false,
   isPlacingOrder = false,
+  orderError = null, // Accept error as prop instead of state
 }) => {
   const { t } = useTranslation(); 
-  
-  const [orderError, setOrderError] = useState<string | null>(null);
   
   const [couponCode, setCouponCode] = useState<string>("");
   const [summary, setSummary] = useState(() => {
