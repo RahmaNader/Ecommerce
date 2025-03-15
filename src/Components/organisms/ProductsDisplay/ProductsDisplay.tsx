@@ -3,12 +3,14 @@ import { Card, Button } from "@components/atoms";
 import { CardComponent } from "@types";
 import { useTranslation } from "react-i18next";
 
-
 type ProductsDisplayProps = {
-  products: CardComponent[]; 
+  products: CardComponent[];
+  language: string; // Add language prop
 };
 
-const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products }) => {
+const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products, language }) => {
+  const isRTL = language === "ar";
+  const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(1);
   const cardsPerPage = 9;
 
@@ -64,24 +66,32 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products }) => {
     }
     return pageNumbers;
   };
-  const { t } = useTranslation();
-  // const navigate = useNavigate();
+
   return (
     <div className="flex flex-col items-center w-full">
       {/* Display Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-5 w-full">
-        {currentCards.map((card) => (
-          <div className="flex justify-center mx-auto w-full md:w-[70%]" key={card.productID}>
-            <Card
-              {...card}
-            />
-          </div>
-        ))}
+        {currentCards.map((card) => {
+          // Create a modified card with the correct language-specific properties
+          const localizedCard = {
+            ...card,
+            name: isRTL ? card.nameAr || card.name : card.nameEn || card.name,
+            productDescription: isRTL 
+              ? card.productDescriptionAr || card.productDescription 
+              : card.productDescriptionEn || card.productDescription
+          };
+          
+          return (
+            <div className="flex justify-center mx-auto w-full md:w-[70%]" key={card.productID}>
+              <Card {...localizedCard} />
+            </div>
+          );
+        })}
       </div>
 
-      {/* Pagination */}
+      {/* Pagination with RTL support */}
       {products.length > cardsPerPage && (
-        <div className="mt-8 flex items-center w-full justify-between space-x-2 md:px-10">
+        <div className={`mt-8 flex items-center w-full justify-between md:px-10 ${isRTL ? 'flex-row-reverse space-x-reverse' : 'space-x-2'}`}>
           <Button
             label={t("pagination.previous")}
             onClick={handlePrevious}
@@ -90,7 +100,7 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products }) => {
             className="flex items-center justify-center leading-none"
           />
 
-          <div className="flex space-x-2 rtl:gap-2">
+          <div className={`flex ${isRTL ? 'space-x-reverse flex-row-reverse' : 'space-x-2'}`}>
             {getPageNumbers().map((item, index) =>
               typeof item === "number" ? (
                 <button
@@ -109,7 +119,7 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products }) => {
                   key={`ellipsis-${item}-${index}`}
                   className={`rounded-full flex items-center justify-center border-wine border text-wine w-6 h-6 text-xs md:w-10 md:h-10 md:text-base`}
                 >
-                  {item === "left" ? "<<" : ">>"}
+                  {item === "left" ? (isRTL ? ">>" : "<<") : (isRTL ? "<<" : ">>")}
                 </span>
               )
             )}
@@ -121,9 +131,6 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products }) => {
             onClick={handleNext}
             isDisabled={currentPage === totalPages}
             className="flex items-center justify-center leading-none"
-            style={{
-              alignSelf: "self-end",
-            }}
           />
         </div>
       )}

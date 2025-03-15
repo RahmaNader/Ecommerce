@@ -7,10 +7,20 @@ import kids from "@assets/HP_kids.svg";
 import women from "@assets/HP_women.svg";
 import men from "@assets/HP_men.svg";
 import { useTranslation } from "react-i18next";
-
+import { useNavigate } from "react-router-dom";
 
 const Home: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  // Updated to handle navigation
+  const handleCategoryClick = (category: string, categoryId: number) => {
+    navigate(`/products/${category.toLowerCase()}`, {
+      state: { categoryId }
+    });
+  };
+
+  // Collection buttons can still just log - or you can update them to navigate too
   const handleButtonClick = (section: string) => {
     console.log("Button clicked: " + section);
   };
@@ -36,13 +46,22 @@ const Home: React.FC = () => {
   return (
     <>
       <div className="flex flex-wrap md:flex-row justify-center items-center md:justify-between my-20 mx-8 md:mx-32">
-        <button onClick={() => handleButtonClick("kids")} className="cursor-pointer hover:opacity-80 mb-8 md:mb-0">
+        <button 
+          onClick={() => handleCategoryClick("kids", 3)} 
+          className="cursor-pointer hover:opacity-80 mb-8 md:mb-0"
+        >
           <img src={kids} alt="kids-image" />
         </button>
-        <button onClick={() => handleButtonClick("women")} className="cursor-pointer hover:opacity-80 mb-8 md:mb-0">
+        <button 
+          onClick={() => handleCategoryClick("women", 2)} 
+          className="cursor-pointer hover:opacity-80 mb-8 md:mb-0"
+        >
           <img src={women} alt="women-image" />
         </button>
-        <button onClick={() => handleButtonClick("men")} className="cursor-pointer hover:opacity-80">
+        <button 
+          onClick={() => handleCategoryClick("men", 1)} 
+          className="cursor-pointer hover:opacity-80"
+        >
           <img src={men} alt="men-image" />
         </button>
       </div>

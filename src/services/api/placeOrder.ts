@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import Cookies from 'js-cookie';
 
 export interface OrderItem {
@@ -17,43 +17,84 @@ export interface OrderRequest {
 }
 
 export interface OrderResponse {
-  orderId: string;
-  status: string;
-  createdAt: string;
-  totalAmount: number;
-  items: {
+  orderId?: string;
+  status?: string;
+  createdAt?: string;
+  totalAmount?: number;
+  items?: Array<{
     id: number;
     name: string;
     quantity: number;
     price: number;
     color?: string;
     size?: string;
-  }[];
-  shippingAddress: {
+  }>;
+  shippingAddress?: {
     id: string;
     city: string;
   };
-  shippingMethod: {
+  shippingMethod?: {
     type: string;
     isFast: boolean;
   };
-  paymentMethod: string;
+  paymentMethod?: string;
   discountApplied?: number;
   success: boolean;
   message?: string;
 }
 
 const placeOrder = async (orderData: OrderRequest): Promise<OrderResponse> => {
+  console.log("[placeOrder] Starting order placement with data:", orderData);
   const authToken = Cookies.get('authToken');
   
   if (!authToken) {
-    throw new Error('Authentication required');
+    console.error("[placeOrder] No auth token found");
+    return {
+      success: false,
+      message: 'Authentication required'
+    };
   }
 
+  // Data validation before sending to API
+  if (!orderData.shoppingItems || orderData.shoppingItems.length === 0) {
+    console.error("[placeOrder] No items in shopping cart");
+    return {
+      success: false,
+      message: 'Shopping cart is empty'
+    };
+  }
+
+  // Ensure all product IDs are valid numbers
+  const validatedItems = orderData.shoppingItems.map(item => ({
+    ...item,
+    productId: typeof item.productId === 'string' ? parseInt(item.productId, 10) : item.productId
+  }));
+
+  // Check for any invalid items
+  const invalidItems = validatedItems.filter(item => 
+    !item.productId || item.productId === 0 || !item.quantity || item.quantity <= 0
+  );
+
+  if (invalidItems.length > 0) {
+    console.error("[placeOrder] Invalid items found:", invalidItems);
+    return {
+      success: false,
+      message: 'Invalid product data'
+    };
+  }
+
+  // Replace the items with validated ones
+  const validatedOrderData = {
+    ...orderData,
+    shoppingItems: validatedItems
+  };
+
+  console.log("[placeOrder] Auth token found, proceeding with API call");
   try {
+    console.log("[placeOrder] Sending request to API endpoint");
     const response = await axios.post<OrderResponse>(
       'https://www.bouraq-mt.com/royalkey/api/Order', 
-      orderData,
+      validatedOrderData,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -62,10 +103,61 @@ const placeOrder = async (orderData: OrderRequest): Promise<OrderResponse> => {
       }
     );
     
-    return response.data;
-  } catch (error) {
-    console.error('Error placing order:', error);
-    throw error;
+    console.log("[placeOrder] API response status:", response.status);
+    console.log("[placeOrder] API response data:", response.data);
+    
+    // Make sure the response has a success field
+    return {
+      ...response.data,
+      success: true // Assume success if no error was thrown
+    };
+  } catch (err) {
+    console.error('[placeOrder] Error occurred:', err instanceof Error ? err.message : String(err));
+    
+    let errorMessage = 'An error occurred while placing your order';
+    let responseData = null;
+    
+    // Handle Axios errors
+    if (axios.isAxiosError(err)) {
+      const axiosError = err as AxiosError;
+      console.error('[placeOrder] Response status:', axiosError.response?.status);
+      console.error('[placeOrder] Response data:', axiosError.response?.data);
+      
+      responseData = axiosError.response?.data;
+      
+      // Define a type for the API error response
+      interface ApiErrorResponse {
+        message?: string;
+        error?: string;
+        [key: string]: unknown;
+      }
+      
+      // Try to extract a meaningful error message
+      if (typeof responseData === 'string') {
+        errorMessage = responseData;
+      } else if (responseData && typeof responseData === 'object') {
+        const typedResponse = responseData as ApiErrorResponse;
+        errorMessage = typedResponse.message || 
+                      typedResponse.error ||
+                      'Product variant not found. Please try a different color or size.';
+      }
+      
+      // Check for specific errors
+      if (axiosError.response?.status === 400) {
+        if (String(axiosError.response.data).includes("product variant doesn't exist")) {
+          errorMessage = "One or more product variants don't exist. Please check your selections.";
+        }
+      } else if (axiosError.response?.status === 401) {
+        errorMessage = "Authentication required. Please log in again.";
+      } else if (axiosError.response?.status === 404) {
+        errorMessage = "Product not found. It may have been removed.";
+      }
+    }
+    
+    return {
+      success: false,
+      message: errorMessage
+    };
   }
 };
 

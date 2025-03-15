@@ -1,6 +1,7 @@
 import React from "react";
 import { ProductCount } from "@components/atoms";
-import { useTranslation } from "react-i18next"; 
+import { useTranslation } from "react-i18next";
+import { useLanguage } from "@context/useLanguage";
 
 interface CartProductProps {
   product: {
@@ -10,9 +11,12 @@ interface CartProductProps {
     color: string;
     size: string;
     quantity: number;
-    src: string;
+    src?: string; // Make this optional with '?'
     alt: string;
     NormalPrice: number;
+    nameEn?: string; // Add these additional properties
+    nameAr?: string;
+    language?: string;
   };
   onRemove: () => void;
   onQuantityChange: (quantity: number) => void;
@@ -25,6 +29,12 @@ const CartProduct: React.FC<CartProductProps> = ({
   onQuantityChange,
 }) => {
   const { t } = useTranslation();
+  const { language } = useLanguage();
+  const isRTL = language === "ar";
+  
+  // Use localized name if available based on current language
+  const displayName = isRTL && product.nameAr ? product.nameAr : 
+                     (!isRTL && product.nameEn ? product.nameEn : product.name);
   
   const handleCountChange = (count: number) => {
     onQuantityChange(count);
@@ -32,20 +42,20 @@ const CartProduct: React.FC<CartProductProps> = ({
 
   return (
     <div className="border-b border-b-ForthColor/50 py-8 w-full px-2">
-      
-      <div className={`flex md:flex-row gap-4 `}>
+      {/* Rest of the component using displayName where appropriate */}
+      <div className={`flex md:flex-row gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
         <div className="w-fit md:w-4/12">
           <img
             src={product.src}
-            alt={product.name}
+            alt={product.alt || displayName}
             className="max-w-48 h-52 object-cover rounded-md"
           />
         </div>
 
         <div className={`flex flex-col gap-4 w-full md:w-8/12`}>
-          <div className={`flex flex-row w-full justify-between `}>
+          <div className={`flex flex-row w-full justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
             <h3 className="font-semibold font-playfair text-wine text-lg md:text-xl">
-              {product.name}
+              {displayName}
             </h3>
 
             <p className="font-medium text-wine">

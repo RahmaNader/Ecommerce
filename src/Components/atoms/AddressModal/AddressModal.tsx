@@ -85,6 +85,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
 
   const [newAddress, setNewAddress] = useState<AddressProps>(
     prefillData || {
+      id:"",
       building: "",
       aptNo: "",
       floor: "",

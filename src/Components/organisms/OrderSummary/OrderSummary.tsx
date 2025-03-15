@@ -10,8 +10,6 @@ import {
 import icon from "@assets/discount icon.svg";
 import icon2 from "@assets/Vector.svg";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from 'react-router-dom'; // Add this import
-import placeOrder from "@services/api/placeOrder";
 
 const OrderSummary: React.FC<OrderSummaryProps> = ({
   products,
@@ -23,103 +21,81 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
   selectedAddress,
   selectedShippingMethod,
   isArabic = false,
+  isPlacingOrder = false,
 }) => {
   const { t } = useTranslation(); 
-  const navigate = useNavigate();
   
-  // Remove the duplicate declaration of couponCode
-  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [orderError, setOrderError] = useState<string | null>(null);
   
   const [couponCode, setCouponCode] = useState<string>("");
   const [summary, setSummary] = useState(() => {
     const saved = Cookies.get("orderSummary");
-    return saved ? JSON.parse(saved) : calculateSummary(products);
+    console.log("[OrderSummary] Initial cookie summary:", saved);
+    const initialSummary = saved ? JSON.parse(saved) : calculateSummary(products);
+    console.log("[OrderSummary] Initial summary state:", initialSummary);
+    return initialSummary;
   });
+  
   const [couponStatus, setCouponStatus] = useState<CouponStatus>(() => {
-    return Cookies.get("appliedCoupon") ? "success" : "none";
+    const appliedCoupon = Cookies.get("appliedCoupon");
+    console.log("[OrderSummary] Initial coupon status:", appliedCoupon ? "success" : "none");
+    return appliedCoupon ? "success" : "none";
   });
+  
   const couponInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    console.log("[OrderSummary] Component mounted with props:", { 
+      productsCount: products.length, 
+      currentStep, 
+      selectedPaymentMethod,
+      selectedAddress: selectedAddress ? "Present" : "Missing",
+      selectedShippingMethod
+    });
+  }, [products.length, currentStep, selectedPaymentMethod, selectedAddress, selectedShippingMethod]);
+
+  useEffect(() => {
+    console.log("[OrderSummary] Products changed:", products);
     const newSummary = calculateSummary(products);
+    console.log("[OrderSummary] Recalculated summary:", newSummary);
     setSummary(newSummary);
+    
     const existingCoupon = Cookies.get('appliedCoupon');
+    console.log("[OrderSummary] Existing coupon:", existingCoupon || "None");
     if (existingCoupon) {
       setCouponStatus('success');
-    }
-    else{
-        setCouponStatus('none');
+    } else {
+      setCouponStatus('none');
     }
   }, [products]);
 
   useEffect(() => {
+    console.log("[OrderSummary] Saving summary to cookies:", summary);
     saveOrderSummary(summary);
   }, [summary]);
 
   const handleApplyCoupon = () => {
-    if (!couponCode) return;
+    console.log("[OrderSummary] Applying coupon:", couponCode);
+    if (!couponCode) {
+      console.log("[OrderSummary] No coupon code entered");
+      return;
+    }
 
     const result = applyCoupon(couponCode.toUpperCase());
+    console.log("[OrderSummary] Coupon result:", result);
     setCouponStatus(result);
 
     if (result === "success") {
-      setSummary(calculateSummary(products));
+      const updatedSummary = calculateSummary(products);
+      console.log("[OrderSummary] Updated summary after coupon:", updatedSummary);
+      setSummary(updatedSummary);
       setCouponCode("");
     }
   };
 
-  const handleConfirmOrder = async () => {
-    if (currentStep !== 'payment' || selectedPaymentMethod !== 'cod') {
-      // If not in payment step or not using COD, use the regular next click
-      if (onNextClick) {
-        onNextClick();
-      }
-      return;
-    }
-
-    if (!selectedAddress) {
-      setOrderError(t("orderSummary.noAddressSelected"));
-      return;
-    }
-
-    setIsPlacingOrder(true);
-    setOrderError(null);
-
-    try {
-      // Format the products for the API
-      const shoppingItems = products.map(product => ({
-        productId: product.id,
-        quantity: product.quantity,
-        color: product.color || "Default",
-        sizeLabel: product.size || "Default",
-      }));
-
-      // Prepare order data
-      const orderData = {
-        city: selectedAddress.city,
-        shippingAddressId: String(Date.now()), // Use timestamp as fallback ID
-        // shippingAddressId: selectedAddress.id || String(Date.now()), // Use timestamp as fallback ID
-        isFastShipping: selectedShippingMethod === 'fast',
-        couponCode: Cookies.get('appliedCoupon') || undefined,
-        shoppingItems
-      };
-
-      // Place the order
-      await placeOrder(orderData);
-      
-      // Clear cart and other order-related data
-      Cookies.remove('cart');
-      Cookies.remove('appliedCoupon');
-      Cookies.remove('orderSummary');
-      
-      // Redirect to orders page
-      navigate('/profile/orders');
-    } catch (error) {
-      console.error('Failed to place order:', error);
-      setOrderError(t("orderSummary.orderError"));
-    } finally {
-      setIsPlacingOrder(false);
+  const handleConfirmOrder = () => {
+    if (onNextClick) {
+      onNextClick();
     }
   };
 

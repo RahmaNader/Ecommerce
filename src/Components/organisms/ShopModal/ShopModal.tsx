@@ -4,6 +4,8 @@ import { Link, useLocation } from "react-router-dom";
 interface Category {
   categoryID: number;
   name: string;
+  nameEn: string;
+  nameAr: string;
   parentCategoryID: number | null;
   createdAt: string;
 }
@@ -13,6 +15,7 @@ type ShopModalProps = {
   onMouseEnter: () => void;
   onMouseLeave: () => void;
   categories: Category[];
+  language: string;
 };
 
 const ShopModal: React.FC<ShopModalProps> = ({
@@ -20,8 +23,18 @@ const ShopModal: React.FC<ShopModalProps> = ({
   onMouseEnter,
   onMouseLeave,
   categories,
+  language,
 }) => {
   const location = useLocation();
+  
+  // Helper function to get the appropriate category name based on language
+  const getCategoryName = (category: Category) => {
+    if (language === "ar") {
+      return category.nameAr || category.name;
+    }
+    return category.nameEn || category.name;
+  };
+
   const mainCategories = categories.filter(
     (cat) => cat.parentCategoryID === null
   );
@@ -40,15 +53,25 @@ const ShopModal: React.FC<ShopModalProps> = ({
             const subcategories = categories.filter(
               (sub) => sub.parentCategoryID === mainCat.categoryID
             );
+            const mainCatName = getCategoryName(mainCat);
+            const mainPath = `/products/${mainCatName.toLowerCase()}`;
+            const isMainActive = location.pathname === mainPath;
 
             return (
               <div key={mainCat.categoryID} className="text-center">
-                <h2 className="text-xl font-bold text-wine mb-4">
-                  {mainCat.name}
-                </h2>
+                <Link
+                  to={mainPath}
+                  state={{ categoryId: mainCat.categoryID }}
+                  className={`text-xl font-bold ${
+                    isMainActive ? "text-wine" : "text-wine"
+                  } mb-4 block hover:underline`}
+                >
+                  {getCategoryName(mainCat)}
+                </Link>
                 <ul className="space-y-2">
                   {subcategories.map((sub) => {
-                    const subPath = `/products/${mainCat.name.toLowerCase()}/${sub.name.toLowerCase()}`;
+                    const subCatName = getCategoryName(sub);
+                    const subPath = `/products/${mainCatName.toLowerCase()}/${subCatName.toLowerCase()}`;
                     const isActive = location.pathname.includes(subPath);
 
                     return (
@@ -62,7 +85,7 @@ const ShopModal: React.FC<ShopModalProps> = ({
                               : "text-mutedGray font-normal"
                           } hover:text-wine`}
                         >
-                          {sub.name}
+                          {getCategoryName(sub)}
                         </Link>
                       </li>
                     );

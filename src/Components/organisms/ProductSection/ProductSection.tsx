@@ -67,19 +67,62 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
       return;
     }
 
+    // Get the selected variant
+    const selectedVariant = productVariants.find(v => v.colorNameEn === selectedColor);
+    
+    if (!selectedVariant) {
+      setAlertMessage(t("product.variantNotFound"));
+      setAlertType("error");
+      setTimeout(() => setAlertType(null), 3000);
+      return;
+    }
+    
+    // Make sure we have a valid variant ID
+    const variantId = selectedVariant.productVarientId;
+    
+    console.log("Selected variant:", selectedVariant);
+    console.log("Using variant ID:", variantId);
+    
     const existingCart = Cookies.get("cart")
       ? JSON.parse(Cookies.get("cart") as string)
       : [];
-    existingCart.push({
+    
+    // Create a complete cart item with all necessary properties
+    const cartItem = {
       id: product.productID,
       name: productName, // Use localized name
       DisPrice: product.priceAfterDiscount,
       NormalPrice: product.productPrice,
       src: product.productImages[0]?.imageUrl,
+      alt: productName, // Add the alt attribute using the product name
       color: selectedColor,
       size: selectedSize,
-      quantity: count, // Use the count from state
-    });
+      quantity: count,
+      // Store the variant ID properly
+      productVarientId: variantId,
+      // Additional properties that might be useful
+      productID: product.productID,
+      nameEn: product.nameEn,
+      nameAr: product.nameAr,
+      discountPercent: product.discountPercent,
+      language: isRTL ? 'ar' : 'en', // Store the language used when adding to cart
+    };
+
+    // Check if item already exists (same product, color, size)
+    const existingItemIndex = existingCart.findIndex(
+      (item: { id: number; color: string; size: string }) =>
+        item.id === cartItem.id &&
+        item.color === cartItem.color &&
+        item.size === cartItem.size
+    );
+
+    if (existingItemIndex !== -1) {
+      // Update quantity if item already exists
+      existingCart[existingItemIndex].quantity += cartItem.quantity;
+    } else {
+      // Add new item if it doesn't exist
+      existingCart.push(cartItem);
+    }
 
     Cookies.set("cart", JSON.stringify(existingCart), { expires: 7 });
     setAlertMessage(t("product.addedToCart"));

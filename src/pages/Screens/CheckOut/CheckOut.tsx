@@ -6,6 +6,8 @@ import { AddressProps } from "@types";
 import { Product } from "@types";
 import { OrderSummary } from "@components/organisms";
 import { useTranslation } from "react-i18next"; 
+import placeOrder from "@services/api/placeOrder";
+import { fetchProductVariant } from "@services/api/fetchVariants";
 
 import {
   ToggleRadioButton,
@@ -48,6 +50,10 @@ export default function CheckOut() {
   const [currentStep, setCurrentStep] = useState<
     "address" | "shipping" | "payment"
   >("address");
+
+  // Add these new states
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const [orderSuccess, setOrderSuccess] = useState(false);
 
   const openModal = () => {
     setShowModal(true);
@@ -135,7 +141,7 @@ export default function CheckOut() {
         setTimeout(() => setAlert(null), 3000);
       }
     } else if (currentStep === "payment") {
-      handleConfirmOrder();
+      handlePlaceOrder();
     }
   };
 
@@ -147,7 +153,7 @@ export default function CheckOut() {
     setSelectedPaymentMethod(method);
   };
 
-  const handleConfirmOrder = () => {
+  const handlePlaceOrder = async () => {
     if (selectedAddressIndex === null) {
       setAlert({ type: "error", message: t("checkout.selectAddress") });
       setTimeout(() => setAlert(null), 3000);
@@ -163,14 +169,82 @@ export default function CheckOut() {
       setTimeout(() => setAlert(null), 3000);
       return;
     }
-
-    setOrderConfirmed(true);
+    
+    const selectedAddress = addresses[selectedAddressIndex];
+    setIsPlacingOrder(true);
+    console.log("[CheckOut] Starting order placement...");
+    
+    try {
+      // Format the shopping items ensuring we have a valid variant ID
+      const shoppingItems = await Promise.all(products.map(async (product) => {
+        let variantId = product.productVarientId;
+        // If missing, try fetching details to pick a variant (fallback to first available variant)
+        if (!variantId) {
+          try {
+            const variants = await fetchProductVariant(product.productID || product.id);
+            if (variants && variants.length > 0) {
+              // Optionally, you can refine your selection by matching color/size
+              variantId = variants[0].productVarientId;
+            }
+          } catch (fetchError) {
+            console.error(`[CheckOut] Failed to fetch variant for product ${product.id}:`, fetchError);
+          }
+        }
+        // If still missing, throw an error to avoid sending invalid data
+        if (!variantId) {
+          throw new Error(`Missing variant ID for product ${product.id}`);
+        }
+        const item = {
+          productId: typeof variantId === "string" ? parseInt(variantId, 10) : variantId,
+          quantity: product.quantity,
+          color: product.color || "Default",
+          sizeLabel: product.size || "Default",
+        };
+        console.log(`[CheckOut] Formatted order item for product ${product.id}:`, item);
+        return item;
+      }));
+      
+      const addressId = selectedAddress.id || Date.now().toString();
+      const orderData = {
+        city: selectedAddress.city,
+        shippingAddressId: String(addressId),
+        isFastShipping: selectedShippingMethod === 'fast',
+        couponCode: Cookies.get('appliedCoupon') || undefined,
+        shoppingItems: shoppingItems
+      };
+      
+      console.log("[CheckOut] Prepared order data:", JSON.stringify(orderData, null, 2));
+      console.log("[CheckOut] Sending order to API...");
+      const response = await placeOrder(orderData);
+      console.log("[CheckOut] Order API response:", response);
+      
+      if (response && response.success) {
+        console.log("[CheckOut] Order successful - clearing cookies and navigating");
+        Cookies.remove('cart');
+        Cookies.remove('appliedCoupon');
+        Cookies.remove('orderSummary');
+        setOrderSuccess(true);
+        setOrderConfirmed(true);
+      } else {
+        console.error("[CheckOut] Order placement failed:", response?.message || "Unknown error");
+        setAlert({ type: "error", message: response?.message || t("checkout.orderError") });
+        setTimeout(() => setAlert(null), 5000);
+      }
+    } catch (error) {
+      console.error("[CheckOut] Order error:", error);
+      setAlert({ type: "error", message: t("checkout.orderError") });
+      setTimeout(() => setAlert(null), 5000);
+    } finally {
+      setIsPlacingOrder(false);
+    }
   };
 
-  if (orderConfirmed) {
-    return <OrderConfirmation 
-    // isArabic={isRTL}
-     />;
+  const handleConfirmOrder = () => {
+    handlePlaceOrder();
+  };
+
+  if (orderConfirmed && orderSuccess) {
+    return <OrderConfirmation />;
   }
 
   return (
@@ -323,7 +397,7 @@ export default function CheckOut() {
             selectedPaymentMethod={selectedPaymentMethod}
             selectedAddress={selectedAddressIndex !== null ? addresses[selectedAddressIndex] : null}
             selectedShippingMethod={selectedShippingMethod}
-            // isArabic={isRTL}
+            isPlacingOrder={isPlacingOrder}
           />
         </div>
       </div>

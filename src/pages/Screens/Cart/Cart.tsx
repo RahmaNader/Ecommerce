@@ -21,7 +21,41 @@ const Cart: React.FC = () => {
   useEffect(() => {
     const cartData = Cookies.get("cart");
     if (cartData) {
-      setProducts(JSON.parse(cartData));
+      try {
+        const parsedCart = JSON.parse(cartData);
+        // Ensure all required fields are present
+        const validatedCart = parsedCart.map((item: Partial<Product>) => {
+          // Extract the properties we want to keep
+          const { 
+            nameEn, nameAr, language, productID, 
+            discountPercent
+          } = item;
+          
+          // Return a new object with the required properties and defaults
+          return {
+            id: item.id!,
+            name: item.name!,
+            DisPrice: item.DisPrice!,
+            NormalPrice: item.NormalPrice!,
+            color: item.color!,
+            size: item.size!,
+            quantity: item.quantity!,
+            src: item.src ?? "",
+            alt: item.alt ?? "",
+            // Additional properties
+            nameEn,
+            nameAr, 
+            language,
+            productID,
+            discountPercent
+            // We don't spread the rest of the object to avoid property conflicts
+          };
+        });
+        setProducts(validatedCart);
+      } catch (error) {
+        console.error("Error parsing cart data:", error);
+        setProducts([]);
+      }
     }
   }, []);
 
@@ -95,8 +129,12 @@ const Cart: React.FC = () => {
           {products.length > 0 ? (
             products.map((product) => (
               <CartProduct
-                key={product.id}
-                product={product}
+                // Add a more unique key by combining properties
+                key={`${product.id}-${product.color}-${product.size}`}
+                product={{
+                  ...product,
+                  alt: product.alt || product.name // Ensure alt is always a string
+                }}
                 onRemove={() => removeProduct(product.id)}
                 onQuantityChange={(quantity) =>
                   updateProductQuantity(product.id, quantity)

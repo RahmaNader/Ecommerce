@@ -35,6 +35,7 @@ export type LoginFormInputs = {
 // }
 
 export interface AddressProps {
+  id: string;
   building: string;
   aptNo: string;
   floor: string;
@@ -119,21 +120,30 @@ export interface CardComponent {
   lastUpdated: string;
   priceAfterDiscount: number;
   discountPercent: number;
+  currentLanguage?: string; // Add this line
 }
 
 
 
 ////////////////////////////////////////////////////
+// Update your Product interface
 export interface Product {
   id: number;
   name: string;
   DisPrice: number;
+  NormalPrice: number;
   color: string;
   size: string;
   quantity: number;
-  NormalPrice: number;
-  src: string;
-  alt: string;
+  src?: string;
+  alt?: string;
+  // Additional properties that might be present
+  nameEn?: string;
+  nameAr?: string;
+  language?: string;
+  productID?: number;
+  discountPercent?: number;
+  // Include any other properties that might be in your cart items
 }
 
 export type CouponStatus = 'none' | 'success' | 'already_applied' | 'invalid';
@@ -160,6 +170,7 @@ export interface OrderSummaryProps {
   selectedAddress?: AddressProps | null;
   selectedShippingMethod?: string;
   isArabic?: boolean;
+  isPlacingOrder?: boolean; 
 }
 
 export type RatingDistributionItem = {

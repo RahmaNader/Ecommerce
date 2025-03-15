@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import Cookies from "js-cookie";
-import { IconSearch, IconMenu2, IconX } from "@tabler/icons-react";
+import { IconSearch, IconMenu2, IconX, IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 import Badge, { BadgeProps } from "@mui/material/Badge";
 import { styled } from "@mui/material/styles";
 import IconButton from "@mui/material/IconButton";
@@ -34,6 +34,7 @@ const Navbar: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isShopOpen, setIsShopOpen] = useState(false);
+  const [expandedCategory, setExpandedCategory] = useState<number | null>(null);
   const [cartCount, setCartCount] = useState(0);
   const location = useLocation();
   const closeTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
@@ -67,10 +68,16 @@ const Navbar: React.FC = () => {
   const toggleMenu = () => {
     setIsMenuOpen((prev) => !prev);
     setIsShopOpen(false);
+    setExpandedCategory(null);
   };
 
   const toggleShopMenu = () => {
     setIsShopOpen((prev) => !prev);
+    setExpandedCategory(null);
+  };
+
+  const toggleCategoryExpansion = (categoryId: number) => {
+    setExpandedCategory(prev => prev === categoryId ? null : categoryId);
   };
 
   const isActive = (path: string) => location.pathname === path;
@@ -92,6 +99,13 @@ const Navbar: React.FC = () => {
 
     return () => clearInterval(interval);
   });
+
+  const getCategoryName = (category: { nameEn: string; nameAr: string; name: string }) => {
+    if (language === "ar") {
+      return category.nameAr || category.name;
+    }
+    return category.nameEn || category.name;
+  };
 
   return (
     <div className="w-full flex justify-between items-center bg-mainColor relative px-6 xl:px-44 pt-4">
@@ -181,12 +195,7 @@ const Navbar: React.FC = () => {
           onMouseLeave={handleCloseModal}
           isActive={isActive("/shop")}
         />
-        <NavLink
-          label={t("navbar.blogs")}
-          to="/blogs"
-          variant="navbar"
-          isActive={isActive("/blogs")}
-        />
+
         <NavLink
           label={t("navbar.contactUs")}
           to="/contact-us"
@@ -225,7 +234,7 @@ const Navbar: React.FC = () => {
           </button>
         </div>
 
-        <div className="flex items-center text-center w-full flex-col mt-4">
+        <div className="flex flex-col mt-4 w-full">
           <NavLink
             label={t("navbar.home")}
             to="/"
@@ -235,49 +244,102 @@ const Navbar: React.FC = () => {
           />
 
           <div className="relative w-full">
-            <NavLink
-              label={t("navbar.shop")}
-              to="#"
-              variant="sidenavbar"
+            <div 
+              className="flex items-center justify-between text-wine w-full font-playfair font-medium h-16 text-base border-b border-ForthColor bg-[#A78E7821] px-4 py-2"
               onClick={toggleShopMenu}
-              isActive={isActive("/shop")}
-            />
-            <div
-              className={`flex flex-col transition-max-height duration-300 ease-in-out ${
-                isShopOpen ? "max-h-40" : "max-h-0"
-              } overflow-hidden border-l-4 border-wine`}
             >
-              {isLoading && (
-                <p className="text-center p-2">{t("loadingCategories")}</p>
+              <span>
+                {t("navbar.shop")}
+              </span>
+              {isShopOpen ? (
+                <IconChevronUp size={20} />
+              ) : (
+                <IconChevronDown size={20} />
               )}
-              {isError && (
-                <p className="text-center p-2 text-red-600">
-                  {(error as Error)?.message}
-                </p>
-              )}
-              {!isLoading &&
-                !isError &&
-                mainCategories.map(
-                  (category: { categoryID: number; name: string }) => (
-                    <NavLink
-                      key={category.categoryID}
-                      label={category.name}
-                      to={`/products/${category.name.toLowerCase()}`}
-                      variant="sidenavbarsub"
-                      onClick={toggleMenu}
-                    />
-                  )
-                )}
             </div>
-          </div>
+            
+            {isShopOpen && (
+              <div className="pl-4 border-l-4 border-wine">
+                {isLoading && (
+                  <p className="text-center p-2">{t("loadingCategories")}</p>
+                )}
+                {isError && (
+                  <p className="text-center p-2 text-red-600">
+                    {(error as Error)?.message}
+                  </p>
+                )}
+                {!isLoading &&
+                  !isError &&
+                  mainCategories.map((category: { categoryID: number; name: string; nameEn: string; nameAr: string }) => {
+                    const subcategories = categories?.filter(
+                      (sub: { parentCategoryID: number | null }) => 
+                        sub.parentCategoryID === category.categoryID
+                    ) || [];
+                    
+                    const isExpanded = expandedCategory === category.categoryID;
+                    const categoryName = getCategoryName(category);
+                    const mainPath = `/products/${categoryName.toLowerCase()}`;
 
-          <NavLink
-            label={t("navbar.blogs")}
-            to="/blogs"
-            variant="sidenavbar"
-            isActive={isActive("/blogs")}
-            onClick={toggleMenu}
-          />
+                    return (
+                      <div key={category.categoryID} className="mb-2">
+                        <div className="flex items-center justify-between pr-4">
+                          <Link
+                            to={mainPath}
+                            state={{ categoryId: category.categoryID }}
+                            className={`py-2 block font-normal text-wine`}
+                            onClick={toggleMenu}
+                          >
+                            {getCategoryName(category)}
+                          </Link>
+                          {subcategories.length > 0 && (
+                            <button 
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                toggleCategoryExpansion(category.categoryID);
+                              }}
+                              className="p-1"
+                            >
+                              {isExpanded ? (
+                                <IconChevronUp size={16} />
+                              ) : (
+                                <IconChevronDown size={16} />
+                              )}
+                            </button>
+                          )}
+                        </div>
+                        
+                        {isExpanded && subcategories.length > 0 && (
+                          <ul className="border-t border-gray-300 mt-2 pt-2">
+                            {subcategories.map((sub: { categoryID: number; name: string; nameEn: string; nameAr: string }) => {
+                              const subCategoryName = getCategoryName(sub);
+                              const subPath = `/products/${categoryName.toLowerCase()}/${subCategoryName.toLowerCase()}`;
+                              const isActive = location.pathname.includes(subPath);
+                              
+                              return (
+                                <li key={sub.categoryID} className="py-1 text-center">
+                                  <Link
+                                    to={subPath}
+                                    state={{ categoryId: sub.categoryID }}
+                                    className={`inline-block text-sm ${
+                                      isActive ? "text-wine font-medium" : "text-gray-700"
+                                    }`}
+                                    onClick={toggleMenu}
+                                  >
+                                    {getCategoryName(sub)}
+                                  </Link>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        )}
+                      </div>
+                    );
+                  })
+                }
+              </div>
+            )}
+          </div>
           <NavLink
             label={t("navbar.contactUs")}
             to="/contact-us"
@@ -301,6 +363,7 @@ const Navbar: React.FC = () => {
           onMouseEnter={handleOpenModal}
           onMouseLeave={handleCloseModal}
           categories={categories || []}
+          language={language}
         />
       )}
     </div>

@@ -4,26 +4,29 @@ import Breadcrumbs from "@mui/material/Breadcrumbs";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import Typography from "@mui/material/Typography";
-import { useTranslation } from "react-i18next";
+import {Category} from "@types";
+import { useQuery } from "react-query";
+import { fetchCategories } from "@services/api/fetchCategories";
+import { useLanguage } from "@context/useLanguage";
 
-
-const routeNameMap: { [key: string]: string } = {
-  "/": "Home",
-  "/blogs": "Blogs",
-  "/order-details": "Order Details",
-  "/contact-us": "Contact Us",
-  "/about-us": "About Us",
-  "/cart": "Cart",
-  "/cart/checkout": "Checkout",
-  "/search": "Search",
-  "/profile": "Profile",
-  "/profile/orders": "Orders",
-  "/profile/returns": "Returns",
-  "/profile/wishlist": "Wishlist",
-  "/profile/verification": "Verification",
-  "/profile/payment-credit-card": "Payment",
-  "/profile/logout": "Logout",
-  "/product-details/:id": "Product Details",
+// Updated to include both English and Arabic route names
+const routeNameMap: { [key: string]: { en: string; ar: string } } = {
+  "/": { en: "Home", ar: "الرئيسية" },
+  "/blogs": { en: "Blogs", ar: "المدونات" },
+  "/order-details": { en: "Order Details", ar: "تفاصيل الطلب" },
+  "/contact-us": { en: "Contact Us", ar: "اتصل بنا" },
+  "/about-us": { en: "About Us", ar: "معلومات عنا" },
+  "/cart": { en: "Cart", ar: "عربة التسوق" },
+  "/cart/checkout": { en: "Checkout", ar: "الدفع" },
+  "/search": { en: "Search", ar: "بحث" },
+  "/profile": { en: "Profile", ar: "الملف الشخصي" },
+  "/profile/orders": { en: "Orders", ar: "الطلبات" },
+  "/profile/returns": { en: "Returns", ar: "المرتجعات" },
+  "/profile/wishlist": { en: "Wishlist", ar: "المفضلة" },
+  "/profile/verification": { en: "Verification", ar: "التحقق" },
+  "/profile/payment-credit-card": { en: "Payment", ar: "الدفع" },
+  "/profile/logout": { en: "Logout", ar: "تسجيل الخروج" },
+  "/product-details/:id": { en: "Product Details", ar: "تفاصيل المنتج" },
 };
 
 const capitalizeWords = (text: string): string =>
@@ -33,11 +36,55 @@ const capitalizeWords = (text: string): string =>
     .join(" ");
 
 const Breadcrumb: React.FC = () => {
-  const { i18n } = useTranslation();
+  const { language } = useLanguage();
   const location = useLocation();
+  const isRTL = language === "ar";
+  
+  // Fetch categories for proper name display
+  const { data: categories } = useQuery("categories", fetchCategories);
 
-  const pathnames = location.pathname.split("/").filter((x) => x);
-  const isRTL = i18n.language === "ar";
+  // Decode URL segments to handle special characters (like Arabic)
+  const pathnames = location.pathname
+    .split("/")
+    .filter(x => x)
+    .map(segment => {
+      try {
+        return decodeURIComponent(segment);
+      } catch {
+        return segment;
+      }
+    });
+
+  // Helper function to get category name by ID or URL segment
+  const getCategoryName = (categoryIdOrSlug: string | number) => {
+    if (!categories) return capitalizeWords(String(categoryIdOrSlug));
+    
+    const decodedSlug = typeof categoryIdOrSlug === 'string' ? 
+      categoryIdOrSlug : String(categoryIdOrSlug);
+    
+    // Try to find by ID first
+    const categoryById = categories.find((cat: Category) => 
+      cat.categoryID === Number(categoryIdOrSlug)
+    );
+    
+    if (categoryById) {
+      return isRTL ? categoryById.nameAr || categoryById.name : categoryById.nameEn || categoryById.name;
+    }
+    
+    // If not found by ID, try to match by name/slug
+    const categoryBySlug = categories.find((cat: Category) => 
+      cat.name.toLowerCase() === decodedSlug.toLowerCase() ||
+      cat.nameEn.toLowerCase() === decodedSlug.toLowerCase() ||
+      cat.nameAr.toLowerCase() === decodedSlug.toLowerCase()
+    );
+    
+    if (categoryBySlug) {
+      return isRTL ? categoryBySlug.nameAr || categoryBySlug.name : categoryBySlug.nameEn || categoryBySlug.name;
+    }
+    
+    // Fallback to capitalizing the segment
+    return capitalizeWords(decodedSlug);
+  };
 
   const breadcrumbs = pathnames
     .map((value, index) => {
@@ -45,10 +92,24 @@ const Breadcrumb: React.FC = () => {
         return null;
       }
 
-      const to = `/${pathnames.slice(0, index + 1).join("/")}`;
+      // Build path with original encoded segments from location.pathname
+      const segments = location.pathname.split('/').filter(Boolean).slice(0, index + 1);
+      const to = `/${segments.join("/")}`;
       const isLast = index === pathnames.length - 1;
 
-      const breadcrumbName = capitalizeWords(routeNameMap[to] || value);
+      // Get the right breadcrumb text based on path and language
+      let breadcrumbName = '';
+      
+      if (routeNameMap[to]) {
+        // Use predefined translations
+        breadcrumbName = routeNameMap[to][isRTL ? 'ar' : 'en'];
+      } else if (pathnames[0] === 'products') {
+        // This is a category or product page, so use category name
+        breadcrumbName = getCategoryName(value);
+      } else {
+        // Fallback to capitalizing the URL segment
+        breadcrumbName = capitalizeWords(value);
+      }
 
       return isLast ? (
         <Typography
@@ -79,13 +140,13 @@ const Breadcrumb: React.FC = () => {
 
   return (
     <Breadcrumbs
-    separator={
-      isRTL ? (
-        <NavigateBeforeIcon fontSize="small" style={{ color: "#A78E78" }} />
-      ) : (
-        <NavigateNextIcon fontSize="small" style={{ color: "#A78E78" }} />
-      )
-    }
+      separator={
+        isRTL ? (
+          <NavigateBeforeIcon fontSize="small" style={{ color: "#A78E78" }} />
+        ) : (
+          <NavigateNextIcon fontSize="small" style={{ color: "#A78E78" }} />
+        )
+      }
       aria-label="breadcrumb"
       sx={{
         margin: "1rem 0",
@@ -97,7 +158,7 @@ const Breadcrumb: React.FC = () => {
       }}
     >
       <Link to="/" style={{ textDecoration: "none", color: "#A78E78" }}>
-        {capitalizeWords(routeNameMap["/"])}
+        {isRTL ? routeNameMap["/"].ar : routeNameMap["/"].en}
       </Link>
       {breadcrumbs}
     </Breadcrumbs>

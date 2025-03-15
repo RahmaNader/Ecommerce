@@ -11,10 +11,13 @@ const Card: React.FC<CardComponent> = ({
   productID,
   productImages,
   name,
+  nameEn,
+  nameAr,
   priceAfterDiscount,
   productPrice,
   averageRate,
   productVarients,
+  discountPercent,
 }) => {
   const navigate = useNavigate();
   const [alertVisible, setAlertVisible] = useState(false);
@@ -63,40 +66,55 @@ const Card: React.FC<CardComponent> = ({
     color: string;
     size: string;
     quantity: number;
+    price: number;
+    priceAfterDiscount: number;
+    imageUrl: string;
+    name: string;
+    productId: number;
   }) => {
     setShowPreference(false);
-
+  
     const existingCart = Cookies.get("cart")
       ? JSON.parse(Cookies.get("cart") as string)
       : [];
-
+  
+    // Create a comprehensive cart item
+    const cartItem = {
+      id: productID,
+      name: name,
+      DisPrice: priceAfterDiscount,
+      NormalPrice: productPrice,
+      src: preferences.imageUrl || (productImages[0]?.imageUrl || ""),
+      alt: name,
+      color: preferences.color,
+      size: preferences.size,
+      quantity: preferences.quantity,
+      // Additional properties
+      productID: productID,
+      nameEn: nameEn,
+      nameAr: nameAr,
+      discountPercent: discountPercent,
+      language: document.documentElement.lang || "en",
+      // Add the product variant ID!
+      productVarientId: productVarients.find(v => v.colorNameEn === preferences.color)?.productVarientId,
+    };
+  
     const existingItemIndex = existingCart.findIndex(
       (item: { id: number; color: string; size: string }) =>
-        item.id === productID &&
-        item.color === preferences.color &&
-        item.size === preferences.size
+        item.id === cartItem.id &&
+        item.color === cartItem.color &&
+        item.size === cartItem.size
     );
-
+  
     if (existingItemIndex !== -1) {
-      existingCart[existingItemIndex].quantity += preferences.quantity;
+      existingCart[existingItemIndex].quantity += cartItem.quantity;
     } else {
-      // Otherwise, add a new item to the cart.
-      const newItem = {
-        id: productID,
-        name,
-        priceAfterDiscount,
-        productPrice,
-        productImages,
-        ...preferences,
-      };
-      existingCart.push(newItem);
+      existingCart.push(cartItem);
     }
-
+  
     Cookies.set("cart", JSON.stringify(existingCart), { expires: 7 });
-
     setAlertMessage("Item added successfully to cart");
     setIsInCart(true);
-
     setAlertVisible(true);
     setTimeout(() => setAlertVisible(false), 3000);
   };

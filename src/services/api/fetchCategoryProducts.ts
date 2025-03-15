@@ -47,13 +47,13 @@ interface CategoryProductResponse {
 }
 
 
-
+//fetches all products in a category
 export const fetchCategoryProducts = async (
   parentCategoryId: number
 ): Promise<CardComponent[]> => {
   try {
     const { data } = await axios.get<CategoryProductResponse>(
-      `https://www.bouraq-mt.com/royalkey/api/Product/?parentCategory=${parentCategoryId}`
+      `https://www.bouraq-mt.com/royalkey/api/Product?parentCategories=${parentCategoryId}&pageNumber=1&pageSize=100`
     );
 
     // Transform backend response to match CardComponent exactly
@@ -122,3 +122,7 @@ export const fetchCategoryProducts = async (
     throw new Error(`Failed to fetch products for category ${parentCategoryId}`);
   }
 };
+
+//return ids of subcategories of a main ctagory , that could be used later for filtering
+//men : 1 , women : 2 , kids : 3 
+//https://www.bouraq-mt.com/royalkey/api/Categories/2?isEnglish=true
