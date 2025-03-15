@@ -326,6 +326,16 @@ const resources = {
         regularDate: "01 Feb, 2023",
         fastDate: "28 Jan, 2023"
       },
+      productPreference: {
+        chooseColor: "Choose Color",
+        chooseSize: "Choose Size",
+        quantity: "Quantity:",
+        cancel: "Cancel",
+        confirm: "Confirm",
+        selectionRequired: "Please select a color, size, and quantity!",
+        noSizesAvailable: "No sizes available for this color",
+        unknown: "Unknown"
+      },
     },
   },
   ar: {
@@ -649,6 +659,16 @@ const resources = {
         fastDelivery: "شحن سريع +٥٠ جنيه",
         regularDate: "١ فبراير، ٢٠٢٣",
         fastDate: "٢٨ يناير، ٢٠٢٣"
+      },
+      productPreference: {
+        chooseColor: "اختر اللون",
+        chooseSize: "اختر المقاس",
+        quantity: "الكمية:",
+        cancel: "إلغاء",
+        confirm: "تأكيد",
+        selectionRequired: "الرجاء اختيار اللون والمقاس والكمية!",
+        noSizesAvailable: "لا توجد مقاسات متاحة لهذا اللون",
+        unknown: "غير معروف"
       },
     },
   },

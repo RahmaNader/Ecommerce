@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ErrorAlert, ProductCount } from "@components/atoms";
 import { ProductVariant, SizeQuantity } from "@types";
+import { useTranslation } from "react-i18next";
 
 interface ProductPreferenceProps {
   product: {
@@ -29,6 +30,7 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
   onSubmit,
   onCancel,
 }) => {
+  const { t } = useTranslation(); // Add the translation hook
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
@@ -75,7 +77,7 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
       });
       setError(null);
     } else {
-      setError("Please select a color, size, and quantity!");
+      setError(t("productPreference.selectionRequired"));
     }
   };
 
@@ -84,9 +86,9 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
       {error && <ErrorAlert message={error} />}
       <div className="bg-mainColor p-6 rounded-lg shadow-lg relative md:w-96">
         <button
-          title="Cancel"
+          title={t("productPreference.cancel")}
           onClick={onCancel}
-          className="rounded-full border-2 p-1 my-2 border-wine absolute right-4 top-2 text-wine hover:text-ForthColor hover:border-ForthColor"
+          className="rounded-full border-2 p-1 my-2 border-wine absolute rtl:left-4 ltr:right-4 top-2 text-wine hover:text-ForthColor hover:border-ForthColor"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -101,7 +103,7 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
         </button>
 
         {/* Color Selection */}
-        <p className="font-playfair font-semibold text-lg text-wine mb-4">Choose Color</p>
+        <p className="font-playfair font-semibold text-lg text-wine mb-4">{t("productPreference.chooseColor")}</p>
         <div className="flex gap-3 mb-4">
           {colors.map((colorOption, index) => (
             <div key={index} className="flex flex-col items-center">
@@ -114,16 +116,14 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
                   setSelectedColor(colorOption.name);
                   setSelectedSize(null); // Reset size when color changes.
                 }}
+                title={colorOption.name} // Add title attribute for accessibility
               />
-              <span style={{ color: "#000", fontSize: "12px", marginTop: "4px" }}>
-                {colorOption.name}
-              </span>
             </div>
           ))}
         </div>
 
         {/* Size Selection */}
-        <p className="font-playfair font-semibold text-lg text-wine mb-4">Choose Size</p>
+        <p className="font-playfair font-semibold text-lg text-wine mb-4">{t("productPreference.chooseSize")}</p>
         <div className="flex gap-3 mb-4">
           {availableSizes.length > 0 ? (
             availableSizes.map((sizeOption: SizeQuantity, index: number) => (
@@ -135,17 +135,17 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
                 onClick={() => setSelectedSize(sizeOption.sizeLabel || null)}
                 disabled={sizeOption.quantity <= 0}
               >
-                {sizeOption.sizeLabel || 'Unknown'}
+                {sizeOption.sizeLabel || t("productPreference.unknown")}
               </button>
             ))
           ) : (
-            <p className="text-wine">No sizes available for this color</p>
+            <p className="text-wine">{t("productPreference.noSizesAvailable")}</p>
           )}
         </div>
 
         {/* Quantity Selection */}
         <div className="flex items-center gap-3 mb-6">
-          <p className="font-playfair font-semibold text-lg text-wine">Quantity:</p>
+          <p className="font-playfair font-semibold text-lg text-wine">{t("productPreference.quantity")}</p>
           <ProductCount
             initialCount={quantity}
             onCountChange={(newCount) => setQuantity(newCount)}
@@ -155,10 +155,10 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
         {/* Action Buttons */}
         <div className="flex justify-between gap-3">
           <button onClick={onCancel} className="px-4 py-2 bg-ForthColor text-white rounded-md">
-            Cancel
+            {t("productPreference.cancel")}
           </button>
           <button onClick={handleSubmit} className="px-4 py-2 bg-wine text-white rounded-md">
-            Confirm
+            {t("productPreference.confirm")}
           </button>
         </div>
       </div>
