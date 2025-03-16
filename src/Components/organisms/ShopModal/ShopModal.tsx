@@ -27,7 +27,6 @@ const ShopModal: React.FC<ShopModalProps> = ({
 }) => {
   const location = useLocation();
   
-  // Helper function to get the appropriate category name based on language
   const getCategoryName = (category: Category) => {
     if (language === "ar") {
       return category.nameAr || category.name;

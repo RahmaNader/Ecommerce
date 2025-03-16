@@ -13,14 +13,12 @@ const Home: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  // Navigate to category pages
   const handleCategoryClick = (category: string, categoryId: number) => {
     navigate(`/products/${category.toLowerCase()}`, {
       state: { categoryId }
     });
   };
 
-  // Updated to navigate to collection pages
   const handleButtonClick = (collectionType: string) => {
     navigate(`/collection/${collectionType.toLowerCase().replace(/\s+/g, '-')}`);
   };

@@ -26,7 +26,6 @@ const CollectionScreen: React.FC = () => {
       setError(null);
 
       try {
-        // Fetch all products for the collection
         const data = await fetchCollection(collectionType);
         setProducts(data);
       } catch (err) {
@@ -40,7 +39,6 @@ const CollectionScreen: React.FC = () => {
     loadProducts();
   }, [collectionType, t]);
 
-  // Get the right title based on collection type
   const getCollectionTitle = () => {
     switch (collectionType) {
       case "new-arrivals":

@@ -44,8 +44,8 @@ export const router = createBrowserRouter([
         element: <BlogsScreen />,
       },
       {
-        path: "order-details",
-        element: <OrderDetails />,
+        path: "/order-details/:orderId",
+        element: <OrderDetails />
       },
       
       {

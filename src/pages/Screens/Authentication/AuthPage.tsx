@@ -17,7 +17,7 @@ const AuthPage: React.FC = () => {
   };
 
   return (
-    <div className="flex w-4/5 flex-col my-6 justify-center items-center mx-auto max-w-[1000px]">
+    <div className="flex w-4/5 flex-col my-6 justify-center items-center mx-auto max-w-[800px]">
       <div className="flex justify-start w-full">
         <Breadcrumb />
       </div>

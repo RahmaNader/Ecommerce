@@ -21,7 +21,7 @@ const Card: React.FC<CardComponent> = ({
   discountPercent,
 }) => {
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation(); // Add i18n to get current language
+  const { t, i18n } = useTranslation(); 
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [isInCart, setIsInCart] = useState(false);
@@ -29,7 +29,6 @@ const Card: React.FC<CardComponent> = ({
   const [imageUrl, setImageUrl] = useState<string>(fallbackImage);
   const [imageAlt, setImageAlt] = useState<string>(t("card.productImage"));
   
-  // Determine which name to display based on current language
   const displayName = i18n.language === "ar" ? nameAr : (nameEn || name);
 
   useEffect(() => {
@@ -47,7 +46,7 @@ const Card: React.FC<CardComponent> = ({
         const firstImage = productImages[0];
         if (firstImage && firstImage.imageUrl) {
           setImageUrl(firstImage.imageUrl);
-          setImageAlt(firstImage.altText || displayName); // Use displayName here too
+          setImageAlt(firstImage.altText || displayName);
           return;
         }
       }
@@ -80,10 +79,9 @@ const Card: React.FC<CardComponent> = ({
       ? JSON.parse(Cookies.get("cart") as string)
       : [];
   
-    // Create a comprehensive cart item
     const cartItem = {
       id: productID,
-      name: displayName, // Use the language-specific name here too
+      name: displayName, 
       DisPrice: priceAfterDiscount,
       NormalPrice: productPrice,
       src: preferences.imageUrl || (productImages?.[0]?.imageUrl || ""),
@@ -91,13 +89,11 @@ const Card: React.FC<CardComponent> = ({
       color: preferences.color,
       size: preferences.size,
       quantity: preferences.quantity,
-      // Additional properties
       productID: productID,
       nameEn: nameEn,
       nameAr: nameAr,
       discountPercent: discountPercent,
-      language: i18n.language, // Store the current language
-      // Add the product variant ID!
+      language: i18n.language, 
       productVarientId: productVarients?.find(v => v.colorNameEn === preferences.color)?.productVarientId,
     };
   
@@ -115,7 +111,7 @@ const Card: React.FC<CardComponent> = ({
     }
   
     Cookies.set("cart", JSON.stringify(existingCart), { expires: 7 });
-    setAlertMessage(t("card.addedToCart")); // Use translation key instead of hardcoded text
+    setAlertMessage(t("card.addedToCart"));
     setIsInCart(true);
     setAlertVisible(true);
     setTimeout(() => setAlertVisible(false), 3000);

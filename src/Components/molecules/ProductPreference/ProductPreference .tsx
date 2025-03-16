@@ -3,7 +3,6 @@ import { ErrorAlert, ProductCount } from "@components/atoms";
 import { ProductVariant, SizeQuantity } from "@types";
 import { useTranslation } from "react-i18next";
 
-// Add a type for color options
 interface ColorOption {
   name: string;
   code: string;
@@ -49,7 +48,6 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
     }
   }, [error]);
 
-  // Extract variants correctly
   let variants: ProductVariant[] = [];
   if (Array.isArray(product.productVarients)) {
     variants = product.productVarients;
@@ -57,14 +55,12 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
     variants = product.productVarients.$values;
   }
 
-  // Extract unique colors from variants with proper typing
   const colors: ColorOption[] = Array.from(
     new Map(
       variants.map((variant) => [variant.colorNameEn, { name: variant.colorNameEn || "Unknown", code: variant.colorCode }])
     ).values()
   );
 
-  // Extract available sizes for the selected color
   const availableSizes = variants.find(
     (v) => v.colorNameEn === selectedColor
   )?.sizeQuantities ?? [];
@@ -120,9 +116,9 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
                 style={{ backgroundColor: colorOption.code }}
                 onClick={() => {
                   setSelectedColor(colorOption.name);
-                  setSelectedSize(null); // Reset size when color changes
+                  setSelectedSize(null); 
                 }}
-                title={colorOption.name} // Add title attribute for accessibility
+                title={colorOption.name} 
               />
             </div>
           ))}

@@ -2,7 +2,7 @@ import React from "react";
 import { ProductCount } from "@components/atoms";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@context/useLanguage";
-import { Link } from "react-router-dom"; // Add this import
+import { Link } from "react-router-dom";
 
 interface CartProductProps {
   product: {
@@ -12,10 +12,10 @@ interface CartProductProps {
     color: string;
     size: string;
     quantity: number;
-    src?: string; // Make this optional with '?'
+    src?: string; 
     alt: string;
     NormalPrice: number;
-    nameEn?: string; // Add these additional properties
+    nameEn?: string;
     nameAr?: string;
     language?: string;
   };
@@ -33,7 +33,6 @@ const CartProduct: React.FC<CartProductProps> = ({
   const { language } = useLanguage();
   const isRTL = language === "ar";
   
-  // Use localized name if available based on current language
   const displayName = isRTL && product.nameAr ? product.nameAr : 
                      (!isRTL && product.nameEn ? product.nameEn : product.name);
   

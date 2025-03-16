@@ -1,4 +1,3 @@
-// src/services/authService.ts
 import axios from 'axios';
 import apiClient from '../../apiClient';
 import { PasswordResetData } from '@types';

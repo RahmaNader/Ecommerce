@@ -4,7 +4,7 @@ import {
   IconBrandInstagram,
   IconBrandLinkedin,
 } from "@tabler/icons-react";
-import NavLink from "@components/atoms/Link/NavLink";
+import {NavLink} from "@components/atoms";
 import { useTranslation } from "react-i18next";
 
 
@@ -71,7 +71,7 @@ const Footer: React.FC = () => {
           <NavLink label={t("footer.aboutUs")} to="/about-us" variant="footer" />
         </div>
 
-        {/* Section 3: Contact Information */}
+        {/* Section 2: Contact Information */}
         <div className="flex flex-col  mt-8 space-y-3 font-medium ">
         <h4>{t("footer.contactUs")}:</h4>
           <NavLink

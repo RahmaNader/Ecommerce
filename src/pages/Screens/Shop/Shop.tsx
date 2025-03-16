@@ -43,7 +43,6 @@ const Shop: React.FC = () => {
     }
   );
 
-  // Handle sidebar visibility with animation
   useEffect(() => {
     if (isFilterOpen) {
       setShowSidebar(true);
@@ -91,13 +90,11 @@ const Shop: React.FC = () => {
     setShowSidebar(false); 
   };
 
-  // Get category name in the correct language
   const getCategoryDisplayName = () => {
     if (!products || products.length === 0) {
       return (lastSegment ?? "").charAt(0).toUpperCase() + (lastSegment ?? "").slice(1);
     }
     
-    // Try to get category name from the products data
     const firstProduct = products[0];
     if (isRTL) {
       return firstProduct.category.nameAr || firstProduct.category.name;

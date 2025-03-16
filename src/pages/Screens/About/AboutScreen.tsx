@@ -1,5 +1,4 @@
 import React from "react";
-// TODO : use tailwind instead of css
 import "./AboutScreen.css";
 import aboutSectionHero from "@assets/lady-good-mood-looks-into-camera-beige-background-beautiful-smiling-woman-with-big-bright-lips-red-beret-earrings-long-coat-posing_197531-18681.svg";
 import AboutImage1 from "@assets/AboutImage1.svg";

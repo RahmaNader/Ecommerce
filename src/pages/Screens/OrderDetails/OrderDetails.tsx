@@ -1,20 +1,24 @@
 import React, { useState, useEffect } from "react";
-import Img1 from "@assets/HP_img1.jpeg";
-import visaLogo from "@assets/visa.svg";
+import { useParams } from "react-router-dom";
 import truck from "@assets/truck.svg";
 import { Breadcrumb } from "@components/molecules";
-import { Category } from "@components/atoms";
+import { Category, ErrorAlert } from "@components/atoms";
 import Box from "@mui/material/Box";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
-import StepConnector, {
-  stepConnectorClasses,
-} from "@mui/material/StepConnector";
+import StepConnector, { stepConnectorClasses } from "@mui/material/StepConnector";
 import { styled } from "@mui/material/styles";
+import { fetchOrderDetails } from "@services/api/fetchOrders";
+import { format } from "date-fns";
+import { ar, enUS } from "date-fns/locale";
+import { useTranslation } from "react-i18next";
+import { OrderStatus} from "@utils/OrderDetails";
+import { UserOrder } from "@types";
 
 interface OrderData {
   orderId: string;
+  orderNumber: number;
   orderDate: string;
   estimatedDelivery: string;
   steps: { label: string; date: string; completed: boolean }[];
@@ -26,12 +30,17 @@ interface OrderData {
     image?: string;
   }[];
   payment: { method: string; lastFourDigits: string; icon?: string };
-  delivery: { address: string; city: string; phone: string };
+  delivery: { 
+    address: string; 
+    city: string; 
+    phone: string;
+    flatNumber: string | number;
+    floorNumber: string | number;
+    additionalDirections?: string;
+  };
   summary: { label: string; value: string }[];
   total: string;
 }
-
-const fallbackImage = Img1;
 
 const CustomStepConnector = styled(StepConnector)(() => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -70,83 +79,200 @@ const CustomStepLabel = styled(StepLabel)(() => ({
 }));
 
 const OrderDetails: React.FC = () => {
+  const { orderId } = useParams<{ orderId: string }>();
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === "ar";
+  const isEnglish = !isRTL;
+  
   const [orderData, setOrderData] = useState<OrderData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Format date based on locale
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return format(date, 'PP', { 
+        locale: isRTL ? ar : enUS 
+      });
+    } catch {
+      return dateString;
+    }
+  };
+
+  // Format currency
+  const formatCurrency = (amount: number) => {
+    return `${amount.toFixed(2)} ${t("product.currency")}`;
+  };
 
   useEffect(() => {
-    const fetchOrderData = async () => {
-      const mockData: OrderData = {
-        orderId: "15456", // Hardcoded Order ID
-        orderDate: "Feb 16, 2022",
-        estimatedDelivery: "May 16, 2022",
-        steps: [
-          { label: "Order Confirmed", date: "Wed, 11th Jan", completed: true },
-          { label: "Shipped", date: "Wed, 11th Jan", completed: true },
-          { label: "Out For Delivery", date: "Wed, 11th Jan", completed: true },
-          {
-            label: "Delivered",
-            date: "Expected by Mon, 16th",
-            completed: false,
-          },
-        ],
-        items: [
-          {
-            name: "Leather Jacket",
-            details: "Brown | Small",
-            price: "200EGP",
-            quantity: 5,
-            image: Img1,
-          },
-          {
-            name: "One Life Graphic T-shirt",
-            details: "Black | Small",
-            price: "200EGP",
-            quantity: 2,
-            image: Img1,
-          },
-          {
-            name: "Classic Jacket",
-            details: "Yellow | Medium",
-            price: "200EGP",
-            quantity: 1,
-            image: Img1,
-          },
-        ],
-        payment: {
-          method: "Visa",
-          lastFourDigits: "5656",
-          icon: visaLogo,
-        },
-        delivery: {
-          address: "847 Jewess Bridge Apt.",
-          city: "174 London, UK",
-          phone: "474-769-3919",
-        },
-        summary: [
-          { label: "Discount", value: "180 EGP" },
-          { label: "Discount (20%)", value: "20 EGP" },
-          { label: "Delivery", value: "20 EGP" },
-          { label: "Tax", value: "14 EGP" },
-        ],
-        total: "214 EGP",
-      };
+    const fetchOrder = async () => {
+      if (!orderId) {
+        setError(t("orderDetails.noOrderId"));
+        return;
+      }
 
-      setOrderData(mockData);
-      setLoading(false);
+      try {
+        console.log(`[OrderDetails] Fetching order: ${orderId}`);
+        const order = await fetchOrderDetails(orderId, isEnglish);
+        
+        // Map the API response to our component's data structure
+        const orderDataMapped = mapOrderToUiModel(order);
+        setOrderData(orderDataMapped);
+        setError(null);
+      } catch (err) {
+        console.error("[OrderDetails] Error fetching order:", err);
+        setError(err instanceof Error ? err.message : t("orderDetails.loadError"));
+      } 
     };
 
-    fetchOrderData();
-  }, []);
+    fetchOrder();
+  }, [orderId, isEnglish, t]);
 
-  if (loading) {
-    return <div className="text-center mt-10 text-wine">Loading...</div>;
+  // Map API response to UI model
+  const mapOrderToUiModel = (order: UserOrder): OrderData => {
+    // Generate order steps based on dates and status
+    const steps = [
+      { 
+        label: t("orderDetails.steps.confirmed"), 
+        date: formatDate(order.orderDate), 
+        completed: true 
+      },
+    ];
+    
+    // Add pre-production step if applicable
+    if (order.preProductionDate || order.status >= OrderStatus.PreProduction) {
+      steps.push({
+        label: t("orderDetails.steps.preProduction"),
+        date: order.preProductionDate ? formatDate(order.preProductionDate) : t("orderDetails.processing"),
+        completed: order.status >= OrderStatus.PreProduction
+      });
+    }
+    
+    // Add in-production step if applicable
+    if (order.inProductionDate || order.status >= OrderStatus.InProduction) {
+      steps.push({
+        label: t("orderDetails.steps.inProduction"),
+        date: order.inProductionDate ? formatDate(order.inProductionDate) : t("orderDetails.processing"),
+        completed: order.status >= OrderStatus.InProduction
+      });
+    }
+    
+    // Add shipped step if applicable
+    if (order.shippedDate || order.status >= OrderStatus.Shipped) {
+      steps.push({
+        label: t("orderDetails.steps.shipped"),
+        date: order.shippedDate && order.shippedDate !== "0001-01-01T00:00:00" ? 
+              formatDate(order.shippedDate) : t("orderDetails.processing"),
+        completed: order.status >= OrderStatus.Shipped
+      });
+    }
+    
+    // Add out for delivery step if applicable
+    if (order.outForDeliveryDate || order.status >= OrderStatus.OutForDelivery) {
+      steps.push({
+        label: t("orderDetails.steps.outForDelivery"),
+        date: order.outForDeliveryDate && order.outForDeliveryDate !== "0001-01-01T00:00:00" ? 
+              formatDate(order.outForDeliveryDate) : t("orderDetails.processing"),
+        completed: order.status >= OrderStatus.OutForDelivery
+      });
+    }
+    
+    // Add delivered step
+    steps.push({
+      label: t("orderDetails.steps.delivered"),
+      date: order.deliveredDate && order.deliveredDate !== "0001-01-01T00:00:00" ? 
+            formatDate(order.deliveredDate) : 
+            formatDate(order.estimadtedDelivereyDate),
+      completed: order.status === OrderStatus.Delivered
+    });
+    
+    // Create items array from order items
+    const items = order.orderItems.$values.map(item => ({
+      name: item.productName || t("orderDetails.unknownProduct"),
+      details: `${item.productColor || ''} | ${item.productSize || ''}`,
+      price: formatCurrency(item.unitPrice),
+      quantity: item.quantity,
+      image: item.firstProductImageUrl
+    }));
+    
+    // Create summary details
+    const summary = [
+      { label: t("orderDetails.subtotal"), value: formatCurrency(order.subTotal) },
+    ];
+    
+    // Add discount if there is one
+    if (order.discountAmount > 0) {
+      summary.push({ 
+        label: t("orderDetails.discount"), 
+        value: `- ${formatCurrency(order.discountAmount)}` 
+      });
+    }
+    
+    // Add shipping cost
+    summary.push({ 
+      label: t("orderDetails.shipping"), 
+      value: formatCurrency(order.shippingCost) 
+    });
+
+    // Extract address information
+    const address = order.shippingAddress;
+    
+    // Create delivery object
+    const delivery = {
+      address: address?.buildingName 
+        ? `${address.buildingName}, ${address.street || ''}` 
+        : t("orderDetails.notAvailable"),
+      city: getCityName(address?.city),
+      phone: address?.phoneNumber || t("orderDetails.notAvailable"),
+      flatNumber: address?.flatNumber || "",
+      floorNumber: address?.floorNumber || "",
+      additionalDirections: address?.additionalDirections || ""
+    };
+
+    return {
+      orderId: order.orderId,
+      orderNumber: order.orderNumber,
+      orderDate: formatDate(order.orderDate),
+      estimatedDelivery: formatDate(order.estimadtedDelivereyDate),
+      steps,
+      items,
+      payment: {
+        method: t("orderDetails.cashOnDelivery"),
+        lastFourDigits: "",
+        icon: undefined
+      },
+      delivery,
+      summary,
+      total: formatCurrency(order.total)
+    };
+  };
+
+const getCityName = (cityCode: number | undefined) => {
+  if (!cityCode) return t("orderDetails.notAvailable");
+  
+  const cityCodes: Record<number, string> = {
+    1: isRTL ? "القاهرة" : "Cairo",
+    2: isRTL ? "الإسكندرية" : "Alexandria",
+    3: isRTL ? "الجيزة" : "Giza",
+    4: isRTL ? "شرم الشيخ" : "Sharm El Sheikh",
+    5: isRTL ? "الغردقة" : "Hurghada",
+    // Add more cities as needed
+  };
+  
+  return cityCodes[cityCode] || `${t("orderDetails.city")} ${cityCode}`;
+};
+
+
+  if (error) {
+    return <ErrorAlert message={error} />;
   }
 
   if (!orderData) {
-    return <div className="text-center mt-10 text-wine">Order not found.</div>;
+    return <div className="text-center mt-10 text-wine">{t("orderDetails.notFound")}</div>;
   }
 
   const {
+    orderNumber,
     orderDate,
     estimatedDelivery,
     steps,
@@ -154,49 +280,49 @@ const OrderDetails: React.FC = () => {
     payment,
     delivery,
     summary,
-    orderId,
+    total
   } = orderData;
 
   const activeStepIndex = steps.findIndex((step) => !step.completed);
-  const activeStep =
-    activeStepIndex === -1 ? steps.length - 1 : activeStepIndex;
+  const activeStep = activeStepIndex === -1 ? steps.length - 1 : activeStepIndex;
 
   return (
     <div className="container mx-auto mt-8 md:mt-16 px-4">
       <Breadcrumb />
 
       {/* Divider */}
-      <Category SectionName={"Order Details"} mdMyValue={"md:my-2"} />
+      <Category SectionName={t("orderDetails.title")} mdMyValue={"md:my-2"} />
 
-      <div className="mx-2 md:mx-20">
+      <div className={`mx-2 md:mx-20 ${isRTL ? 'rtl' : 'ltr'}`}>
         <div className="flex flex-col w-full">
           {/* Order ID and Return Button */}
           <div className="flex flex-col md:flex-row justify-between gap-4 my-2 items-center">
             <h2 className="text-xl md:text-2xl font-semibold font-playfair text-wine">
-              Order ID: <span className="font-normal">{orderId}</span>
+              {t("orderDetails.orderNumber")}: <span className="font-normal">#{orderNumber}</span>
             </h2>
             <button className="bg-wine text-mainColor font-playfair px-8 py-2 rounded-md hover:bg-ForthColor text-lg md:text-xl">
-              Return
+              {t("orderDetails.return")}
             </button>
           </div>
 
           {/* Order Status */}
-          <div className="flex flex-row gap-4 w-full my-4 items-center  border-b-2 border-ForthColor/50 pb-8">
+          <div className="flex flex-row gap-4 w-full my-4 items-center border-b-2 border-ForthColor/50 pb-8">
             <p className="text-ForthColor font-Poppins text-xs md:text-xl font-medium">
-              Order date: <span className="text-wine">{orderDate}</span>
+              {t("orderDetails.orderDate")}: <span className="text-wine">{orderDate}</span>
             </p>
             <span className="text-green font-Poppins text-base md:text-xl font-medium">
               |
             </span>
-            <img src={truck} alt="Truck Icon" className="w-6 h-6" />
+            <img src={truck} alt={t("orderDetails.delivery")} className="w-6 h-6" />
             <p className="text-green font-Poppins text-xs md:text-xl font-medium">
-              Estimated delivery: {estimatedDelivery}
+              {t("orderDetails.estimatedDelivery")}: {estimatedDelivery}
             </p>
           </div>
+          
         </div>
 
         {/* Timeline using Material-UI Stepper */}
-        <div className="flex justify-center my-2 items-center">
+        <div className="flex justify-center my-2 items-center overflow-x-auto">
           <Box
             sx={{
               width: { sm: "90%", md: "100%" },
@@ -211,6 +337,7 @@ const OrderDetails: React.FC = () => {
               activeStep={activeStep}
               alternativeLabel
               connector={<CustomStepConnector />}
+              sx={{ minWidth: steps.length * 150 }}
             >
               {steps.map((step, index) => (
                 <Step key={step.label}>
@@ -261,9 +388,12 @@ const OrderDetails: React.FC = () => {
             <div key={index} className="flex justify-between items-center py-4">
               <div className="flex items-center">
                 <img
-                  src={item.image || fallbackImage}
+                  src={item.image}
                   alt={item.name}
                   className="w-16 h-16 object-cover rounded mr-4"
+                  onError={(e) => {
+                    e.currentTarget.src = "https://via.placeholder.com/64";
+                  }}
                 />
                 <div>
                   <h4 className="font-semibold text-wine font-playfair text-xs md:text-xl">
@@ -277,7 +407,7 @@ const OrderDetails: React.FC = () => {
               <div className="text-right">
                 <p className="text-wine font-semibold text-xs md:text-lg">{item.price}</p>
                 <p className="text-ForthColor text-sm md:text-base font-Poppins">
-                  Qty: {item.quantity}
+                  {t("orderDetails.qty")}: {item.quantity}
                 </p>
               </div>
             </div>
@@ -288,10 +418,10 @@ const OrderDetails: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div>
             <h3 className="text-lg md:text-xl font-Poppins font-semibold text-wine">
-              Payment
+              {t("orderDetails.payment")}
             </h3>
             <p className="text-ForthColor text-xs md:text-base font-Poppins flex items-center">
-              {payment.method} *{payment.lastFourDigits}
+              {payment.method} {payment.lastFourDigits}
               {payment.icon && (
                 <img src={payment.icon} alt={payment.method} className="ml-2" />
               )}
@@ -300,20 +430,30 @@ const OrderDetails: React.FC = () => {
 
           <div>
             <h3 className="text-lg md:text-xl font-Poppins font-semibold text-wine">
-              Delivery
+              {t("orderDetails.delivery")}
             </h3>
             <p className="text-ForthColor text-base md:text-lg font-Poppins">
               {delivery.address}
             </p>
+            {delivery.flatNumber && delivery.floorNumber && (
+              <p className="text-ForthColor text-base md:text-lg font-Poppins">
+                {t("orderDetails.flat")} {delivery.flatNumber}, {t("orderDetails.floor")} {delivery.floorNumber}
+              </p>
+            )}
             <p className="text-ForthColor text-base md:text-lg font-Poppins">
               {delivery.city}
             </p>
             <p className="text-ForthColor text-base md:text-lg font-Poppins">
-              {delivery.phone}
+              {t("orderDetails.phone")}: {delivery.phone}
             </p>
+            {delivery.additionalDirections && (
+              <p className="text-ForthColor text-base md:text-lg font-Poppins">
+                {delivery.additionalDirections}
+              </p>
+            )}
             <div className="border-t border-ForthColor mt-4 pt-2">
               <h3 className="text-lg md:text-xl font-Poppins font-semibold text-wine">
-                Order Summary
+                {t("orderDetails.orderSummary")}
               </h3>
               {summary.map((item, index) => (
                 <div key={index} className="flex justify-between mb-2">
@@ -327,10 +467,10 @@ const OrderDetails: React.FC = () => {
               ))}
               <div className="flex justify-between border-ForthColor border-t border-dotted mt-4 pt-2">
                 <p className="text-lg md:text-xl font-Poppins font-semibold text-wine">
-                  Total
+                  {t("orderDetails.total")}
                 </p>
                 <p className="text-ForthColor text-base md:text-lg font-Poppins">
-                  {orderData.total || "N/A"}
+                  {total}
                 </p>
               </div>
             </div>

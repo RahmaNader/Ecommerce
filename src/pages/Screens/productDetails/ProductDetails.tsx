@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useTranslation } from "react-i18next"; // Add this import
+import { useTranslation } from "react-i18next"; 
 import { CardComponent } from "@types";
 import { fetchProductDetails } from "@services/api/fetchProductDetails";
 import { fetchRelatedProducts } from "@services/api/fetchCollections";
@@ -10,8 +10,8 @@ import { ProductsView, Loading } from "@components/molecules";
 
 const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { i18n } = useTranslation(); // Add this hook
-  const isArabic = i18n.language === 'ar'; // Check if language is Arabic
+  const { i18n } = useTranslation(); 
+  const isArabic = i18n.language === 'ar'; 
   
   const [loading, setLoading] = useState(true);
   const [product, setProduct] = useState<CardComponent | null>(null);
@@ -54,9 +54,7 @@ const ProductDetails: React.FC = () => {
   if (!product) return <div className="text-center mt-20">Product not found</div>;
 
   return (
-    <div className={`flex flex-col gap-8 px-10 w-full ${isArabic ? 'rtl' : 'ltr'}`}>
-      {/* Pass isArabic to child components */}
-      <ProductSection product={product} isArabic={isArabic} />
+    <div className={`flex flex-col gap-8 px-10 w-full ${isArabic ? 'rtl' : 'ltr'}`}>      <ProductSection product={product} isArabic={isArabic} />
       
       <Category SectionName={isArabic ? "التقييمات والمراجعات" : "Rating And Reviews"} />
       

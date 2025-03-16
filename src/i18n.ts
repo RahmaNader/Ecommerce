@@ -226,6 +226,9 @@ const resources = {
         shareProduct: "Share Product",
         toggleWishlist: "Toggle wishlist",
         currency: "EGP",
+        urlCopiedToClipboard: "Product URL copied to clipboard!",
+        failedToCopyUrl: "Failed to copy URL to clipboard",
+        browserDoesNotSupportSharing: "Your browser does not support sharing",
       },
       reviews: {
         allReviews: "All Reviews",
@@ -376,7 +379,11 @@ const resources = {
         status_pending: "Pending",
         status_processing: "Processing",
         status_shipped: "Shipped",
-        status_delivered: "Delivered"
+        status_delivered: "Delivered",
+        status_confirmed: "Confirmed",
+        status_pre_production: "Pre-Production",
+        status_in_production: "In Production", 
+        status_out_for_delivery: "Out For Delivery",
       },
       card: {
         addToCart: "Add to Cart",
@@ -436,6 +443,40 @@ const resources = {
           message: "Your verification failed",
           tryAgain: "Try Again",
           altText: "Failed Verification ID"
+        }
+      },
+      orderDetails: {
+        title: "Order Details",
+        noOrderId: "Order ID not found",
+        loadError: "Error loading order details",
+        notFound: "Order not found",
+        orderNumber: "Order Number",
+        orderDate: "Order date",
+        estimatedDelivery: "Estimated delivery",
+        return: "Return",
+        cashOnDelivery: "Cash On Delivery",
+        notAvailable: "Not available",
+        city: "City",
+        qty: "Qty",
+        payment: "Payment",
+        delivery: "Delivery",
+        orderSummary: "Order Summary",
+        total: "Total",
+        subtotal: "Subtotal",
+        discount: "Discount",
+        shipping: "Shipping",
+        phone: "Phone",
+        flat: "Flat",
+        floor: "Floor",
+        processing: "Processing",
+        unknownProduct: "Unknown Product",
+        steps: {
+          confirmed: "Order Confirmed",
+          preProduction: "Pre-Production",
+          inProduction: "In Production",
+          shipped: "Shipped",
+          outForDelivery: "Out For Delivery",
+          delivered: "Delivered"
         }
       }
     },
@@ -662,6 +703,9 @@ const resources = {
         shareProduct: "مشاركة المنتج",
         toggleWishlist: "تبديل قائمة الرغبات",
         currency: "ج.م",
+        urlCopiedToClipboard: "تم نسخ رابط المنتج إلى الحافظة!",
+        failedToCopyUrl: "فشل نسخ الرابط إلى الحافظة",
+        browserDoesNotSupportSharing: "متصفحك لا يدعم المشاركة",
       },
       reviews: {
         allReviews: "جميع التقييمات",
@@ -812,7 +856,11 @@ const resources = {
         status_pending: "قيد الانتظار",
         status_processing: "قيد المعالجة",
         status_shipped: "تم الشحن",
-        status_delivered: "تم التوصيل"
+        status_delivered: "تم التوصيل",
+        status_confirmed: "تم التأكيد",
+        status_pre_production: "ما قبل الإنتاج",
+        status_in_production: "قيد الإنتاج",
+        status_out_for_delivery: "خارج للتوصيل",
       },
       card: {
         addToCart: "إضافة إلى السلة",
@@ -872,6 +920,40 @@ const resources = {
           message: "فشل التحقق من الهوية",
           tryAgain: "حاول مرة أخرى",
           altText: "فشل التحقق من الهوية"
+        }
+      },
+      orderDetails: {
+        title: "تفاصيل الطلب",
+        noOrderId: "لم يتم العثور على معرف الطلب",
+        loadError: "خطأ في تحميل تفاصيل الطلب",
+        notFound: "الطلب غير موجود",
+        orderNumber: "رقم الطلب",
+        orderDate: "تاريخ الطلب",
+        estimatedDelivery: "موعد التسليم المتوقع",
+        return: "إرجاع",
+        cashOnDelivery: "الدفع عند الاستلام",
+        notAvailable: "غير متاح",
+        city: "المدينة",
+        qty: "الكمية",
+        payment: "الدفع",
+        delivery: "التوصيل",
+        orderSummary: "ملخص الطلب",
+        total: "الإجمالي",
+        subtotal: "المجموع الفرعي",
+        discount: "الخصم",
+        shipping: "الشحن",
+        phone: "الهاتف",
+        flat: "شقة",
+        floor: "طابق",
+        processing: "قيد المعالجة",
+        unknownProduct: "منتج غير معروف",
+        steps: {
+          confirmed: "تم تأكيد الطلب",
+          preProduction: "ما قبل الإنتاج",
+          inProduction: "قيد الإنتاج",
+          shipped: "تم الشحن",
+          outForDelivery: "خارج للتسليم",
+          delivered: "تم التسليم"
         }
       }
     },
