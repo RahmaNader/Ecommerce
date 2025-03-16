@@ -8,7 +8,7 @@ import { Product } from "@types";
 import { OrderSummary } from "@components/organisms";
 import { useTranslation } from "react-i18next"; 
 import placeOrder from "@services/api/placeOrder";
-import { fetchProductVariant } from "@services/api/fetchVariants";
+// import { fetchProductVariant } from "@services/api/fetchVariants";
 
 import {
   ToggleRadioButton,
@@ -216,32 +216,26 @@ export default function CheckOut() {
     console.log("[CheckOut] Starting order placement...");
     
     try {
-      const shoppingItems = await Promise.all(products.map(async (product) => {
-        let variantId = product.productVarientId;
-        if (!variantId) {
-          try {
-            const variants = await fetchProductVariant(product.productID || product.id);
-            if (variants && variants.length > 0) {
-              // Optionally, you can refine your selection by matching color/size
-              variantId = variants[0].productVarientId;
-            }
-          } catch (fetchError) {
-            console.error(`[CheckOut] Failed to fetch variant for product ${product.id}:`, fetchError);
-          }
+      // Modified to use product.productID instead of variant ID
+      const shoppingItems = products.map((product) => {
+        // Use productID (main product ID) directly instead of variant ID
+        const productId = product.productID || product.id;
+        console.log(`[CheckOut] Product ID for ${product.name}: ${productId}`);
+        
+        if (!productId) {
+          throw new Error(`Missing product ID for item ${product.name}`);
         }
-        // If still missing, throw an error to avoid sending invalid data
-        if (!variantId) {
-          throw new Error(`Missing variant ID for product ${product.id}`);
-        }
+        
         const item = {
-          productId: typeof variantId === "string" ? parseInt(variantId, 10) : variantId,
+          productId: typeof productId === "string" ? parseInt(productId, 10) : productId,
           quantity: product.quantity,
           color: product.color || "Default",
           sizeLabel: product.size || "Default",
         };
-        console.log(`[CheckOut] Formatted order item for product ${product.id}:`, item);
+        
+        console.log(`[CheckOut] Using productID: ${productId} instead of variant ID for ${product.name}`);
         return item;
-      }));
+      });
       
       const orderData = {
         city: selectedAddress.city,

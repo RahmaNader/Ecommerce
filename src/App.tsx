@@ -4,7 +4,7 @@ import { Navbar } from "@components/organisms";
 import { AuthProvider } from "@services/auth/AuthContext";
 import { router } from "./router";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { LanguageProvider } from "./context/LanguageProvider"; // Import new provider
+import { LanguageProvider } from "./context/LanguageProvider"; 
 
 import "./i18n"; 
 
@@ -12,7 +12,7 @@ function App() {
   const queryClient = new QueryClient();
 
   return (
-    <LanguageProvider> {/* Wrap the entire app */}
+    <LanguageProvider> 
       <Suspense fallback="Loading...">
         <AuthProvider>
           <QueryClientProvider client={queryClient}>

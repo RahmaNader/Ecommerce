@@ -3,6 +3,12 @@ import { ErrorAlert, ProductCount } from "@components/atoms";
 import { ProductVariant, SizeQuantity } from "@types";
 import { useTranslation } from "react-i18next";
 
+// Add a type for color options
+interface ColorOption {
+  name: string;
+  code: string;
+}
+
 interface ProductPreferenceProps {
   product: {
     productVarients?: { $id: string; $values: ProductVariant[] } | ProductVariant[];
@@ -30,7 +36,7 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
   onSubmit,
   onCancel,
 }) => {
-  const { t } = useTranslation(); // Add the translation hook
+  const { t } = useTranslation();
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
@@ -51,8 +57,8 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
     variants = product.productVarients.$values;
   }
 
-  // Extract unique colors from variants
-  const colors = Array.from(
+  // Extract unique colors from variants with proper typing
+  const colors: ColorOption[] = Array.from(
     new Map(
       variants.map((variant) => [variant.colorNameEn, { name: variant.colorNameEn || "Unknown", code: variant.colorCode }])
     ).values()
@@ -71,7 +77,7 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
         quantity,
         price: product.productPrice || 0,
         priceAfterDiscount: product.priceAfterDiscount || 0,
-        imageUrl: product.productImages ? (Array.isArray(product.productImages) ? product.productImages[0].imageUrl : product.productImages.$values[0].imageUrl) : "",
+        imageUrl: product.productImages ? (Array.isArray(product.productImages) ? product.productImages[0]?.imageUrl : product.productImages.$values[0]?.imageUrl) : "",
         name: product.name || "",
         productId: product.productID || 0,
       });
@@ -105,7 +111,7 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
         {/* Color Selection */}
         <p className="font-playfair font-semibold text-lg text-wine mb-4">{t("productPreference.chooseColor")}</p>
         <div className="flex gap-3 mb-4">
-          {colors.map((colorOption, index) => (
+          {colors.map((colorOption: ColorOption, index) => (
             <div key={index} className="flex flex-col items-center">
               <div
                 className={`w-10 h-10 rounded-full cursor-pointer border-2 ${
@@ -114,7 +120,7 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
                 style={{ backgroundColor: colorOption.code }}
                 onClick={() => {
                   setSelectedColor(colorOption.name);
-                  setSelectedSize(null); // Reset size when color changes.
+                  setSelectedSize(null); // Reset size when color changes
                 }}
                 title={colorOption.name} // Add title attribute for accessibility
               />

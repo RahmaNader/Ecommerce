@@ -17,7 +17,7 @@ const AuthPage: React.FC = () => {
   };
 
   return (
-    <div className="flex w-4/5 flex-col my-6 justify-center items-center mx-auto">
+    <div className="flex w-4/5 flex-col my-6 justify-center items-center mx-auto max-w-[1000px]">
       <div className="flex justify-start w-full">
         <Breadcrumb />
       </div>
@@ -45,7 +45,7 @@ const AuthPage: React.FC = () => {
         </button>
       </div>
 
-      <div className="w-full">
+      <div className="w-full max-w-[1000px]">
         {isLogin ? (
           <LoginForm onSwitchToSignUp={handleRegisterClick} />
         ) : (

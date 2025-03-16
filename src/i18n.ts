@@ -378,6 +378,66 @@ const resources = {
         status_shipped: "Shipped",
         status_delivered: "Delivered"
       },
+      card: {
+        addToCart: "Add to Cart",
+        addedToCart: "Item added successfully to cart",
+        productImage: "Product Image",
+        priceInCurrency: "{{price}} EGP",
+        shopNow: "Shop Now",
+        viewDetails: "View Details"
+      },
+      paymentCreditCard: {
+        title: "Payment & Credit Card",
+        subtitle: "Manage payment method",
+        addNewCard: "Add new card",
+        masterCardLogoAlt: "MasterCard Logo",
+        visaLogoAlt: "Visa Logo",
+        confirm: "Confirm"
+      },
+      addCreditCardModal: {
+        title: "Add your payment method",
+        cardType: "Card Type",
+        selectCardType: "Select card type",
+        visa: "Visa",
+        masterCard: "MasterCard",
+        cardNumber: "Card number",
+        nameOnCard: "Name on card",
+        expiryDate: "Expiry date (MM/YY)",
+        cvv: "CVV",
+        cancel: "Cancel",
+        confirm: "Confirm",
+        fillAllFields: "Please fill out all fields"
+      },
+      verification: {
+        title: "Verification",
+        subtitle: "Add your ID card",
+        idCard: "ID Card",
+        uploadID: {
+          title: "ID Card",
+          instructions: "Attach a clear photo of the front and back of the ID",
+          altText: "ID Upload Area"
+        },
+        reviewUpload: {
+          checkInfo: "Please check if your ID information is clear and visible",
+          delete: "Delete",
+          submit: "Submit",
+          altText: "ID Preview"
+        },
+        pendingVerification: {
+          status: "Pending",
+          message: "Your request has been successfully processed and will be responded to within two business days.",
+          altText: "Pending ID Verification"
+        },
+        verificationSuccess: {
+          message: "Your verification was successful!",
+          altText: "Successfully Verified ID"
+        },
+        verificationFailed: {
+          message: "Your verification failed",
+          tryAgain: "Try Again",
+          altText: "Failed Verification ID"
+        }
+      }
     },
   },
   ar: {
@@ -754,6 +814,66 @@ const resources = {
         status_shipped: "تم الشحن",
         status_delivered: "تم التوصيل"
       },
+      card: {
+        addToCart: "إضافة إلى السلة",
+        addedToCart: "تمت إضافة المنتج إلى السلة بنجاح",
+        productImage: "صورة المنتج",
+        priceInCurrency: "{{price}} ج.م",
+        shopNow: "تسوق الآن",
+        viewDetails: "عرض التفاصيل"
+      },
+      paymentCreditCard: {
+        title: "الدفع وبطاقة الائتمان",
+        subtitle: "إدارة طريقة الدفع",
+        addNewCard: "إضافة بطاقة جديدة",
+        masterCardLogoAlt: "شعار ماستر كارد",
+        visaLogoAlt: "شعار فيزا",
+        confirm: "تأكيد"
+      },
+      addCreditCardModal: {
+        title: "إضافة طريقة الدفع",
+        cardType: "نوع البطاقة",
+        selectCardType: "اختر نوع البطاقة",
+        visa: "فيزا",
+        masterCard: "ماستر كارد",
+        cardNumber: "رقم البطاقة",
+        nameOnCard: "الاسم على البطاقة",
+        expiryDate: "تاريخ الانتهاء (شهر/سنة)",
+        cvv: "رمز التحقق CVV",
+        cancel: "إلغاء",
+        confirm: "تأكيد",
+        fillAllFields: "يرجى ملء جميع الحقول"
+      },
+      verification: {
+        title: "التحقق",
+        subtitle: "أضف بطاقة الهوية الخاصة بك",
+        idCard: "بطاقة الهوية",
+        uploadID: {
+          title: "بطاقة الهوية",
+          instructions: "قم بإرفاق صورة واضحة للوجه الأمامي والخلفي للبطاقة",
+          altText: "منطقة تحميل الهوية"
+        },
+        reviewUpload: {
+          checkInfo: "يرجى التحقق من وضوح ورؤية معلومات الهوية الخاصة بك",
+          delete: "حذف",
+          submit: "إرسال",
+          altText: "معاينة الهوية"
+        },
+        pendingVerification: {
+          status: "قيد الانتظار",
+          message: "تمت معالجة طلبك بنجاح وسيتم الرد عليه في غضون يومي عمل.",
+          altText: "التحقق من الهوية قيد الانتظار"
+        },
+        verificationSuccess: {
+          message: "تم التحقق بنجاح!",
+          altText: "تم التحقق من الهوية بنجاح"
+        },
+        verificationFailed: {
+          message: "فشل التحقق من الهوية",
+          tryAgain: "حاول مرة أخرى",
+          altText: "فشل التحقق من الهوية"
+        }
+      }
     },
   },
 };
