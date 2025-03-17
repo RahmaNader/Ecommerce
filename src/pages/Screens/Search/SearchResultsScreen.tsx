@@ -16,8 +16,16 @@ const SearchResultsScreen: React.FC = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState(1);
-  const pageSize = 20;
+
+  const getLocalizedSearchTerm = (term: string): string => {
+    const popularTerms = ['jacket', 'shirt', 'dress', 'pants', 'shoes'];
+    if (isRTL && popularTerms.includes(term.toLowerCase())) {
+      return t(`search.popular.${term.toLowerCase()}`);
+    }
+    return term;
+  };
+
+  const localizedQuery = getLocalizedSearchTerm(query);
 
   useEffect(() => {
     const fetchSearchResults = async () => {
@@ -26,7 +34,7 @@ const SearchResultsScreen: React.FC = () => {
       setIsLoading(true);
       setError(null);
       try {
-        const results = await searchProducts(query, page, pageSize, !isRTL);
+        const results = await searchProducts(query, !isRTL);
         setProducts(results.products);
         setTotalCount(results.totalCount);
       } catch (err) {
@@ -38,77 +46,54 @@ const SearchResultsScreen: React.FC = () => {
     };
 
     fetchSearchResults();
-  }, [query, page, pageSize, isRTL, t]);
+  }, [query,  isRTL, t]);
+
+
 
   return (
-    <div className="flex flex-col w-full mt-8 px-4">
-      <Breadcrumb />
-      
-      <h1 className="text-3xl text-wine font-playfair font-semibold my-6">
-        {t("search.resultsFor")} "{query}"
-      </h1>
-      
-      {isLoading && (
-        <div className="flex justify-center items-center min-h-[200px]">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-wine"></div>
-        </div>
-      )}
-      
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-          <span className="block sm:inline">{error}</span>
-        </div>
-      )}
-      
-      {!isLoading && !error && (
-        <>
-          <p className="text-lg text-ForthColor mb-6">
-            {t("search.showing")} {products.length} {t("search.of")} {totalCount} {t("search.results")}
-          </p>
-          
-          {products.length > 0 ? (
-            <ProductsDisplay products={products} language={isRTL ? "ar" : "en"} />
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-xl text-ForthColor">{t("search.noProductsFound")}</p>
-              <p className="mt-2 text-wine">{t("search.tryDifferentKeywords")}</p>
-            </div>
-          )}
-          
-          {totalCount > pageSize && (
-            <div className="flex justify-center mt-10 mb-8">
-              {/* Pagination buttons */}
-              <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className={`px-4 py-2 mx-1 rounded ${
-                  page === 1
-                    ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                    : "bg-wine text-white hover:bg-wine/80"
-                }`}
-              >
-                {t("pagination.previous")}
-              </button>
-              
-              <span className="flex items-center px-4">
-                {t("pagination.page")} {page} {t("pagination.of")} {Math.ceil(totalCount / pageSize)}
-              </span>
-              
-              <button
-                onClick={() => setPage(p => p + 1)}
-                disabled={page >= Math.ceil(totalCount / pageSize)}
-                className={`px-4 py-2 mx-1 rounded ${
-                  page >= Math.ceil(totalCount / pageSize)
-                    ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                    : "bg-wine text-white hover:bg-wine/80"
-                }`}
-              >
-                {t("pagination.next")}
-              </button>
-            </div>
-          )}
-        </>
-      )}
+    <div className="flex flex-col items-center w-full">
+      {/* Container with max-width and centered */}
+      <div className="w-full max-w-[800px] px-4 sm:px-6 py-4 sm:py-6 md:py-8">
+        <Breadcrumb />
+        
+        <h1 className="text-2xl sm:text-3xl text-wine font-playfair font-semibold mt-4 mb-4 sm:mb-6">
+          {t("search.resultsFor")} "{localizedQuery}"
+        </h1>
+        
+        {isLoading && (
+          <div className="flex justify-center items-center min-h-[200px]">
+            <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-t-2 border-b-2 border-wine"></div>
+          </div>
+        )}
+        
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-3 py-2 sm:px-4 sm:py-3 rounded relative my-4" role="alert">
+            <span className="block text-sm sm:text-base">{error}</span>
+          </div>
+        )}
+        
+        {!isLoading && !error && (
+          <>
+            <p className="text-base sm:text-lg text-ForthColor mb-4 sm:mb-6">
+              {t("search.showing")} {totalCount} {t("search.results")}
+            </p>
+            
+            {products.length > 0 ? (
+              <div className="w-full">
+                <ProductsDisplay 
+                  products={products} 
+                  language={isRTL ? "ar" : "en"}
+                />
+              </div>
+            ) : (
+              <div className="text-center py-8 sm:py-12">
+                <p className="text-lg sm:text-xl text-ForthColor">{t("search.noProductsFound")}</p>
+                <p className="mt-2 text-sm sm:text-base text-wine">{t("search.tryDifferentKeywords")}</p>
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 };

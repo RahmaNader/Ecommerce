@@ -19,7 +19,7 @@ const SearchScreen: React.FC = () => {
           {t("search.popularSearches")}
         </h2>
         <div className="flex flex-wrap gap-3">
-          {["jackets", "shirts", "dresses", "pants", "shoes"].map((term) => (
+          {["jacket", "shirt", "dress", "pants", "shoes"].map((term) => (
             <div 
               key={term}
               className="px-4 py-2 bg-ForthColor/10 hover:bg-ForthColor/20 text-wine rounded-full cursor-pointer"

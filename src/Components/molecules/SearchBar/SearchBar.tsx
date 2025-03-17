@@ -50,7 +50,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onResultClick }) => {
       setError(null);
       
       try {
-        const result = await searchProducts(query, 1, 8, !isRTL);
+        const result = await searchProducts(query, !isRTL);
         setResults(result.products);
         setShowResults(true);
       } catch (err) {

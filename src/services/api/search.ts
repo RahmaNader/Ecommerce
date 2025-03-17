@@ -58,8 +58,6 @@ export interface SearchResponse {
 
 export const searchProducts = async (
   query: string,
-  pageNumber: number = 1,
-  pageSize: number = 10,
   isEnglish: boolean = true
 ): Promise<{ products: CardComponent[], totalCount: number }> => {
   try {
@@ -76,7 +74,7 @@ export const searchProducts = async (
 
     // Make API request - now using the isEnglish parameter 
     const response = await axios.get<SearchResponse>(
-      `https://www.bouraq-mt.com/royalkey/api/Product?search=${encodeURIComponent(query)}&pageNumber=${pageNumber}&pageSize=${pageSize}&isEnglish=${isEnglish}`,
+      `https://www.bouraq-mt.com/royalkey/api/Product?search=${encodeURIComponent(query)}&isEnglish=${isEnglish}`,
       { headers }
     );
 

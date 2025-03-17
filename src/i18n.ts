@@ -497,9 +497,9 @@ const resources = {
         popularSearches: "Popular searches",
         errorFetching: "Error fetching search results",
         popular: {
-          jackets: "Jackets",
-          shirts: "Shirts",
-          dresses: "Dresses", 
+          jacket: "Jacket",
+          shirt: "Shirt",
+          dress: "Dress", 
           pants: "Pants",
           shoes: "Shoes"
         }
@@ -999,11 +999,11 @@ const resources = {
         popularSearches: "عمليات البحث الشائعة",
         errorFetching: "خطأ في جلب نتائج البحث",
         popular: {
-          jackets: "جواكت",
-          shirts: "قمصان",
-          dresses: "فساتين", 
-          pants: "بنطلونات",
-          shoes: "أحذية"
+          jacket: "جاكت",
+          shirt: "قميص",
+          dress: "فستان", 
+          pants: "بنطلون",
+          shoes: "حذاء"
         }
       },
     },
