@@ -2,9 +2,8 @@ import React, { useState } from "react";
 import { ToggleRadioButton } from "@components/atoms";
 import visaLogo from "@assets/visa.svg";
 import masterCardLogo from "@assets/master card.svg";
-import CardModal from "../CardModal/CardModal"; 
+import {CardModal, PaymentCard} from "@components/molecules"; 
 import addCardPlusIcon from "@assets/add-card-plus-icon.svg";
-import PaymentCard from "../PaymentCard/PaymentCard";
 
 interface PaymentMethodProps {
   selectedPaymentMethod: string;
@@ -119,61 +118,3 @@ const PaymentMethod: React.FC<PaymentMethodProps> = ({
 };
 
 export default PaymentMethod;
-
-
-
-// import { ToggleRadioButton } from "@components/atoms";
-// import visaLogo from '../../../assets/visa.svg'
-// import masterCardLogo from '../../../assets/master card.svg'
-
-// interface PaymentMethodProps {
-//   selectedPaymentMethod: string;
-//   onPaymentMethodChange: (method: string) => void;
-// }
-
-// const PaymentMethod: React.FC<PaymentMethodProps> = ({
-//   selectedPaymentMethod,
-//   onPaymentMethodChange,
-// }) => {
-//   return (
-//     <div className="space-y-2 my-5 px-12">
-//       <h2 className="text-xl font-semibold text-wine">Payment Method</h2>
-
-//       {/* Cash on Delivery option */}
-//       <div className="py-5 flex border-b border-b-gray-300 text-wine">
-//         <div className="w-full flex justify-between items-center">
-//           <div className="w-full flex justify-between">
-//             <div>
-//               <ToggleRadioButton
-//                 label="Cash on Delivery"
-//                 isChecked={selectedPaymentMethod === "cash"}
-//                 onChange={() => onPaymentMethodChange("cash")}
-//               />
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-
-//       {/* Credit Card option */}
-//       <div className="py-5 flex text-wine">
-//         <div className="w-full flex justify-between items-center">
-//           <div className="w-full flex justify-between">
-//             <div>
-//               <ToggleRadioButton
-//                 label="Credit Card"
-//                 isChecked={selectedPaymentMethod === "credit"}
-//                 onChange={() => onPaymentMethodChange("credit")}
-//               />
-//             </div>
-//             <div className="flex">
-//                 <img src={visaLogo} alt="" />
-//                 <img src={masterCardLogo} alt="" />
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default PaymentMethod;

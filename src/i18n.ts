@@ -226,6 +226,9 @@ const resources = {
         shareProduct: "Share Product",
         toggleWishlist: "Toggle wishlist",
         currency: "EGP",
+        urlCopiedToClipboard: "Product URL copied to clipboard!",
+        failedToCopyUrl: "Failed to copy URL to clipboard",
+        browserDoesNotSupportSharing: "Your browser does not support sharing",
       },
       reviews: {
         allReviews: "All Reviews",
@@ -376,7 +379,130 @@ const resources = {
         status_pending: "Pending",
         status_processing: "Processing",
         status_shipped: "Shipped",
-        status_delivered: "Delivered"
+        status_delivered: "Delivered",
+        status_confirmed: "Confirmed",
+        status_pre_production: "Pre-Production",
+        status_in_production: "In Production", 
+        status_out_for_delivery: "Out For Delivery",
+      },
+      card: {
+        addToCart: "Add to Cart",
+        addedToCart: "Item added successfully to cart",
+        productImage: "Product Image",
+        priceInCurrency: "{{price}} EGP",
+        shopNow: "Shop Now",
+        viewDetails: "View Details"
+      },
+      paymentCreditCard: {
+        title: "Payment & Credit Card",
+        subtitle: "Manage payment method",
+        addNewCard: "Add new card",
+        masterCardLogoAlt: "MasterCard Logo",
+        visaLogoAlt: "Visa Logo",
+        confirm: "Confirm"
+      },
+      addCreditCardModal: {
+        title: "Add your payment method",
+        cardType: "Card Type",
+        selectCardType: "Select card type",
+        visa: "Visa",
+        masterCard: "MasterCard",
+        cardNumber: "Card number",
+        nameOnCard: "Name on card",
+        expiryDate: "Expiry date (MM/YY)",
+        cvv: "CVV",
+        cancel: "Cancel",
+        confirm: "Confirm",
+        fillAllFields: "Please fill out all fields"
+      },
+      verification: {
+        title: "Verification",
+        subtitle: "Add your ID card",
+        idCard: "ID Card",
+        uploadID: {
+          title: "ID Card",
+          instructions: "Attach a clear photo of the front and back of the ID",
+          altText: "ID Upload Area"
+        },
+        reviewUpload: {
+          checkInfo: "Please check if your ID information is clear and visible",
+          delete: "Delete",
+          submit: "Submit",
+          altText: "ID Preview"
+        },
+        pendingVerification: {
+          status: "Pending",
+          message: "Your request has been successfully processed and will be responded to within two business days.",
+          altText: "Pending ID Verification"
+        },
+        verificationSuccess: {
+          message: "Your verification was successful!",
+          altText: "Successfully Verified ID"
+        },
+        verificationFailed: {
+          message: "Your verification failed",
+          tryAgain: "Try Again",
+          altText: "Failed Verification ID"
+        }
+      },
+      orderDetails: {
+        title: "Order Details",
+        noOrderId: "Order ID not found",
+        loadError: "Error loading order details",
+        notFound: "Order not found",
+        orderNumber: "Order Number",
+        orderDate: "Order date",
+        estimatedDelivery: "Estimated delivery",
+        return: "Return",
+        cashOnDelivery: "Cash On Delivery",
+        notAvailable: "Not available",
+        city: "City",
+        qty: "Qty",
+        payment: "Payment",
+        delivery: "Delivery",
+        orderSummary: "Order Summary",
+        total: "Total",
+        subtotal: "Subtotal",
+        discount: "Discount",
+        shipping: "Shipping",
+        phone: "Phone",
+        flat: "Flat",
+        floor: "Floor",
+        processing: "Processing",
+        unknownProduct: "Unknown Product",
+        steps: {
+          confirmed: "Order Confirmed",
+          preProduction: "Pre-Production",
+          inProduction: "In Production",
+          shipped: "Shipped",
+          outForDelivery: "Out For Delivery",
+          delivered: "Delivered"
+        }
+      },
+      search: {
+        title: "Search Products",
+        placeholder: "Search for products...",
+        buttonText: "Search",
+        loading: "Searching...",
+        noResults: "No products found",
+        errorMessage: "Error searching products",
+        uncategorized: "Uncategorized",
+        viewAllResults: "View all results",
+        resultsFor: "Search results for",
+        showing: "Showing",
+        of: "of",
+        results: "results",
+        noProductsFound: "No products found for your search",
+        tryDifferentKeywords: "Try different keywords or browse our categories",
+        popularSearches: "Popular searches",
+        errorFetching: "Error fetching search results",
+        popular: {
+          jacket: "Jacket",
+          shirt: "Shirt",
+          dress: "Dress", 
+          pants: "Pants",
+          shoes: "Shoes"
+        }
       },
     },
   },
@@ -602,6 +728,9 @@ const resources = {
         shareProduct: "مشاركة المنتج",
         toggleWishlist: "تبديل قائمة الرغبات",
         currency: "ج.م",
+        urlCopiedToClipboard: "تم نسخ رابط المنتج إلى الحافظة!",
+        failedToCopyUrl: "فشل نسخ الرابط إلى الحافظة",
+        browserDoesNotSupportSharing: "متصفحك لا يدعم المشاركة",
       },
       reviews: {
         allReviews: "جميع التقييمات",
@@ -752,7 +881,130 @@ const resources = {
         status_pending: "قيد الانتظار",
         status_processing: "قيد المعالجة",
         status_shipped: "تم الشحن",
-        status_delivered: "تم التوصيل"
+        status_delivered: "تم التوصيل",
+        status_confirmed: "تم التأكيد",
+        status_pre_production: "ما قبل الإنتاج",
+        status_in_production: "قيد الإنتاج",
+        status_out_for_delivery: "خارج للتوصيل",
+      },
+      card: {
+        addToCart: "إضافة إلى السلة",
+        addedToCart: "تمت إضافة المنتج إلى السلة بنجاح",
+        productImage: "صورة المنتج",
+        priceInCurrency: "{{price}} ج.م",
+        shopNow: "تسوق الآن",
+        viewDetails: "عرض التفاصيل"
+      },
+      paymentCreditCard: {
+        title: "الدفع وبطاقة الائتمان",
+        subtitle: "إدارة طريقة الدفع",
+        addNewCard: "إضافة بطاقة جديدة",
+        masterCardLogoAlt: "شعار ماستر كارد",
+        visaLogoAlt: "شعار فيزا",
+        confirm: "تأكيد"
+      },
+      addCreditCardModal: {
+        title: "إضافة طريقة الدفع",
+        cardType: "نوع البطاقة",
+        selectCardType: "اختر نوع البطاقة",
+        visa: "فيزا",
+        masterCard: "ماستر كارد",
+        cardNumber: "رقم البطاقة",
+        nameOnCard: "الاسم على البطاقة",
+        expiryDate: "تاريخ الانتهاء (شهر/سنة)",
+        cvv: "رمز التحقق CVV",
+        cancel: "إلغاء",
+        confirm: "تأكيد",
+        fillAllFields: "يرجى ملء جميع الحقول"
+      },
+      verification: {
+        title: "التحقق",
+        subtitle: "أضف بطاقة الهوية الخاصة بك",
+        idCard: "بطاقة الهوية",
+        uploadID: {
+          title: "بطاقة الهوية",
+          instructions: "قم بإرفاق صورة واضحة للوجه الأمامي والخلفي للبطاقة",
+          altText: "منطقة تحميل الهوية"
+        },
+        reviewUpload: {
+          checkInfo: "يرجى التحقق من وضوح ورؤية معلومات الهوية الخاصة بك",
+          delete: "حذف",
+          submit: "إرسال",
+          altText: "معاينة الهوية"
+        },
+        pendingVerification: {
+          status: "قيد الانتظار",
+          message: "تمت معالجة طلبك بنجاح وسيتم الرد عليه في غضون يومي عمل.",
+          altText: "التحقق من الهوية قيد الانتظار"
+        },
+        verificationSuccess: {
+          message: "تم التحقق بنجاح!",
+          altText: "تم التحقق من الهوية بنجاح"
+        },
+        verificationFailed: {
+          message: "فشل التحقق من الهوية",
+          tryAgain: "حاول مرة أخرى",
+          altText: "فشل التحقق من الهوية"
+        }
+      },
+      orderDetails: {
+        title: "تفاصيل الطلب",
+        noOrderId: "لم يتم العثور على معرف الطلب",
+        loadError: "خطأ في تحميل تفاصيل الطلب",
+        notFound: "الطلب غير موجود",
+        orderNumber: "رقم الطلب",
+        orderDate: "تاريخ الطلب",
+        estimatedDelivery: "موعد التسليم المتوقع",
+        return: "إرجاع",
+        cashOnDelivery: "الدفع عند الاستلام",
+        notAvailable: "غير متاح",
+        city: "المدينة",
+        qty: "الكمية",
+        payment: "الدفع",
+        delivery: "التوصيل",
+        orderSummary: "ملخص الطلب",
+        total: "الإجمالي",
+        subtotal: "المجموع الفرعي",
+        discount: "الخصم",
+        shipping: "الشحن",
+        phone: "الهاتف",
+        flat: "شقة",
+        floor: "طابق",
+        processing: "قيد المعالجة",
+        unknownProduct: "منتج غير معروف",
+        steps: {
+          confirmed: "تم تأكيد الطلب",
+          preProduction: "ما قبل الإنتاج",
+          inProduction: "قيد الإنتاج",
+          shipped: "تم الشحن",
+          outForDelivery: "خارج للتسليم",
+          delivered: "تم التسليم"
+        }
+      },
+      search: {
+        title: "البحث عن المنتجات",
+        placeholder: "ابحث عن المنتجات...",
+        buttonText: "بحث",
+        loading: "جاري البحث...",
+        noResults: "لم يتم العثور على منتجات",
+        errorMessage: "خطأ في البحث عن المنتجات",
+        uncategorized: "بدون تصنيف",
+        viewAllResults: "عرض كل النتائج",
+        resultsFor: "نتائج البحث عن",
+        showing: "عرض",
+        of: "من",
+        results: "نتائج",
+        noProductsFound: "لم يتم العثور على منتجات لعملية البحث هذه",
+        tryDifferentKeywords: "جرب كلمات مختلفة أو تصفح فئاتنا",
+        popularSearches: "عمليات البحث الشائعة",
+        errorFetching: "خطأ في جلب نتائج البحث",
+        popular: {
+          jacket: "جاكت",
+          shirt: "قميص",
+          dress: "فستان", 
+          pants: "بنطلون",
+          shoes: "حذاء"
+        }
       },
     },
   },

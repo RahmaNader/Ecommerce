@@ -4,7 +4,7 @@ import { AddressProps } from '@types';
 interface AddressPostData {
   buildingName: string;
   street: string;
-  city: number; // Note: city is a number in the API
+  city: number; 
   additionalDirections: string;
   flatNumber: number;
   floorNumber: number;
@@ -26,25 +26,22 @@ interface AddressResponse {
   isDefault: boolean;
 }
 
-// City name to ID mapping based on the example
+
 const cityIdMap: Record<string, number> = {
-  // English names
   "Cairo": 1,
   "Alexandria": 2,
   "Giza": 3,
   "Sharm El Sheikh": 4,
   "Hurghada": 5,
-  // Arabic names
   "القاهرة": 1,
   "الإسكندرية": 2,
   "الجيزة": 3,
   "شرم الشيخ": 4,
   "الغردقة": 5,
-  // Add more mappings as needed
 };
 
 export const getCityId = (cityName: string): number => {
-  return cityIdMap[cityName] || 5; // Default to 5 if not found
+  return cityIdMap[cityName] || 5; 
 };
 
 export const postAddress = async (addressData: AddressPostData): Promise<AddressResponse | null> => {
@@ -56,17 +53,13 @@ export const postAddress = async (addressData: AddressPostData): Promise<Address
   }
   
   try {
-    // Format phone number to EXACTLY match the working format
-    // Remove any spaces, dashes or other non-standard characters
     let phoneNumber = addressData.phoneNumber;
     
-    // Ensure it has a + prefix and no spaces or other characters
     phoneNumber = phoneNumber.trim().replace(/\s+/g, '');
     if (!phoneNumber.startsWith('+')) {
       phoneNumber = `+${phoneNumber}`;
     }
     
-    // Create an exact copy of the structure that works in Swagger
     const formattedData = {
       buildingName: addressData.buildingName,
       street: addressData.street,
@@ -105,8 +98,6 @@ export const postAddress = async (addressData: AddressPostData): Promise<Address
   }
 };
 
-// Add this function to fetch all shipping addresses
-
 export const getAllShippingAddresses = async (): Promise<AddressResponse[] | null> => {
   const authToken = Cookies.get('authToken');
   
@@ -139,7 +130,6 @@ export const getAllShippingAddresses = async (): Promise<AddressResponse[] | nul
   }
 };
 
-// Create a function to convert API address format to our AddressProps format
 export const convertApiAddressToAddressProps = (apiAddress: AddressResponse): AddressProps => {
   return {
     id: apiAddress.shippingAddressId,
@@ -148,7 +138,7 @@ export const convertApiAddressToAddressProps = (apiAddress: AddressResponse): Ad
     floor: apiAddress.floorNumber.toString(),
     street: apiAddress.street,
     phoneNumber: apiAddress.phoneNumber,
-    country: "Egypt", // Assuming Egypt as default
+    country: "Egypt", 
     city: getCityNameById(apiAddress.city),
     additionalDirections: apiAddress.additionalDirections,
     saveAddress: apiAddress.isSaved,
@@ -156,16 +146,12 @@ export const convertApiAddressToAddressProps = (apiAddress: AddressResponse): Ad
   };
 };
 
-// Helper function to get city name from ID (reverse of getCityId)
 export const getCityNameById = (cityId: number): string => {
   const englishCities = Object.keys(cityIdMap);
   const cityName = englishCities.find(city => cityIdMap[city] === cityId);
   
-  // Default to first city if not found
   return cityName || "Cairo";
 };
-
-// Add this new delete function after your other API functions
 
 export const deleteAddress = async (shippingAddressId: string): Promise<boolean> => {
   const authToken = Cookies.get('authToken');

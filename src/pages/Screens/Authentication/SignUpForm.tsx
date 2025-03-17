@@ -5,7 +5,7 @@ import "react-phone-input-2/lib/style.css";
 import { SignUpFormInputs } from "@types";
 import IconGoogle from "@assets/Icon-Google.svg";
 import { registerUser } from "@services/auth/AuthService";
-import { ErrorAlert, SuccessAlert,Button } from "@components/atoms";
+import { ErrorAlert, SuccessAlert, Button } from "@components/atoms";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 

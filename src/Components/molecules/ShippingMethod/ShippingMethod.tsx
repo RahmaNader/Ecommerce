@@ -16,12 +16,10 @@ const ShippingMethod: React.FC<ShippingMethodProps> = ({
 }: ShippingMethodProps) => {
   const { t, i18n } = useTranslation();
   
-  // Calculate delivery dates
   const today = new Date();
   const regularDeliveryDate = addDays(today, 5);
   const fastDeliveryDate = addDays(today, 2);
   
-  // Format dates based on language
   const locale = isArabic || i18n.language === 'ar' ? arDZ : enUS;
   const dateFormat = isArabic || i18n.language === 'ar' ? "d MMMM، yyyy" : "d MMM, yyyy";
   

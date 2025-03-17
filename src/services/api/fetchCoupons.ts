@@ -6,7 +6,7 @@ export interface Coupon {
   couponCode: string;
   startDate: string;
   endDate: string;
-  type: number; // 0 = fixed amount, 1 = percentage
+  type: number;
   value: number;
   quantity: number;
   allowFreeShipping: boolean;
@@ -40,7 +40,6 @@ export async function fetchCoupons(): Promise<Coupon[]> {
       "https://www.bouraq-mt.com/royalkey/api/Coupons"
     );
 
-    // Transform API response to our Coupon interface
     return data.$values.map((coupon): Coupon => ({
       couponId: coupon.couponId,
       title: coupon.title,

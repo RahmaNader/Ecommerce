@@ -8,7 +8,6 @@ import { Product } from "@types";
 import { OrderSummary } from "@components/organisms";
 import { useTranslation } from "react-i18next"; 
 import placeOrder from "@services/api/placeOrder";
-import { fetchProductVariant } from "@services/api/fetchVariants";
 
 import {
   ToggleRadioButton,
@@ -52,7 +51,6 @@ export default function CheckOut() {
     "address" | "shipping" | "payment"
   >("address");
 
-  // Add these new states
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
 
@@ -91,7 +89,6 @@ export default function CheckOut() {
       setProducts(JSON.parse(cartData));
     }
     
-    // Ensure we have previous cart state
     if (!Cookies.get('previousCart') && cartData) {
       Cookies.set('previousCart', JSON.stringify(JSON.parse(cartData).map((p: Product) => ({ 
         id: p.id, 
@@ -126,7 +123,6 @@ export default function CheckOut() {
   const handleRemoveAddress = async (index: number) => {
     const addressToDelete = addresses[index];
     
-    // If the address has a shippingAddressId, try to delete it from the backend
     if (addressToDelete.shippingAddressId) {
       try {
         const success = await deleteAddress(addressToDelete.shippingAddressId);
@@ -135,15 +131,12 @@ export default function CheckOut() {
           console.log(`[CheckOut] Successfully deleted address with ID: ${addressToDelete.shippingAddressId} from backend`);
         } else {
           console.log(`[CheckOut] Failed to delete address with ID: ${addressToDelete.shippingAddressId} from backend`);
-          // Even if backend deletion fails, continue with UI update
         }
       } catch (error) {
         console.error(`[CheckOut] Error when deleting address:`, error);
-        // Continue with UI update despite the error
       }
     }
     
-    // Update the local state
     setAddresses((prevAddresses) => {
       const updatedAddresses = prevAddresses.filter((_, i) => i !== index);
       updateSavedAddresses(updatedAddresses);
@@ -216,32 +209,24 @@ export default function CheckOut() {
     console.log("[CheckOut] Starting order placement...");
     
     try {
-      const shoppingItems = await Promise.all(products.map(async (product) => {
-        let variantId = product.productVarientId;
-        if (!variantId) {
-          try {
-            const variants = await fetchProductVariant(product.productID || product.id);
-            if (variants && variants.length > 0) {
-              // Optionally, you can refine your selection by matching color/size
-              variantId = variants[0].productVarientId;
-            }
-          } catch (fetchError) {
-            console.error(`[CheckOut] Failed to fetch variant for product ${product.id}:`, fetchError);
-          }
+      const shoppingItems = products.map((product) => {
+        const productId = product.productVarientId || product.id;
+        console.log(`[CheckOut] Product ID for ${product.name}: ${productId}`);
+        
+        if (!productId) {
+          throw new Error(`Missing product ID for item ${product.name}`);
         }
-        // If still missing, throw an error to avoid sending invalid data
-        if (!variantId) {
-          throw new Error(`Missing variant ID for product ${product.id}`);
-        }
+        
         const item = {
-          productId: typeof variantId === "string" ? parseInt(variantId, 10) : variantId,
+          productId: typeof productId === "string" ? parseInt(productId, 10) : productId,
           quantity: product.quantity,
           color: product.color || "Default",
           sizeLabel: product.size || "Default",
         };
-        console.log(`[CheckOut] Formatted order item for product ${product.id}:`, item);
+        
+        console.log(`[CheckOut] Using productID: ${productId} instead of variant ID for ${product.name}`);
         return item;
-      }));
+      });
       
       const orderData = {
         city: selectedAddress.city,
@@ -411,7 +396,6 @@ export default function CheckOut() {
               <ShippingMethod
                 selectedShippingMethod={selectedShippingMethod}
                 onShippingMethodChange={handleShippingMethodChange}
-                // isArabic={isRTL}
               />
             )}
 
@@ -419,7 +403,6 @@ export default function CheckOut() {
               <PaymentMethod
                 selectedPaymentMethod={selectedPaymentMethod}
                 onPaymentMethodChange={handlePaymentMethodChange}
-                // isArabic={isRTL}
               />
             )}
           </div>

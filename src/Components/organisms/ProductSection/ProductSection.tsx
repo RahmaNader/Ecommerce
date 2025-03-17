@@ -21,7 +21,7 @@ interface ProductSectionProps {
 
 const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = false }) => {
   const { t, i18n } = useTranslation();
-  const navigate = useNavigate(); // Add this line
+  const navigate = useNavigate(); 
   const isRTL = isArabic || i18n.language === 'ar';
   
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
@@ -32,7 +32,6 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
   const [alertType, setAlertType] = useState<"success" | "error" | null>(null);
   const [count, setCount] = useState(1);
 
-  // Get localized content
   const productName = isRTL ? product.nameAr || product.name : product.nameEn || product.name;
   const productDescription = isRTL 
     ? product.productDescriptionAr || product.productDescription 
@@ -68,7 +67,6 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
       return;
     }
 
-    // Get the selected variant
     const selectedVariant = productVariants.find(v => v.colorNameEn === selectedColor);
     
     if (!selectedVariant) {
@@ -78,7 +76,6 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
       return;
     }
     
-    // Make sure we have a valid variant ID
     const variantId = selectedVariant.productVarientId;
     
     console.log("Selected variant:", selectedVariant);
@@ -88,28 +85,24 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
       ? JSON.parse(Cookies.get("cart") as string)
       : [];
     
-    // Create a complete cart item with all necessary properties
     const cartItem = {
       id: product.productID,
-      name: productName, // Use localized name
+      name: productName, 
       DisPrice: product.priceAfterDiscount,
       NormalPrice: product.productPrice,
       src: product.productImages[0]?.imageUrl,
-      alt: productName, // Add the alt attribute using the product name
+      alt: productName, 
       color: selectedColor,
       size: selectedSize,
       quantity: count,
-      // Store the variant ID properly
       productVarientId: variantId,
-      // Additional properties that might be useful
       productID: product.productID,
       nameEn: product.nameEn,
       nameAr: product.nameAr,
       discountPercent: product.discountPercent,
-      language: isRTL ? 'ar' : 'en', // Store the language used when adding to cart
+      language: isRTL ? 'ar' : 'en', 
     };
 
-    // Check if item already exists (same product, color, size)
     const existingItemIndex = existingCart.findIndex(
       (item: { id: number; color: string; size: string }) =>
         item.id === cartItem.id &&
@@ -118,10 +111,8 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
     );
 
     if (existingItemIndex !== -1) {
-      // Update quantity if item already exists
       existingCart[existingItemIndex].quantity += cartItem.quantity;
     } else {
-      // Add new item if it doesn't exist
       existingCart.push(cartItem);
     }
 
@@ -132,7 +123,6 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
   };
 
   const handleBuyNow = () => {
-    // Only proceed if color and size are selected
     if (!selectedColor || !selectedSize) {
       setAlertMessage(t("product.selectColorAndSize"));
       setAlertType("error");
@@ -140,7 +130,6 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
       return;
     }
 
-    // Check if user is logged in
     const authToken = Cookies.get("authToken");
     if (!authToken) {
       setAlertMessage(t("product.loginToAddCart"));
@@ -149,17 +138,32 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
       return;
     }
 
-    // Add to cart first
     handleAddToCart();
     
-    // Navigate to cart page
     navigate('/cart');
   };
 
   const handleShare = () => {
-    // Implement share functionality
-    // Could use navigator.share if available
-    console.log("Share button clicked");
+    try {
+      const currentUrl = window.location.href;
+            navigator.clipboard.writeText(currentUrl)
+        .then(() => {
+          setAlertMessage(t("product.urlCopiedToClipboard"));
+          setAlertType("success");
+          setTimeout(() => setAlertType(null), 3000);
+        })
+        .catch((err) => {
+          console.error("Failed to copy URL: ", err);
+          setAlertMessage(t("product.failedToCopyUrl"));
+          setAlertType("error");
+          setTimeout(() => setAlertType(null), 3000);
+        });
+    } catch (err) {
+      console.error("Clipboard API not supported", err);
+      setAlertMessage(t("product.browserDoesNotSupportSharing"));
+      setAlertType("error");
+      setTimeout(() => setAlertType(null), 3000);
+    }
   };
 
   const handleCountChange = (count: number) => {

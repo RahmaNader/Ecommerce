@@ -1,7 +1,6 @@
 import React from "react";
 import { ToggleRadioButton } from "@components/atoms";
 
-// Define the structure of the PaymentCard props
 interface PaymentCardProps {
   cardNumber: string;
   expirationDate: string;
@@ -15,7 +14,6 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
   isSelected,
   onSelect,
 }) => {
-  // Mask the first 12 digits of the card number
   const maskedCardNumber = `**** **** **** ${cardNumber.slice(-4)}`;
 
   return (
@@ -24,7 +22,7 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
         <ToggleRadioButton
           label={maskedCardNumber}
           isChecked={isSelected}
-          onChange={() => onSelect(cardNumber)} // Pass the card number back to parent on toggle
+          onChange={() => onSelect(cardNumber)} 
         />
       </div>
 

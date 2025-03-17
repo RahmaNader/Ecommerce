@@ -1,6 +1,5 @@
-// src/context/LanguageProvider.tsx
 import React, { createContext, useEffect, useState } from "react";
-import i18n from "../i18n"; // Import i18n configuration
+import i18n from "../i18n"; 
 
 interface LanguageContextType {
   language: string;

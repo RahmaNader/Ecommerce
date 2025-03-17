@@ -1,8 +1,6 @@
 import axios from "axios";
 import fallbackImage from "@assets/HP_img2.jpeg";
 import { CardComponent, ProductImage, ProductVariant,  Review, Category, SizeQuantityResponse } from "@types";
-
-// Exact structure matching backend response
 interface ProductVariantResponse {
   $id: string;
   productVarientId: number;
@@ -47,7 +45,6 @@ interface CategoryProductResponse {
 }
 
 
-//fetches all products in a category
 export const fetchCategoryProducts = async (
   parentCategoryId: number
 ): Promise<CardComponent[]> => {
@@ -123,6 +120,6 @@ export const fetchCategoryProducts = async (
   }
 };
 
-//return ids of subcategories of a main ctagory , that could be used later for filtering
-//men : 1 , women : 2 , kids : 3 
-//https://www.bouraq-mt.com/royalkey/api/Categories/2?isEnglish=true
+// return ids of subcategories of a main ctagory , that could be used later for filtering
+// men : 1 , women : 2 , kids : 3 
+// https://www.bouraq-mt.com/royalkey/api/Categories/2?isEnglish=true

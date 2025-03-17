@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 
 const ReturnsScreen: React.FC = () => {
   const { t } = useTranslation();
-  // Mock data for product details
   const products = [
     {
       name: "One Life Graphic T-shirt",
