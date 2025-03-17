@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import { Layout, ProfileLayout } from "@components/organisms";
 import {OrderConfirmation} from "@components/molecules";
+import { SearchResultsScreen } from "@pages/Screens/Search";
 import {
   AboutScreen,
   BlogsScreen,
@@ -91,6 +92,10 @@ export const router = createBrowserRouter([
       {
         path: "search",
         element: <Search />,
+      },
+      {
+        path: "/search-results",
+        element: <SearchResultsScreen />
       },
       {
         path: "profile",

@@ -478,7 +478,32 @@ const resources = {
           outForDelivery: "Out For Delivery",
           delivered: "Delivered"
         }
-      }
+      },
+      search: {
+        title: "Search Products",
+        placeholder: "Search for products...",
+        buttonText: "Search",
+        loading: "Searching...",
+        noResults: "No products found",
+        errorMessage: "Error searching products",
+        uncategorized: "Uncategorized",
+        viewAllResults: "View all results",
+        resultsFor: "Search results for",
+        showing: "Showing",
+        of: "of",
+        results: "results",
+        noProductsFound: "No products found for your search",
+        tryDifferentKeywords: "Try different keywords or browse our categories",
+        popularSearches: "Popular searches",
+        errorFetching: "Error fetching search results",
+        popular: {
+          jackets: "Jackets",
+          shirts: "Shirts",
+          dresses: "Dresses", 
+          pants: "Pants",
+          shoes: "Shoes"
+        }
+      },
     },
   },
   ar: {
@@ -955,7 +980,32 @@ const resources = {
           outForDelivery: "خارج للتسليم",
           delivered: "تم التسليم"
         }
-      }
+      },
+      search: {
+        title: "البحث عن المنتجات",
+        placeholder: "ابحث عن المنتجات...",
+        buttonText: "بحث",
+        loading: "جاري البحث...",
+        noResults: "لم يتم العثور على منتجات",
+        errorMessage: "خطأ في البحث عن المنتجات",
+        uncategorized: "بدون تصنيف",
+        viewAllResults: "عرض كل النتائج",
+        resultsFor: "نتائج البحث عن",
+        showing: "عرض",
+        of: "من",
+        results: "نتائج",
+        noProductsFound: "لم يتم العثور على منتجات لعملية البحث هذه",
+        tryDifferentKeywords: "جرب كلمات مختلفة أو تصفح فئاتنا",
+        popularSearches: "عمليات البحث الشائعة",
+        errorFetching: "خطأ في جلب نتائج البحث",
+        popular: {
+          jackets: "جواكت",
+          shirts: "قمصان",
+          dresses: "فساتين", 
+          pants: "بنطلونات",
+          shoes: "أحذية"
+        }
+      },
     },
   },
 };
