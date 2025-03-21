@@ -259,3 +259,57 @@ export type User = {
   username: string;
   token:string;
 }
+
+export interface OrderItem {
+  $id?: string;
+  orderItemId: string;
+  productId: number;
+  productName: string;
+  quantity: number;
+  unitPrice: number;
+  priceAfterDiscount: number;
+  subPrice: number;
+  productColor: string;
+  productSize: string;
+  quantityRefunded: number;
+  firstProductImageUrl: string;
+}
+
+export interface UserOrder {
+  $id?: string;
+  orderId: string;
+  userId: string;
+  orderNumber: number;
+  subTotal: number;
+  discountAmount: number;
+  shippingCost: number;
+  total: number;
+  status: number;
+  orderDate: string;
+  deliveredDate: string;
+  shippedDate: string;
+  outForDeliveryDate: string;
+  estimadtedDelivereyDate: string; // Note: API has typo in field name
+  inProductionDate: string | null;
+  preProductionDate: string | null;
+  isCanceled: boolean;
+  couponCode: string | null;
+  shippingAddress: {
+    $id?: string;
+    shippingAdressId: string; // Note: API has typo in field name
+    buildingName: string;
+    street: string;
+    city: number;
+    additionalDirections: string;
+    flatNumber: number;
+    floorNumber: number;
+    phoneNumber: string;
+    isSaved: boolean;
+    isDefult: boolean; // Note: API has typo in field name
+    userId: string;
+  } | null;
+  orderItems: {
+    $id: string;
+    $values: OrderItem[];
+  };
+}

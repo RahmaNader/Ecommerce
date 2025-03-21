@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useTranslation } from "react-i18next"; // Add this import
+import { useTranslation } from "react-i18next";
 import Cookies from "js-cookie";
-import { ReviewCard } from "@components/atoms";
 import { WriteReview } from "@components/molecules";
 import { fetchReviews, writeReview } from "@services/api/fetchReviews";
 import { Review } from "@types";
-import { SuccessAlert, ErrorAlert } from "@components/atoms";
+import { SuccessAlert, ErrorAlert, ReviewCard } from "@components/atoms";
 
 interface ReviewsSectionProps {
   reviews: Review[];
@@ -14,8 +13,8 @@ interface ReviewsSectionProps {
 
 const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews: initialReviews }) => {
   const { id } = useParams<{ id: string }>();
-  const { t, i18n } = useTranslation(); // Add translation hook
-  const isRTL = i18n.language === 'ar'; // Check if Arabic
+  const { t, i18n } = useTranslation(); 
+  const isRTL = i18n.language === 'ar'; 
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [reviews, setReviews] = useState<Review[]>(initialReviews);
@@ -48,7 +47,7 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews: initialReviews
     try {
       const productID = Number(id);
       const result = await writeReview(reviewText, rating, productID);
-      const userName = "Anonymous"; // Define userName here
+      const userName = "Anonymous"; 
       if (result.success) {
         const newReview: Review = {
           reviewId: Date.now(), 

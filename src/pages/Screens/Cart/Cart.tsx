@@ -4,14 +4,13 @@ import Cookies from "js-cookie";
 import { Product } from "@types";
 import { Category, SuccessAlert, ErrorAlert } from "@components/atoms";
 import { CartProduct, Breadcrumb } from "@components/molecules";
-import OrderSummary from '@components/organisms/OrderSummary/OrderSummary';
+import {OrderSummary} from '@components/organisms';
 import { useTranslation } from "react-i18next"; 
 
 const Cart: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation(); 
-  // const isRTL = i18n.language === 'ar'; 
-  
+
   const [products, setProducts] = useState<Product[]>([]);
   const [alert, setAlert] = useState<{
     type: "success" | "error";
@@ -23,15 +22,12 @@ const Cart: React.FC = () => {
     if (cartData) {
       try {
         const parsedCart = JSON.parse(cartData);
-        // Ensure all required fields are present
         const validatedCart = parsedCart.map((item: Partial<Product>) => {
-          // Extract the properties we want to keep
           const { 
             nameEn, nameAr, language, productID, 
             discountPercent
           } = item;
           
-          // Return a new object with the required properties and defaults
           return {
             id: item.id!,
             name: item.name!,
@@ -42,13 +38,11 @@ const Cart: React.FC = () => {
             quantity: item.quantity!,
             src: item.src ?? "",
             alt: item.alt ?? "",
-            // Additional properties
             nameEn,
             nameAr, 
             language,
             productID,
             discountPercent
-            // We don't spread the rest of the object to avoid property conflicts
           };
         });
         setProducts(validatedCart);
@@ -129,11 +123,10 @@ const Cart: React.FC = () => {
           {products.length > 0 ? (
             products.map((product) => (
               <CartProduct
-                // Add a more unique key by combining properties
                 key={`${product.id}-${product.color}-${product.size}`}
                 product={{
                   ...product,
-                  alt: product.alt || product.name // Ensure alt is always a string
+                  alt: product.alt || product.name
                 }}
                 onRemove={() => removeProduct(product.id)}
                 onQuantityChange={(quantity) =>

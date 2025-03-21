@@ -5,7 +5,7 @@ export async function fetchProductDetails(productId: number): Promise<CardCompon
   try {
     const response = await axios.get(`https://www.bouraq-mt.com/royalkey/api/Product/${productId}`);
     const product = response.data;
-
+    console.log("product", product);
     return {
       productID: product.productID,
       name: product.name,
@@ -55,6 +55,7 @@ export async function fetchProductDetails(productId: number): Promise<CardCompon
       priceAfterDiscount: product.priceAfterDiscount,
       discountPercent: product.discountPercent,
     };
+    
   } catch (error) {
     console.error("Error fetching product details:", error);
     throw new Error("Failed to fetch product details.");

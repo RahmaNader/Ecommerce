@@ -1,13 +1,6 @@
 import axios from "axios";
 import fallbackImage from "@assets/HP_img2.jpeg";
 import { CardComponent, ProductImage, ProductVariant,  Review, Category, SizeQuantityResponse } from "@types";
-
-// interface FetchProductsParams {
-//   parentCategories: number;
-//   pageNumber: number;
-//   pageSize: number;
-// }
-
 interface ProductVariantResponse {
   $id: string;
   productVarientId: number;
@@ -56,8 +49,6 @@ export async function fetchHomeCategory(
     const { data } = await axios.get<HomeCategoryResponse>(
       `https://www.bouraq-mt.com/royalkey/api/Product/${category}?count=${count}`
     );
-
-    // Transform backend response to match CardComponent structure
     return data.$values.map((product): CardComponent => ({
       productID: product.productID,
       name: product.name,
@@ -134,8 +125,6 @@ export async function fetchRelatedProducts(
     const { data } = await axios.get<RelatedProductsResponse>(
       `https://www.bouraq-mt.com/royalkey/api/Product/${productID}/related?count=${count}`
     );
-
-    // Transform backend response to match CardComponent structure
     interface RelatedProductResponse {
       $id: string;
       productID: number;
@@ -242,7 +231,6 @@ export async function fetchCollection(
       `https://www.bouraq-mt.com/royalkey/api/Product/${category}`
     );
 
-    // Transform backend response to match CardComponent structure
     return data.$values.map((product): CardComponent => ({
       productID: product.productID,
       name: product.name,

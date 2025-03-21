@@ -7,9 +7,7 @@ const LogoutScreen: React.FC = () => {
   const { logout } = useAuth();
 
   useEffect(() => {
-    // Call your logout function
     logout();
-    // Redirect to the authentication page or home
     navigate('/authentication');
   }, [logout, navigate]);
 

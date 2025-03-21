@@ -16,3 +16,5 @@ export { default as VerificationSuccess } from "./VerificationStatus/Verificatio
 export { default as VerificationFailed } from "./VerificationStatus/VerificationFailed";
 export { default as PendingVerification } from "./VerificationStatus/PendingVerification";
 export { default as ReviewUpload } from "./VerificationStatus/ReviewUpload";
+export { default as CardModal } from "./CardModal/CardModal";
+export {default as PaymentCard} from "./PaymentCard/PaymentCard";

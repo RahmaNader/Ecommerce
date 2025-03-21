@@ -1,7 +1,7 @@
-// src/services/authService.ts
 import axios from 'axios';
 import apiClient from '../../apiClient';
 import { PasswordResetData } from '@types';
+import Cookies from 'js-cookie'; // Ensure this is imported
 
 export interface RegisterData {
   userName: string;
@@ -19,11 +19,33 @@ export interface LoginData {
   password: string;
 }
 
+// Add token expiry management
+export const setAuthTokens = (token: string, refreshToken: string, username?: string) => {
+  // Store tokens with secure settings
+  Cookies.set('authToken', token, { path: '/', secure: true });
+  Cookies.set('refreshToken', refreshToken, { path: '/', secure: true });
+  if (username) {
+    Cookies.set('username', username, { path: '/' });
+  }
+};
+
+export const clearAuthTokens = () => {
+  Cookies.remove('authToken');
+  Cookies.remove('refreshToken');
+  Cookies.remove('username');
+};
+
 export const registerUser = async (userData: RegisterData) => {
   try {
     console.log('Request payload:', userData);
     
     const response = await apiClient.post('/Account/register', userData);
+    
+    // Store tokens if present
+    if (response.data.token && response.data.refreshToken) {
+      setAuthTokens(response.data.token, response.data.refreshToken, response.data.username);
+    }
+    
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -38,11 +60,11 @@ export const registerUser = async (userData: RegisterData) => {
 export const loginUser = async (data: LoginData) => {
   const response = await apiClient.post('/Account/login', data);
   const { token, username, refreshToken } = response.data;
-  if (token) {
-    document.cookie = `authToken=${token}; path=/;`;
-    document.cookie = `username=${username}; path=/;`;
-    document.cookie = `refreshToken=${refreshToken}; path=/;`;
+
+  if (token && refreshToken) {
+    setAuthTokens(token, refreshToken, username);
   }
+  
   return response.data;
 };
 
@@ -57,5 +79,30 @@ export const requestPasswordReset = async (data: PasswordResetData) => {
       console.log('Error headers:', error.response?.headers);
     }
     throw error;
+  }
+};
+
+// Add a new function to refresh tokens
+export const refreshAuthToken = async (): Promise<boolean> => {
+  try {
+    const refreshToken = Cookies.get('refreshToken');
+    if (!refreshToken) {
+      return false;
+    }
+    
+    const response = await axios.post(
+      'https://www.bouraq-mt.com/royalkey/api/Account/refresh-token',
+      { refreshToken }
+    );
+    
+    if (response.data && response.data.token && response.data.refreshToken) {
+      setAuthTokens(response.data.token, response.data.refreshToken);
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('Failed to refresh token:', error);
+    clearAuthTokens();
+    return false;
   }
 };

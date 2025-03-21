@@ -33,59 +33,12 @@ const ProfileSidebar: React.FC = () => {
     loadUserData();
   }, []);
 
-  // const handleLogout = async () => {
-  //   try {
-  //     // Retrieve tokens from cookies
-  //     const authToken = Cookies.get("authToken");
-  //     const refreshToken = Cookies.get("refreshToken");
-  
-  //     if (!authToken || !refreshToken) {
-  //       console.warn("No tokens found. User may already be logged out.");
-  //       return;
-  //     }
-  
-  //     // Logout API request (sending both tokens in the request body)
-  //     const response = await fetch("https://www.bouraq-mt.com/royalkey/api/Account/logout", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         "Authorization": `Bearer ${authToken}`
-  //       },
-  //       body: JSON.stringify({
-  //         refreshToken: refreshToken
-  //       })
-  //     });
-  
-  //     if (!response.ok) {
-  //       const errorResponse = await response.json();
-  //       throw new Error(`Logout failed: ${errorResponse.message || response.status}`);
-  //     }
-  
-  //     // Clear cookies after successful logout
-  //     Cookies.remove("authToken");
-  //     Cookies.remove("refreshToken");
-  //     Cookies.remove("username");
-  
-  //     console.log("User successfully logged out");
-  
-  //     // Redirect user to login page (or homepage)
-  //     window.location.href = "/authentication"; 
-  
-  //   } catch (error) {
-  //     console.error("Logout error:", error);
-  //   }
-  // };
-  
 const handleLogout = async () => {
     try {
-      // Clear cookies
       Cookies.remove("authToken");
       Cookies.remove("refreshToken");
       Cookies.remove("username");
-
       console.log("User successfully logged out");
-
-      // Redirect user to login page
       window.location.href = "/authentication";
     } catch (error) {
       console.error("Logout error:", error);

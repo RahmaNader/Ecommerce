@@ -7,7 +7,7 @@ import { Button } from "@components/atoms";
 import RightArrow from "@assets/RightArrow.svg";
 import LeftArrow from "@assets/LeftArrow.svg";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom"; // Add this import
+import { useNavigate } from "react-router-dom"; 
 
 interface Item {
   text: string;
@@ -17,11 +17,10 @@ interface Item {
 
 const Slider: React.FC = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate(); // Add navigate hook
+  const navigate = useNavigate(); 
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   
-  // Update window dimensions when resized
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
@@ -31,16 +30,13 @@ const Slider: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   
-  // Function to navigate to new-arrivals collection
   const handleViewCollection = () => {
     navigate('/collection/new-arrivals');
   };
   
-  // Responsive breakpoints
   const isMobile = windowWidth <= 640;
   const isTablet = windowWidth > 640 && windowWidth <= 1024;
   
-  // Calculate responsive max height (70vh on mobile, 80vh on larger screens)
   const maxSliderHeight = isMobile ? `${Math.min(windowHeight * 0.7, 500)}px` : 
                          isTablet ? `${Math.min(windowHeight * 0.75, 600)}px` : 
                          `${Math.min(windowHeight * 0.8, 700)}px`;
@@ -101,7 +97,7 @@ const Slider: React.FC = () => {
               maxHeight={maxSliderHeight}
               isMobile={isMobile}
               isTablet={isTablet}
-              onViewCollection={handleViewCollection} // Pass the function to SliderItem
+              onViewCollection={handleViewCollection} 
             />
           ))}
         </Carousel>
@@ -114,7 +110,7 @@ interface SliderItemProps extends Item {
   maxHeight: string;
   isMobile: boolean;
   isTablet: boolean;
-  onViewCollection: () => void; // Add this prop
+  onViewCollection: () => void; 
 }
 
 const SliderItem: React.FC<SliderItemProps> = React.memo(
@@ -147,12 +143,11 @@ const SliderItem: React.FC<SliderItemProps> = React.memo(
             />
             <Button 
               label={t("slider.viewCollection")} 
-              onClick={onViewCollection} // Use the navigation function
+              onClick={onViewCollection} 
             />
           </div>
         </div>
         
-        {/* Image section - with max-height constraint */}
         <div className="w-full md:w-1/2 lg:w-[45%] mt-3 md:mt-0 flex justify-center md:justify-end">
           <img 
             src={img} 
@@ -166,11 +161,10 @@ const SliderItem: React.FC<SliderItemProps> = React.memo(
           />
         </div>
         
-        {/* Mobile button */}
         <div className="mt-4 text-center md:hidden">
           <Button 
             label={t("slider.viewCollection")} 
-            onClick={onViewCollection} // Use the navigation function
+            onClick={onViewCollection} 
           />
         </div>
       </div>

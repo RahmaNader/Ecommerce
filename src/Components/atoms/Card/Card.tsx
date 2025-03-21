@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { CardComponent } from "@types";
 import fallbackImage from "@assets/HP_img2.jpeg";
-import {  CustomRating, SuccessAlert } from "@components/atoms";
+import { CustomRating, SuccessAlert } from "@components/atoms";
 import shoppingCart from "@assets/shoppingCart.svg";
 import { ProductPreference } from "@components/molecules";
+import { useTranslation } from "react-i18next";
 
 const Card: React.FC<CardComponent> = ({
   productID,
@@ -20,13 +21,15 @@ const Card: React.FC<CardComponent> = ({
   discountPercent,
 }) => {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation(); 
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [isInCart, setIsInCart] = useState(false);
   const [showPreference, setShowPreference] = useState(false);
   const [imageUrl, setImageUrl] = useState<string>(fallbackImage);
-  const [imageAlt, setImageAlt] = useState<string>("Product Image");
-
+  const [imageAlt, setImageAlt] = useState<string>(t("card.productImage"));
+  
+  const displayName = i18n.language === "ar" ? nameAr : (nameEn || name);
 
   useEffect(() => {
     const existingCart = Cookies.get("cart")
@@ -38,20 +41,18 @@ const Card: React.FC<CardComponent> = ({
   }, [productID]);
 
   useEffect(() => {
-
     if (productImages) {
       if (Array.isArray(productImages) && productImages.length > 0) {
         const firstImage = productImages[0];
         if (firstImage && firstImage.imageUrl) {
           setImageUrl(firstImage.imageUrl);
-          setImageAlt(firstImage.altText || name);
+          setImageAlt(firstImage.altText || displayName);
           return;
         }
       }
-
       console.warn("No valid images found for product:", productID);
     }
-  }, [productImages, name, productID]);
+  }, [productImages, displayName, productID]);
 
   const handleCardClick = () => {
     navigate(`/product-details/${productID}`);
@@ -78,25 +79,22 @@ const Card: React.FC<CardComponent> = ({
       ? JSON.parse(Cookies.get("cart") as string)
       : [];
   
-    // Create a comprehensive cart item
     const cartItem = {
       id: productID,
-      name: name,
+      name: displayName, 
       DisPrice: priceAfterDiscount,
       NormalPrice: productPrice,
-      src: preferences.imageUrl || (productImages[0]?.imageUrl || ""),
-      alt: name,
+      src: preferences.imageUrl || (productImages?.[0]?.imageUrl || ""),
+      alt: displayName,
       color: preferences.color,
       size: preferences.size,
       quantity: preferences.quantity,
-      // Additional properties
       productID: productID,
       nameEn: nameEn,
       nameAr: nameAr,
       discountPercent: discountPercent,
-      language: document.documentElement.lang || "en",
-      // Add the product variant ID!
-      productVarientId: productVarients.find(v => v.colorNameEn === preferences.color)?.productVarientId,
+      language: i18n.language, 
+      productVarientId: productVarients?.find(v => v.colorNameEn === preferences.color)?.productVarientId,
     };
   
     const existingItemIndex = existingCart.findIndex(
@@ -113,7 +111,7 @@ const Card: React.FC<CardComponent> = ({
     }
   
     Cookies.set("cart", JSON.stringify(existingCart), { expires: 7 });
-    setAlertMessage("Item added successfully to cart");
+    setAlertMessage(t("card.addedToCart"));
     setIsInCart(true);
     setAlertVisible(true);
     setTimeout(() => setAlertVisible(false), 3000);
@@ -153,7 +151,7 @@ const Card: React.FC<CardComponent> = ({
             isInCart ? "bg-ForthColor" : "bg-wine"
           }`}
         >
-          <img src={shoppingCart} alt="Add to Cart" className="w-5 h-5" />
+          <img src={shoppingCart} alt={t("card.addToCart")} className="w-5 h-5" />
         </div>
       </div>
 
@@ -162,13 +160,13 @@ const Card: React.FC<CardComponent> = ({
           onClick={handleCardClick}
           className="font-playfair font-medium text-base md:text-2xl hover:opacity-80 cursor-pointer text-wine"
         >
-          {name}
+          {displayName} {/* Use the displayName variable instead of just name */}
         </p>
         <p className="font-playfair font-semibold text-base md:text-xl text-ForthColor">
-          {priceAfterDiscount} EGP
+          {t("card.priceInCurrency", { price: priceAfterDiscount })}
         </p>
         <p className="font-playfair font-medium text-base md:text-xl line-through text-FifthColor">
-          {productPrice} EGP
+          {t("card.priceInCurrency", { price: productPrice })}
         </p>
       </div>
 

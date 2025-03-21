@@ -3,7 +3,6 @@ import MuiRating from '@mui/material/Rating';
 import { Box, Typography } from '@mui/material';
 import {CustomRatingProps} from "@types";
 
-//convert rate from string to number
 const CustomRating: React.FC<CustomRatingProps> = ({ rate, mode }) => {
   return (
     <Box className="flex items-center">

@@ -6,7 +6,7 @@ import {
   calculateSummary,
   saveOrderSummary,
 } from "@utils/OrderSummaryUtils";
-import { validateCoupon, Coupon } from "@services/api/fetchCoupons"; // Import the API function
+import { validateCoupon, Coupon } from "@services/api/fetchCoupons";
 import icon from "@assets/discount icon.svg";
 import icon2 from "@assets/Vector.svg";
 import { useTranslation } from "react-i18next";
@@ -74,31 +74,23 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
     saveOrderSummary(summary);
   }, [summary]);
 
-  // Apply coupon discount to the summary
   const applyDiscount = (validCoupon: Coupon) => {
     const newSummary = {...summary};
     
-    // Store the pre-coupon total
     newSummary.totalBeforeCoupon = newSummary.totalAfterCoupon || newSummary.total;
     
-    // Apply discount based on coupon type
     if (validCoupon.type === 0) {
-      // Fixed amount
       newSummary.couponDiscount = validCoupon.value;
     } else {
-      // Percentage discount
       newSummary.couponDiscount = (newSummary.totalBeforeCoupon * validCoupon.value) / 100;
     }
     
-    // Calculate total after coupon
     newSummary.totalAfterCoupon = Math.max(0, newSummary.totalBeforeCoupon - newSummary.couponDiscount);
     
-    // Free shipping if allowed
     if (validCoupon.allowFreeShipping) {
       newSummary.shipping = 0;
     }
     
-    // Save the applied coupon
     const couponData = {
       code: validCoupon.couponCode,
       value: validCoupon.value,
@@ -118,26 +110,22 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
       return;
     }
   
-    // Check if a coupon is already applied
     const existingCouponJson = Cookies.get('appliedCoupon');
     if (existingCouponJson) {
       try {
         const existingCoupon = JSON.parse(existingCouponJson);
         console.log("[OrderSummary] Found existing coupon:", existingCoupon);
         
-        // Check if the user is trying to apply the same coupon again
         if (existingCoupon.code && existingCoupon.code.toLowerCase() === couponCode.toLowerCase()) {
           console.log("[OrderSummary] User tried to apply same coupon again");
           setCouponStatus("already_applied");
           return;
         }
         
-        // If different coupon, show message that one is already applied
         setCouponStatus("already_applied");
         return;
       } catch (e) {
         console.error("[OrderSummary] Error parsing existing coupon:", e);
-        // If there's an error parsing the coupon, we'll remove it and continue
         Cookies.remove('appliedCoupon');
       }
     }
@@ -145,13 +133,11 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
     setIsApplyingCoupon(true);
     
     try {
-      // Fetch all coupons for debugging
       const { fetchCoupons } = await import("@services/api/fetchCoupons");
       const allCoupons = await fetchCoupons();
       console.log("[OrderSummary] Available coupons:", allCoupons);
       console.log("[OrderSummary] Entered coupon code:", couponCode);
       
-      // Validate entered coupon against available ones
       const validCoupon = await validateCoupon(couponCode);
       console.log("[OrderSummary] Coupon validation result:", validCoupon);
       
@@ -159,7 +145,6 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
         console.log("[OrderSummary] Valid coupon found:", validCoupon);
         setCouponStatus("success");
         
-        // Apply the coupon discount
         const updatedSummary = applyDiscount(validCoupon);
         console.log("[OrderSummary] Updated summary after coupon:", updatedSummary);
         setSummary(updatedSummary);

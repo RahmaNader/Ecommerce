@@ -5,10 +5,11 @@ import "react-phone-input-2/lib/style.css";
 import { SignUpFormInputs } from "@types";
 import IconGoogle from "@assets/Icon-Google.svg";
 import { registerUser } from "@services/auth/AuthService";
-import { ErrorAlert, SuccessAlert,Button } from "@components/atoms";
+import { ErrorAlert, SuccessAlert, Button } from "@components/atoms";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
-
+import { useGoogleLogin } from "@react-oauth/google";
+import apiClient from "../../../apiClient";
 
 interface SignUpFormProps {
   onSwitchToLogin: () => void;
@@ -30,13 +31,106 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
   } = useForm<SignUpFormInputs>();
 
   const password = watch("password");
+  
+  // Use the Google login hook
+  const googleLogin = useGoogleLogin({
+    flow: "implicit", 
+    scope: "email profile",
+    onSuccess: async (response) => {
+      try {
+        console.log("Google OAuth Response:", response);
+  
+        if (!response.access_token) {
+          throw new Error("No access token received from Google");
+        }
+  
+        // Get user info using the access token
+        const userInfoResponse = await axios.get(
+          "https://www.googleapis.com/oauth2/v3/userinfo",
+          {
+            headers: {
+              Authorization: `Bearer ${response.access_token}`,
+            },
+          }
+        );
+  
+        const userInfo = userInfoResponse.data;
+        console.log("Google User Data:", userInfo);
+  
+        // Send access token and user info to backend
+        const backendResponse = await apiClient.post(
+          "/Account/authenticateGoogle",
+          {
+            token: response.access_token,
+            email: userInfo.email,
+            name: userInfo.name,
+            picture: userInfo.picture
+          }
+        );
+  
+        console.log("Backend Response:", backendResponse.data);
+  
+        if (backendResponse.data && backendResponse.data.succeeded) {
+          // Success handling
+          setAlert({
+            type: "success",
+            message: t("auth.successGoogleSignUp")
+          });
+  
+          // Store token from your backend
+          if (backendResponse.data.token) {
+            localStorage.setItem("authToken", backendResponse.data.token);
+          }
+  
+          setTimeout(() => {
+            setAlert(null);
+            onSwitchToLogin();
+          }, 2000);
+        } else {
+          // API returned success=false
+          throw new Error(backendResponse.data.message || "Authentication failed");
+        }
+      } catch (error) {
+        console.error("Google sign-in error:", error);
+        
+        let errorMessage = t("auth.googleSignUpFailed");
+        
+        // Get more specific error messages if available
+        if (axios.isAxiosError(error) && error.response?.data?.message) {
+          errorMessage = error.response.data.message;
+        } else if (error instanceof Error) {
+          errorMessage = error.message;
+        }
+        
+        setAlert({
+          type: "error",
+          message: errorMessage
+        });
+        
+        setTimeout(() => setAlert(null), 3000);
+      }
+    },
+    onError: (error) => {
+      console.error("Google login error:", error);
+      setAlert({
+        type: "error", 
+        message: t("auth.googleSignUpFailed")
+      });
+      setTimeout(() => setAlert(null), 3000);
+    }
+  });
+
+  const handleGoogleSignUp = () => {
+    googleLogin();
+  };
 
   const onSubmit = async (formData: SignUpFormInputs) => {
     try {
-      const paddedMonth = formData.month.padStart(2, '0');
-      const paddedDay = formData.day.padStart(2, '0');
+      const paddedMonth = formData.month.padStart(2, "0");
+      const paddedDay = formData.day.padStart(2, "0");
       const dateOfBirth = `${formData.year}-${paddedMonth}-${paddedDay}`;
       const genderValue = parseInt(formData.gender, 10);
+
       const result = await registerUser({
         userName: formData.userName,
         email: formData.email,
@@ -45,12 +139,13 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
         phoneNumber: formData.phoneNumber,
         gender: genderValue,
         dateOfBirth: dateOfBirth,
-        model: 'web',
+        model: "web",
       });
+
       console.log("Registration response:", result);
       setAlert({
         type: "success",
-        message: t("auth.registersuccess")
+        message: t("auth.registersuccess"),
       });
 
       setTimeout(() => {
@@ -60,17 +155,19 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const errorMessage = error.response?.data;
-          
-        if (errorMessage.toLowerCase().includes('already registered') || 
-            errorMessage.toLowerCase().includes('already exists')) {
+
+        if (
+          errorMessage.toLowerCase().includes("already registered") ||
+          errorMessage.toLowerCase().includes("already exists")
+        ) {
           setAlert({
             type: "error",
-            message: t("auth.usernameTaken")
+            message: t("auth.usernameTaken"),
           });
         } else {
           setAlert({
             type: "error",
-            message: errorMessage
+            message: errorMessage,
           });
         }
       }
@@ -345,7 +442,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
         <button
           type="button"
           className="w-4/5 md:w-2/5 py-2 px-4 flex items-center justify-center m-auto border-2 border-ForthColor rounded-lg text-black text-[10px] md:text-[16px] hover:border-wine"
-          onClick={() => {}}
+          onClick={handleGoogleSignUp}
         >
           <img src={IconGoogle} alt="Google Icon" className="w-4 h-4 mr-2" />
           {t("auth.signUpWithGoogle")}

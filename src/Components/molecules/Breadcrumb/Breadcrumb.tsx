@@ -9,7 +9,6 @@ import { useQuery } from "react-query";
 import { fetchCategories } from "@services/api/fetchCategories";
 import { useLanguage } from "@context/useLanguage";
 
-// Updated to include both English and Arabic route names
 const routeNameMap: { [key: string]: { en: string; ar: string } } = {
   "/": { en: "Home", ar: "الرئيسية" },
   "/blogs": { en: "Blogs", ar: "المدونات" },
@@ -40,10 +39,8 @@ const Breadcrumb: React.FC = () => {
   const location = useLocation();
   const isRTL = language === "ar";
   
-  // Fetch categories for proper name display
   const { data: categories } = useQuery("categories", fetchCategories);
 
-  // Decode URL segments to handle special characters (like Arabic)
   const pathnames = location.pathname
     .split("/")
     .filter(x => x)
@@ -55,14 +52,12 @@ const Breadcrumb: React.FC = () => {
       }
     });
 
-  // Helper function to get category name by ID or URL segment
   const getCategoryName = (categoryIdOrSlug: string | number) => {
     if (!categories) return capitalizeWords(String(categoryIdOrSlug));
     
     const decodedSlug = typeof categoryIdOrSlug === 'string' ? 
       categoryIdOrSlug : String(categoryIdOrSlug);
     
-    // Try to find by ID first
     const categoryById = categories.find((cat: Category) => 
       cat.categoryID === Number(categoryIdOrSlug)
     );
@@ -71,7 +66,6 @@ const Breadcrumb: React.FC = () => {
       return isRTL ? categoryById.nameAr || categoryById.name : categoryById.nameEn || categoryById.name;
     }
     
-    // If not found by ID, try to match by name/slug
     const categoryBySlug = categories.find((cat: Category) => 
       cat.name.toLowerCase() === decodedSlug.toLowerCase() ||
       cat.nameEn.toLowerCase() === decodedSlug.toLowerCase() ||
@@ -82,7 +76,6 @@ const Breadcrumb: React.FC = () => {
       return isRTL ? categoryBySlug.nameAr || categoryBySlug.name : categoryBySlug.nameEn || categoryBySlug.name;
     }
     
-    // Fallback to capitalizing the segment
     return capitalizeWords(decodedSlug);
   };
 
@@ -92,22 +85,17 @@ const Breadcrumb: React.FC = () => {
         return null;
       }
 
-      // Build path with original encoded segments from location.pathname
       const segments = location.pathname.split('/').filter(Boolean).slice(0, index + 1);
       const to = `/${segments.join("/")}`;
       const isLast = index === pathnames.length - 1;
 
-      // Get the right breadcrumb text based on path and language
       let breadcrumbName = '';
       
       if (routeNameMap[to]) {
-        // Use predefined translations
         breadcrumbName = routeNameMap[to][isRTL ? 'ar' : 'en'];
       } else if (pathnames[0] === 'products') {
-        // This is a category or product page, so use category name
         breadcrumbName = getCategoryName(value);
       } else {
-        // Fallback to capitalizing the URL segment
         breadcrumbName = capitalizeWords(value);
       }
 

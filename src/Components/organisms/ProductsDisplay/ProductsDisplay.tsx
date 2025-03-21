@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 
 type ProductsDisplayProps = {
   products: CardComponent[];
-  language: string; // Add language prop
+  language: string; 
 };
 
 const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products, language }) => {
@@ -72,7 +72,6 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products, language })
       {/* Display Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-5 w-full">
         {currentCards.map((card) => {
-          // Create a modified card with the correct language-specific properties
           const localizedCard = {
             ...card,
             name: isRTL ? card.nameAr || card.name : card.nameEn || card.name,

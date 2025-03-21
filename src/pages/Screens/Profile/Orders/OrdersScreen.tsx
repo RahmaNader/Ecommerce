@@ -1,24 +1,58 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import noOrder from "@assets/noorders.svg";
-import { orders } from "@data/orders";
+import { fetchUserOrders } from "@services/api/fetchOrders";
+import { UserOrder } from "@types";
 import { useTranslation } from "react-i18next";
-import { useLanguage } from "@context/useLanguage";
+import { format } from "date-fns";
+import { ar, enUS } from "date-fns/locale";
+import { ErrorAlert} from "@components/atoms";
+import { getOrderStatusText } from "@utils/OrderDetails";
 
 const OrdersScreen: React.FC = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
-  const { language } = useLanguage();
-  const isRTL = language === "ar";
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === "ar";
+  const isEnglish = !isRTL;
 
-  const handleRowClick = () => {
-    navigate(`/order-details`);
+  const [error, setError] = useState<string | null>(null);
+  const [orders, setOrders] = useState<UserOrder[]>([]);
+
+  useEffect(() => {
+    const loadOrders = async () => {
+      try {
+        const userOrders = await fetchUserOrders(isEnglish);
+        setOrders(userOrders);
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching orders:", err);
+        setError(err instanceof Error ? err.message : 'Failed to load orders');
+      }
+    };
+
+    loadOrders();
+  }, [isEnglish]);
+
+  const handleRowClick = (orderId: string) => {
+    navigate(`/order-details/${orderId}`);
   };
 
-  // Function to translate order status
-  const getTranslatedStatus = (status: string) => {
-    return t(`orders.status_${status.toLowerCase().replace(/\s+/g, '_')}`);
+  // Format date based on locale
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return format(date, 'PP', { 
+        locale: isRTL ? ar : enUS 
+      });
+    } catch {
+      return dateString;
+    }
   };
+
+
+  if (error) {
+    return <ErrorAlert message={error} />;
+  }
 
   return (
     <div className={`flex flex-col mt-8 md:mt-16 justify-center ${isRTL ? 'rtl' : 'ltr'}`}>
@@ -37,13 +71,11 @@ const OrdersScreen: React.FC = () => {
           </p>
         </div>
       ) : (
-        <div className="overflow-x-auto rtl:md:self-stretch ">
+        <div className="overflow-x-auto rtl:md:self-stretch">
           <table className={`w-full border-collapse ${isRTL ? 'text-right' : 'text-left'}`}>
             <thead>
-              <tr className={`${isRTL ? 'text-right' : 'text-left'} text-wine text-base font-playfair`}>
-                <th className="p-2 border-b border-tableDivider">
-                  {t("orders.orderNumber")}
-                </th>
+              <tr className={`text-wine text-base font-playfair`}>
+                <th className="p-2 border-b border-tableDivider">{t("orders.orderNumber")}</th>
                 <th className="p-2 border-b border-tableDivider">{t("orders.total")}</th>
                 <th className="p-2 border-b border-tableDivider">{t("orders.date")}</th>
                 <th className="p-2 border-b border-tableDivider">{t("orders.status")}</th>
@@ -51,30 +83,28 @@ const OrdersScreen: React.FC = () => {
             </thead>
 
             <tbody>
-              {orders.map((order, index) => (
+              {orders.map((order) => (
                 <tr
-                  key={index}
-                  className="text-sm h-14 text-wine font-Poppins cursor-pointer transition"
-                  onClick={() => handleRowClick()}
+                  key={order.orderId}
+                  className="text-sm h-14 text-wine font-Poppins cursor-pointer hover:bg-ForthColor/10 transition"
+                  onClick={() => handleRowClick(order.orderId)}
                 >
                   <td className="p-2 border-b border-tableDivider">
-                    {order.orderNumber}
+                    #{order.orderNumber}
                   </td>
                   <td className="p-2 border-b border-tableDivider">
-                    {order.total}
+                    {order.total} EGP
                   </td>
                   <td className="p-2 border-b border-tableDivider">
-                    {order.date}
+                    {formatDate(order.orderDate)}
                   </td>
                   <td className="p-2 border-b border-tableDivider">
                     <span
                       className={`flex items-center ${
-                        order.status === "Active"
-                          ? "text-green"
-                          : "text-ForthColor"
+                        order.status < 5 ? "text-green" : "text-ForthColor"
                       } `}
                     >
-                      {getTranslatedStatus(order.status)}
+                      {t(`orders.status_${getOrderStatusText(order.status).toLowerCase().replace(/\s+/g, '_')}`)}
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
