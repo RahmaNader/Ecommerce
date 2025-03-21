@@ -170,6 +170,8 @@ const resources = {
         enterEmail: "Enter your email",
         sendResetLink: "Send Reset Link",
         backToLogin: "Back to Login",
+        googleSignUpFailed: "Google sign up failed. Please try again.",
+        successGoogleSignUp: "Successfully signed up with Google!",
       },
       profile: {
         identification: "Identification",
@@ -672,6 +674,8 @@ const resources = {
         enterEmail: "أدخل بريدك الإلكتروني",
         sendResetLink: "إرسال رابط إعادة التعيين",
         backToLogin: "العودة إلى تسجيل الدخول",
+        googleSignUpFailed: "فشل التسجيل باستخدام جوجل. يرجى المحاولة مرة أخرى.",
+        successGoogleSignUp: "تم التسجيل بنجاح باستخدام جوجل!",
       },
       profile: {
         identification: "الهوية",

@@ -1,29 +1,33 @@
 import React from "react";
-import './i18n';
-import { LanguageProvider } from "./context/LanguageProvider"; // Import the provider
 import ReactDOM from "react-dom/client";
+import './i18n';
 import "./index.css";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./router";
 import { QueryClient, QueryClientProvider } from "react-query";
+import { LanguageProvider } from "./context/LanguageProvider";
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
+// Initialize your QueryClient
 const queryClient = new QueryClient();
 
-// eslint-disable-next-line react-refresh/only-export-components
+// Define your Google OAuth client ID
+const googleClientId = "478766202773-3a2j4siq6cb4sjediej70to1rftlhdhi.apps.googleusercontent.com";
+
+// Main App component
 const App: React.FC = () => {
   return <RouterProvider router={router} />;
 };
 
-const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
-);
-
-root.render(
+// Render your React application root with all providers
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <LanguageProvider> 
-        <App />
-      </LanguageProvider>
-    </QueryClientProvider>
+    <GoogleOAuthProvider clientId={googleClientId}>
+      <QueryClientProvider client={queryClient}>
+        <LanguageProvider>
+          <App />
+        </LanguageProvider>
+      </QueryClientProvider>
+    </GoogleOAuthProvider>
   </React.StrictMode>
 );

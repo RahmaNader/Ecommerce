@@ -116,7 +116,7 @@ const Navbar: React.FC = () => {
           </button>
         </div>
         <Link to="/">
-          <img src={Logo} alt="Logo" className="h-8 md:h-14 w-auto ml-2" />
+          <img src={Logo} alt="Logo" className="w-20 md:w-28 ml-2" />
         </Link>
       </div>
 
@@ -224,7 +224,7 @@ const Navbar: React.FC = () => {
         }`}
       >
         <div className="flex justify-between items-center px-4 py-4">
-          <img src={Logo} alt="Logo" className="h-8 w-auto" />
+          <img src={Logo} alt="Logo" className="w-20 md:w-28 ml-2" />
           <button
             onClick={toggleMenu}
             aria-label="Close Menu"
