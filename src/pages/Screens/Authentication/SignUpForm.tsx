@@ -62,9 +62,9 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
           "/Account/authenticateGoogle",
           {
             token: response.access_token,
-            email: userInfo.email,
-            name: userInfo.name,
-            picture: userInfo.picture
+            // email: userInfo.email,
+            // name: userInfo.name,
+            // picture: userInfo.picture
           }
         );
   

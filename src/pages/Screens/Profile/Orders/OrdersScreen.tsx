@@ -8,6 +8,7 @@ import { format } from "date-fns";
 import { ar, enUS } from "date-fns/locale";
 import { ErrorAlert} from "@components/atoms";
 import { getOrderStatusText } from "@utils/OrderDetails";
+import { LoadingSkeleton } from "@components/molecules";
 
 const OrdersScreen: React.FC = () => {
   const navigate = useNavigate();
@@ -17,16 +18,20 @@ const OrdersScreen: React.FC = () => {
 
   const [error, setError] = useState<string | null>(null);
   const [orders, setOrders] = useState<UserOrder[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadOrders = async () => {
       try {
+        setLoading(true);
         const userOrders = await fetchUserOrders(isEnglish);
         setOrders(userOrders);
         setError(null);
       } catch (err) {
         console.error("Error fetching orders:", err);
         setError(err instanceof Error ? err.message : 'Failed to load orders');
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -49,6 +54,16 @@ const OrdersScreen: React.FC = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="container mx-auto mt-8 md:mt-16 px-4">
+        <h1 className="text-2xl font-semibold text-wine font-playfair md:self-start mx-auto md:mx-0">
+          {t("orders.orderHistory")}
+        </h1>
+        <LoadingSkeleton variant="order" />
+      </div>
+    );
+  }
 
   if (error) {
     return <ErrorAlert message={error} />;

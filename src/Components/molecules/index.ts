@@ -18,3 +18,4 @@ export { default as PendingVerification } from "./VerificationStatus/PendingVeri
 export { default as ReviewUpload } from "./VerificationStatus/ReviewUpload";
 export { default as CardModal } from "./CardModal/CardModal";
 export {default as PaymentCard} from "./PaymentCard/PaymentCard";
+export { default as LoadingSkeleton } from "./LoadingSkeleton/LoadingSkeleton";

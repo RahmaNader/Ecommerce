@@ -18,6 +18,14 @@ const ProductDetails: React.FC = () => {
   const [error, setError] = useState<string | null>(null); 
   const [relatedProducts, setRelatedProducts] = useState<CardComponent[]>([]);
 
+  // Add useEffect for scrolling to top
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  }, [id]); // Re-run when id changes
+
   useEffect(() => {
     const loadProduct = async () => {
       try {
