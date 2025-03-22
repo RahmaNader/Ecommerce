@@ -17,6 +17,9 @@ const resources = {
           "Find Your Perfect Blend of Our Traditional and Modern Fashion.",
         slide2: "Unite Timeless Traditions with Fresh, Modern Styles Today.",
         slide3: "Uncover the Perfect Balance of Tradition and Trendy Pieces.",
+        description1: "Discover our latest collection of premium pieces designed for the modern woman who appreciates tradition.",
+        description2: "Elegant designs crafted with attention to detail and high-quality materials for every occasion.",
+        description3: "Special offers on seasonal favorites. Limited time only on our most popular traditional pieces.",
         viewCollection: "View Collection",
       },
       home: {
@@ -37,8 +40,8 @@ const resources = {
         viewDiscounts: "View Discounts",
       },
       footer: {
-        brandName: "Royal Key",
-        copyright: "2024 Royal Key. All Rights Reserved",
+        brandName: "Kiswa",
+        copyright: "2024 Kiswa. All Rights Reserved",
         collection: "Collection",
         brands: "Brands",
         aboutUs: "About Us",
@@ -522,6 +525,9 @@ const resources = {
         slide1: "اكتشف المزيج المثالي بين أزيائنا التقليدية والحديثة.",
         slide2: "اجمع بين التقاليد العريقة والأساليب العصرية الجديدة اليوم.",
         slide3: "اكتشف التوازن المثالي بين الأناقة التقليدية والقطع العصرية.",
+        description1: "اكتشفي مجموعتنا الأحدث من القطع الفاخرة المصممة للمرأة العصرية التي تقدر التقاليد.",
+        description2: "تصاميم أنيقة مصنوعة بعناية فائقة ومواد عالية الجودة لكل مناسبة.",
+        description3: "عروض خاصة على المفضلات الموسمية. لفترة محدودة فقط على أكثر قطعنا التقليدية شعبية.",
         viewCollection: "عرض المجموعة",
       },
       home: {
@@ -542,8 +548,8 @@ const resources = {
         viewDiscounts: "عرض الخصومات",
       },
       footer: {
-        brandName: "رويال كي",
-        copyright: "© 2024 رويال كي. جميع الحقوق محفوظة",
+        brandName: "كسوة",
+        copyright: "© 2024 كسوة. جميع الحقوق محفوظة",
         collection: "المجموعة",
         brands: "العلامات التجارية",
         aboutUs: "من نحن",
