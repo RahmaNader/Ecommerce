@@ -36,7 +36,7 @@ const Footer: React.FC = () => {
 
   const contactInfo = {
     phone: "522-252-4244",
-    email: "Royalkey@gmail.com",
+    email: "Kiswa@gmail.com",
   };
 
   return (
@@ -85,7 +85,7 @@ const Footer: React.FC = () => {
             variant="footer"
           />
           <NavLink
-            label={`${t("footer.website")}: www.RoyalKey.com`}
+            label={`${t("footer.website")}: www.Kiswa.com`}
             to="/"
             variant="footer"
           />

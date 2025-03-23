@@ -17,6 +17,9 @@ const resources = {
           "Find Your Perfect Blend of Our Traditional and Modern Fashion.",
         slide2: "Unite Timeless Traditions with Fresh, Modern Styles Today.",
         slide3: "Uncover the Perfect Balance of Tradition and Trendy Pieces.",
+        description1: "Discover our latest collection of premium pieces designed for the modern woman who appreciates tradition.",
+        description2: "Elegant designs crafted with attention to detail and high-quality materials for every occasion.",
+        description3: "Special offers on seasonal favorites. Limited time only on our most popular traditional pieces.",
         viewCollection: "View Collection",
       },
       home: {
@@ -37,8 +40,8 @@ const resources = {
         viewDiscounts: "View Discounts",
       },
       footer: {
-        brandName: "Royal Key",
-        copyright: "2024 Royal Key. All Rights Reserved",
+        brandName: "Kiswa",
+        copyright: "2024 Kiswa. All Rights Reserved",
         collection: "Collection",
         brands: "Brands",
         aboutUs: "About Us",
@@ -205,10 +208,17 @@ const resources = {
         logout: "Log Out",
       },
       returns: {
-        title: "Return",
         subtitle: "Return your order",
         quantity: "Qty",
         details: "Details ➔",
+        title: "My Returns",
+        noRefunds: "You have no refunded items",
+        orderNumber: "Order Number",
+        refundDate: "Refund Date",
+        quantityRefunded: "Quantity Refunded",
+        loadError: "Failed to load refunded items",
+        orderId: "Order ID",
+        refundConfirmed: "Refund Confirmed",
       },
       product: {
         selectColorAndSize: "Please select both a color and a size.",
@@ -352,19 +362,16 @@ const resources = {
       },
       orderConfirmation: {
         title: "Order Confirmed",
-        subtitle: "Your order has been confirmed, please wait and track your order",
-        trackOrder: "Tracking order",
-        goHome: "Go to home",
-        summary: "Order Summary",
-        price: "Price",
-        discount: "Discount",
-        shipping: "Shipping",
-        coupon: "Coupon Applied",
-        total: "TOTAL",
-        delivery: "Estimated Delivery by"
+        message: "Your order has been confirmed, please wait and track your order",
+        trackOrder: "Track Order",
+        goHome: "Go to Home"
       },
       common: {
-        currency: "EGP"
+        currency: "EGP",
+        processing: "Processing...",
+        yes: "Yes",
+        no: "No",
+        cancel: "Cancel"
       },
       orders: {
         orderHistory: "Order History",
@@ -472,14 +479,33 @@ const resources = {
         floor: "Floor",
         processing: "Processing",
         unknownProduct: "Unknown Product",
+        cancel: "Cancel Order",
+        cancelled: "Order Cancelled",
+        cancelError: "Failed to cancel order. Please try again.",
+        confirmCancelTitle: "Cancel Order?",
+        confirmCancelMessage: "Are you sure you want to cancel this order? This action cannot be undone.",
+        cancelledTitle: "Order Cancelled",
+        cancelledDescription: "This order has been cancelled and will not be processed further.",
         steps: {
           confirmed: "Order Confirmed",
           preProduction: "Pre-Production",
           inProduction: "In Production",
           shipped: "Shipped",
           outForDelivery: "Out For Delivery",
-          delivered: "Delivered"
-        }
+          delivered: "Delivered",
+          cancelled: "Order Cancelled" // Add this new key for cancelled step
+        },
+        refund: "Request Refund",
+        refundTitle: "Request a Refund",
+        refundInstructions: "Select the items you'd like to refund. You can choose to refund all or part of your order.",
+        refundSuccess: "Refund Requested Successfully",
+        refundError: "Failed to process refund. Please try again.",
+        quantity: "Quantity",
+        selectItemsToRefund: "Please select at least one item to refund",
+        submitRefund: "Submit Refund Request",
+        fullyRefunded: "Fully Refunded",
+        partiallyRefunded: "{{count}} already refunded", 
+        noRefundableItems: "No items available for refund",
       },
       search: {
         title: "Search Products",
@@ -506,6 +532,13 @@ const resources = {
           shoes: "Shoes"
         }
       },
+      payment: {
+        cashOnDelivery: "Cash on Delivery",
+        creditCard: "Credit Card",
+        savedCards: "Saved Cards",
+        addCard: "Add Card",
+        addNewCard: "Add New Card"
+      }
     },
   },
   ar: {
@@ -522,6 +555,9 @@ const resources = {
         slide1: "اكتشف المزيج المثالي بين أزيائنا التقليدية والحديثة.",
         slide2: "اجمع بين التقاليد العريقة والأساليب العصرية الجديدة اليوم.",
         slide3: "اكتشف التوازن المثالي بين الأناقة التقليدية والقطع العصرية.",
+        description1: "اكتشفي مجموعتنا الأحدث من القطع الفاخرة المصممة للمرأة العصرية التي تقدر التقاليد.",
+        description2: "تصاميم أنيقة مصنوعة بعناية فائقة ومواد عالية الجودة لكل مناسبة.",
+        description3: "عروض خاصة على المفضلات الموسمية. لفترة محدودة فقط على أكثر قطعنا التقليدية شعبية.",
         viewCollection: "عرض المجموعة",
       },
       home: {
@@ -542,8 +578,8 @@ const resources = {
         viewDiscounts: "عرض الخصومات",
       },
       footer: {
-        brandName: "رويال كي",
-        copyright: "© 2024 رويال كي. جميع الحقوق محفوظة",
+        brandName: "كسوة",
+        copyright: "© 2024 كسوة. جميع الحقوق محفوظة",
         collection: "المجموعة",
         brands: "العلامات التجارية",
         aboutUs: "من نحن",
@@ -709,10 +745,17 @@ const resources = {
         logout: "تسجيل الخروج",
       },
       returns: {
-        title: "الإرجاع",
         subtitle: "إرجاع طلبك",
         quantity: "الكمية",
         details: "التفاصيل ➔",
+        title: "المرتجعات",
+        noRefunds: "لا توجد لديك عناصر مستردة",
+        orderNumber: "رقم الطلب",
+        refundDate: "تاريخ الاسترداد",
+        quantityRefunded: "الكمية المستردة",
+        loadError: "فشل في تحميل العناصر المستردة",
+        orderId: "رقم الطلب",
+        refundConfirmed: "تم تأكيد الاسترداد",
       },
       product: {
         selectColorAndSize: "يرجى اختيار اللون والمقاس معًا.",
@@ -856,19 +899,16 @@ const resources = {
       },
       orderConfirmation: {
         title: "تم تأكيد الطلب",
-        subtitle: "تم تأكيد طلبك، يرجى الانتظار وتتبع طلبك",
+        message: "تم تأكيد طلبك، يرجى الانتظار وتتبع طلبك",
         trackOrder: "تتبع الطلب",
-        goHome: "الذهاب إلى الرئيسية",
-        summary: "ملخص الطلب",
-        price: "السعر",
-        discount: "الخصم",
-        shipping: "الشحن",
-        coupon: "الكوبون المطبق",
-        total: "المجموع",
-        delivery: "التسليم المتوقع بتاريخ"
+        goHome: "الذهاب إلى الرئيسية"
       },
       common: {
-        currency: "جنيه"
+        currency: "جنيه",
+        processing: "جارٍ المعالجة...",
+        yes: "نعم",
+        no: "لا",
+        cancel: "إلغاء"
       },
       orders: {
         orderHistory: "سجل الطلبات",
@@ -976,14 +1016,33 @@ const resources = {
         floor: "طابق",
         processing: "قيد المعالجة",
         unknownProduct: "منتج غير معروف",
+        cancel: "إلغاء الطلب",
+        cancelled: "تم إلغاء الطلب",
+        cancelError: "فشل إلغاء الطلب. يرجى المحاولة مرة أخرى.",
+        confirmCancelTitle: "إلغاء الطلب؟",
+        confirmCancelMessage: "هل أنت متأكد من رغبتك في إلغاء هذا الطلب؟ لا يمكن التراجع عن هذا الإجراء.",
+        cancelledTitle: "تم إلغاء الطلب",
+        cancelledDescription: "تم إلغاء هذا الطلب ولن تتم متابعة معالجته.",
         steps: {
           confirmed: "تم تأكيد الطلب",
           preProduction: "ما قبل الإنتاج",
           inProduction: "قيد الإنتاج",
           shipped: "تم الشحن",
           outForDelivery: "خارج للتسليم",
-          delivered: "تم التسليم"
-        }
+          delivered: "تم التسليم",
+          cancelled: "تم إلغاء الطلب" // Add this new key for cancelled step
+        },
+        refund: "طلب استرداد",
+        refundTitle: "طلب استرداد الأموال",
+        refundInstructions: "اختر العناصر التي ترغب في استردادها. يمكنك اختيار استرداد كل طلبك أو جزء منه.",
+        refundSuccess: "تم طلب الاسترداد بنجاح",
+        refundError: "فشل في معالجة الاسترداد. يرجى المحاولة مرة أخرى.",
+        quantity: "الكمية",
+        selectItemsToRefund: "الرجاء تحديد عنصر واحد على الأقل للاسترداد",
+        submitRefund: "إرسال طلب الاسترداد",
+        fullyRefunded: "تم استرداده بالكامل",
+        partiallyRefunded: "تم استرداد {{count}} بالفعل",
+        noRefundableItems: "لا توجد عناصر متاحة للاسترداد",
       },
       search: {
         title: "البحث عن المنتجات",
@@ -1010,6 +1069,13 @@ const resources = {
           shoes: "حذاء"
         }
       },
+      payment: {
+        cashOnDelivery: "الدفع عند الاستلام",
+        creditCard: "بطاقة الائتمان",
+        savedCards: "البطاقات المحفوظة",
+        addCard: "إضافة بطاقة",
+        addNewCard: "إضافة بطاقة جديدة"
+      }
     },
   },
 };

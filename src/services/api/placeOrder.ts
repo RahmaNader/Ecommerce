@@ -18,6 +18,8 @@ export interface OrderRequest {
 
 export interface OrderResponse {
   orderId?: string;
+  orderNumber?: number;           // Add this field
+  estimatedDeliveryDate?: string; // Add this field
   status?: string;
   createdAt?: string;
   totalAmount?: number;

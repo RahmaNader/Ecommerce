@@ -275,8 +275,9 @@ export interface OrderItem {
   firstProductImageUrl: string;
 }
 
+// Update your UserOrder interface to match the actual API response
+
 export interface UserOrder {
-  $id?: string;
   orderId: string;
   userId: string;
   orderNumber: number;
@@ -284,32 +285,42 @@ export interface UserOrder {
   discountAmount: number;
   shippingCost: number;
   total: number;
-  status: number;
+  status: number; // This will be matched against the OrderStatus enum
   orderDate: string;
   deliveredDate: string;
   shippedDate: string;
   outForDeliveryDate: string;
-  estimadtedDelivereyDate: string; // Note: API has typo in field name
+  estimadtedDelivereyDate: string;
   inProductionDate: string | null;
   preProductionDate: string | null;
-  isCanceled: boolean;
-  couponCode: string | null;
+  isCanceled: boolean; // Note: API uses 'isCanceled' not 'isCancelled'
+  couponCode: string;
   shippingAddress: {
-    $id?: string;
-    shippingAdressId: string; // Note: API has typo in field name
+    shippingAdressId: string;
     buildingName: string;
     street: string;
     city: number;
-    additionalDirections: string;
+    additionalDirections: string | null;
     flatNumber: number;
     floorNumber: number;
     phoneNumber: string;
     isSaved: boolean;
-    isDefult: boolean; // Note: API has typo in field name
+    isDefult: boolean;
     userId: string;
-  } | null;
+  };
   orderItems: {
-    $id: string;
-    $values: OrderItem[];
+    $values: Array<{
+      orderItemId: string;
+      productId: number;
+      productName: string;
+      quantity: number;
+      unitPrice: number;
+      priceAfterDiscount: number;
+      subPrice: number;
+      productColor: string;
+      productSize: string;
+      quantityRefunded: number;
+      firstProductImageUrl: string;
+    }>;
   };
 }

@@ -17,6 +17,7 @@
     "@tabler/icons-react": "^3.24.0",
     "axios": "^1.7.9",
     "date-fns": "^4.1.0",
+    "framer-motion": "^12.5.0",
     "i18next-browser-languagedetector": "^8.0.3",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
@@ -34,7 +35,8 @@
     "react-slider": "^2.0.6",
     "react-star-ratings": "^2.3.0",
     "react-stepper-horizontal": "^1.0.11",
-    "recharts": "^2.14.1"
+    "recharts": "^2.14.1",
+    "swiper": "^11.2.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.11.1",
