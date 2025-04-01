@@ -274,7 +274,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
             size="large"
             label={
               isPlacingOrder 
-                ? t("orderSummary.processing") 
+                ? t("common.processing")
                 : currentStep === "payment" 
                   ? t("orderSummary.confirmOrder") 
                   : t("orderSummary.next")
