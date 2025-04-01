@@ -57,8 +57,10 @@ const Cart: React.FC = () => {
     Cookies.set("cart", JSON.stringify(updatedProducts), { expires: 2 });
   };
 
-  const removeProduct = (id: number) => {
-    const updatedProducts = products.filter((product) => product.id !== id);
+  const removeProduct = (id: number, color: string, size: string) => {
+    const updatedProducts = products.filter(
+      (product) => !(product.id === id && product.color === color && product.size === size)
+    );
     setProducts(updatedProducts);
     saveCartToCookies(updatedProducts);
   };
@@ -128,11 +130,10 @@ const Cart: React.FC = () => {
                   ...product,
                   alt: product.alt || product.name
                 }}
-                onRemove={() => removeProduct(product.id)}
+                onRemove={() => removeProduct(product.id, product.color, product.size)}
                 onQuantityChange={(quantity) =>
                   updateProductQuantity(product.id, quantity)
                 }
-                
               />
             ))
           ) : (
