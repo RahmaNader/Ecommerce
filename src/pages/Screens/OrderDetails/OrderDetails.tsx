@@ -43,12 +43,13 @@ interface OrderData {
   estimatedDelivery: string;
   steps: (OrderStep | CancelledOrderStep)[];
   items: {
-    id: string; // Add this property
+    id: string; 
+    productId: number; // Add this field
     name: string;
     details: string;
     price: string;
     quantity: number;
-    quantityRefunded: number; // Add this property
+    quantityRefunded: number;
     image?: string;
   }[];
   payment: { method: string; lastFourDigits: string; icon?: string };
@@ -164,6 +165,18 @@ const OrderDetails: React.FC = () => {
         console.log(`[OrderDetails] Fetching order: ${orderId}`);
         const order = await fetchOrderDetails(orderId, isEnglish);
         
+        // Log full API response to inspect product data
+        console.log("[OrderDetails] API Response:", order);
+        
+        // Log specific product data for debugging
+        console.log("[OrderDetails] Product Items:", order.orderItems.$values.map(item => ({
+          orderItemId: item.orderItemId,
+          productId: item.productId,
+          name: item.productName,
+          color: item.productColor,
+          size: item.productSize
+        })));
+        
         // Map the API response to our component's data structure
         const orderDataMapped = mapOrderToUiModel(order);
         setOrderData(orderDataMapped);
@@ -252,12 +265,13 @@ const OrderDetails: React.FC = () => {
     
     // Create items array from order items
     const items = order.orderItems.$values.map(item => ({
-      id: item.orderItemId, // Add this line
+      id: item.orderItemId,
+      productId: item.productId, // Add this to include the product ID
       name: item.productName || t("orderDetails.unknownProduct"),
       details: `${item.productColor || ''} | ${item.productSize || ''}`,
       price: formatCurrency(item.unitPrice),
       quantity: item.quantity,
-      quantityRefunded: item.quantityRefunded, // Add this line
+      quantityRefunded: item.quantityRefunded,
       image: item.firstProductImageUrl
     }));
     
@@ -310,7 +324,7 @@ const OrderDetails: React.FC = () => {
       delivery,
       summary,
       total: formatCurrency(order.total),
-      isCancelled // Add this new property
+      isCancelled
     };
   };
 
@@ -463,7 +477,7 @@ const updateItemQuantity = (itemId: string, quantity: number, refundableQuantity
         <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 my-4 mx-2 md:mx-20 rounded-md shadow-md">
           <div className="flex items-center">
             <svg className="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 101.414 1.414L10 11.414l1.293 1.293a1 1 00-1.414-1.414L11.414 10l1.293-1.293a1 1 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 101.414 1.414L10 11.414l1.293-1.293a1 1 00-1.414-1.414L11.414 10l1.293-1.293a1 1 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
             </svg>
             <p className="font-bold">{t("orderDetails.cancelledTitle")}</p>
           </div>
@@ -660,7 +674,7 @@ const updateItemQuantity = (itemId: string, quantity: number, refundableQuantity
                 />
                 <div className={`flex flex-col ${isRTL ? 'text-right' : 'text-left'}`}>
                   <Link 
-                    to={`/product/${item.id}`}
+                    to={`/product-details/${item.productId}`}
                     className="group hover:text-sixColor transition-colors"
                   >
                     <h4 className="font-semibold text-wine font-playfair text-sm sm:text-lg">
