@@ -42,12 +42,13 @@ const ShopModal: React.FC<ShopModalProps> = ({
 
   return (
     <div
-      className="bg-customBeige absolute left-1/2 top-full transform -translate-x-1/2 mt-4 z-50 w-[55%] ease-in shadow-custom-light"
+      className="absolute left-1/2 top-full transform -translate-x-1/2 mt-4 z-50 w-[55%] 
+                 transition-all duration-300 ease-in-out"
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      <div className="p-8 rounded-lg w-auto">
-        <div className="grid grid-cols-3 gap-8">
+      <div className="bg-customBeige p-10 rounded-lg shadow-custom-light border-t-2 border-wine/20">
+        <div className="grid grid-cols-3 gap-10">
           {mainCategories.map((mainCat) => {
             const subcategories = categories.filter(
               (sub) => sub.parentCategoryID === mainCat.categoryID
@@ -57,34 +58,40 @@ const ShopModal: React.FC<ShopModalProps> = ({
             const isMainActive = location.pathname === mainPath;
 
             return (
-              <div key={mainCat.categoryID} className="text-center">
-                <Link
-                  to={mainPath}
-                  state={{ categoryId: mainCat.categoryID }}
-                  className={`text-xl font-bold ${
-                    isMainActive ? "text-wine" : "text-wine"
-                  } mb-4 block hover:underline`}
-                >
-                  {getCategoryName(mainCat)}
-                </Link>
-                <ul className="space-y-2">
+              <div key={mainCat.categoryID} className="flex flex-col">
+                <div className="pb-2 mb-4 border-b border-wine/20">
+                  <Link
+                    to={mainPath}
+                    state={{ categoryId: mainCat.categoryID }}
+                    className={`text-xl font-semibold text-wine hover:text-wine/80 
+                              transition-colors duration-200 ${
+                                isMainActive ? "underline underline-offset-4" : ""
+                              }`}
+                  >
+                    {getCategoryName(mainCat)}
+                  </Link>
+                </div>
+                <ul className="space-y-3">
                   {subcategories.map((sub) => {
                     const subCatName = getCategoryName(sub);
                     const subPath = `/products/${mainCatName.toLowerCase()}/${subCatName.toLowerCase()}`;
                     const isActive = location.pathname.includes(subPath);
 
                     return (
-                      <li key={sub.categoryID}>
+                      <li key={sub.categoryID} className="group">
                         <Link
                           to={subPath}
                           state={{ categoryId: sub.categoryID }}
-                          className={`text-[16px] ${
-                            isActive
-                              ? "text-wine font-medium"
-                              : "text-mutedGray font-normal"
-                          } hover:text-wine`}
+                          className={`text-[16px] transition-all duration-200
+                                    ${isActive
+                                      ? "text-wine font-medium"
+                                      : "text-mutedGray hover:text-wine/80"
+                                    } flex items-center`}
                         >
-                          {getCategoryName(sub)}
+                          <span className={`transition-all duration-200 
+                                          ${isActive ? "translate-x-1" : "group-hover:translate-x-1"}`}>
+                            {getCategoryName(sub)}
+                          </span>
                         </Link>
                       </li>
                     );

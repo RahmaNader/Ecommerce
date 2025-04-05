@@ -239,7 +239,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
           <img
             src={product.productImages[0]?.imageUrl}
             alt={productDescription}
-            className="object-cover max-w-[300px] min-h-[450px] h-full w-full cursor-pointer border border-1 border-golden rounded-t-[500px]"
+            className="object-cover max-w-[300px] min-h-[250px] sm:min-h-[450px] h-full w-full cursor-pointer border border-1 border-golden rounded-t-[500px]"
           />
         </div>
       </div>

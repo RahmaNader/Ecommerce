@@ -18,15 +18,19 @@ export const calculateSummary = (products: Product[]): OrderSummaryData => {
     (acc, product) => {
       acc.total += product.NormalPrice * product.quantity;
       acc.subTotal += product.DisPrice * product.quantity;
-      acc.shipping += 50;
+      // Don't add shipping here at all
       return acc;
     },
     { total: 0, subTotal: 0, shipping: 0 }
   );
+  
+  // Set flat shipping rate
+  summary.shipping = 20; // Default to regular shipping
 
   const appliedCoupon = Cookies.get('appliedCoupon');
   const couponDiscount = appliedCoupon ? validCoupons[appliedCoupon] : 0;
 
+  // Calculate totals with shipping added just once
   const totalBeforeCoupon = summary.subTotal + summary.shipping;
   const totalAfterCoupon = totalBeforeCoupon * (1 - couponDiscount);
 

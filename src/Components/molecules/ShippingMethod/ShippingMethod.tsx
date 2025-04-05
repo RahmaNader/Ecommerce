@@ -40,7 +40,7 @@ const ShippingMethod: React.FC<ShippingMethodProps> = ({
               <ToggleRadioButton
                 label={t("shipping.regularDelivery")}
                 isChecked={selectedShippingMethod === "regular"}
-                onChange={() => onShippingMethodChange("regular")}
+                onChange={() => onShippingMethodChange("regular")} // Pass "regular" for normal shipping
               />
             </div>
             <div className="text-lg text-wine px-8 font-semibold">
@@ -58,7 +58,7 @@ const ShippingMethod: React.FC<ShippingMethodProps> = ({
               <ToggleRadioButton
                 label={t("shipping.fastDelivery")}
                 isChecked={selectedShippingMethod === "fast"}
-                onChange={() => onShippingMethodChange("fast")}
+                onChange={() => onShippingMethodChange("fast")} // Pass "fast" for fast shipping
               />
             </div>
             <div className="text-lg text-wine px-8 font-semibold">

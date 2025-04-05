@@ -226,6 +226,7 @@ export type NavLinkProps = {
   isActive?: boolean;
   DefaultIcon?: string;
   ActiveIcon?: string;
+  className?: string;
 };
 
 export type PersonalData = {

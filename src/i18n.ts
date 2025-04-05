@@ -11,6 +11,8 @@ const resources = {
         contactUs: "Contact Us",
         aboutUs: "About Us",
         toggleMenu: "Toggle Menu",
+        myProfile: "My Profile",
+        language: "Language",
       },
       slider: {
         slide1:
@@ -550,6 +552,8 @@ const resources = {
         contactUs: "اتصل بنا",
         aboutUs: "من نحن",
         toggleMenu: "القائمة",
+        myProfile: "ملفي الشخصي",
+        language: "اللغة",
       },
       slider: {
         slide1: "اكتشف المزيج المثالي بين أزيائنا التقليدية والحديثة.",

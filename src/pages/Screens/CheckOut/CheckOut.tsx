@@ -35,8 +35,7 @@ export default function CheckOut() {
   const [selectedAddressIndex, setSelectedAddressIndex] = useState<
     number | null
   >(null);
-  const [selectedShippingMethod, setSelectedShippingMethod] =
-    useState<string>("");
+  const [selectedShippingMethod, setSelectedShippingMethod] = useState<string>("regular"); // Default to "regular"
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<string>("");
   const [orderConfirmed, setOrderConfirmed] = useState(false);
