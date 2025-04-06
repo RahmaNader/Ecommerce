@@ -7,7 +7,7 @@ const ProductsView: React.FC<ProductsViewProps> = ({ sectionName, cards }) => {
       <div className='max-w-[1200px] justify-center mx-auto'>
         <Category SectionName={sectionName} />
 
-        <div className="flex flex-wrap justify-between mx-12">
+        <div className="flex flex-wrap justify-around mx-12">
           {cards.map((card: CardComponent) => (
             <div
               key={card.productID}

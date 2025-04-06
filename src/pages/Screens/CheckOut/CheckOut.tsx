@@ -35,8 +35,7 @@ export default function CheckOut() {
   const [selectedAddressIndex, setSelectedAddressIndex] = useState<
     number | null
   >(null);
-  const [selectedShippingMethod, setSelectedShippingMethod] =
-    useState<string>("");
+  const [selectedShippingMethod, setSelectedShippingMethod] = useState<string>("regular"); // Default to "regular"
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<string>("");
   const [orderConfirmed, setOrderConfirmed] = useState(false);
@@ -210,21 +209,21 @@ export default function CheckOut() {
     
     try {
       const shoppingItems = products.map((product) => {
-        const productId = product.productVarientId || product.id;
-        console.log(`[CheckOut] Product ID for ${product.name}: ${productId}`);
+        const variantId = product.productVarientId ;
+        console.log(`[CheckOut] Variant ID for ${product.name}: ${variantId}`);
         
-        if (!productId) {
-          throw new Error(`Missing product ID for item ${product.name}`);
+        if (!variantId) {
+          throw new Error(`Missing variant ID for item ${product.name}`);
         }
         
         const item = {
-          productId: typeof productId === "string" ? parseInt(productId, 10) : productId,
+          productId: typeof variantId === "string" ? parseInt(variantId, 10) : variantId,
           quantity: product.quantity,
           color: product.color || "Default",
           sizeLabel: product.size || "Default",
         };
         
-        console.log(`[CheckOut] Using productID: ${productId} instead of variant ID for ${product.name}`);
+        console.log(`[CheckOut] Using variantId: ${variantId} for order item ${product.name}`);
         return item;
       });
       

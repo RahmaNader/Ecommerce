@@ -1,7 +1,7 @@
 import { ToggleRadioButton } from "@components/atoms";
 import { useTranslation } from "react-i18next";
 import { format, addDays } from "date-fns";
-import { arDZ, enUS } from "date-fns/locale";
+import { arEG, enUS } from "date-fns/locale";
 
 interface ShippingMethodProps {
   selectedShippingMethod: string;
@@ -20,7 +20,7 @@ const ShippingMethod: React.FC<ShippingMethodProps> = ({
   const regularDeliveryDate = addDays(today, 5);
   const fastDeliveryDate = addDays(today, 2);
   
-  const locale = isArabic || i18n.language === 'ar' ? arDZ : enUS;
+  const locale = isArabic || i18n.language === 'ar' ? arEG : enUS;
   const dateFormat = isArabic || i18n.language === 'ar' ? "d MMMM، yyyy" : "d MMM, yyyy";
   
   const formattedRegularDate = format(regularDeliveryDate, dateFormat, { locale });
@@ -40,7 +40,7 @@ const ShippingMethod: React.FC<ShippingMethodProps> = ({
               <ToggleRadioButton
                 label={t("shipping.regularDelivery")}
                 isChecked={selectedShippingMethod === "regular"}
-                onChange={() => onShippingMethodChange("regular")}
+                onChange={() => onShippingMethodChange("regular")} // Pass "regular" for normal shipping
               />
             </div>
             <div className="text-lg text-wine px-8 font-semibold">
@@ -58,7 +58,7 @@ const ShippingMethod: React.FC<ShippingMethodProps> = ({
               <ToggleRadioButton
                 label={t("shipping.fastDelivery")}
                 isChecked={selectedShippingMethod === "fast"}
-                onChange={() => onShippingMethodChange("fast")}
+                onChange={() => onShippingMethodChange("fast")} // Pass "fast" for fast shipping
               />
             </div>
             <div className="text-lg text-wine px-8 font-semibold">

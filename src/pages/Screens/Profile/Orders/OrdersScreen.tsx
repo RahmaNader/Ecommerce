@@ -25,7 +25,13 @@ const OrdersScreen: React.FC = () => {
       try {
         setLoading(true);
         const userOrders = await fetchUserOrders(isEnglish);
-        setOrders(userOrders);
+        
+        // Sort orders by order number in descending order
+        const sortedOrders = [...userOrders].sort((a, b) => 
+          b.orderNumber - a.orderNumber
+        );
+        
+        setOrders(sortedOrders);
         setError(null);
       } catch (err) {
         console.error("Error fetching orders:", err);

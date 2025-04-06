@@ -31,7 +31,19 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
     const saved = Cookies.get("orderSummary");
     console.log("[OrderSummary] Initial cookie summary:", saved);
     const initialSummary = saved ? JSON.parse(saved) : calculateSummary(products);
-    console.log("[OrderSummary] Initial summary state:", initialSummary);
+    
+    // ALWAYS set shipping to 20 by default for normal shipping
+    initialSummary.shipping = 20; // Default to normal shipping cost
+    
+    // Recalculate total with shipping cost
+    if (initialSummary.totalAfterCoupon) {
+      initialSummary.totalAfterCoupon = 
+        initialSummary.totalBeforeCoupon - initialSummary.couponDiscount + initialSummary.shipping;
+    } else {
+      initialSummary.total = initialSummary.subTotal + initialSummary.shipping;
+    }
+    
+    console.log("[OrderSummary] Initial summary state with default shipping:", initialSummary);
     return initialSummary;
   });
   
@@ -43,6 +55,35 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
   
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
   const couponInputRef = useRef<HTMLInputElement>(null);
+
+  // Update shipping cost based on selected shipping method
+  useEffect(() => {
+    const newSummary = { ...summary };
+
+    // Ensure default shipping is 20 unless explicitly set to 'fast'
+    if (selectedShippingMethod === "fast") {
+      newSummary.shipping = 50; // Fast shipping cost
+    } else {
+      newSummary.shipping = 20; // Default to normal shipping cost
+    }
+
+    // Recalculate totals properly to avoid adding shipping twice
+    if (newSummary.totalAfterCoupon !== undefined) {
+      // First recalculate totalBeforeCoupon with the correct shipping
+      newSummary.totalBeforeCoupon = newSummary.subTotal + newSummary.shipping;
+      
+      // Then recalculate totalAfterCoupon using the correct discount
+      newSummary.totalAfterCoupon = 
+        newSummary.totalBeforeCoupon * (1 - (newSummary.couponDiscount / newSummary.totalBeforeCoupon));
+    } else {
+      // If no coupon, update the regular total
+      newSummary.total = newSummary.subTotal + newSummary.shipping;
+    }
+
+    console.log("[OrderSummary] Updated shipping cost:", newSummary.shipping);
+    setSummary(newSummary);
+    saveOrderSummary(newSummary);
+  }, [selectedShippingMethod]);
 
   useEffect(() => {
     console.log("[OrderSummary] Component mounted with props:", { 
@@ -57,7 +98,16 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
   useEffect(() => {
     console.log("[OrderSummary] Products changed:", products);
     const newSummary = calculateSummary(products);
-    console.log("[OrderSummary] Recalculated summary:", newSummary);
+    
+    // Set default shipping cost to 20 always
+    newSummary.shipping = 20;
+    
+    // Only override with selected shipping method if explicitly chosen
+    if (selectedShippingMethod) {
+      newSummary.shipping = selectedShippingMethod === 'fast' ? 50 : 20;
+    }
+    
+    console.log("[OrderSummary] Recalculated summary with shipping:", newSummary);
     setSummary(newSummary);
     
     const existingCoupon = Cookies.get('appliedCoupon');
@@ -274,7 +324,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
             size="large"
             label={
               isPlacingOrder 
-                ? t("orderSummary.processing") 
+                ? t("common.processing")
                 : currentStep === "payment" 
                   ? t("orderSummary.confirmOrder") 
                   : t("orderSummary.next")
