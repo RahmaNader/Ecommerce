@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import "react-phone-input-2/lib/style.css";
 import { fetchPersonalData, updatePersonalData } from "@services/api/personaldetails";
@@ -21,17 +21,20 @@ const PersonalDataScreen: React.FC = () => {
     reValidateMode: "onChange",
   });
 
-    const [initialData, setInitialData] = useState<PersonalData | null>(null);
-
+  const [initialData, setInitialData] = useState<PersonalData | null>(null);
   const [isEditable, setIsEditable] = useState<{ [key: string]: boolean }>(
     personalDataFields.reduce((acc, field) => {
       acc[field.id] = false;
       return acc;
     }, {} as { [key: string]: boolean })
   );
-
   const [editMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  // New states & ref for photo upload
+  const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -47,7 +50,6 @@ const PersonalDataScreen: React.FC = () => {
         setLoading(false);
       }
     };
-
     loadUserData();
   }, [setValue]);
 
@@ -68,15 +70,10 @@ const PersonalDataScreen: React.FC = () => {
         alert("No changes detected.");
         return;
       }
-
       console.log("Sending changes to API:", JSON.stringify(formattedData, null, 2));
-
       await updatePersonalData(formattedData);
-
       setInitialData({ ...initialData, ...formattedData } as PersonalData);
-      
       alert("Data updated successfully!");
-
       setEditMode(false);
       setIsEditable(
         personalDataFields.reduce((acc, field) => {
@@ -95,7 +92,7 @@ const PersonalDataScreen: React.FC = () => {
       alert("Failed to update data. Please try again.");
     }
   };
-  
+
   const onToggleEditMode = () => {
     if (editMode) {
       if (isValid) {
@@ -114,6 +111,42 @@ const PersonalDataScreen: React.FC = () => {
     }
   };
 
+  // --- Photo Upload handlers ---
+  const triggerFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      if (!file.type.startsWith("image/")) {
+        alert(t("profile.onlyImagesAllowed"));
+        return;
+      }
+      if (file.size > 2 * 1024 * 1024) {
+        alert(t("profile.fileTooLarge"));
+        return;
+      }
+      setIsUploadingPhoto(true);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setTimeout(() => {
+          setProfilePhoto(reader.result as string);
+          setIsUploadingPhoto(false);
+          alert(t("profile.photoUpdateSuccess"));
+        }, 1500); // simulate network delay
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeProfilePhoto = () => {
+    setProfilePhoto(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   return (
     <div className="flex flex-col mt-8 md:mt-16 items-center justify-center">
       <h1 className="text-2xl font-semibold text-wine font-playfair md:self-start">
@@ -127,12 +160,55 @@ const PersonalDataScreen: React.FC = () => {
         <p>Loading...</p>
       ) : (
         <div className="w-full max-w-md">
-          <div className="relative mb-4 w-[100px] h-[100px] cursor-pointer mx-auto rounded-full bg-[#A78E7821] border-wine border-[1px]">
-            <div className="absolute bottom-0 right-0 hover:bg-ForthColor w-[30px] h-[30px] bg-wine flex items-center justify-center rounded-full">
-              <img src={addPhoto} alt="Add Photo" className="w-4 h-4" />
+          {/* Profile Photo Section */}
+          <div className="flex flex-col items-center mb-6">
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept="image/*"
+              className="hidden"
+            />
+            <div
+              className="relative w-[100px] h-[100px] mx-auto rounded-full bg-[#A78E7821] border-wine border-[1px]"
+            >
+              {isUploadingPhoto ? (
+                <div className="absolute inset-0 flex items-center justify-center bg-ForthColor/20">
+                  <div className="w-8 h-8 border-4 border-wine border-t-transparent rounded-full animate-spin"></div>
+                </div>
+              ) : profilePhoto ? (
+                <img
+                  src={profilePhoto}
+                  alt="Profile"
+                  className="w-full h-full object-cover rounded-full"
+                />
+              ) : (
+                <div className="flex items-center justify-center w-full h-full">
+                  <span className="text-wine text-2xl">
+                    {initialData?.fullName?.[0] || "?"}
+                  </span>
+                </div>
+              )}
+              {/* Add Photo Button positioned on bottom left of the circle */}
+              <div
+                onClick={triggerFileInput}
+                className="absolute bottom-0 right-0 hover:bg-ForthColor w-[30px] h-[30px] bg-wine flex items-center justify-center rounded-full"
+              >
+                <img src={addPhoto} alt="Add Photo" className="w-4 h-4" />
+              </div>
             </div>
+            {profilePhoto && (
+              <button
+                type="button"
+                onClick={removeProfilePhoto}
+                className="mt-2 text-sm text-FifthColor hover:underline"
+              >
+                {t("profile.removePhoto")}
+              </button>
+            )}
           </div>
 
+          {/* Existing Form */}
           <form onSubmit={handleSubmit(onSubmit)}>
             {personalDataFields.map((field) => (
               <div key={field.id} className="mb-4 relative">
@@ -173,7 +249,6 @@ const PersonalDataScreen: React.FC = () => {
                 )}
               </div>
             ))}
-
             <button
               type="button"
               onClick={onToggleEditMode}

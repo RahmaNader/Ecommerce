@@ -27,7 +27,8 @@ const variants = {
 };
 
 const Slider: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.dir() === 'rtl';
   const navigate = useNavigate();
   const [[page, direction], setPage] = useState([0, 0]);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
@@ -190,10 +191,10 @@ const Slider: React.FC = () => {
         </button>
 
         {/* Enhanced Dots Navigation with solid colors */}
-        <div className="absolute bottom-3 sm:bottom-5 left-1/2 -translate-x-1/2 z-20 
-                      flex items-center space-x-2 sm:space-x-3 
-                      bg-sixColor/80 rounded-full 
-                      py-1.5 px-3 border-2 border-golden shadow-lg">
+        <div className={`absolute bottom-3 sm:bottom-5 left-1/2 -translate-x-1/2 z-20 
+                      flex items-center ${isRTL ? 'gap-2' : ''} 
+                      bg-sixColor/80 rounded-full  
+                      py-1.5 px-3 border-2 border-golden shadow-lg`}>
           {slides.map((_, index) => (
             <button
               key={index}

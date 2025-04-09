@@ -12,18 +12,18 @@ interface Category {
 
 type ShopModalProps = {
   isOpen: boolean;
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
   categories: Category[];
   language: string;
+  onMouseEnter?: React.MouseEventHandler<HTMLDivElement>;
+  onMouseLeave?: React.MouseEventHandler<HTMLDivElement>;
 };
 
 const ShopModal: React.FC<ShopModalProps> = ({
   isOpen,
-  onMouseEnter,
-  onMouseLeave,
   categories,
   language,
+  onMouseEnter,
+  onMouseLeave
 }) => {
   const location = useLocation();
   
