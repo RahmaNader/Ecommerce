@@ -68,7 +68,7 @@ const Navbar: React.FC = () => {
   const handleCloseModal = () => {
     closeTimeoutRef.current = setTimeout(() => {
       setIsModalOpen(false);
-    }, 100);
+    }, 200); // Increased from 100ms to 200ms for better user experience
   };
 
   const toggleMenu = () => {
@@ -140,12 +140,15 @@ const Navbar: React.FC = () => {
             isActive={isActive("/")}
           />
           
-          <div className="relative group">
+          <div 
+            className="relative group"
+            onMouseEnter={handleOpenModal}
+            onMouseLeave={handleCloseModal}
+          >
             <NavLink
               label={t("navbar.shop")}
               to="#"
               variant="navbar"
-              onMouseEnter={handleOpenModal}
               isActive={isActive("/shop")}
             />
           </div>
@@ -485,15 +488,15 @@ const Navbar: React.FC = () => {
       {isModalOpen && (
         <div 
           className="absolute left-0 right-0 z-50 w-full"
-          onMouseLeave={handleCloseModal}
           onMouseEnter={handleOpenModal}
+          onMouseLeave={handleCloseModal}
         >
           <ShopModal
             isOpen={isModalOpen}
-            onMouseEnter={handleOpenModal}
-            onMouseLeave={handleCloseModal}
             categories={categories || []}
             language={language}
+            onMouseEnter={handleOpenModal}
+            onMouseLeave={handleCloseModal}
           />
         </div>
       )}
