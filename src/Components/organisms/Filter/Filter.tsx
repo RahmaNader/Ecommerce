@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import ReactSlider from "react-slider";
+import ReactSlider, { ReactSliderProps } from "react-slider";
 import FilterIcon from "@assets/FilterIcon.svg";
 import { IconX } from "@tabler/icons-react";
 import FilterArrow from "@assets/FilterArrow.svg";
 import { Button } from "@components/atoms";
 import Checkbox from "@mui/material/Checkbox";
-import { FilterCategory } from '@types';
+import { FilterCategory } from "@types";
 import { styled } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 
@@ -19,6 +19,9 @@ type FilterProps = {
   onClose?: () => void;
 };
 
+const Slider = ReactSlider as unknown as React.FC<
+  ReactSliderProps<[number, number]>
+>;
 
 const CustomCheckbox = styled(Checkbox)(() => ({
   color: "#721013",
@@ -255,7 +258,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
               EGP {priceRange[1]}
             </span>
           </div>
-          <ReactSlider
+          <Slider
             className="relative w-[100%] items-center rounded-md mt-2"
             thumbClassName="absolute relative transform -translate-y-1/2 w-4 h-4 bg-wine rounded-full cursor-pointer focus:outline-none focus:ring-wine"
             trackClassName="h-[1px] bg-ThirdColor"
@@ -263,7 +266,7 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
             max={10000}
             step={100}
             value={priceRange}
-            onChange={(values) => setPriceRange(values as [number, number])}
+            onChange={(values: [number, number]) => setPriceRange(values)}
             withTracks={true}
             pearling
             minDistance={10}
