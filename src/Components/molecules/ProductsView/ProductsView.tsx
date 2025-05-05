@@ -4,10 +4,10 @@ import { CardComponent, ProductsViewProps } from '@types';
 
 const ProductsView: React.FC<ProductsViewProps> = ({ sectionName, cards }) => {
   return (
-      <div className='max-w-[1200px] justify-center mx-auto'>
+      <div className='w-[90%] justify-center mx-auto px-16'>
         <Category SectionName={sectionName} />
 
-        <div className="flex flex-wrap justify-around mx-12">
+        <div className="flex flex-wrap justify-around ">
           {cards.map((card: CardComponent) => (
             <div
               key={card.productID}
