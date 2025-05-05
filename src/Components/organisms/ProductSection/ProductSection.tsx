@@ -33,6 +33,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
   const [count, setCount] = useState(1);
   const [showShareOptions, setShowShareOptions] = useState(false);
   const shareMenuRef = useRef<HTMLDivElement>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
   const productName = isRTL ? product.nameAr || product.name : product.nameEn || product.name;
   const productDescription = isRTL 
     ? product.productDescriptionAr || product.productDescription 
@@ -258,15 +259,54 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
         </div>
       )}
 
-      {/* Product Image Section - Same for both languages */}
-      <div className="flex flex-col justify-center items-center gap-2">
+      {/* Product Image Section with Thumbnails */}
+      <div className="flex flex-col justify-center items-center gap-4">
         <div className="image-container w-48 min-h-48 md:w-full h-[100%] relative overflow-hidden rounded-t-[500px]">
           <img
-            src={product.productImages[0]?.imageUrl}
+            src={product.productImages[selectedImageIndex]?.imageUrl || product.productImages[0]?.imageUrl}
             alt={productDescription}
             className="object-cover max-w-[300px] min-h-[250px] sm:min-h-[450px] h-full w-full cursor-pointer border border-1 border-golden rounded-t-[500px]"
           />
         </div>
+        
+        {/* Thumbnails Row - Centered */}
+        {product.productImages.length > 1 && (
+          <div className="flex flex-row justify-center items-center gap-4 w-full max-w-[300px] mt-2">
+            {product.productImages.map((image, index) => (
+              <div 
+                key={image.imageId || index}
+                onClick={() => setSelectedImageIndex(index)}
+                className={`relative flex-none cursor-pointer transition-all duration-200`}
+                style={{ 
+                  width: '49px',
+                  height: '50px',
+                }}
+              >
+                <img
+                  src={image.imageUrl}
+                  alt={image.altText || `Product view ${index + 1}`}
+                  className="object-cover w-full h-full rounded-[5px]"
+                  style={{ 
+                    border: selectedImageIndex === index 
+                      ? '2px solid #721013' 
+                      : '1px solid #721013',
+                    borderRadius: '5px'
+                  }}
+                />
+                {selectedImageIndex === index && (
+                  <div 
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      backgroundColor: 'rgba(0, 0, 0, 0.25)',
+                      borderRadius: '5px',
+                      border: '1px solid #721013'
+                    }}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Product Details Section */}
