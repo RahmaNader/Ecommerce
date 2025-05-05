@@ -10,7 +10,7 @@ import {
 } from "@components/atoms";
 import heart from "@assets/heart.svg";
 import filledHeart from "@assets/filledHeart.svg";
-import { FaShareAlt } from "react-icons/fa";
+import { FaShareAlt, FaChevronLeft, FaChevronRight, FaTimes } from "react-icons/fa";
 import { fetchProductVariant } from "src/services/api/fetchVariants";
 import { useNavigate } from 'react-router-dom';
 
@@ -34,6 +34,14 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
   const [showShareOptions, setShowShareOptions] = useState(false);
   const shareMenuRef = useRef<HTMLDivElement>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
+  const [showGallery, setShowGallery] = useState<boolean>(false);
+  const [isHovering, setIsHovering] = useState<boolean>(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [magnifierPosition, setMagnifierPosition] = useState({ x: 0, y: 0 });
+  const [showMagnifier, setShowMagnifier] = useState(false);
+  const magnifierSize = { width: 300, height: 300 }; // Size of the floating magnifier
+  const zoomLevel = 2.5; // Magnification level
+  const imageContainerRef = useRef<HTMLDivElement>(null);
   const productName = isRTL ? product.nameAr || product.name : product.nameEn || product.name;
   const productDescription = isRTL 
     ? product.productDescriptionAr || product.productDescription 
@@ -247,6 +255,66 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
     (v) => v.colorNameEn === selectedColor
   )?.sizeQuantities ?? [];
 
+  const handleImageClick = () => {
+    setShowGallery(true);
+  };
+
+  const handleMouseEnter = () => {
+    setIsHovering(true);
+    if (window.innerWidth >= 1024) { // Only show floating magnifier on larger screens
+      setShowMagnifier(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovering(false);
+    setShowMagnifier(false);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (imageContainerRef.current) {
+      const { left, top, width, height } = imageContainerRef.current.getBoundingClientRect();
+      
+      // Calculate relative position within the image (0-100%)
+      const x = ((e.clientX - left) / width) * 100;
+      const y = ((e.clientY - top) / height) * 100;
+      setMousePosition({ x, y });
+      
+      // Calculate position for the floating magnifier
+      // Position it near the cursor but ensure it stays within viewport
+      const cursorX = e.clientX;
+      const cursorY = e.clientY;
+      
+      // Position magnifier to the right of cursor, unless near right edge
+      let magnifierX = cursorX + 20;
+      if (magnifierX + magnifierSize.width > window.innerWidth) {
+        magnifierX = cursorX - magnifierSize.width - 20;
+      }
+      
+      // Position magnifier centered vertically with cursor
+      let magnifierY = cursorY - magnifierSize.height / 2;
+      // Ensure it doesn't go offscreen
+      if (magnifierY < 0) magnifierY = 0;
+      if (magnifierY + magnifierSize.height > window.innerHeight) {
+        magnifierY = window.innerHeight - magnifierSize.height;
+      }
+      
+      setMagnifierPosition({ x: magnifierX, y: magnifierY });
+    }
+  };
+
+  const nextImage = () => {
+    setSelectedImageIndex((prev) => 
+      prev === product.productImages.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  const prevImage = () => {
+    setSelectedImageIndex((prev) => 
+      prev === 0 ? product.productImages.length - 1 : prev - 1
+    );
+  };
+
   return (
     <div className={`flex flex-col md:flex-row items-center justify-center w-full gap-10 my-8 px-6 `}>
       {alertType && alertMessage && (
@@ -261,18 +329,71 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
 
       {/* Product Image Section with Thumbnails */}
       <div className="flex flex-col justify-center items-center gap-4">
-        <div className="image-container w-48 min-h-48 md:w-full h-[100%] relative overflow-hidden rounded-t-[500px]">
+      <div 
+           ref={imageContainerRef}
+           className="image-container w-48 min-h-48 md:w-full h-[100%] relative overflow-hidden rounded-t-[500px]"
+           onMouseEnter={handleMouseEnter}
+           onMouseLeave={handleMouseLeave}
+           onMouseMove={handleMouseMove}
+           onClick={handleImageClick}
+         >
           <img
             src={product.productImages[selectedImageIndex]?.imageUrl || product.productImages[0]?.imageUrl}
             alt={productDescription}
             className="object-cover max-w-[300px] min-h-[250px] sm:min-h-[450px] h-full w-full cursor-pointer border border-1 border-golden rounded-t-[500px]"
           />
+             
+           {/* On mobile or tablet, use the in-place zoom */}
+           {isHovering && window.innerWidth < 1024 && (
+             <div 
+               className="absolute top-0 left-0 w-full h-full pointer-events-none"
+               style={{
+                 backgroundImage: `url(${product.productImages[selectedImageIndex]?.imageUrl || product.productImages[0]?.imageUrl})`,
+                 backgroundPosition: `${mousePosition.x}% ${mousePosition.y}%`,
+                 backgroundRepeat: 'no-repeat',
+                 backgroundSize: '200%',
+                 zIndex: 5,
+               }}
+             />
+           )}
+           
+           {/* Show a small indicator of the area being magnified on larger screens */}
+           {showMagnifier && (
+             <div 
+               className="absolute pointer-events-none border-2 border-white"
+               style={{
+                 left: `calc(${mousePosition.x}% - 40px)`,
+                 top: `calc(${mousePosition.y}% - 40px)`,
+                 width: '80px',
+                 height: '80px',
+                 opacity: 0.6,
+                 zIndex: 6,
+               }}
+             ></div>
+           )}
         </div>
         
-        {/* Thumbnails Row - Centered */}
+ {/* Floating magnifier for desktop/laptop */}
+ {showMagnifier && (
+           <div 
+             className="fixed pointer-events-none rounded-lg shadow-xl overflow-hidden border-4 border-white z-50"
+             style={{
+               left: magnifierPosition.x,
+               top: magnifierPosition.y,
+               width: magnifierSize.width,
+               height: magnifierSize.height,
+               backgroundImage: `url(${product.productImages[selectedImageIndex]?.imageUrl || product.productImages[0]?.imageUrl})`,
+               backgroundPosition: `${mousePosition.x}% ${mousePosition.y}%`,
+               backgroundRepeat: 'no-repeat',
+               backgroundSize: `${zoomLevel * 100}%`,
+             }}
+           />
+         )}
+
+         {/* Thumbnails Row */}
         {product.productImages.length > 1 && (
-          <div className="flex flex-row justify-center items-center gap-4 w-full max-w-[300px] mt-2">
-            {product.productImages.map((image, index) => (
+          <div className="flex flex-row items-center gap-4 w-full max-w-[300px] mt-2">
+          {product.productImages.map((image, index) => (
               <div 
                 key={image.imageId || index}
                 onClick={() => setSelectedImageIndex(index)}
@@ -501,6 +622,60 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
           </div>
         </div>
       </div>
+      {/* Image Gallery Modal */}
+      {showGallery && (
+         <div className="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center">
+           <div className="relative w-full h-full flex flex-col justify-center items-center">
+             <button 
+               className="absolute top-4 right-4 text-white z-10"
+               onClick={() => setShowGallery(false)}
+             >
+               <FaTimes size={24} />
+             </button>
+             
+             <div className="w-full h-full max-w-4xl max-h-[80vh] relative flex items-center justify-center">
+               <img 
+                 src={product.productImages[selectedImageIndex]?.imageUrl} 
+                 alt={productDescription}
+                 className="max-h-full max-w-full object-contain" 
+               />
+               
+               <button 
+                 className="absolute left-4 bg-white bg-opacity-50 p-2 rounded-full"
+                 onClick={prevImage}
+               >
+                 <FaChevronLeft size={20} />
+               </button>
+               
+               <button 
+                 className="absolute right-4 bg-white bg-opacity-50 p-2 rounded-full"
+                 onClick={nextImage}
+               >
+                 <FaChevronRight size={20} />
+               </button>
+             </div>
+             
+             {/* Thumbnails for gallery */}
+             {product.productImages.length > 1 && (
+               <div className="flex justify-center gap-2 mt-4 overflow-x-auto pb-2 max-w-full px-4">
+                 {product.productImages.map((image, index) => (
+                   <div 
+                     key={image.imageId || index}
+                     onClick={() => setSelectedImageIndex(index)}
+                     className={`cursor-pointer border-2 ${selectedImageIndex === index ? 'border-white' : 'border-transparent'}`}
+                   >
+                     <img 
+                       src={image.imageUrl} 
+                       alt={`Thumbnail ${index}`} 
+                       className="h-16 w-16 object-cover"
+                     />
+                   </div>
+                 ))}
+               </div>
+             )}
+           </div>
+         </div>
+       )}
     </div>
   );
 };
