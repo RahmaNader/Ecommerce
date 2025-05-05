@@ -43,25 +43,40 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <div className="flex flex-wrap md:flex-row justify-center items-center md:justify-between my-20 mx-8 md:mx-32">
-        <button 
-          onClick={() => handleCategoryClick("kids", 3)} 
-          className="cursor-pointer hover:opacity-80 mb-8 md:mb-0"
-        >
-          <img src={kids} alt="kids-image" />
-        </button>
-        <button 
-          onClick={() => handleCategoryClick("women", 2)} 
-          className="cursor-pointer hover:opacity-80 mb-8 md:mb-0"
-        >
-          <img src={women} alt="women-image" />
-        </button>
-        <button 
-          onClick={() => handleCategoryClick("men", 1)} 
-          className="cursor-pointer hover:opacity-80"
-        >
-          <img src={men} alt="men-image" />
-        </button>
+      {/* Category Section - Updated for single column on small screens */}
+      <div className="flex flex-row flex-wrap justify-center gap-1 xs:gap-2 sm:gap-3 md:gap-6 mx-auto my-20">
+        <div className="w-[30%] flex justify-center">
+          <div className="relative">
+            <div 
+              className="relative cursor-pointer w-full"
+              onClick={() => handleCategoryClick("kids", 3)}
+            >
+              <img src={kids} alt="kids-category" className="object-cover w-full h-full cursor-pointer" />
+            </div>
+          </div>
+        </div>
+
+        <div className="w-[30%] flex justify-center">
+          <div className="relative">
+            <div 
+              className="relative cursor-pointer w-full"
+              onClick={() => handleCategoryClick("women", 2)}
+            >
+              <img src={women} alt="women-category" className="object-cover w-full h-full cursor-pointer" />
+            </div>
+          </div>
+        </div>
+
+        <div className="w-[30%] flex justify-center">
+          <div className="relative">
+            <div 
+              className="relative cursor-pointer w-full"
+              onClick={() => handleCategoryClick("men", 1)}
+            >
+              <img src={men} alt="men-category" className="object-cover w-full h-full cursor-pointer" />
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="flex flex-col">
