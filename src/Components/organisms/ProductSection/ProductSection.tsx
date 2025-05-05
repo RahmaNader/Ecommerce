@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { CardComponent, ProductVariant, SizeQuantity } from "@types";
 import Cookies from "js-cookie";
@@ -31,11 +31,16 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [alertType, setAlertType] = useState<"success" | "error" | null>(null);
   const [count, setCount] = useState(1);
-
+  const [showShareOptions, setShowShareOptions] = useState(false);
+  const shareMenuRef = useRef<HTMLDivElement>(null);
   const productName = isRTL ? product.nameAr || product.name : product.nameEn || product.name;
   const productDescription = isRTL 
     ? product.productDescriptionAr || product.productDescription 
     : product.productDescriptionEn || product.productDescription;
+
+  // If "product.copyLink" is not yet defined in translations
+  // You can add this to your component
+  const copyLinkText = t("product.copyLink", "Copy Link");
 
   useEffect(() => {
     const fetchVariants = async () => {
@@ -50,6 +55,22 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
 
     fetchVariants();
   }, [product.productID]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (shareMenuRef.current && !shareMenuRef.current.contains(event.target as Node)) {
+        setShowShareOptions(false);
+      }
+    };
+
+    if (showShareOptions) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showShareOptions]);
 
   const handleAddToCart = () => {
     if (!selectedColor || !selectedSize) {
@@ -144,25 +165,29 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
   };
 
   const handleShare = () => {
-    try {
-      const currentUrl = window.location.href;
-            navigator.clipboard.writeText(currentUrl)
-        .then(() => {
-          setAlertMessage(t("product.urlCopiedToClipboard"));
-          setAlertType("success");
-          setTimeout(() => setAlertType(null), 3000);
-        })
-        .catch((err) => {
-          console.error("Failed to copy URL: ", err);
-          setAlertMessage(t("product.failedToCopyUrl"));
-          setAlertType("error");
-          setTimeout(() => setAlertType(null), 3000);
-        });
-    } catch (err) {
-      console.error("Clipboard API not supported", err);
-      setAlertMessage(t("product.browserDoesNotSupportSharing"));
-      setAlertType("error");
-      setTimeout(() => setAlertType(null), 3000);
+    // Get the current URL
+    const url = window.location.href;
+    const title = productName;
+    const text = productDescription?.substring(0, 100) || productName;
+
+    // Try to use the Web Share API first (works well on mobile)
+    if (navigator.share) {
+      navigator.share({
+        title,
+        text,
+        url,
+      })
+      .then(() => {
+        console.log('Successfully shared');
+      })
+      .catch((error) => {
+        console.log('Error sharing:', error);
+        // If sharing fails, show the dropdown instead
+        setShowShareOptions(prev => !prev);
+      });
+    } else {
+      // If Web Share API is not supported, toggle dropdown
+      setShowShareOptions(prev => !prev);
     }
   };
 
@@ -359,13 +384,80 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
             >
               {t("product.buyNow")}
             </button>
-            <button
-              onClick={handleShare}
-              className="w-10 h-10 rounded-full bg-wine text-mainColor hover:bg-sixColor flex items-center justify-center"
-              aria-label={t("product.shareProduct")}
-            >
-              <FaShareAlt size={16} />
-            </button>
+            <div className="relative">
+              <button
+                onClick={handleShare}
+                className="w-10 h-10 rounded-full bg-wine text-mainColor hover:bg-sixColor flex items-center justify-center"
+                aria-label={t("product.shareProduct")}
+              >
+                <FaShareAlt size={16} />
+              </button>
+              
+              {showShareOptions && (
+                <div 
+                  ref={shareMenuRef}
+                  className="absolute right-0 bottom-12 bg-white shadow-lg rounded-md p-3 z-30 w-52"
+                >
+                  <div className="flex flex-col gap-2">
+                    <a 
+                      href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`${productName} - ${window.location.href}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-md"
+                    >
+                      <img src="https://cdn-icons-png.flaticon.com/512/124/124034.png" alt="WhatsApp" className="w-5 h-5" />
+                      <span>WhatsApp</span>
+                    </a>
+                    
+                    <a 
+                      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-md"
+                    >
+                      <img src="https://cdn-icons-png.flaticon.com/512/124/124010.png" alt="Facebook" className="w-5 h-5" />
+                      <span>Facebook</span>
+                    </a>
+                    
+                    <a 
+                      href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out this product: ${productName}`)}&url=${encodeURIComponent(window.location.href)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-md"
+                    >
+                      <img src="https://cdn-icons-png.flaticon.com/512/124/124021.png" alt="Twitter" className="w-5 h-5" />
+                      <span>Twitter</span>
+                    </a>
+                    
+                    <a 
+                      href={`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(`Check out this product: ${productName}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-md"
+                    >
+                      <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram" className="w-5 h-5" />
+                      <span>Telegram</span>
+                    </a>
+                    
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(window.location.href);
+                        setAlertMessage(t("product.urlCopiedToClipboard"));
+                        setAlertType("success");
+                        setTimeout(() => setAlertType(null), 3000);
+                        setShowShareOptions(false);
+                      }}
+                      className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-md"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                      <span>{copyLinkText}</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
