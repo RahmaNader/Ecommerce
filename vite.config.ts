@@ -9,12 +9,7 @@ const __dirname = path.dirname(__filename);
 
 export default defineConfig({
   optimizeDeps: {
-    include: [
-      "@emotion/react",
-      "@emotion/styled",
-      "@mui/material/Tooltip",
-      "@mui/material/Unstable_Grid2",
-    ],
+    include: ["@emotion/react", "@emotion/styled", "@mui/material/Tooltip"],
   },
   plugins: [
     react({
