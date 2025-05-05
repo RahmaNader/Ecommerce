@@ -431,7 +431,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
       </div>
 
       {/* Product Details Section */}
-      <div className={`flex flex-col justify-center space-y-3 md:space-y-6 `}>
+      <div className={`flex flex-col justify-center max-w-[448px] space-y-3 md:space-y-6 `}>
         <div className={`flex flex-row w-full justify-between items-center `}>
           <p className="font-playfair text-wine text-2xl md:text-4xl font-extrabold">
             {productName}
