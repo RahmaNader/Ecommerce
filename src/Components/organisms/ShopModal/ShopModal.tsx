@@ -62,7 +62,7 @@ const ShopModal: React.FC<ShopModalProps> = ({
                 <div className="pb-2 mb-4 border-b border-wine/20">
                   <Link
                     to={mainPath}
-                    state={{ categoryId: mainCat.categoryID }}
+                    state={{ categoryId: mainCat.categoryID, isMainCategory: true }}
                     className={`text-xl font-semibold text-wine hover:text-wine/80 
                               transition-colors duration-200 ${
                                 isMainActive ? "underline underline-offset-4" : ""

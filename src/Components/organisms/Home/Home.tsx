@@ -15,7 +15,10 @@ const Home: React.FC = () => {
 
   const handleCategoryClick = (category: string, categoryId: number) => {
     navigate(`/products/${category.toLowerCase()}`, {
-      state: { categoryId }
+      state: { 
+        categoryId, 
+        isMainCategory: true  // Add this flag
+      }
     });
   };
 

@@ -1,6 +1,6 @@
 import axios from "axios";
 import fallbackImage from "@assets/HP_img2.jpeg";
-import { CardComponent, ProductImage, ProductVariant,  Review, Category, SizeQuantityResponse } from "@types";
+import { CardComponent, ProductImage, ProductVariant, Review, Category, SizeQuantityResponse } from "@types";
 interface ProductVariantResponse {
   $id: string;
   productVarientId: number;
@@ -50,7 +50,7 @@ export const fetchCategoryProducts = async (
 ): Promise<CardComponent[]> => {
   try {
     const { data } = await axios.get<CategoryProductResponse>(
-      `https://www.bouraq-mt.com/royalkey/api/Product?parentCategories=${parentCategoryId}&pageNumber=1&pageSize=100`
+      `https://www.bouraq-mt.com/royalkey/api/Product?parentCategories=${parentCategoryId}`
     );
 
     // Transform backend response to match CardComponent exactly
@@ -117,6 +117,81 @@ export const fetchCategoryProducts = async (
   } catch (error) {
     console.error("Error fetching category products:", error);
     throw new Error(`Failed to fetch products for category ${parentCategoryId}`);
+  }
+};
+
+export const fetchMainCategoryProducts = async (
+  categoryId: number
+): Promise<CardComponent[]> => {
+  try {
+    const { data } = await axios.get<CategoryProductResponse>(
+      `https://www.bouraq-mt.com/royalkey/api/Product?parentCategories=${categoryId}&parentCategories=0`
+    );
+
+    return data.products.$values.map((product): CardComponent => ({
+      // Same mapping logic as in fetchCategoryProducts
+      productID: product.productID,
+      name: product.name,
+      nameEn: product.nameEn,
+      nameAr: product.nameAr,
+      productDescription: product.productDescription || "",
+      productDescriptionEn: product.productDescriptionEn || "",
+      productDescriptionAr: product.productDescriptionAr || "",
+      productCode: product.productCode || null,
+      productPrice: product.productPrice,
+      averageRate: product.averageRate ?? null,
+      productQuantity: product.productQuantity,
+      categoryID: product.categoryID,
+      category: {
+        categoryID: product.category.categoryID,
+        name: product.category.name,
+        nameEn: product.category.nameEn,
+        nameAr: product.category.nameAr,
+        parentCategoryID: product.category.parentCategoryID || null,
+        createdAt: product.category.createdAt,
+      },
+      reviews: product.reviews.$values.map(review => ({
+        reviewId: review.reviewId,
+        reviewContent: review.reviewContent,
+        rate: review.rate,
+        createdAt: review.createdAt,
+        userName: review.userName,
+      })),
+      productVarients: product.productVarients.$values.map((variant): ProductVariant => ({
+        productVarientId: variant.productVarientId,
+        colorNameEn: variant.colorNameEn,
+        colorNameAr: variant.colorNameAr,
+        colorName: variant.colorName || null,
+        colorCode: variant.colorCode,
+        sizeQuantities: variant.sizeQuantities.$values.map((size) => ({
+          sizeId: size.sizeId || 0, 
+          sizeLabel: size.sizeLabel || null,
+          quantity: size.quantity
+        })),
+      })),
+      productImages:
+        product.productImages.$values.length > 0
+          ? product.productImages.$values.map(({ imageId, imageUrl, altText }): ProductImage => ({
+              imageId,
+              imageUrl: imageUrl || fallbackImage,
+              altText: altText || product.name,
+            }))
+          : [
+              {
+                imageId: 0,
+                imageUrl: fallbackImage,
+                altText: product.name,
+              },
+            ],
+      reviewPercentages: product.reviewPercentages,
+      created: product.created,
+      lastUpdated: product.lastUpdated,
+      priceAfterDiscount: product.priceAfterDiscount,
+      discountPercent: product.discountPercent,
+    }));
+  } catch (error) {
+    console.error("Error fetching main category products:", error);
+    throw new Error(`Failed to fetch products for category ${categoryId}`);
   }
 };
 

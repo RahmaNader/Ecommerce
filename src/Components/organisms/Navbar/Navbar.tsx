@@ -351,7 +351,7 @@ const Navbar: React.FC = () => {
                       <div className="flex items-center justify-between">
                         <Link
                           to={mainPath}
-                          state={{ categoryId: category.categoryID }}
+                          state={{ categoryId: category.categoryID, isMainCategory: true }}  // Added isMainCategory flag
                           className={`py-2 px-3 block flex-grow font-medium hover:bg-wine/5 transition-colors ${
                             isExpanded ? "text-wine" : "text-ForthColor"
                           }`}
