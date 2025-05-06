@@ -25,7 +25,8 @@ export const personalDataFields: Array<{
     validation: {
       required: "profile.phoneNumberRequired",
       pattern: {
-        value: /^\0?[0]\d{1,12}$/,
+        // Updated pattern to handle country code variations
+        value: /^(\+?20)?(0|01)\d{9}$|^\d{11}$/,
         message: "profile.invalidPhoneNumber",
       },
     },

@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import "react-phone-input-2/lib/style.css";
+import { MuiTelInput } from "mui-tel-input";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { fetchPersonalData, updatePersonalData } from "@services/api/personaldetails";
 import { PersonalData } from "@types";
 import personalDataFields from "@data/personalData";
@@ -11,10 +13,47 @@ import axios from 'axios';
 
 const PersonalDataScreen: React.FC = () => {
   const { t } = useTranslation();
+  
+  // Add phone input theme configuration
+  const phoneInputTheme = createTheme({
+    palette: {
+      primary: {
+        main: "#A78E78", // wine color from your app
+      },
+    },
+    components: {
+      MuiOutlinedInput: {
+        styleOverrides: {
+          root: {
+            borderRadius: "0.25rem",
+            backgroundColor: "rgba(167, 142, 120, 0.13)",
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#A78E78",
+            },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#A78E78",
+            },
+            "& .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#A78E78",
+            },
+          },
+          input: {
+            color: "#A78E78",
+            "&::placeholder": {
+              color: "#A78E78",
+              opacity: 0.7,
+            },
+          },
+        },
+      },
+    },
+  });
+
   const {
     register,
     handleSubmit,
     setValue,
+    control,
     formState: { errors},
   } = useForm<PersonalData>({
     mode: "onBlur",
@@ -208,25 +247,108 @@ const PersonalDataScreen: React.FC = () => {
                       {t(`${field.placeholder}`)}
                     </label>
                     <div className={`relative rounded-md ${editMode ? 'shadow-sm' : ''}`}>
-                      <input
-                        type={field.type}
-                        id={field.id}
-                        disabled={!editMode}
-                        placeholder={t(`${field.placeholder}`)}
-                        {...register(
-                          field.id,
-                          editMode ? field.validation : {}
-                        )}
-                        className={`w-full px-4 py-3 border rounded-md transition-all duration-300 ${
-                          editMode
-                            ? "border-wine bg-white"
-                            : "border-ForthColor bg-ForthColor/[0.13]"
-                        } text-wine ltr:text-left rtl:text-right focus:outline-none focus:ring-1 focus:ring-wine`}
-                      />
-                      {editMode && field.id === "phoneNumber" && (
-                        <div className="absolute inset-y-0 ltr:left-0 rtl:right-0 pl-3 flex items-center pointer-events-none">
-                          <span className="text-wine text-sm">+</span>
-                        </div>
+                      {field.id === "phoneNumber" ? (
+                        <Controller
+                          name="phoneNumber"
+                          control={control}
+                          rules={editMode ? field.validation : {}}
+                          render={({ field: controllerField }) => (
+                            <ThemeProvider theme={phoneInputTheme}>
+                              <MuiTelInput
+                                {...controllerField}
+                                value={controllerField.value || ""}
+                                onChange={(newValue) => {
+                                  // Remove any non-digit characters before setting the value
+                                  const digitsOnly = newValue.replace(/\D/g, '');
+                                  controllerField.onChange(digitsOnly);
+                                }}
+                                defaultCountry="EG"
+                                placeholder={t(`${field.placeholder}`)}
+                                className="w-full"
+                                disabled={!editMode}
+                                focusOnSelectCountry
+                                langOfCountryName="en"
+                                // Change this to false to avoid forcing country code
+                                forceCallingCode={false}
+                                dir={document.dir || 'ltr'}
+                                MenuProps={{
+                                  anchorOrigin: {
+                                    vertical: 'bottom',
+                                    horizontal: document.dir === 'rtl' ? 'right' : 'left',
+                                  },
+                                  transformOrigin: {
+                                    vertical: 'top',
+                                    horizontal: document.dir === 'rtl' ? 'right' : 'left',
+                                  },
+                                }}
+                                sx={{
+                                  width: "100%",
+                                  "& .MuiInputBase-root": {
+                                    width: "100%",
+                                    height: "45px",
+                                    backgroundColor: editMode ? "white" : "rgba(167, 142, 120, 0.13)",
+                                    color: "#A78E78",
+                                    borderColor: editMode ? "#A78E78" : "#A78E78",
+                                    textAlign: document.dir === 'rtl' ? 'right' : 'left',
+                                    fontFamily: "Poppins, sans-serif",
+                                  },
+                                  "& .MuiOutlinedInput-input": {
+                                    height: "11px",
+                                    padding: "14px",
+                                    textAlign: document.dir === 'rtl' ? 'right' : 'left',
+                                    direction: document.dir || 'ltr',
+                                    fontFamily: "Poppins, sans-serif",
+                                    fontSize: "15px",
+                                  },
+                                  "& input::placeholder": {
+                                    textAlign: document.dir === 'rtl' ? 'right' : 'left',
+                                    fontFamily: "Poppins, sans-serif",
+                                  },
+                                  "& .MuiOutlinedInput-notchedOutline": {
+                                    borderColor: "#A78E78",
+                                  },
+                                  "& .MuiSvgIcon-root": {
+                                    color: "#A78E78",
+                                  },
+                                  "& .MuiTelInput-Flag": {
+                                    marginRight: document.dir === 'rtl' ? '0' : '8px',
+                                    marginLeft: document.dir === 'rtl' ? '8px' : '0',
+                                    order: document.dir === 'rtl' ? '1' : '0',
+                                  },
+                                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                                    borderColor: "#A78E78",
+                                  },
+                                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                                    borderColor: "#A78E78",
+                                  },
+                                  "& .MuiMenu-paper": {
+                                    fontFamily: "Poppins, sans-serif",
+                                  },
+                                  "&.Mui-disabled": {
+                                    opacity: 0.7,
+                                    backgroundColor: "rgba(167, 142, 120, 0.13)",
+                                  },
+                                }}
+                              />
+                            </ThemeProvider>
+                          )}
+                        />
+                      ) : (
+                        <input
+                          type={field.type}
+                          id={field.id}
+                          disabled={!editMode}
+                          placeholder={t(`${field.placeholder}`)}
+                          {...register(
+                            field.id,
+                            editMode ? field.validation : {}
+                          )}
+                          className={`w-full px-4 py-3 border rounded-md transition-all duration-300 ${
+                            editMode
+                              ? "border-wine bg-white"
+                              : "border-ForthColor bg-ForthColor/[0.13]"
+                          } text-wine ltr:text-left rtl:text-right focus:outline-none focus:ring-1 focus:ring-wine`}
+                        />
                       )}
                     </div>
                     {editMode && errors[field.id] && (
