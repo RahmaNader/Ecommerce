@@ -30,8 +30,12 @@ apiClient.interceptors.response.use(
               Authorization: `Bearer ${refreshToken}`,
             },
           });
-          const { token } = response.data;
-          Cookies.set('authToken', token);
+          const { token, refreshToken: newRefreshToken } = response.data;
+          Cookies.set('authToken', token, { path: '/', secure: true, expires: 7 }); // 7 days
+          // Also update the refresh token if provided
+          if (newRefreshToken) {
+            Cookies.set('refreshToken', newRefreshToken, { path: '/', secure: true, expires: 30 }); // 30 days
+          }
           originalRequest.headers.Authorization = `Bearer ${token}`;
           return axios(originalRequest);
         } catch (refreshError) {
