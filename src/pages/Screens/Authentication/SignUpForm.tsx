@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import PhoneInput from "react-phone-input-2";
+import { MuiTelInput } from "mui-tel-input";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 import "react-phone-input-2/lib/style.css";
 import { SignUpFormInputs } from "@types";
 import IconGoogle from "@assets/Icon-Google.svg";
@@ -31,19 +32,19 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
   } = useForm<SignUpFormInputs>();
 
   const password = watch("password");
-  
+
   // Use the Google login hook
   const googleLogin = useGoogleLogin({
-    flow: "implicit", 
+    flow: "implicit",
     scope: "email profile",
     onSuccess: async (response) => {
       try {
         console.log("Google OAuth Response:", response);
-  
+
         if (!response.access_token) {
           throw new Error("No access token received from Google");
         }
-  
+
         // Get user info using the access token
         const userInfoResponse = await axios.get(
           "https://www.googleapis.com/oauth2/v3/userinfo",
@@ -53,71 +54,70 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
             },
           }
         );
-  
+
         const userInfo = userInfoResponse.data;
         console.log("Google User Data:", userInfo);
-  
+
         // Send access token and user info to backend
         const backendResponse = await apiClient.post(
           "/Account/authenticateGoogle",
           {
             token: response.access_token,
-            // email: userInfo.email,
-            // name: userInfo.name,
-            // picture: userInfo.picture
           }
         );
-  
+
         console.log("Backend Response:", backendResponse.data);
-  
+
         if (backendResponse.data && backendResponse.data.succeeded) {
           // Success handling
           setAlert({
             type: "success",
-            message: t("auth.successGoogleSignUp")
+            message: t("auth.successGoogleSignUp"),
           });
-  
+
           // Store token from your backend
           if (backendResponse.data.token) {
             localStorage.setItem("authToken", backendResponse.data.token);
           }
-  
+
           setTimeout(() => {
             setAlert(null);
             onSwitchToLogin();
           }, 2000);
         } else {
           // API returned success=false
-          throw new Error(backendResponse.data.message || "Authentication failed");
+          throw new Error(
+            backendResponse.data.message || "Authentication failed"
+          );
         }
       } catch (error) {
         console.error("Google sign-in error:", error);
-        
+
         let errorMessage = t("auth.googleSignUpFailed");
-        
+
         // Get more specific error messages if available
         if (axios.isAxiosError(error) && error.response?.data?.message) {
           errorMessage = error.response.data.message;
         } else if (error instanceof Error) {
           errorMessage = error.message;
         }
-        
+
         setAlert({
           type: "error",
-          message: errorMessage
+          message: errorMessage,
         });
-        
+
         setTimeout(() => setAlert(null), 3000);
       }
     },
     onError: (error) => {
       console.error("Google login error:", error);
       setAlert({
-        type: "error", 
-        message: t("auth.googleSignUpFailed")
+        type: "error",
+        message: t("auth.googleSignUpFailed"),
       });
       setTimeout(() => setAlert(null), 3000);
-    }
+    },
   });
 
   const handleGoogleSignUp = () => {
@@ -175,6 +175,41 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
     }
   };
 
+  // Create a custom theme to match your website's styling
+  const phoneInputTheme = createTheme({
+    palette: {
+      primary: {
+        main: "#A78E78", // wine color from your app
+      },
+    },
+    components: {
+      MuiOutlinedInput: {
+        styleOverrides: {
+          root: {
+            borderRadius: "0.25rem",
+            backgroundColor: "rgba(167, 142, 120, 0.13)",
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#A78E78",
+            },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#A78E78",
+            },
+            "& .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#A78E78",
+            },
+          },
+          input: {
+            color: "#A78E78",
+            "&::placeholder": {
+              color: "#A78E78",
+              opacity: 0.7,
+            },
+          },
+        },
+      },
+    },
+  });
+
   return (
     <div className="bg-mainColor text-secondColor p-6 rounded w-full mx-auto">
       {alert && (
@@ -230,38 +265,87 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
           <Controller
             name="phoneNumber"
             control={control}
-            rules={{ 
+            rules={{
               required: t("auth.phoneRequired"),
-              pattern: {
-                value: /^[0-9]+$/,
-                message: t("auth.invalidPhone"),
+              validate: (value) => {
+                // Basic validation for phone format
+                if (!value || value.trim().length < 11) {
+                  return t("auth.phoneMinLength");
+                }
+                return true;
               },
-              minLength: {
-                value: 11,
-                message: t("auth.phoneMinLength"),
-              }
             }}
             render={({ field }) => (
-              <PhoneInput
-                {...field}
-                country={"eg"}
-                placeholder={t("auth.phoneNumber")}
-                containerClass="w-full ltr:text-left rtl:text-right"
-                inputStyle={{
-                  width: "100%",
-                  borderColor: "#A78E78",
-                  backgroundColor: "rgba(167, 142, 120, 0.13)",
-                  color: "#A78E78",
-                  alignItems: "center",
-                }}
-                buttonStyle={{
-                  borderColor: "#A78E78",
-                }}
-                dropdownStyle={{
-                  width: "250px",
-                }}
-                onChange={(value) => field.onChange(value)}
-              />
+              <ThemeProvider theme={phoneInputTheme}>
+                <MuiTelInput
+                  {...field}
+                  value={field.value || ""}
+                  onChange={(newValue) => field.onChange(newValue)}
+                  defaultCountry="EG"
+                  placeholder={t("auth.phoneNumber")}
+                  className="w-full"
+                  focusOnSelectCountry
+                  langOfCountryName="en"
+                  forceCallingCode={true}
+                  // Add RTL support
+                  dir={document.dir || 'ltr'}
+                  MenuProps={{
+                    anchorOrigin: {
+                      vertical: 'bottom',
+                      horizontal: document.dir === 'rtl' ? 'right' : 'left',
+                    },
+                    transformOrigin: {
+                      vertical: 'top',
+                      horizontal: document.dir === 'rtl' ? 'right' : 'left',
+                    },
+                  }}
+                  sx={{
+                    width: "100%",
+                    "& .MuiInputBase-root": {
+                      width: "100%",
+                      height: "45px",
+                      backgroundColor: "rgba(167, 142, 120, 0.13)",
+                      color: "#A78E78",
+                      borderColor: "#A78E78",
+                      textAlign: document.dir === 'rtl' ? 'right' : 'left',
+                      fontFamily: "Poppins, sans-serif", // Match other inputs font
+                    },
+                    "& .MuiOutlinedInput-input": {
+                      height: "11px",
+                      padding: "14px",
+                      textAlign: document.dir === 'rtl' ? 'right' : 'left',
+                      direction: document.dir || 'ltr',
+                      fontFamily: "Poppins, sans-serif", // Match other inputs font
+                      fontSize: "15px", // Match text size with other form fields
+                    },
+                    "& input::placeholder": {
+                      textAlign: document.dir === 'rtl' ? 'right' : 'left',
+                      fontFamily: "Poppins, sans-serif", // Match placeholder font
+                    },
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#A78E78",
+                    },
+                    "& .MuiSvgIcon-root": {
+                      color: "#A78E78",
+                    },
+                    "& .MuiTelInput-Flag": {
+                      marginRight: document.dir === 'rtl' ? '0' : '8px',
+                      marginLeft: document.dir === 'rtl' ? '8px' : '0',
+                      order: document.dir === 'rtl' ? '1' : '0',
+                    },
+                    "&:hover .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#A78E78",
+                    },
+                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#A78E78",
+                    },
+                    // Apply font to the dropdown menu as well
+                    "& .MuiMenu-paper": {
+                      fontFamily: "Poppins, sans-serif",
+                    },
+                  }}
+                />
+              </ThemeProvider>
             )}
           />
           {errors.phoneNumber && (
@@ -314,7 +398,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
         </div>
 
         {/* Gender and Dates Row */}
-        <div className="flex flex-col md:flex-row items-center md:justify-between space-y-4 md:space-y-0 md:space-x-4">
+        <div className="flex flex-col md:flex-row items-center md:justify-between space-y-4 md:space-y-0 ltr:md:space-x-4 w-full">
           {/* Gender Dropdown */}
           <div className="w-full md:w-1/2">
             <select
@@ -334,7 +418,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
           </div>
 
           {/* Dates Dropdowns */}
-          <div className="flex flex-wrap md:flex-nowrap justify-between md:justify-end space-x-0 md:space-x-2 w-full md:w-1/2 ltr:gap-0 rtl:gap-4">
+          <div className="flex flex-wrap md:flex-nowrap justify-between md:justify-end space-x-0 ltr:md:space-x-2 w-full md:w-1/2 ltr:gap-0 rtl:gap-4">
             {/* Day Dropdown */}
             <div className="w-1/4">
               <select
@@ -433,7 +517,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
           </div>
           <div className="relative flex justify-center">
             <span className="bg-mainColor px-2 text-ForthColor">
-            {t("auth.orSignUpWith")}
+              {t("auth.orSignUpWith")}
             </span>
           </div>
         </div>
@@ -450,7 +534,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
 
         <div className="relative flex items-center justify-center w-3/4 mx-auto">
           <p className="font-playfair text-[10px] md:text-[28px] text-sixColor flex justify-center">
-          {t("auth.haveAccount")} &nbsp;
+            {t("auth.haveAccount")} &nbsp;
             <button
               onClick={onSwitchToLogin}
               className="text-wine border-b-2 border-wine text-[10px] md:text-[28px]"
