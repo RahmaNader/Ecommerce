@@ -89,13 +89,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
       return;
     }
 
-    const authToken = Cookies.get("authToken");
-    if (!authToken) {
-      setAlertMessage(t("product.loginToAddCart"));
-      setAlertType("error");
-      setTimeout(() => setAlertType(null), 3000);
-      return;
-    }
+    // Authentication check removed - allow anyone to add to cart
 
     const selectedVariant = productVariants.find(v => v.colorNameEn === selectedColor);
     
@@ -160,13 +154,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
       return;
     }
 
-    const authToken = Cookies.get("authToken");
-    if (!authToken) {
-      setAlertMessage(t("product.loginToAddCart"));
-      setAlertType("error");
-      setTimeout(() => setAlertType(null), 3000);
-      return;
-    }
+    // Authentication check removed - allow anyone to buy now
 
     handleAddToCart();
     

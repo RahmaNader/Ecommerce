@@ -63,7 +63,6 @@ const ProductDetails: React.FC = () => {
 
   return (
     <div className={`flex flex-col gap-8 px-10 w-full ${isArabic ? 'rtl' : 'ltr'}`}>      
-    
      <ProductSection product={product} isArabic={isArabic} />
       
       <Category SectionName={isArabic ? "التقييمات والمراجعات" : "Rating And Reviews"} />
