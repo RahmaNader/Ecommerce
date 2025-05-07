@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Breadcrumb } from "@components/molecules";
+import SearchBar from "@components/molecules/SearchBar/SearchBar"; // Import SearchBar
 import { searchProducts } from "@services/api/search";
 import { ProductsDisplay } from "@components/organisms";
 import { useTranslation } from "react-i18next";
@@ -55,6 +56,7 @@ const SearchResultsScreen: React.FC = () => {
       {/* Container with max-width and centered */}
       <div className="w-full max-w-[800px] px-4 sm:px-6 py-4 sm:py-6 md:py-8">
         <Breadcrumb />
+        <SearchBar /> {/* Add SearchBar here */}
         
         <h1 className="text-2xl sm:text-3xl text-wine font-playfair font-semibold mt-4 mb-4 sm:mb-6">
           {t("search.resultsFor")} "{localizedQuery}"

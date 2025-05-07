@@ -539,7 +539,9 @@ const resources = {
           dress: "Dress", 
           pants: "Pants",
           shoes: "Shoes"
-        }
+        },
+        breadcrumb_searchLink: "Search",
+        breadcrumb_searchResultsPage: "Search Results"
       },
       payment: {
         cashOnDelivery: "Cash on Delivery",
@@ -1085,7 +1087,9 @@ const resources = {
           dress: "فستان", 
           pants: "بنطلون",
           shoes: "حذاء"
-        }
+        },
+        breadcrumb_searchLink: "بحث",
+        breadcrumb_searchResultsPage: "نتائج البحث"
       },
       payment: {
         cashOnDelivery: "الدفع عند الاستلام",
