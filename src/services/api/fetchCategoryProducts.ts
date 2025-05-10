@@ -1,6 +1,10 @@
 import axios from "axios";
 import fallbackImage from "@assets/HP_img2.jpeg";
 import { CardComponent, ProductImage, ProductVariant, Review, Category, SizeQuantityResponse } from "@types";
+
+// Add the base URL from environment variables
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 interface ProductVariantResponse {
   $id: string;
   productVarientId: number;
@@ -10,7 +14,6 @@ interface ProductVariantResponse {
   colorCode: string;
   sizeQuantities: SizeQuantityResponse;
 }
-
 
 interface CategoryProductResponse {
   $id: string;
@@ -44,13 +47,12 @@ interface CategoryProductResponse {
   totalCount: number;
 }
 
-
 export const fetchCategoryProducts = async (
   parentCategoryId: number
 ): Promise<CardComponent[]> => {
   try {
     const { data } = await axios.get<CategoryProductResponse>(
-      `https://www.bouraq-mt.com/royalkey/api/Product?parentCategories=${parentCategoryId}`
+      `${baseUrl}/api/Product?parentCategories=${parentCategoryId}`
     );
 
     // Transform backend response to match CardComponent exactly
@@ -93,7 +95,7 @@ export const fetchCategoryProducts = async (
           sizeLabel: size.sizeLabel || null,
           quantity: size.quantity
         })),
-})),
+      })),
       productImages:
         product.productImages.$values.length > 0
           ? product.productImages.$values.map(({ imageId, imageUrl, altText }): ProductImage => ({
@@ -125,11 +127,10 @@ export const fetchMainCategoryProducts = async (
 ): Promise<CardComponent[]> => {
   try {
     const { data } = await axios.get<CategoryProductResponse>(
-      `https://www.bouraq-mt.com/royalkey/api/Product?parentCategories=${categoryId}&parentCategories=0`
+      `${baseUrl}/api/Product?parentCategories=${categoryId}&parentCategories=0`
     );
 
     return data.products.$values.map((product): CardComponent => ({
-      // Same mapping logic as in fetchCategoryProducts
       productID: product.productID,
       name: product.name,
       nameEn: product.nameEn,
@@ -197,4 +198,4 @@ export const fetchMainCategoryProducts = async (
 
 // return ids of subcategories of a main ctagory , that could be used later for filtering
 // men : 1 , women : 2 , kids : 3 
-// https://www.bouraq-mt.com/royalkey/api/Categories/2?isEnglish=true
+// ${baseUrl}/api/Categories/2?isEnglish=true

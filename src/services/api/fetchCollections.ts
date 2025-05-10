@@ -1,6 +1,10 @@
 import axios from "axios";
 import fallbackImage from "@assets/HP_img2.jpeg";
-import { CardComponent, ProductImage, ProductVariant,  Review, Category, SizeQuantityResponse } from "@types";
+import { CardComponent, ProductImage, ProductVariant, Review, Category, SizeQuantityResponse } from "@types";
+
+// Add the base URL from environment variables
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 interface ProductVariantResponse {
   $id: string;
   productVarientId: number;
@@ -10,7 +14,6 @@ interface ProductVariantResponse {
   colorCode: string;
   sizeQuantities: SizeQuantityResponse;
 }
-
 
 interface HomeCategoryResponse {
   $id: string;
@@ -40,14 +43,13 @@ interface HomeCategoryResponse {
   }>;
 }
 
-
 export async function fetchHomeCategory(
   count: number,
   category: string
 ): Promise<CardComponent[]> {
   try {
     const { data } = await axios.get<HomeCategoryResponse>(
-      `https://www.bouraq-mt.com/royalkey/api/Product/${category}?count=${count}`
+      `${baseUrl}/api/Product/${category}?count=${count}`
     );
     return data.$values.map((product): CardComponent => ({
       productID: product.productID,
@@ -123,7 +125,7 @@ export async function fetchRelatedProducts(
 ): Promise<CardComponent[]> {
   try {
     const { data } = await axios.get<RelatedProductsResponse>(
-      `https://www.bouraq-mt.com/royalkey/api/Product/${productID}/related?count=${count}`
+      `${baseUrl}/api/Product/${productID}/related?count=${count}`
     );
     interface RelatedProductResponse {
       $id: string;
@@ -228,7 +230,7 @@ export async function fetchCollection(
 ): Promise<CardComponent[]> {
   try {
     const { data } = await axios.get<HomeCategoryResponse>(
-      `https://www.bouraq-mt.com/royalkey/api/Product/${category}`
+      `${baseUrl}/api/Product/${category}`
     );
 
     return data.$values.map((product): CardComponent => ({

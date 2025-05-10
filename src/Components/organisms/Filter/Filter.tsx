@@ -1,20 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import ReactSlider, { ReactSliderProps } from "react-slider";
 import FilterIcon from "@assets/FilterIcon.svg";
 import { IconX } from "@tabler/icons-react";
 import FilterArrow from "@assets/FilterArrow.svg";
 import { Button } from "@components/atoms";
 import Checkbox from "@mui/material/Checkbox";
-import { FilterCategory } from "@types";
+import { FilterCategory as ImportedFilterCategory } from "@types";
 import { styled } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 
+// Extended FilterCategory type to include id
+interface FilterCategory extends ImportedFilterCategory {
+  id?: number;
+}
+
+// Update type to include subcategories
 type FilterProps = {
   onFilterChange: (filters: {
     categories?: string[];
     priceRange?: [number, number];
   }) => void;
   onClose?: () => void;
+  subcategories?: {
+    categoryID: number;
+    name: string;
+    nameEn?: string;
+    nameAr?: string;
+  }[];
+  mainCategoryId?: number; // Add this to track main category changes
 };
 
 const Slider = ReactSlider as unknown as React.FC<
@@ -31,10 +44,17 @@ const CustomCheckbox = styled(Checkbox)(() => ({
   },
 }));
 
-const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
-  const { t } = useTranslation();
+const Filter: React.FC<FilterProps> = ({
+  onFilterChange,
+  onClose,
+  subcategories,
+  mainCategoryId,
+}) => {
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === "ar";
 
-  const initialCategories: FilterCategory[] = [
+  // Fallback categories in case no subcategories are provided
+  const fallbackCategories: FilterCategory[] = [
     { name: t("filter.categories.jackets"), isChecked: false },
     { name: t("filter.categories.coats"), isChecked: false },
     { name: t("filter.categories.shirts"), isChecked: false },
@@ -44,12 +64,36 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
     { name: t("filter.categories.hats"), isChecked: false },
   ];
 
-  const [categoryItems, setCategoryItems] =
-    useState<FilterCategory[]>(initialCategories);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
+  // Generate categories from subcategories
+  const generateInitialCategories = useCallback((): FilterCategory[] => {
+    if (!subcategories || subcategories.length === 0) {
+      return fallbackCategories;
+    }
 
+    return subcategories.map((category) => ({
+      id: category.categoryID,
+      name: isRTL
+        ? category.nameAr || category.name
+        : category.nameEn || category.name,
+      isChecked: false,
+    }));
+  }, [subcategories, isRTL, fallbackCategories]);
+
+  const [categoryItems, setCategoryItems] = useState<FilterCategory[]>([]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
   const [isCategoriesCollapsed, setIsCategoriesCollapsed] =
-    useState<boolean>(true);
+    useState<boolean>(false);
+
+  // Initialize categories when component mounts
+  useEffect(() => {
+    setCategoryItems(generateInitialCategories());
+  }, []);
+
+  // Update categories when subcategories or main category changes
+  useEffect(() => {
+    console.log("Subcategories updated:", subcategories);
+    setCategoryItems(generateInitialCategories());
+  }, [subcategories, mainCategoryId, generateInitialCategories, i18n.language]);
 
   const handleCategoryChange = (index: number) => {
     const updatedCategories = [...categoryItems];
@@ -60,11 +104,10 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
   const handleFilterClick = () => {
     const selectedCategories = categoryItems
       .filter((category) => category.isChecked)
-      .map((category) => category.name);
+      .map((category) => category.id?.toString() || category.name);
 
     const filters = {
-      categories:
-        selectedCategories.length > 0 ? selectedCategories : undefined,
+      categories: selectedCategories.length > 0 ? selectedCategories : undefined,
       priceRange,
     };
 
@@ -120,27 +163,33 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
 
           {!isCategoriesCollapsed && (
             <div className="mt-2">
-              {categoryItems.map((category, index) => (
-                <div
-                  key={index}
-                  className="flex flex-row items-center justify-between"
-                >
-                  <label
-                    htmlFor={`category-${index}`}
-                    className={`font-Poppins text-base cursor-pointer ${
-                      category.isChecked ? "text-wine" : "text-ThirdColor"
-                    }`}
+              {categoryItems.length > 0 ? (
+                categoryItems.map((category, index) => (
+                  <div
+                    key={`category-${category.id || index}-${mainCategoryId}`}
+                    className="flex flex-row items-center justify-between"
                   >
-                    {category.name}
-                  </label>
-                  <CustomCheckbox
-                    checked={category.isChecked}
-                    onChange={() => handleCategoryChange(index)}
-                    id={`category-${index}`}
-                    inputProps={{ "aria-label": category.name }}
-                  />
-                </div>
-              ))}
+                    <label
+                      htmlFor={`category-${category.id || index}-${mainCategoryId}`}
+                      className={`font-Poppins text-base cursor-pointer ${
+                        category.isChecked ? "text-wine" : "text-ThirdColor"
+                      }`}
+                    >
+                      {category.name}
+                    </label>
+                    <CustomCheckbox
+                      checked={category.isChecked}
+                      onChange={() => handleCategoryChange(index)}
+                      id={`category-${category.id || index}-${mainCategoryId}`}
+                      inputProps={{ "aria-label": category.name }}
+                    />
+                  </div>
+                ))
+              ) : (
+                <p className="text-ThirdColor font-Poppins text-sm py-2">
+                  {t("filter.noCategories")}
+                </p>
+              )}
             </div>
           )}
         </div>

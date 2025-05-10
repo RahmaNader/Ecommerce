@@ -1,8 +1,11 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
+// Add the base URL from environment variables
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 const apiClient = axios.create({
-  baseURL: 'https://www.bouraq-mt.com/royalkey/api',
+  baseURL: `${baseUrl}/api`,
 });
 
 apiClient.interceptors.request.use(
@@ -25,7 +28,7 @@ apiClient.interceptors.response.use(
       const refreshToken = Cookies.get('refreshToken');
       if (refreshToken) {
         try {
-          const response = await axios.get('https://www.bouraq-mt.com/royalkey/api/Account/refreshToken', {
+          const response = await axios.get(`${baseUrl}/api/Account/refreshToken`, {
             headers: {
               Authorization: `Bearer ${refreshToken}`,
             },
@@ -49,6 +52,5 @@ apiClient.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
 
 export default apiClient;

@@ -1,5 +1,8 @@
 import Cookies from "js-cookie";
 
+// Add the base URL from environment variables
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 export const cancelOrder = async (orderId: string): Promise<void> => {
   const authToken = Cookies.get("authToken");
   
@@ -8,7 +11,7 @@ export const cancelOrder = async (orderId: string): Promise<void> => {
   }
 
   const response = await fetch(
-    `https://www.bouraq-mt.com/royalkey/api/Order/cancel-order/${orderId}`,
+    `${baseUrl}/api/Order/cancel-order/${orderId}`,
     {
       method: "DELETE",
       headers: {

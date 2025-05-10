@@ -2,6 +2,9 @@ import axios, { AxiosError } from 'axios';
 import Cookies from 'js-cookie';
 import { UserOrder } from '@types';
 
+// Add the base URL from environment variables
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 export const fetchUserOrders = async (isEnglish: boolean = true): Promise<UserOrder[]> => {
   console.log("[fetchUserOrders] Fetching user orders");
   const authToken = Cookies.get('authToken');
@@ -13,7 +16,7 @@ export const fetchUserOrders = async (isEnglish: boolean = true): Promise<UserOr
 
   try {
     const response = await axios.get<UserOrder[]>(
-      `https://www.bouraq-mt.com/royalkey/api/Order/User-orders?isEnglish=${isEnglish}`,
+      `${baseUrl}/api/Order/User-orders?isEnglish=${isEnglish}`,
       {
         headers: {
           'accept': '*/*',
@@ -55,7 +58,7 @@ export const fetchOrderDetails = async (orderId: string, isEnglish: boolean = tr
 
   try {
     const response = await axios.get<UserOrder>(
-      `https://www.bouraq-mt.com/royalkey/api/Order/${orderId}?isEnglish=${isEnglish}`,
+      `${baseUrl}/api/Order/${orderId}?isEnglish=${isEnglish}`,
       {
         headers: {
           'accept': '*/*',
