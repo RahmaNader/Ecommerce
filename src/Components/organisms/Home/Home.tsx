@@ -1,5 +1,5 @@
 import React from "react";
-import { ProductsView } from "@components/molecules";
+// import { ProductsView } from "@components/molecules";
 import { Button } from "@components/atoms";
 import { useQuery } from "react-query";
 import { fetchHomeCategory } from "@services/api/fetchCollections";
@@ -8,6 +8,8 @@ import women from "@assets/HP_women.svg";
 import men from "@assets/HP_men.svg";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { ProductsGrid } from "@components/organisms/ProductsGrid/ProductsGrid";
+import { CategoryItem } from "@components/atoms/CategoryItem/CategoryItem";
 
 const Home: React.FC = () => {
   const { t } = useTranslation();
@@ -15,15 +17,17 @@ const Home: React.FC = () => {
 
   const handleCategoryClick = (category: string, categoryId: number) => {
     navigate(`/products/${category.toLowerCase()}`, {
-      state: { 
-        categoryId, 
-        isMainCategory: true  // Add this flag
-      }
+      state: {
+        categoryId,
+        isMainCategory: true,
+      },
     });
   };
 
   const handleButtonClick = (collectionType: string) => {
-    navigate(`/collection/${collectionType.toLowerCase().replace(/\s+/g, '-')}`);
+    navigate(
+      `/collection/${collectionType.toLowerCase().replace(/\s+/g, "-")}`
+    );
   };
 
   const {
@@ -42,54 +46,55 @@ const Home: React.FC = () => {
     data: highestDiscount,
     isLoading: isLoadingHighestDiscount,
     isError: isErrorHighestDiscount,
-  } = useQuery("highestDiscount", () => fetchHomeCategory(3, "highest-discount"));
+  } = useQuery("highestDiscount", () =>
+    fetchHomeCategory(3, "highest-discount")
+  );
 
   return (
     <>
       {/* Category Section - Updated for single column on small screens */}
-      <div className="flex flex-row flex-wrap justify-center gap-1 xs:gap-2 sm:gap-3 md:gap-6 mx-auto my-20">
-        <div className="w-[30%] flex justify-center">
-          <div className="relative">
-            <div 
-              className="relative cursor-pointer w-full"
-              onClick={() => handleCategoryClick("kids", 3)}
-            >
-              <img src={kids} alt="kids-category" className="object-cover w-full h-full cursor-pointer" />
-            </div>
-          </div>
-        </div>
-
-        <div className="w-[30%] flex justify-center">
-          <div className="relative">
-            <div 
-              className="relative cursor-pointer w-full"
-              onClick={() => handleCategoryClick("women", 2)}
-            >
-              <img src={women} alt="women-category" className="object-cover w-full h-full cursor-pointer" />
-            </div>
-          </div>
-        </div>
-
-        <div className="w-[30%] flex justify-center">
-          <div className="relative">
-            <div 
-              className="relative cursor-pointer w-full"
-              onClick={() => handleCategoryClick("men", 1)}
-            >
-              <img src={men} alt="men-category" className="object-cover w-full h-full cursor-pointer" />
-            </div>
-          </div>
-        </div>
+      <div className="w-[90%] mx-auto px-16">
+        <section
+          className="grid auto-rows-[1fr] gap-y-8 gap-x-10 justify-center"
+          style={{ gridTemplateColumns: "repeat(auto-fit, 225px)" }}
+        >
+          <CategoryItem
+            src={kids}
+            alt="Kids"
+            onClick={() => handleCategoryClick("kids", 3)}
+          />
+          <CategoryItem
+            src={women}
+            alt="Women"
+            onClick={() => handleCategoryClick("women", 2)}
+          />
+          <CategoryItem
+            src={men}
+            alt="Men"
+            onClick={() => handleCategoryClick("men", 1)}
+          />
+        </section>
       </div>
 
       <div className="flex flex-col">
-        {isLoadingNewArrivals &&<p>{t("home.loadingNewCollection")}</p>}
+        {isLoadingNewArrivals && <p>{t("home.loadingNewCollection")}</p>}
         {isErrorNewArrivals && <p>{t("home.errorNewCollection")}</p>}
         {newArrivals && newArrivals.length > 0 && (
           <>
-            <ProductsView sectionName={t("home.newCollection")} cards={newArrivals} />
+            {/* <ProductsView
+              sectionName={t("home.newCollection")}
+              cards={newArrivals}
+            /> */}
+            <ProductsGrid
+              products={newArrivals}
+              sectionName={t("home.newCollection")} // optional
+            />
+
             <div className="flex justify-center mt-12">
-              <Button label={t("home.viewCollection")} onClick={() => handleButtonClick("new-arrivals")} />
+              <Button
+                label={t("home.viewCollection")}
+                onClick={() => handleButtonClick("new-arrivals")}
+              />
             </div>
           </>
         )}
@@ -98,9 +103,20 @@ const Home: React.FC = () => {
         {isErrorBestSellers && <p>{t("home.errorBestSellers")}</p>}
         {bestSellers && bestSellers.length > 0 && (
           <>
-            <ProductsView sectionName={t("home.bestSellers")} cards={bestSellers} />
+            {/* <ProductsView
+              sectionName={t("home.bestSellers")}
+              cards={bestSellers}
+            /> */}
+            <ProductsGrid
+              products={bestSellers}
+              sectionName={t("home.bestSellers")}
+            />
+
             <div className="flex justify-center mt-12">
-              <Button label={t("home.viewBestSellers")} onClick={() => handleButtonClick("best-selling")} />
+              <Button
+                label={t("home.viewBestSellers")}
+                onClick={() => handleButtonClick("best-selling")}
+              />
             </div>
           </>
         )}
@@ -109,9 +125,20 @@ const Home: React.FC = () => {
         {isErrorHighestDiscount && <p>{t("home.errorHighestDiscount")}</p>}
         {highestDiscount && highestDiscount.length > 0 && (
           <>
-            <ProductsView sectionName={t("home.highestDiscount")} cards={highestDiscount} />
+            {/* <ProductsView
+              sectionName={t("home.highestDiscount")}
+              cards={highestDiscount}
+            /> */}
+            <ProductsGrid
+              products={highestDiscount}
+              sectionName={t("home.highestDiscount")}
+            />
+
             <div className="flex justify-center mt-12">
-              <Button label={t("home.viewDiscounts")} onClick={() => handleButtonClick("highest-discount")} />
+              <Button
+                label={t("home.viewDiscounts")}
+                onClick={() => handleButtonClick("highest-discount")}
+              />
             </div>
           </>
         )}

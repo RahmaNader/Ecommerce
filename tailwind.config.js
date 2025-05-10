@@ -4,42 +4,42 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        playfair: ['"Playfair Display"', 'serif'],
-        instrumentSerif: ['"Instrument Serif"', 'serif'],
-        playball: ['Playball', 'cursive'], // home page 
-        instrumentSans: ['Instrument Sans', 'sans-serif'],
-        Poppins: ['Poppins', 'sans-serif'], // M
+        playfair: ['"Playfair Display"', "serif"],
+        instrumentSerif: ['"Instrument Serif"', "serif"],
+        playball: ["Playball", "cursive"], // home page
+        instrumentSans: ["Instrument Sans", "sans-serif"],
+        Poppins: ["Poppins", "sans-serif"], // M
       },
       screens: {
         // Custom breakpoint for screens below 1277px
-        'laptop': { 'max': '1277px' },
-        'xs' : {'max' : '639px'}
-            },
+        laptop: { max: "1277px" },
+        xs: { max: "639px" },
+      },
       boxShadow: {
         "custom-light": "0 0 14.4px -1px rgba(167, 142, 120, 0.46)",
       },
 
       colors: {
-        mainColor:"#f4eee8",
-        secondColor:"#710e12",
-        ThirdColor:"#A78E78",
-        ForthColor:"#A78E78",
-        FifthColor:"#E14B4B",
-        sixColor:"#af754d",
-        sevenColor:"#3d3128",
-        eightColor:"#E5D4C6",
+        mainColor: "#f4eee8",
+        secondColor: "#710e12",
+        ThirdColor: "#A78E78",
+        ForthColor: "#A78E78",
+        FifthColor: "#E14B4B",
+        sixColor: "#af754d",
+        sevenColor: "#3d3128",
+        eightColor: "#E5D4C6",
         primary: "#1da1f2",
         secondary: "#14171a",
         customBeige: "#F4EEE8",
-        golden:"#E3C174",
-        yellow: '#FFD700',
-        grey:"#f4eee8",
-        green:"#01AB31",
-        grayColor:"#E5E7EB",
+        golden: "#E3C174",
+        yellow: "#FFD700",
+        grey: "#f4eee8",
+        green: "#01AB31",
+        grayColor: "#E5E7EB",
         tableDivider: "#A78E785E",
         customRed: "#FF3333",
         idbg: "#C6B3A4",
-        
+
         customGray: {
           light: "#f7fafc",
           DEFAULT: "#edf2f7",
@@ -52,7 +52,7 @@ export default {
         shadowColor: "rgba(167, 142, 120, 0.46)",
         removeButton: "#E14B4B",
         skin: "#A78E78",
-        addressDetails: "#AF754D"
+        addressDetails: "#AF754D",
       },
     },
   },
