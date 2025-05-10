@@ -3,6 +3,9 @@ import apiClient from '../../apiClient';
 import { PasswordResetData } from '@types';
 import Cookies from 'js-cookie'; // Ensure this is imported
 
+// Add the base URL from environment variables
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 export interface RegisterData {
   userName: string;
   email: string;
@@ -91,7 +94,7 @@ export const refreshAuthToken = async (): Promise<boolean> => {
     }
     
     const response = await axios.post(
-      'https://www.bouraq-mt.com/royalkey/api/Account/refresh-token',
+      `${baseUrl}/api/Account/refresh-token`,
       { refreshToken }
     );
     

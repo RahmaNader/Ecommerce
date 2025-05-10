@@ -70,7 +70,7 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products, language })
   return (
     <div className="flex flex-col items-center w-full">
       {/* Display Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-5 w-full">
+      <div className="grid grid-cols-2 md:grid-cols-3 w-full">
         {currentCards.map((card) => {
           const localizedCard = {
             ...card,

@@ -1,10 +1,12 @@
 import Cookies from "js-cookie";
 
+// Add the base URL from environment variables
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 export interface RefundItem {
   orderItemId: string;
   quantity: number;
 }
-
 
 export const refundOrder = async (
   orderId: string,
@@ -21,7 +23,7 @@ export const refundOrder = async (
   }
 
   const response = await fetch(
-    `https://www.bouraq-mt.com/royalkey/api/Order/refund/${orderId}`,
+    `${baseUrl}/api/Order/refund/${orderId}`,
     {
       method: "POST",
       headers: {
@@ -78,7 +80,7 @@ export const fetchRefundedOrders = async (isEnglish: boolean): Promise<RefundedI
   }
 
   const response = await fetch(
-    `https://www.bouraq-mt.com/royalkey/api/Order/refunded-items?isEnglish=${isEnglish}`,
+    `${baseUrl}/api/Order/refunded-items?isEnglish=${isEnglish}`,
     {
       method: "GET",
       headers: {

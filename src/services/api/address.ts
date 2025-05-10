@@ -1,6 +1,9 @@
 import Cookies from 'js-cookie';
 import { AddressProps } from '@types';
 
+// Add the base URL from environment variables
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 interface AddressPostData {
   buildingName: string;
   street: string;
@@ -25,7 +28,6 @@ interface AddressResponse {
   isSaved: boolean;
   isDefault: boolean;
 }
-
 
 const cityIdMap: Record<string, number> = {
   "Cairo": 1,
@@ -73,7 +75,7 @@ export const postAddress = async (addressData: AddressPostData): Promise<Address
     
     console.log('[postAddress] Sending address data:', JSON.stringify(formattedData, null, 2));
     
-    const response = await fetch('https://www.bouraq-mt.com/royalkey/api/ShippingAddresses', {
+    const response = await fetch(`${baseUrl}/api/ShippingAddresses`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -107,7 +109,7 @@ export const getAllShippingAddresses = async (): Promise<AddressResponse[] | nul
   }
   
   try {
-    const response = await fetch('https://www.bouraq-mt.com/royalkey/api/ShippingAddresses', {
+    const response = await fetch(`${baseUrl}/api/ShippingAddresses`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -162,7 +164,7 @@ export const deleteAddress = async (shippingAddressId: string): Promise<boolean>
   }
   
   try {
-    const response = await fetch(`https://www.bouraq-mt.com/royalkey/api/ShippingAddresses/${shippingAddressId}`, {
+    const response = await fetch(`${baseUrl}/api/ShippingAddresses/${shippingAddressId}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${authToken}`

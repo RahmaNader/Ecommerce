@@ -1,22 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import ReactSlider, { ReactSliderProps } from "react-slider";
 import FilterIcon from "@assets/FilterIcon.svg";
 import { IconX } from "@tabler/icons-react";
 import FilterArrow from "@assets/FilterArrow.svg";
 import { Button } from "@components/atoms";
 import Checkbox from "@mui/material/Checkbox";
-import { FilterCategory } from "@types";
+import { FilterCategory as ImportedFilterCategory } from "@types";
 import { styled } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 
+// Extended FilterCategory type to include id
+interface FilterCategory extends ImportedFilterCategory {
+  id?: number;
+}
+
+// Update type to include subcategories
 type FilterProps = {
   onFilterChange: (filters: {
-    size?: string;
-    collection?: number;
     categories?: string[];
     priceRange?: [number, number];
   }) => void;
   onClose?: () => void;
+  subcategories?: {
+    categoryID: number;
+    name: string;
+    nameEn?: string;
+    nameAr?: string;
+  }[];
+  mainCategoryId?: number; // Add this to track main category changes
 };
 
 const Slider = ReactSlider as unknown as React.FC<
@@ -33,12 +44,17 @@ const CustomCheckbox = styled(Checkbox)(() => ({
   },
 }));
 
-const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
-  const { t } = useTranslation();
+const Filter: React.FC<FilterProps> = ({
+  onFilterChange,
+  onClose,
+  subcategories,
+  mainCategoryId,
+}) => {
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === "ar";
 
-  const sizes = ["S", "M", "L", "XL", "XXL"];
-
-  const initialCategories: FilterCategory[] = [
+  // Fallback categories in case no subcategories are provided
+  const fallbackCategories: FilterCategory[] = [
     { name: t("filter.categories.jackets"), isChecked: false },
     { name: t("filter.categories.coats"), isChecked: false },
     { name: t("filter.categories.shirts"), isChecked: false },
@@ -48,27 +64,36 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
     { name: t("filter.categories.hats"), isChecked: false },
   ];
 
-  const collections = [
-    t("filter.collections.allProducts"),
-    t("filter.collections.bestSellers"),
-    t("filter.collections.newArrivals"),
-    t("filter.collections.accessories"),
-  ];
+  // Generate categories from subcategories
+  const generateInitialCategories = useCallback((): FilterCategory[] => {
+    if (!subcategories || subcategories.length === 0) {
+      return fallbackCategories;
+    }
 
-  const ALL_PRODUCTS_INDEX = 0;
+    return subcategories.map((category) => ({
+      id: category.categoryID,
+      name: isRTL
+        ? category.nameAr || category.name
+        : category.nameEn || category.name,
+      isChecked: false,
+    }));
+  }, [subcategories, isRTL, fallbackCategories]);
 
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [selectedCollection, setSelectedCollection] = useState<number | null>(
-    null
-  );
-  const [categoryItems, setCategoryItems] =
-    useState<FilterCategory[]>(initialCategories);
+  const [categoryItems, setCategoryItems] = useState<FilterCategory[]>([]);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
-
   const [isCategoriesCollapsed, setIsCategoriesCollapsed] =
-    useState<boolean>(true);
-  const [isCollectionsCollapsed, setIsCollectionsCollapsed] =
-    useState<boolean>(true);
+    useState<boolean>(false);
+
+  // Initialize categories when component mounts
+  useEffect(() => {
+    setCategoryItems(generateInitialCategories());
+  }, []);
+
+  // Update categories when subcategories or main category changes
+  useEffect(() => {
+    console.log("Subcategories updated:", subcategories);
+    setCategoryItems(generateInitialCategories());
+  }, [subcategories, mainCategoryId, generateInitialCategories, i18n.language]);
 
   const handleCategoryChange = (index: number) => {
     const updatedCategories = [...categoryItems];
@@ -76,31 +101,15 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
     setCategoryItems(updatedCategories);
   };
 
-  const handleSizeClick = (size: string) => {
-    setSelectedSize(selectedSize === size ? null : size);
-  };
-
   const handleFilterClick = () => {
     const selectedCategories = categoryItems
       .filter((category) => category.isChecked)
-      .map((category) => category.name);
+      .map((category) => category.id?.toString() || category.name);
 
     const filters = {
-      size: selectedSize || undefined,
-      collection:
-        selectedCollection !== null && selectedCollection !== ALL_PRODUCTS_INDEX
-          ? selectedCollection
-          : undefined,
-      categories:
-        selectedCategories.length > 0 ? selectedCategories : undefined,
+      categories: selectedCategories.length > 0 ? selectedCategories : undefined,
       priceRange,
     };
-
-    if (selectedCollection === ALL_PRODUCTS_INDEX) {
-      filters.size = undefined;
-      filters.collection = undefined;
-      filters.categories = undefined;
-    }
 
     onFilterChange(filters);
   };
@@ -134,35 +143,6 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
 
       {/* Main content starts below the header */}
       <div className="px-4 gap-9 w-full flex flex-col">
-        {/* Size Filter */}
-        <div className="flex flex-col w-full">
-          <p className="font-playfair text-2xl text-wine ltr:text-left rtl:text-right font-semibold">
-            {t("filter.size")}
-          </p>
-          <div
-            className="flex gap-3 sm:gap-4 mt-2 w-full items-center justify-evenly"
-            role="group"
-            aria-label={t("filter.sizeSelection")}
-          >
-            {sizes.map((size, index) => (
-              <div
-                key={index}
-                onClick={() => handleSizeClick(size)}
-                role="button"
-                tabIndex={0}
-                aria-pressed={selectedSize === size ? "true" : "false"}
-                className={`font-Jost flex items-center text-base w-9 h-10 justify-center border-2 rounded-lg cursor-pointer focus:outline-none ${
-                  selectedSize === size
-                    ? "text-wine border-wine"
-                    : "text-ThirdColor border-ThirdColor"
-                }`}
-              >
-                {size}
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* Categories Filter */}
         <div className="w-full flex flex-col">
           <div
@@ -183,64 +163,33 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange, onClose }) => {
 
           {!isCategoriesCollapsed && (
             <div className="mt-2">
-              {categoryItems.map((category, index) => (
-                <div
-                  key={index}
-                  className="flex flex-row items-center justify-between"
-                >
-                  <label
-                    htmlFor={`category-${index}`}
-                    className={`font-Poppins text-base cursor-pointer ${
-                      category.isChecked ? "text-wine" : "text-ThirdColor"
-                    }`}
+              {categoryItems.length > 0 ? (
+                categoryItems.map((category, index) => (
+                  <div
+                    key={`category-${category.id || index}-${mainCategoryId}`}
+                    className="flex flex-row items-center justify-between"
                   >
-                    {category.name}
-                  </label>
-                  <CustomCheckbox
-                    checked={category.isChecked}
-                    onChange={() => handleCategoryChange(index)}
-                    id={`category-${index}`}
-                    inputProps={{ "aria-label": category.name }}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Collections Filter */}
-        <div className="w-full flex flex-col">
-          <div
-            className="flex flex-row items-center justify-between cursor-pointer"
-            onClick={() => setIsCollectionsCollapsed(!isCollectionsCollapsed)}
-          >
-            <p className="font-playfair text-2xl text-wine text-left font-semibold">
-              {t("filter.collectionstitle")}
-            </p>
-            <img
-              src={FilterArrow}
-              alt="Filter icon"
-              className={`w-5 h-5 transform transition-transform duration-300 ${
-                isCollectionsCollapsed ? "rotate-180" : "rotate-270"
-              }`}
-            />
-          </div>
-
-          {!isCollectionsCollapsed && (
-            <div className="mt-2">
-              {collections.map((collection, index) => (
-                <p
-                  key={index}
-                  className={`font-Poppins text-base cursor-pointer ${
-                    selectedCollection === index
-                      ? "text-wine"
-                      : "text-ThirdColor"
-                  }`}
-                  onClick={() => setSelectedCollection(index)}
-                >
-                  {collection}
+                    <label
+                      htmlFor={`category-${category.id || index}-${mainCategoryId}`}
+                      className={`font-Poppins text-base cursor-pointer ${
+                        category.isChecked ? "text-wine" : "text-ThirdColor"
+                      }`}
+                    >
+                      {category.name}
+                    </label>
+                    <CustomCheckbox
+                      checked={category.isChecked}
+                      onChange={() => handleCategoryChange(index)}
+                      id={`category-${category.id || index}-${mainCategoryId}`}
+                      inputProps={{ "aria-label": category.name }}
+                    />
+                  </div>
+                ))
+              ) : (
+                <p className="text-ThirdColor font-Poppins text-sm py-2">
+                  {t("filter.noCategories")}
                 </p>
-              ))}
+              )}
             </div>
           )}
         </div>

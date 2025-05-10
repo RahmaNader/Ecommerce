@@ -137,7 +137,7 @@ const Card: React.FC<CardComponent> = ({
 
       <div
         onClick={handleCardClick}
-        className="relative image-container w-auto h-auto min-h-[200px] overflow-hidden rounded-t-[500px] cursor-pointer"
+        className="relative image-container w-auto h-[363.025px] min-h-[200px] overflow-hidden rounded-t-[500px] cursor-pointer"
       >
         <img
           src={imageUrl}

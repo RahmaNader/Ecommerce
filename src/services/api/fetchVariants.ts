@@ -1,6 +1,9 @@
 import axios from 'axios';
 import { ProductVariant, SizeQuantity } from '@types';
 
+// Add the base URL from environment variables
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 interface ProductVariantResponse {
   $id: string;
   $values: Array<{
@@ -20,7 +23,7 @@ interface ProductVariantResponse {
 export async function fetchProductVariant(productId: number): Promise<ProductVariant[]> {
   try {
     const response = await axios.get<ProductVariantResponse>(
-      `https://www.bouraq-mt.com/royalkey/api/ProductVariants/product/${productId}`
+      `${baseUrl}/api/ProductVariants/product/${productId}`
     );
 
     console.log("Product Variants:", response.data.$values);

@@ -16,8 +16,12 @@ const routeNameMap: { [key: string]: { en: string; ar: string } } = {
   "/contact-us": { en: "Contact Us", ar: "اتصل بنا" },
   "/about-us": { en: "About Us", ar: "معلومات عنا" },
   "/cart": { en: "Cart", ar: "عربة التسوق" },
+  // Add this line for the authentication page
+  "/auth": { en: "Authentication", ar: "تسجيل الدخول" },
+  "/authentication": { en: "Authentication", ar: "تسجيل الدخول" },
   "/cart/checkout": { en: "Checkout", ar: "الدفع" },
   "/search": { en: "Search", ar: "بحث" },
+  "/search-results": { en: "Search Results", ar: "نتائج البحث" }, // Added this line
   "/profile": { en: "Profile", ar: "الملف الشخصي" },
   "/profile/orders": { en: "Orders", ar: "الطلبات" },
   "/profile/returns": { en: "Returns", ar: "المرتجعات" },

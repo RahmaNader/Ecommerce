@@ -1,9 +1,12 @@
 import axios from "axios";
 import { CardComponent, Review, ProductImage, ProductVariant } from "@types";
 
+// Add the base URL from environment variables
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 export async function fetchProductDetails(productId: number): Promise<CardComponent> {
   try {
-    const response = await axios.get(`https://www.bouraq-mt.com/royalkey/api/Product/${productId}`);
+    const response = await axios.get(`${baseUrl}/api/Product/${productId}`);
     const product = response.data;
     console.log("product", product);
     return {

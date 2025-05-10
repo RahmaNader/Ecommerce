@@ -1,8 +1,11 @@
 import axios from "axios";
 
+// Add the base URL from environment variables
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 export async function fetchProductImages(productId: number): Promise<{ imageId: number; imageUrl: string; altText: string } | null> {
   try {
-    const response = await axios.get(`https://www.bouraq-mt.com/royalkey/api/ProductImages/${productId}`);
+    const response = await axios.get(`${baseUrl}/api/ProductImages/${productId}`);
     
     if (response.data?.$values?.length > 0) {
       const image = response.data.$values[0]; 

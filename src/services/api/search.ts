@@ -3,6 +3,9 @@ import Cookies from 'js-cookie';
 import fallbackImage from "@assets/HP_img2.jpeg";
 import { CardComponent, ProductImage, ProductVariant, Review, Category } from "@types";
 
+// Add the base URL from environment variables
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 interface ProductVariantResponse {
   $id: string;
   productVarientId: number;
@@ -74,7 +77,7 @@ export const searchProducts = async (
 
     // Make API request - now using the isEnglish parameter 
     const response = await axios.get<SearchResponse>(
-      `https://www.bouraq-mt.com/royalkey/api/Product?search=${encodeURIComponent(query)}&isEnglish=${isEnglish}`,
+      `${baseUrl}/api/Product?search=${encodeURIComponent(query)}&isEnglish=${isEnglish}`,
       { headers }
     );
 

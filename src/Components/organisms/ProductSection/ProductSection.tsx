@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { CardComponent, ProductVariant, SizeQuantity } from "@types";
 import Cookies from "js-cookie";
@@ -10,7 +10,7 @@ import {
 } from "@components/atoms";
 import heart from "@assets/heart.svg";
 import filledHeart from "@assets/filledHeart.svg";
-import { FaShareAlt } from "react-icons/fa";
+import { FaShareAlt, FaChevronLeft, FaChevronRight, FaTimes } from "react-icons/fa";
 import { fetchProductVariant } from "src/services/api/fetchVariants";
 import { useNavigate } from 'react-router-dom';
 
@@ -31,11 +31,25 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [alertType, setAlertType] = useState<"success" | "error" | null>(null);
   const [count, setCount] = useState(1);
-
+  const [showShareOptions, setShowShareOptions] = useState(false);
+  const shareMenuRef = useRef<HTMLDivElement>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
+  const [showGallery, setShowGallery] = useState<boolean>(false);
+  const [isHovering, setIsHovering] = useState<boolean>(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [magnifierPosition, setMagnifierPosition] = useState({ x: 0, y: 0 });
+  const [showMagnifier, setShowMagnifier] = useState(false);
+  const magnifierSize = { width: 300, height: 300 }; // Size of the floating magnifier
+  const zoomLevel = 2.5; // Magnification level
+  const imageContainerRef = useRef<HTMLDivElement>(null);
   const productName = isRTL ? product.nameAr || product.name : product.nameEn || product.name;
   const productDescription = isRTL 
     ? product.productDescriptionAr || product.productDescription 
     : product.productDescriptionEn || product.productDescription;
+
+  // If "product.copyLink" is not yet defined in translations
+  // You can add this to your component
+  const copyLinkText = t("product.copyLink", "Copy Link");
 
   useEffect(() => {
     const fetchVariants = async () => {
@@ -51,6 +65,22 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
     fetchVariants();
   }, [product.productID]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (shareMenuRef.current && !shareMenuRef.current.contains(event.target as Node)) {
+        setShowShareOptions(false);
+      }
+    };
+
+    if (showShareOptions) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showShareOptions]);
+
   const handleAddToCart = () => {
     if (!selectedColor || !selectedSize) {
       setAlertMessage(t("product.selectColorAndSize"));
@@ -59,13 +89,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
       return;
     }
 
-    const authToken = Cookies.get("authToken");
-    if (!authToken) {
-      setAlertMessage(t("product.loginToAddCart"));
-      setAlertType("error");
-      setTimeout(() => setAlertType(null), 3000);
-      return;
-    }
+    // Authentication check removed - allow anyone to add to cart
 
     const selectedVariant = productVariants.find(v => v.colorNameEn === selectedColor);
     
@@ -130,13 +154,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
       return;
     }
 
-    const authToken = Cookies.get("authToken");
-    if (!authToken) {
-      setAlertMessage(t("product.loginToAddCart"));
-      setAlertType("error");
-      setTimeout(() => setAlertType(null), 3000);
-      return;
-    }
+    // Authentication check removed - allow anyone to buy now
 
     handleAddToCart();
     
@@ -144,25 +162,29 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
   };
 
   const handleShare = () => {
-    try {
-      const currentUrl = window.location.href;
-            navigator.clipboard.writeText(currentUrl)
-        .then(() => {
-          setAlertMessage(t("product.urlCopiedToClipboard"));
-          setAlertType("success");
-          setTimeout(() => setAlertType(null), 3000);
-        })
-        .catch((err) => {
-          console.error("Failed to copy URL: ", err);
-          setAlertMessage(t("product.failedToCopyUrl"));
-          setAlertType("error");
-          setTimeout(() => setAlertType(null), 3000);
-        });
-    } catch (err) {
-      console.error("Clipboard API not supported", err);
-      setAlertMessage(t("product.browserDoesNotSupportSharing"));
-      setAlertType("error");
-      setTimeout(() => setAlertType(null), 3000);
+    // Get the current URL
+    const url = window.location.href;
+    const title = productName;
+    const text = productDescription?.substring(0, 100) || productName;
+
+    // Try to use the Web Share API first (works well on mobile)
+    if (navigator.share) {
+      navigator.share({
+        title,
+        text,
+        url,
+      })
+      .then(() => {
+        console.log('Successfully shared');
+      })
+      .catch((error) => {
+        console.log('Error sharing:', error);
+        // If sharing fails, show the dropdown instead
+        setShowShareOptions(prev => !prev);
+      });
+    } else {
+      // If Web Share API is not supported, toggle dropdown
+      setShowShareOptions(prev => !prev);
     }
   };
 
@@ -221,6 +243,66 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
     (v) => v.colorNameEn === selectedColor
   )?.sizeQuantities ?? [];
 
+  const handleImageClick = () => {
+    setShowGallery(true);
+  };
+
+  const handleMouseEnter = () => {
+    setIsHovering(true);
+    if (window.innerWidth >= 1024) { // Only show floating magnifier on larger screens
+      setShowMagnifier(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovering(false);
+    setShowMagnifier(false);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (imageContainerRef.current) {
+      const { left, top, width, height } = imageContainerRef.current.getBoundingClientRect();
+      
+      // Calculate relative position within the image (0-100%)
+      const x = ((e.clientX - left) / width) * 100;
+      const y = ((e.clientY - top) / height) * 100;
+      setMousePosition({ x, y });
+      
+      // Calculate position for the floating magnifier
+      // Position it near the cursor but ensure it stays within viewport
+      const cursorX = e.clientX;
+      const cursorY = e.clientY;
+      
+      // Position magnifier to the right of cursor, unless near right edge
+      let magnifierX = cursorX + 20;
+      if (magnifierX + magnifierSize.width > window.innerWidth) {
+        magnifierX = cursorX - magnifierSize.width - 20;
+      }
+      
+      // Position magnifier centered vertically with cursor
+      let magnifierY = cursorY - magnifierSize.height / 2;
+      // Ensure it doesn't go offscreen
+      if (magnifierY < 0) magnifierY = 0;
+      if (magnifierY + magnifierSize.height > window.innerHeight) {
+        magnifierY = window.innerHeight - magnifierSize.height;
+      }
+      
+      setMagnifierPosition({ x: magnifierX, y: magnifierY });
+    }
+  };
+
+  const nextImage = () => {
+    setSelectedImageIndex((prev) => 
+      prev === product.productImages.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  const prevImage = () => {
+    setSelectedImageIndex((prev) => 
+      prev === 0 ? product.productImages.length - 1 : prev - 1
+    );
+  };
+
   return (
     <div className={`flex flex-col md:flex-row items-center justify-center w-full gap-10 my-8 px-6 `}>
       {alertType && alertMessage && (
@@ -233,19 +315,111 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
         </div>
       )}
 
-      {/* Product Image Section - Same for both languages */}
-      <div className="flex flex-col justify-center items-center gap-2">
-        <div className="image-container w-48 min-h-48 md:w-full h-[100%] relative overflow-hidden rounded-t-[500px]">
+      {/* Product Image Section with Thumbnails */}
+      <div className="flex flex-col justify-center items-center gap-4">
+      <div 
+           ref={imageContainerRef}
+           className="image-container w-48 min-h-48 md:w-full h-[100%] relative overflow-hidden rounded-t-[500px]"
+           onMouseEnter={handleMouseEnter}
+           onMouseLeave={handleMouseLeave}
+           onMouseMove={handleMouseMove}
+           onClick={handleImageClick}
+         >
           <img
-            src={product.productImages[0]?.imageUrl}
+            src={product.productImages[selectedImageIndex]?.imageUrl || product.productImages[0]?.imageUrl}
             alt={productDescription}
             className="object-cover max-w-[300px] min-h-[250px] sm:min-h-[450px] h-full w-full cursor-pointer border border-1 border-golden rounded-t-[500px]"
           />
+             
+           {/* On mobile or tablet, use the in-place zoom */}
+           {isHovering && window.innerWidth < 1024 && (
+             <div 
+               className="absolute top-0 left-0 w-full h-full pointer-events-none"
+               style={{
+                 backgroundImage: `url(${product.productImages[selectedImageIndex]?.imageUrl || product.productImages[0]?.imageUrl})`,
+                 backgroundPosition: `${mousePosition.x}% ${mousePosition.y}%`,
+                 backgroundRepeat: 'no-repeat',
+                 backgroundSize: '200%',
+                 zIndex: 5,
+               }}
+             />
+           )}
+           
+           {/* Show a small indicator of the area being magnified on larger screens */}
+           {showMagnifier && (
+             <div 
+               className="absolute pointer-events-none border-2 border-white"
+               style={{
+                 left: `calc(${mousePosition.x}% - 40px)`,
+                 top: `calc(${mousePosition.y}% - 40px)`,
+                 width: '80px',
+                 height: '80px',
+                 opacity: 0.6,
+                 zIndex: 6,
+               }}
+             ></div>
+           )}
         </div>
+        
+ {/* Floating magnifier for desktop/laptop */}
+ {showMagnifier && (
+           <div 
+             className="fixed pointer-events-none rounded-lg shadow-xl overflow-hidden border-4 border-white z-50"
+             style={{
+               left: magnifierPosition.x,
+               top: magnifierPosition.y,
+               width: magnifierSize.width,
+               height: magnifierSize.height,
+               backgroundImage: `url(${product.productImages[selectedImageIndex]?.imageUrl || product.productImages[0]?.imageUrl})`,
+               backgroundPosition: `${mousePosition.x}% ${mousePosition.y}%`,
+               backgroundRepeat: 'no-repeat',
+               backgroundSize: `${zoomLevel * 100}%`,
+             }}
+           />
+         )}
+
+         {/* Thumbnails Row */}
+        {product.productImages.length > 1 && (
+          <div className="flex flex-row items-center gap-4 w-full max-w-[300px] mt-2">
+          {product.productImages.map((image, index) => (
+              <div 
+                key={image.imageId || index}
+                onClick={() => setSelectedImageIndex(index)}
+                className={`relative flex-none cursor-pointer transition-all duration-200`}
+                style={{ 
+                  width: '49px',
+                  height: '50px',
+                }}
+              >
+                <img
+                  src={image.imageUrl}
+                  alt={image.altText || `Product view ${index + 1}`}
+                  className="object-cover w-full h-full rounded-[5px]"
+                  style={{ 
+                    border: selectedImageIndex === index 
+                      ? '2px solid #721013' 
+                      : '1px solid #721013',
+                    borderRadius: '5px'
+                  }}
+                />
+                {selectedImageIndex === index && (
+                  <div 
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      backgroundColor: 'rgba(0, 0, 0, 0.25)',
+                      borderRadius: '5px',
+                      border: '1px solid #721013'
+                    }}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Product Details Section */}
-      <div className={`flex flex-col justify-center space-y-3 md:space-y-6 `}>
+      <div className={`flex flex-col justify-center max-w-[448px] space-y-3 md:space-y-6 `}>
         <div className={`flex flex-row w-full justify-between items-center `}>
           <p className="font-playfair text-wine text-2xl md:text-4xl font-extrabold">
             {productName}
@@ -359,16 +533,137 @@ const ProductSection: React.FC<ProductSectionProps> = ({ product, isArabic = fal
             >
               {t("product.buyNow")}
             </button>
-            <button
-              onClick={handleShare}
-              className="w-10 h-10 rounded-full bg-wine text-mainColor hover:bg-sixColor flex items-center justify-center"
-              aria-label={t("product.shareProduct")}
-            >
-              <FaShareAlt size={16} />
-            </button>
+            <div className="relative">
+              <button
+                onClick={handleShare}
+                className="w-10 h-10 rounded-full bg-wine text-mainColor hover:bg-sixColor flex items-center justify-center"
+                aria-label={t("product.shareProduct")}
+              >
+                <FaShareAlt size={16} />
+              </button>
+              
+              {showShareOptions && (
+                <div 
+                  ref={shareMenuRef}
+                  className="absolute right-0 bottom-12 bg-white shadow-lg rounded-md p-3 z-30 w-52"
+                >
+                  <div className="flex flex-col gap-2">
+                    <a 
+                      href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`${productName} - ${window.location.href}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-md"
+                    >
+                      <img src="https://cdn-icons-png.flaticon.com/512/124/124034.png" alt="WhatsApp" className="w-5 h-5" />
+                      <span>WhatsApp</span>
+                    </a>
+                    
+                    <a 
+                      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-md"
+                    >
+                      <img src="https://cdn-icons-png.flaticon.com/512/124/124010.png" alt="Facebook" className="w-5 h-5" />
+                      <span>Facebook</span>
+                    </a>
+                    
+                    <a 
+                      href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out this product: ${productName}`)}&url=${encodeURIComponent(window.location.href)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-md"
+                    >
+                      <img src="https://cdn-icons-png.flaticon.com/512/124/124021.png" alt="Twitter" className="w-5 h-5" />
+                      <span>Twitter</span>
+                    </a>
+                    
+                    <a 
+                      href={`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(`Check out this product: ${productName}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-md"
+                    >
+                      <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram" className="w-5 h-5" />
+                      <span>Telegram</span>
+                    </a>
+                    
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(window.location.href);
+                        setAlertMessage(t("product.urlCopiedToClipboard"));
+                        setAlertType("success");
+                        setTimeout(() => setAlertType(null), 3000);
+                        setShowShareOptions(false);
+                      }}
+                      className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-md"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                      <span>{copyLinkText}</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
+      {/* Image Gallery Modal */}
+      {showGallery && (
+         <div className="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center">
+           <div className="relative w-full h-full flex flex-col justify-center items-center">
+             <button 
+               className="absolute top-4 right-4 text-white z-10"
+               onClick={() => setShowGallery(false)}
+             >
+               <FaTimes size={24} />
+             </button>
+             
+             <div className="w-full h-full max-w-4xl max-h-[80vh] relative flex items-center justify-center">
+               <img 
+                 src={product.productImages[selectedImageIndex]?.imageUrl} 
+                 alt={productDescription}
+                 className="max-h-full max-w-full object-contain" 
+               />
+               
+               <button 
+                 className="absolute left-4 bg-white bg-opacity-50 p-2 rounded-full"
+                 onClick={prevImage}
+               >
+                 <FaChevronLeft size={20} />
+               </button>
+               
+               <button 
+                 className="absolute right-4 bg-white bg-opacity-50 p-2 rounded-full"
+                 onClick={nextImage}
+               >
+                 <FaChevronRight size={20} />
+               </button>
+             </div>
+             
+             {/* Thumbnails for gallery */}
+             {product.productImages.length > 1 && (
+               <div className="flex justify-center gap-2 mt-4 overflow-x-auto pb-2 max-w-full px-4">
+                 {product.productImages.map((image, index) => (
+                   <div 
+                     key={image.imageId || index}
+                     onClick={() => setSelectedImageIndex(index)}
+                     className={`cursor-pointer border-2 ${selectedImageIndex === index ? 'border-white' : 'border-transparent'}`}
+                   >
+                     <img 
+                       src={image.imageUrl} 
+                       alt={`Thumbnail ${index}`} 
+                       className="h-16 w-16 object-cover"
+                     />
+                   </div>
+                 ))}
+               </div>
+             )}
+           </div>
+         </div>
+       )}
     </div>
   );
 };

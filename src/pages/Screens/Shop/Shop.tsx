@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useQuery } from "react-query";
-import { fetchCategoryProducts } from "@services/api/fetchCategoryProducts";
+import { fetchCategoryProducts, fetchMainCategoryProducts } from "@services/api/fetchCategoryProducts";
 import { useParams, Navigate, useLocation } from "react-router-dom";
 import { Filter, ProductsDisplay } from "@components/organisms";
 import { Breadcrumb, Loading } from "@components/molecules";
@@ -36,7 +36,16 @@ const Shop: React.FC = () => {
 
   const { data: products, isLoading, error } = useQuery(
     ['categoryProducts', categoryId],
-    () => fetchCategoryProducts(categoryId),
+    () => {
+      // Check if this is a main category navigation (from home page)
+      const isMainCategoryFromHome = location.state?.isMainCategory;
+      
+      if (isMainCategoryFromHome) {
+        return fetchMainCategoryProducts(categoryId);
+      } else {
+        return fetchCategoryProducts(categoryId);
+      }
+    },
     {
       enabled: !!categoryId,
       staleTime: 5 * 60 * 1000,
@@ -91,6 +100,23 @@ const Shop: React.FC = () => {
   };
 
   const getCategoryDisplayName = () => {
+    // Check if we're viewing a main category
+    const isMainCategory = location.state?.isMainCategory;
+    
+    if (isMainCategory) {
+      // For main categories, use the category from URL or a mapping
+      const mainCategoryMap: Record<number, { en: string; ar: string }> = {
+        1: { en: "Men", ar: "رجالي" },
+        2: { en: "Women", ar: "حريمي" },
+        3: { en: "Kids", ar: "أطفالي" }
+      };
+      
+      if (categoryId && mainCategoryMap[categoryId]) {
+        return isRTL ? mainCategoryMap[categoryId].ar : mainCategoryMap[categoryId].en;
+      }
+    }
+    
+    // Fall back to existing logic for subcategories
     if (!products || products.length === 0) {
       return (lastSegment ?? "").charAt(0).toUpperCase() + (lastSegment ?? "").slice(1);
     }

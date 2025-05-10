@@ -1,6 +1,9 @@
 import axios, { AxiosError } from 'axios';
 import Cookies from 'js-cookie';
 
+// Add the base URL from environment variables
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 export interface OrderItem {
   productId: number;
   quantity: number;
@@ -91,7 +94,7 @@ const placeOrder = async (orderData: OrderRequest): Promise<OrderResponse> => {
   try {
     console.log("[placeOrder] Sending request to API endpoint");
     const response = await axios.post<OrderResponse>(
-      'https://www.bouraq-mt.com/royalkey/api/Order', 
+      `${baseUrl}/api/Order`, 
       validatedOrderData,
       {
         headers: {

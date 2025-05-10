@@ -198,6 +198,7 @@ const resources = {
         passwordMinLength: "Password must be at least 6 characters",
         submit: "Submit",
         edit: "Edit",
+        cancel: "Cancel",
         fillAllFields: "Please fill all fields before submitting.",
         changePhoto: "Change Photo",
         removePhoto: "Remove Photo",
@@ -538,7 +539,9 @@ const resources = {
           dress: "Dress", 
           pants: "Pants",
           shoes: "Shoes"
-        }
+        },
+        breadcrumb_searchLink: "Search",
+        breadcrumb_searchResultsPage: "Search Results"
       },
       payment: {
         cashOnDelivery: "Cash on Delivery",
@@ -743,6 +746,7 @@ const resources = {
         passwordMinLength: "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل",
         submit: "تأكيد",
         edit: "تعديل",
+        cancel: "إلغاء",
         fillAllFields: "يرجى ملء جميع الحقول قبل التقديم.",
         changePhoto: "تغيير الصورة",
         removePhoto: "إزالة الصورة",
@@ -1083,7 +1087,9 @@ const resources = {
           dress: "فستان", 
           pants: "بنطلون",
           shoes: "حذاء"
-        }
+        },
+        breadcrumb_searchLink: "بحث",
+        breadcrumb_searchResultsPage: "نتائج البحث"
       },
       payment: {
         cashOnDelivery: "الدفع عند الاستلام",

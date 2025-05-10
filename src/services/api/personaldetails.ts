@@ -2,7 +2,9 @@ import axios from "axios";
 import {PersonalData} from "@types"
 import Cookies from "js-cookie";
 
-const API_BASE_URL = "https://www.bouraq-mt.com/royalkey/api/PersonalData/personal-data";
+// Add the base URL from environment variables
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = `${baseUrl}/api/PersonalData/personal-data`;
 
 const getAuthToken = (): string | null => {
   return Cookies.get("authToken") || null;

@@ -1,5 +1,8 @@
 import axios from "axios";
 
+// Add the base URL from environment variables
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 export interface Coupon {
   couponId: string;
   title: string;
@@ -37,7 +40,7 @@ interface CouponResponse {
 export async function fetchCoupons(): Promise<Coupon[]> {
   try {
     const { data } = await axios.get<CouponResponse>(
-      "https://www.bouraq-mt.com/royalkey/api/Coupons"
+      `${baseUrl}/api/Coupons`
     );
 
     return data.$values.map((coupon): Coupon => ({

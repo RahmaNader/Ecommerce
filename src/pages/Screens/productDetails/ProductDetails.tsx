@@ -62,7 +62,8 @@ const ProductDetails: React.FC = () => {
   if (!product) return <div className="text-center mt-20">Product not found</div>;
 
   return (
-    <div className={`flex flex-col gap-8 px-10 w-full ${isArabic ? 'rtl' : 'ltr'}`}>      <ProductSection product={product} isArabic={isArabic} />
+    <div className={`flex flex-col gap-8 px-10 w-full ${isArabic ? 'rtl' : 'ltr'}`}>      
+     <ProductSection product={product} isArabic={isArabic} />
       
       <Category SectionName={isArabic ? "التقييمات والمراجعات" : "Rating And Reviews"} />
       
