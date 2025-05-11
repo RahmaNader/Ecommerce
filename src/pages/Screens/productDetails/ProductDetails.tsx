@@ -6,7 +6,9 @@ import { fetchProductDetails } from "@services/api/fetchProductDetails";
 import { fetchRelatedProducts } from "@services/api/fetchCollections";
 import { Category } from "@components/atoms";
 import { RatingSection, ProductSection, ReviewsSection } from "@components/organisms";
-import { ProductsView, Loading } from "@components/molecules";
+import { Loading } from "@components/molecules";
+import { ProductsGrid } from "@components/organisms/ProductsGrid/ProductsGrid";
+
 
 const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -71,9 +73,9 @@ const ProductDetails: React.FC = () => {
       
       <ReviewsSection reviews={product.reviews} />
       
-      <ProductsView 
+      <ProductsGrid 
         sectionName={isArabic ? "المنتجات ذات الصلة" : "Related Products"} 
-        cards={relatedProducts} 
+        products={relatedProducts} 
       />
     </div>
   );
