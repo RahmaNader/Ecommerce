@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useQuery } from "react-query";
 import { fetchCategoryProducts, fetchMainCategoryProducts } from "@services/api/fetchCategoryProducts";
+import { fetchCategories } from "@services/api/fetchCategories";
 import { useParams, Navigate, useLocation } from "react-router-dom";
 import { Filter, ProductsDisplay } from "@components/organisms";
 import { Breadcrumb, Loading } from "@components/molecules";
 import FilterIcon from "@assets/FilterIcon.svg";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@context/useLanguage";
+import { Category } from "@types";
 
 type ShopParams = {
   category: string;
@@ -34,7 +36,17 @@ const Shop: React.FC = () => {
 
   const lastSegment = location.pathname.split("/").filter(Boolean).pop();
 
-  const { data: products, isLoading, error } = useQuery(
+  // Fetch all categories
+  const { data: allCategories, isLoading: categoriesLoading } = useQuery(
+    ['allCategories'],
+    fetchCategories,
+    {
+      staleTime: 5 * 60 * 1000,
+    }
+  );
+
+  // Fetch products for the current category
+  const { data: products, isLoading: productsLoading, error } = useQuery(
     ['categoryProducts', categoryId],
     () => {
       // Check if this is a main category navigation (from home page)
@@ -51,6 +63,26 @@ const Shop: React.FC = () => {
       staleTime: 5 * 60 * 1000,
     }
   );
+
+  // Get subcategories for the current main category
+  const subcategories = useMemo(() => {
+    if (!allCategories || !categoryId) return [];
+    
+    // First, determine if we're looking at a main category
+    const currentCategory = allCategories.find((cat: Category) => cat.categoryID === parseInt(categoryId));
+    
+    // If this is a main category (has null parentCategoryID)
+    if (currentCategory?.parentCategoryID === null) {
+      // Return its subcategories
+      return allCategories.filter((cat: Category) => cat.parentCategoryID === currentCategory.categoryID);
+    } 
+    // If this is a subcategory, get siblings (other subcategories with same parent)
+    else if (currentCategory?.parentCategoryID) {
+      return allCategories.filter((cat: Category) => cat.parentCategoryID === currentCategory.parentCategoryID);
+    }
+    
+    return [];
+  }, [allCategories, categoryId]);
 
   useEffect(() => {
     if (isFilterOpen) {
@@ -83,6 +115,8 @@ const Shop: React.FC = () => {
     return filtered;
   }, [products, filterCriteria]);
 
+  const isLoading = productsLoading || categoriesLoading;
+  
   if (isLoading) return <Loading />;
   if (error) return <div>{t("common.errorLoading")}</div>;
 
@@ -147,6 +181,8 @@ const Shop: React.FC = () => {
                 <Filter
                   onFilterChange={handleFilterChange}
                   onClose={handleCloseSidebar}
+                  subcategories={subcategories}
+                  mainCategoryId={parseInt(categoryId)}
                 />
               </div>
             </div>
@@ -160,7 +196,11 @@ const Shop: React.FC = () => {
 
         {/* Desktop Filter for screens larger than laptop size */}
         <div className="laptop:hidden w-full md:w-1/4 p-4 md:sticky md:top-0 md:h-screen md:overflow-y-auto">
-          <Filter onFilterChange={handleFilterChange} />
+          <Filter 
+            onFilterChange={handleFilterChange} 
+            subcategories={subcategories} 
+            mainCategoryId={parseInt(categoryId)}
+          />
         </div>
 
         {/* Products Section */}

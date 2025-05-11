@@ -4,17 +4,16 @@ import FilterIcon from "@assets/FilterIcon.svg";
 import { IconX } from "@tabler/icons-react";
 import FilterArrow from "@assets/FilterArrow.svg";
 import { Button } from "@components/atoms";
-import Checkbox from "@mui/material/Checkbox";
 import { FilterCategory as ImportedFilterCategory } from "@types";
-import { styled } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
+import { useNavigate, useLocation } from "react-router-dom";
 
 // Extended FilterCategory type to include id
 interface FilterCategory extends ImportedFilterCategory {
   id?: number;
 }
 
-// Update type to include subcategories
+// Update type to include subcategories and main category info
 type FilterProps = {
   onFilterChange: (filters: {
     categories?: string[];
@@ -27,22 +26,13 @@ type FilterProps = {
     nameEn?: string;
     nameAr?: string;
   }[];
-  mainCategoryId?: number; // Add this to track main category changes
+  mainCategoryId?: number;
+  mainCategoryName?: string;
 };
 
 const Slider = ReactSlider as unknown as React.FC<
   ReactSliderProps<[number, number]>
 >;
-
-const CustomCheckbox = styled(Checkbox)(() => ({
-  color: "#721013",
-  "&.Mui-checked": {
-    color: "#721013",
-  },
-  "&:hover": {
-    backgroundColor: "rgba(114, 16, 19, 0.1)",
-  },
-}));
 
 const Filter: React.FC<FilterProps> = ({
   onFilterChange,
@@ -52,6 +42,8 @@ const Filter: React.FC<FilterProps> = ({
 }) => {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === "ar";
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Fallback categories in case no subcategories are provided
   const fallbackCategories: FilterCategory[] = [
@@ -80,38 +72,43 @@ const Filter: React.FC<FilterProps> = ({
   }, [subcategories, isRTL, fallbackCategories]);
 
   const [categoryItems, setCategoryItems] = useState<FilterCategory[]>([]);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
-  const [isCategoriesCollapsed, setIsCategoriesCollapsed] =
-    useState<boolean>(false);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
+  const [isCategoriesCollapsed, setIsCategoriesCollapsed] = useState<boolean>(false);
 
-  // Initialize categories when component mounts
+  // Initialize categories when component mounts or when subcategories/language changes
   useEffect(() => {
-    setCategoryItems(generateInitialCategories());
-  }, []);
-
-  // Update categories when subcategories or main category changes
-  useEffect(() => {
-    console.log("Subcategories updated:", subcategories);
     setCategoryItems(generateInitialCategories());
   }, [subcategories, mainCategoryId, generateInitialCategories, i18n.language]);
 
-  const handleCategoryChange = (index: number) => {
-    const updatedCategories = [...categoryItems];
-    updatedCategories[index].isChecked = !updatedCategories[index].isChecked;
-    setCategoryItems(updatedCategories);
+  const handleCategoryClick = (categoryId: number | undefined, categoryName: string) => {
+    if (!categoryId) return;
+    
+    // Get current main category name from pathname
+    const pathParts = location.pathname.split('/');
+    const mainCategoryName = pathParts[2] || '';
+    
+    // Navigate to the subcategory
+    navigate(`/products/${mainCategoryName}/${categoryName.toLowerCase()}`, {
+      state: { categoryId: categoryId }
+    });
+    
+    // Close the filter on mobile
+    if (onClose) {
+      onClose();
+    }
   };
 
   const handleFilterClick = () => {
-    const selectedCategories = categoryItems
-      .filter((category) => category.isChecked)
-      .map((category) => category.id?.toString() || category.name);
-
     const filters = {
-      categories: selectedCategories.length > 0 ? selectedCategories : undefined,
       priceRange,
     };
 
     onFilterChange(filters);
+    
+    // Close filter on mobile after applying
+    if (onClose) {
+      onClose();
+    }
   };
 
   return (
@@ -167,22 +164,15 @@ const Filter: React.FC<FilterProps> = ({
                 categoryItems.map((category, index) => (
                   <div
                     key={`category-${category.id || index}-${mainCategoryId}`}
-                    className="flex flex-row items-center justify-between"
+                    className="flex flex-row items-center justify-between py-2 cursor-pointer hover:bg-wine/10 px-2 rounded transition-colors"
+                    onClick={() => handleCategoryClick(category.id, category.name)}
                   >
-                    <label
-                      htmlFor={`category-${category.id || index}-${mainCategoryId}`}
-                      className={`font-Poppins text-base cursor-pointer ${
-                        category.isChecked ? "text-wine" : "text-ThirdColor"
-                      }`}
+                    <span
+                      className="font-Poppins text-base text-wine hover:text-wine/80 transition-colors"
                     >
                       {category.name}
-                    </label>
-                    <CustomCheckbox
-                      checked={category.isChecked}
-                      onChange={() => handleCategoryChange(index)}
-                      id={`category-${category.id || index}-${mainCategoryId}`}
-                      inputProps={{ "aria-label": category.name }}
-                    />
+                    </span>
+                    <span className="text-wine">&rsaquo;</span>
                   </div>
                 ))
               ) : (
@@ -212,7 +202,7 @@ const Filter: React.FC<FilterProps> = ({
             thumbClassName="absolute relative transform -translate-y-1/2 w-4 h-4 bg-wine rounded-full cursor-pointer focus:outline-none focus:ring-wine"
             trackClassName="h-[1px] bg-ThirdColor"
             min={0}
-            max={10000}
+            max={5000}
             step={100}
             value={priceRange}
             onChange={(values: [number, number]) => setPriceRange(values)}
@@ -222,7 +212,7 @@ const Filter: React.FC<FilterProps> = ({
           />
         </div>
 
-        {/* Filter Button */}
+        {/* Filter Button - Only for price filtering now */}
         <Button
           label={t("filter.apply")}
           type="primary"
