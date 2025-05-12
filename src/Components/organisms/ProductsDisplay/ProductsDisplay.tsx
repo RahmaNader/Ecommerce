@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Card, Button } from "@components/atoms";
+import { Button } from "@components/atoms";
+import { ProductCard } from "@components/atoms/ProductCard/ProductCard";
 import { CardComponent } from "@types";
 import { useTranslation } from "react-i18next";
 
@@ -69,28 +70,33 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products, language })
 
   return (
     <div className="flex flex-col items-center w-full">
-      {/* Display Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 w-full">
-        {currentCards.map((card) => {
-          const localizedCard = {
-            ...card,
-            name: isRTL ? card.nameAr || card.name : card.nameEn || card.name,
-            productDescription: isRTL 
-              ? card.productDescriptionAr || card.productDescription 
-              : card.productDescriptionEn || card.productDescription
-          };
-          
-          return (
-            <div className="flex justify-center mx-auto w-full md:w-[70%]" key={card.productID}>
-              <Card {...localizedCard} />
-            </div>
-          );
-        })}
+      {/* Products Grid - Using the same styling as ProductsGrid */}
+      <div className="w-[90%] mx-auto px-4 md:px-16">
+        <section
+          className="grid auto-rows-[1fr] gap-y-8 gap-x-4 md:gap-x-10 justify-evenly"
+          style={{ gridTemplateColumns: "repeat(auto-fit, minmax(150px, 225px))" }}
+        >
+          {currentCards.map((card) => (
+            <ProductCard
+              key={card.productID}
+              productID={card.productID}
+              name={card.name}
+              nameEn={card.nameEn}
+              nameAr={card.nameAr}
+              productPrice={card.productPrice}
+              priceAfterDiscount={card.priceAfterDiscount}
+              discountPercent={card.discountPercent}
+              productVarients={card.productVarients}
+              productImages={card.productImages}
+              averageRate={card.averageRate}
+            />
+          ))}
+        </section>
       </div>
 
       {/* Pagination with RTL support */}
       {products.length > cardsPerPage && (
-        <div className={`mt-8 flex items-center w-full justify-between md:px-10 `}>
+        <div className={`mt-8 flex items-center w-full justify-between md:px-10`}>
           <Button
             label={t("pagination.previous")}
             onClick={handlePrevious}
