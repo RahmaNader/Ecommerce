@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { Product } from "@types";
 import { Category, SuccessAlert, ErrorAlert } from "@components/atoms";
 import { CartProduct, Breadcrumb } from "@components/molecules";
-import {OrderSummary} from '@components/organisms';
-import { useTranslation } from "react-i18next"; 
+import { OrderSummary } from "@components/organisms";
+import { useTranslation } from "react-i18next";
 
 const Cart: React.FC = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation(); 
+  const { t } = useTranslation();
 
   const [products, setProducts] = useState<Product[]>([]);
   const [alert, setAlert] = useState<{
@@ -23,11 +23,8 @@ const Cart: React.FC = () => {
       try {
         const parsedCart = JSON.parse(cartData);
         const validatedCart = parsedCart.map((item: Partial<Product>) => {
-          const { 
-            nameEn, nameAr, language, productID, 
-            discountPercent
-          } = item;
-          
+          const { nameEn, nameAr, language, productID, discountPercent } = item;
+
           return {
             id: item.id!,
             name: item.name!,
@@ -39,10 +36,10 @@ const Cart: React.FC = () => {
             src: item.src ?? "",
             alt: item.alt ?? "",
             nameEn,
-            nameAr, 
+            nameAr,
             language,
             productID,
-            discountPercent
+            discountPercent,
           };
         });
         setProducts(validatedCart);
@@ -59,7 +56,8 @@ const Cart: React.FC = () => {
 
   const removeProduct = (id: number, color: string, size: string) => {
     const updatedProducts = products.filter(
-      (product) => !(product.id === id && product.color === color && product.size === size)
+      (product) =>
+        !(product.id === id && product.color === color && product.size === size)
     );
     setProducts(updatedProducts);
     saveCartToCookies(updatedProducts);
@@ -74,31 +72,44 @@ const Cart: React.FC = () => {
   };
 
   const handleCheckoutClick = () => {
-    const authToken = Cookies.get('authToken');
-    const cartItems = Cookies.get('cart') ? JSON.parse(Cookies.get('cart') as string) : [];
+    const authToken = Cookies.get("authToken");
+    const cartItems = Cookies.get("cart")
+      ? JSON.parse(Cookies.get("cart") as string)
+      : [];
 
     if (!authToken) {
       setAlert({
-        type: 'error',
-        message: t("cart.loginRequired")
+        type: "error",
+        message: t("cart.loginRequired"),
       });
+      navigate("/authentication");
       setTimeout(() => setAlert(null), 3000);
       return;
     }
 
     if (cartItems.length === 0) {
       setAlert({
-        type: 'error',
-        message: t("cart.emptyCart")
+        type: "error",
+        message: t("cart.emptyCart"),
       });
       setTimeout(() => setAlert(null), 3000);
       return;
     }
-    Cookies.set('previousCart', JSON.stringify(products.map(p => ({ 
-      id: p.id, 
-      quantity: p.quantity 
-    }))), { expires: 7 });
-    navigate('/cart/checkout');
+    Cookies.set(
+      "previousCart",
+      JSON.stringify(
+        products.map((p) => ({
+          id: p.id,
+          quantity: p.quantity,
+        }))
+      ),
+      { expires: 7 }
+    );
+    if (authToken) {
+      navigate("/cart/checkout");
+    } else {
+      navigate("/authentication");
+    }
   };
 
   return (
@@ -119,7 +130,9 @@ const Cart: React.FC = () => {
         </div>
       )}
 
-      <div className={`flex flex-col md:flex-row justify-between w-full gap-6 `}>
+      <div
+        className={`flex flex-col md:flex-row justify-between w-full gap-6 `}
+      >
         {/* Cart Items */}
         <div className="md:w-7/12 w- ">
           {products.length > 0 ? (
@@ -128,9 +141,11 @@ const Cart: React.FC = () => {
                 key={`${product.id}-${product.color}-${product.size}`}
                 product={{
                   ...product,
-                  alt: product.alt || product.name
+                  alt: product.alt || product.name,
                 }}
-                onRemove={() => removeProduct(product.id, product.color, product.size)}
+                onRemove={() =>
+                  removeProduct(product.id, product.color, product.size)
+                }
                 onQuantityChange={(quantity) =>
                   updateProductQuantity(product.id, quantity)
                 }
@@ -142,12 +157,11 @@ const Cart: React.FC = () => {
         </div>
 
         {/* Order Summary */}
-        <OrderSummary 
+        <OrderSummary
           products={products}
           showCheckoutButton={true}
           onCheckoutClick={handleCheckoutClick}
         />
-
       </div>
     </div>
   );

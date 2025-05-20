@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import ReactSlider, { ReactSliderProps } from "react-slider";
 import FilterIcon from "@assets/FilterIcon.svg";
 import { IconX } from "@tabler/icons-react";
@@ -34,6 +34,16 @@ const Slider = ReactSlider as unknown as React.FC<
   ReactSliderProps<[number, number]>
 >;
 
+const FALLBACK_KEYS = [
+  "filter.categories.jackets",
+  "filter.categories.coats",
+  "filter.categories.shirts",
+  "filter.categories.accessories",
+  "filter.categories.pants",
+  "filter.categories.shoes",
+  "filter.categories.hats",
+];
+
 const Filter: React.FC<FilterProps> = ({
   onFilterChange,
   onClose,
@@ -46,52 +56,47 @@ const Filter: React.FC<FilterProps> = ({
   const location = useLocation();
 
   // Fallback categories in case no subcategories are provided
-  const fallbackCategories: FilterCategory[] = [
-    { name: t("filter.categories.jackets"), isChecked: false },
-    { name: t("filter.categories.coats"), isChecked: false },
-    { name: t("filter.categories.shirts"), isChecked: false },
-    { name: t("filter.categories.accessories"), isChecked: false },
-    { name: t("filter.categories.pants"), isChecked: false },
-    { name: t("filter.categories.shoes"), isChecked: false },
-    { name: t("filter.categories.hats"), isChecked: false },
-  ];
 
   // Generate categories from subcategories
-  const generateInitialCategories = useCallback((): FilterCategory[] => {
-    if (!subcategories || subcategories.length === 0) {
-      return fallbackCategories;
-    }
-
-    return subcategories.map((category) => ({
-      id: category.categoryID,
-      name: isRTL
-        ? category.nameAr || category.name
-        : category.nameEn || category.name,
+  useEffect(() => {
+    const fallbackCategories: FilterCategory[] = FALLBACK_KEYS.map((key) => ({
+      name: t(key),
       isChecked: false,
     }));
-  }, [subcategories, isRTL, fallbackCategories]);
+
+    const categories = subcategories?.length
+      ? subcategories.map((c) => ({
+          id: c.categoryID,
+          name: isRTL ? c.nameAr ?? c.name : c.nameEn ?? c.name,
+          isChecked: false,
+        }))
+      : fallbackCategories;
+
+    setCategoryItems(categories);
+  }, [subcategories, i18n.language]);
 
   const [categoryItems, setCategoryItems] = useState<FilterCategory[]>([]);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
-  const [isCategoriesCollapsed, setIsCategoriesCollapsed] = useState<boolean>(false);
+  const [isCategoriesCollapsed, setIsCategoriesCollapsed] =
+    useState<boolean>(false);
 
   // Initialize categories when component mounts or when subcategories/language changes
-  useEffect(() => {
-    setCategoryItems(generateInitialCategories());
-  }, [subcategories, mainCategoryId, generateInitialCategories, i18n.language]);
 
-  const handleCategoryClick = (categoryId: number | undefined, categoryName: string) => {
+  const handleCategoryClick = (
+    categoryId: number | undefined,
+    categoryName: string
+  ) => {
     if (!categoryId) return;
-    
+
     // Get current main category name from pathname
-    const pathParts = location.pathname.split('/');
-    const mainCategoryName = pathParts[2] || '';
-    
+    const pathParts = location.pathname.split("/");
+    const mainCategoryName = pathParts[2] || "";
+
     // Navigate to the subcategory
     navigate(`/products/${mainCategoryName}/${categoryName.toLowerCase()}`, {
-      state: { categoryId: categoryId }
+      state: { categoryId: categoryId },
     });
-    
+
     // Close the filter on mobile
     if (onClose) {
       onClose();
@@ -104,7 +109,7 @@ const Filter: React.FC<FilterProps> = ({
     };
 
     onFilterChange(filters);
-    
+
     // Close filter on mobile after applying
     if (onClose) {
       onClose();
@@ -165,11 +170,11 @@ const Filter: React.FC<FilterProps> = ({
                   <div
                     key={`category-${category.id || index}-${mainCategoryId}`}
                     className="flex flex-row items-center justify-between py-2 cursor-pointer hover:bg-wine/10 px-2 rounded transition-colors"
-                    onClick={() => handleCategoryClick(category.id, category.name)}
+                    onClick={() =>
+                      handleCategoryClick(category.id, category.name)
+                    }
                   >
-                    <span
-                      className="font-Poppins text-base text-wine hover:text-wine/80 transition-colors"
-                    >
+                    <span className="font-Poppins text-base text-wine hover:text-wine/80 transition-colors">
                       {category.name}
                     </span>
                     <span className="text-wine">&rsaquo;</span>
