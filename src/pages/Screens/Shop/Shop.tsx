@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useMemo } from "react";
+// src/screens/Shop/Shop.tsx
+import React, { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import {
   fetchCategoryProducts,
   fetchMainCategoryProducts,
 } from "@services/api/fetchCategoryProducts";
 import { fetchCategories } from "@services/api/fetchCategories";
-import { useParams, Navigate, useLocation } from "react-router-dom";
+import { useParams, useLocation, Navigate } from "react-router-dom";
 import { Filter, ProductsDisplay } from "@components/organisms";
 import { Breadcrumb, Loading } from "@components/molecules";
 import FilterIcon from "@assets/FilterIcon.svg";
@@ -13,10 +14,26 @@ import { useTranslation } from "react-i18next";
 import { useLanguage } from "@context/useLanguage";
 import { Category } from "@types";
 
-type ShopParams = {
-  category: string;
-  item?: string;
+const slugify = (t: string) => t.replace(/\s+/g, "-").toLowerCase();
+
+const matchBySlug = (cats: Category[], slug?: string) => {
+  if (!slug) return undefined;
+  const norm = slug.toLowerCase();
+  return (
+    cats.find((c) => c.slug?.toLowerCase() === norm) ??
+    cats.find(
+      (c) =>
+        slugify((c.nameEn || c.name).toLowerCase()) === norm ||
+        slugify((c.nameAr || c.name).toLowerCase()) === norm
+    )
+  );
 };
+
+type ShopParams = { category: string };
+type NavState =
+  | { categoryId?: number; isMainCategory?: boolean }
+  | null
+  | undefined;
 
 type FilterCriteria = {
   size?: string;
@@ -30,117 +47,123 @@ const Shop: React.FC = () => {
   const { language } = useLanguage();
   const isRTL = language === "ar";
 
-  const { category } = useParams<ShopParams>();
+  const { category: categorySlug } = useParams<ShopParams>();
   const location = useLocation();
-  const categoryId = location.state?.categoryId;
+  const navState = location.state as NavState;
+
   const [filterCriteria, setFilterCriteria] = useState<FilterCriteria>({});
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
 
-  const lastSegment = location.pathname.split("/").filter(Boolean).pop();
+  const [categoryId, setCategoryId] = useState<number | null>(null);
+  const [isMainCategory, setIsMainCategory] = useState(false);
+  const [slugChecked, setSlugChecked] = useState(false);
 
-  const { data: allCategories, isLoading: categoriesLoading } = useQuery(
-    ["allCategories"],
-    fetchCategories,
-    { staleTime: 300000 }
-  );
+  const {
+    data: allCats = [],
+    isLoading: catsLoading,
+    error: catsError,
+  } = useQuery<Category[], Error>(["allCategories"], fetchCategories, {
+    staleTime: 5 * 60_000,
+  });
+
+  useEffect(() => {
+    if (allCats.length === 0) return;
+    if (navState?.categoryId) {
+      setCategoryId(navState.categoryId);
+      setIsMainCategory(navState.isMainCategory ?? false);
+      setSlugChecked(true);
+      return;
+    }
+
+    // 2. Fallback: resolve from slug
+    const matched = matchBySlug(allCats, categorySlug);
+    if (matched) {
+      setCategoryId(matched.categoryID);
+      setIsMainCategory(matched.parentCategoryID === null);
+    } else {
+      setCategoryId(null);
+      setIsMainCategory(false);
+    }
+    setSlugChecked(true);
+  }, [allCats, categorySlug, navState]);
 
   const {
     data: products,
-    isLoading: productsLoading,
-    error,
+    isLoading: prodsLoading,
+    error: prodsError,
   } = useQuery(
     ["categoryProducts", categoryId],
-    () => {
-      const isMainCategoryFromHome = location.state?.isMainCategory;
-      return isMainCategoryFromHome
+    () =>
+      isMainCategory && categoryId !== null
         ? fetchMainCategoryProducts(categoryId)
-        : fetchCategoryProducts(categoryId);
-    },
-    { enabled: !!categoryId, staleTime: 300000 }
+        : fetchCategoryProducts(categoryId!),
+    { enabled: categoryId !== null, staleTime: 5 * 60_000 }
   );
 
-  const subcategories = useMemo(() => {
-    if (!allCategories || !categoryId) return [];
-    const currentCategory = allCategories.find(
-      (cat: Category) => cat.categoryID === parseInt(categoryId)
-    );
-    if (currentCategory?.parentCategoryID === null) {
-      return allCategories.filter(
-        (cat: Category) => cat.parentCategoryID === currentCategory.categoryID
-      );
-    } else if (currentCategory?.parentCategoryID) {
-      return allCategories.filter(
-        (cat: Category) =>
-          cat.parentCategoryID === currentCategory.parentCategoryID
-      );
-    }
-    return [];
-  }, [allCategories, categoryId]);
-
-  useEffect(() => {
-    setShowSidebar(isFilterOpen);
-  }, [isFilterOpen]);
+  const subcats = useMemo(() => {
+    if (!allCats || categoryId === null) return [];
+    const current = allCats.find((c) => c.categoryID === categoryId);
+    if (!current) return [];
+    return current.parentCategoryID === null
+      ? allCats.filter((c) => c.parentCategoryID === current.categoryID)
+      : allCats.filter((c) => c.parentCategoryID === current.parentCategoryID);
+  }, [allCats, categoryId]);
 
   const filteredProducts = useMemo(() => {
     if (!products) return [];
-    let filtered = [...products];
-    if (Object.keys(filterCriteria).length > 0) {
-      if (filterCriteria.categories?.length) {
-        filtered = filtered.filter((product) =>
-          filterCriteria.categories?.includes(product.categoryID.toString())
-        );
-      }
-      if (filterCriteria.priceRange) {
-        filtered = filtered.filter(
-          (product) =>
-            Number(product.priceAfterDiscount) >=
-              filterCriteria.priceRange![0] &&
-            Number(product.priceAfterDiscount) <= filterCriteria.priceRange![1]
-        );
-      }
+    let out = [...products];
+
+    if (filterCriteria.categories?.length) {
+      out = out.filter((p) =>
+        filterCriteria.categories!.includes(p.categoryID.toString())
+      );
     }
-    return filtered;
+    if (filterCriteria.priceRange) {
+      const [min, max] = filterCriteria.priceRange;
+      out = out.filter(
+        (p) =>
+          Number(p.priceAfterDiscount) >= min &&
+          Number(p.priceAfterDiscount) <= max
+      );
+    }
+    return out;
   }, [products, filterCriteria]);
 
-  const isLoading = productsLoading || categoriesLoading;
-  if (isLoading) return <Loading />;
-  if (error) return <div>{t("common.errorLoading")}</div>;
-  if (!category) return <Navigate to="/" />;
-
-  const handleFilterChange = (filters: FilterCriteria) =>
-    setFilterCriteria(filters);
-
-  const handleCloseSidebar = () => {
-    setIsFilterOpen(false);
-    setShowSidebar(false);
-  };
-
-  const getCategoryDisplayName = () => {
-    const isMainCategory = location.state?.isMainCategory;
-    if (isMainCategory) {
-      const mainCategoryMap: Record<number, { en: string; ar: string }> = {
+  const displayName = useMemo(() => {
+    if (isMainCategory && categoryId !== null) {
+      const map: Record<number, { en: string; ar: string }> = {
         1: { en: "Men", ar: "رجالي" },
         2: { en: "Women", ar: "حريمي" },
         3: { en: "Kids", ar: "أطفالي" },
       };
-      if (categoryId && mainCategoryMap[categoryId]) {
-        return isRTL
-          ? mainCategoryMap[categoryId].ar
-          : mainCategoryMap[categoryId].en;
-      }
+      if (map[categoryId])
+        return isRTL ? map[categoryId].ar : map[categoryId].en;
     }
-    if (!products || products.length === 0) {
-      return (
-        (lastSegment ?? "").charAt(0).toUpperCase() +
-        (lastSegment ?? "").slice(1)
-      );
+    if (products && products.length > 0) {
+      const { category } = products[0];
+      return isRTL
+        ? category.nameAr || category.name
+        : category.nameEn || category.name;
     }
-    const firstProduct = products[0];
-    return isRTL
-      ? firstProduct.category.nameAr || firstProduct.category.name
-      : firstProduct.category.nameEn || firstProduct.category.name;
-  };
+    return (
+      (categorySlug ?? "").charAt(0).toUpperCase() +
+      (categorySlug ?? "").slice(1)
+    );
+  }, [isMainCategory, categoryId, products, isRTL, categorySlug]);
+
+  /* ───── effects ─────────────────────────────────────────────────── */
+
+  useEffect(() => setShowSidebar(isFilterOpen), [isFilterOpen]);
+  useEffect(() => setSlugChecked(!catsLoading), [categorySlug, catsLoading]);
+
+  /* ───── guards ──────────────────────────────────────────────────── */
+
+  if (catsLoading || prodsLoading || !slugChecked) return <Loading />;
+  if (catsError || prodsError) return <div>{t("common.errorLoading")}</div>;
+  if (slugChecked && categoryId === null) return <Navigate to="/" />;
+
+  /* ───── render ──────────────────────────────────────────────────── */
 
   return (
     <div
@@ -149,7 +172,9 @@ const Shop: React.FC = () => {
       }`}
     >
       <Breadcrumb />
+
       <div className="flex flex-col xl:flex-row xl:items-start items-center">
+        {/* mobile overlay sidebar */}
         {showSidebar && (
           <div className="fixed inset-0 z-50 flex">
             <div
@@ -163,39 +188,42 @@ const Shop: React.FC = () => {
                 isRTL ? "right-0" : "left-0"
               }`}
             >
-              <div className="flex w-full">
-                <Filter
-                  onFilterChange={handleFilterChange}
-                  onClose={handleCloseSidebar}
-                  subcategories={subcategories}
-                  mainCategoryId={parseInt(categoryId)}
-                />
-              </div>
+              <Filter
+                onFilterChange={setFilterCriteria}
+                onClose={() => setIsFilterOpen(false)}
+                subcategories={subcats}
+                mainCategoryId={categoryId!}
+              />
             </div>
             <div
               className="flex-1 bg-black opacity-50"
-              onClick={handleCloseSidebar}
+              onClick={() => setIsFilterOpen(false)}
             />
           </div>
         )}
 
+        {/* desktop sticky sidebar */}
         <div className="laptop:hidden w-full md:w-1/4 p-4 md:sticky md:top-0 md:h-screen md:overflow-y-auto">
           <Filter
-            onFilterChange={handleFilterChange}
-            subcategories={subcategories}
-            mainCategoryId={parseInt(categoryId)}
+            onFilterChange={setFilterCriteria}
+            subcategories={subcats}
+            mainCategoryId={categoryId!}
           />
         </div>
 
+        {/* products */}
         <div className="w-full p-4">
           <p className="kiwi font-playball text-3xl md:text-4xl text-wine text-left mb-4">
-            {getCategoryDisplayName()}
+            {displayName}
           </p>
+
+          {/* filter button (mobile) */}
           <div className="banana laptop:flex hidden justify-start">
             <button onClick={() => setIsFilterOpen(true)}>
               <img src={FilterIcon} alt={t("filter.title")} />
             </button>
           </div>
+
           <ProductsDisplay products={filteredProducts} language={language} />
         </div>
       </div>

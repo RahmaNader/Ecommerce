@@ -24,8 +24,8 @@ export type LoginFormInputs = {
 //   productPrice: number;
 //   averageRate?: number;
 //   productDescription?: string;
-//   color?: string[]; 
-//   size?: string[];   
+//   color?: string[];
+//   size?: string[];
 //   availableQuantity?: number;
 //   category?: string;
 //   collection?: string;
@@ -45,8 +45,8 @@ export interface AddressProps {
   city: string;
   additionalDirections?: string;
   saveAddress: boolean;
-   shippingAddressId: string;
-};
+  shippingAddressId: string;
+}
 ////////////////////////////////////////////////////
 
 export interface ProductImage {
@@ -54,7 +54,6 @@ export interface ProductImage {
   imageUrl: string;
   altText: string;
 }
-
 
 export interface Review {
   reviewId: number;
@@ -96,7 +95,8 @@ export interface Category {
   nameAr: string;
   nameEn: string;
   parentCategoryID?: number | null;
-  createdAt: string; 
+  createdAt: string;
+  slug?: string;
 }
 
 export interface CardComponent {
@@ -124,8 +124,6 @@ export interface CardComponent {
   currentLanguage?: string; // Add this line
 }
 
-
-
 ////////////////////////////////////////////////////
 // Update your Product interface
 export interface Product {
@@ -149,7 +147,7 @@ export interface Product {
   // Include any other properties that might be in your cart items
 }
 
-export type CouponStatus = 'none' | 'success' | 'already_applied' | 'invalid';
+export type CouponStatus = "none" | "success" | "already_applied" | "invalid";
 
 export interface OrderSummaryData {
   total: number;
@@ -173,7 +171,7 @@ export interface OrderSummaryProps {
   selectedAddress?: AddressProps | null;
   selectedShippingMethod?: string;
   isArabic?: boolean;
-  isPlacingOrder?: boolean; 
+  isPlacingOrder?: boolean;
   orderError?: string | null;
 }
 
@@ -181,14 +179,14 @@ export type RatingDistributionItem = {
   rating: number;
   percentage: string;
   color: string;
-}
+};
 
-export type ReviewCardProps =  {
+export type ReviewCardProps = {
   reviewerName: string;
   datePosted: string;
   reviewText: string;
   rating: number;
-}
+};
 
 export type ProductsViewProps = {
   sectionName: string;
@@ -199,26 +197,33 @@ export type categoryProps = {
   SectionName: string;
 };
 
-export type CustomRatingProps  = {
+export type CustomRatingProps = {
   rate: number;
-  mode: 'show' | 'hide';
-}
-
-export type ProductCountProps = {
-  initialCount?: number; 
-  onCountChange?: (count: number) => void; 
+  mode: "show" | "hide";
 };
 
+export type ProductCountProps = {
+  initialCount?: number;
+  onCountChange?: (count: number) => void;
+};
 
-export type FilterCategory  = {
+export type FilterCategory = {
   name: string;
   isChecked: boolean;
-}
+};
 
 export type NavLinkProps = {
   label: string | JSX.Element;
   to?: string;
-  variant: "navbar" | "footer" | "navbaricons" | "subnavbar" | "breadcrumb" | "sidebar" | "sidenavbar" | "sidenavbarsub";
+  variant:
+    | "navbar"
+    | "footer"
+    | "navbaricons"
+    | "subnavbar"
+    | "breadcrumb"
+    | "sidebar"
+    | "sidenavbar"
+    | "sidenavbarsub";
   state?: { categoryId: number };
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
@@ -234,7 +239,7 @@ export type PersonalData = {
   phoneNumber: string;
   address: string;
   email: string;
-  password:string;
+  password: string;
 };
 
 export interface PasswordResetData {
@@ -247,19 +252,19 @@ export type CreditCard = {
   nameOnCard: string;
   expiry: string;
   CVV: string;
-}
+};
 
 export type Order = {
   orderNumber: string;
   total: string;
   date: string;
   status: string;
-}
+};
 
 export type User = {
   username: string;
-  token:string;
-}
+  token: string;
+};
 
 export interface OrderItem {
   $id?: string;
