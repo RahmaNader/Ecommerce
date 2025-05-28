@@ -51,7 +51,7 @@ export const ProductCard: FC<ProductCardProps> = (props) => {
         <button
           onClick={logic.handleAddToCartIconClick}
           aria-label={logic.t("card.addToCart")}
-          className={`absolute -bottom-6 right-6 w-12 h-12 rounded-full flex items-center justify-center shadow-md transition-transform duration-150 hover:scale-105 ${
+          className={`absolute -bottom-4 right-6 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-transform duration-150 hover:scale-105 ${
             logic.isInCart ? "bg-ForthColor" : "bg-wine"
           }`}
         >
@@ -66,11 +66,9 @@ export const ProductCard: FC<ProductCardProps> = (props) => {
         <h3 className="font-playfair font-medium text-xl truncate">
           {logic.displayName}
         </h3>
-
         <p className="font-playfair font-semibold text-2xl text-ForthColor">
           {logic.t("card.priceInCurrency", { price: logic.priceAfterDiscount })}
         </p>
-
         <p className="font-playfair font-medium text-lg line-through text-FifthColor">
           {logic.t("card.priceInCurrency", { price: props.productPrice })}
         </p>

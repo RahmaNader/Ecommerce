@@ -6,10 +6,13 @@ import { useTranslation } from "react-i18next";
 
 type ProductsDisplayProps = {
   products: CardComponent[];
-  language: string; 
+  language: string;
 };
 
-const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products, language }) => {
+const ProductsDisplay: React.FC<ProductsDisplayProps> = ({
+  products,
+  language,
+}) => {
   const isRTL = language === "ar";
   const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(1);
@@ -43,42 +46,39 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products, language })
   const totalPages = Math.ceil(products.length / cardsPerPage);
 
   const getPageNumbers = () => {
-    const pageNumbers = [];
+    const pageNumbers: (number | "left" | "right")[] = [];
     if (totalPages <= maxPageButtons) {
-      for (let i = 1; i <= totalPages; i++) {
-        pageNumbers.push(i);
-      }
+      for (let i = 1; i <= totalPages; i++) pageNumbers.push(i);
     } else if (currentPage <= maxPageButtons - 1) {
-      for (let i = 1; i <= maxPageButtons; i++) {
-        pageNumbers.push(i);
-      }
+      for (let i = 1; i <= maxPageButtons; i++) pageNumbers.push(i);
       pageNumbers.push("right");
     } else if (currentPage > totalPages - maxPageButtons + 1) {
       pageNumbers.push("left");
-      for (let i = totalPages - maxPageButtons + 1; i <= totalPages; i++) {
+      for (let i = totalPages - maxPageButtons + 1; i <= totalPages; i++)
         pageNumbers.push(i);
-      }
     } else {
       pageNumbers.push("left");
-      for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+      for (let i = currentPage - 1; i <= currentPage + 1; i++)
         pageNumbers.push(i);
-      }
       pageNumbers.push("right");
     }
     return pageNumbers;
   };
 
   return (
-    <div className="flex flex-col items-center w-full">
-      {/* Products Grid - Using the same styling as ProductsGrid */}
-      <div className="w-[90%] mx-auto px-4 md:px-16">
-        <section
-          className="grid auto-rows-[1fr] gap-y-8 gap-x-4 md:gap-x-10 justify-evenly"
-          style={{ gridTemplateColumns: "repeat(auto-fit, minmax(150px, 225px))" }}
-        >
-          {currentCards.map((card) => (
+    <div className="w-full">
+      <section
+        className="
+    grid auto-rows-[1fr] gap-y-8 gap-x-4 md:gap-x-10
+    grid-cols-2      
+    sm:grid-cols-3      
+    lg:grid-cols-4  
+    justify-items-center
+  "
+      >
+        {currentCards.map((card) => (
+          <div key={card.productID} className="max-w-[225px] w-full">
             <ProductCard
-              key={card.productID}
               productID={card.productID}
               name={card.name}
               nameEn={card.nameEn}
@@ -90,13 +90,12 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products, language })
               productImages={card.productImages}
               averageRate={card.averageRate}
             />
-          ))}
-        </section>
-      </div>
+          </div>
+        ))}
+      </section>
 
-      {/* Pagination with RTL support */}
       {products.length > cardsPerPage && (
-        <div className={`mt-8 flex items-center w-full justify-between md:px-10`}>
+        <div className="mt-8 flex items-center w-full justify-between md:px-10">
           <Button
             label={t("pagination.previous")}
             onClick={handlePrevious}
@@ -104,8 +103,7 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products, language })
             isDisabled={currentPage === 1}
             className="flex items-center justify-center leading-none"
           />
-
-          <div className={`flex gap-2`}>
+          <div className="flex gap-2">
             {getPageNumbers().map((item, index) =>
               typeof item === "number" ? (
                 <button
@@ -122,14 +120,19 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({ products, language })
               ) : (
                 <span
                   key={`ellipsis-${item}-${index}`}
-                  className={`rounded-full flex items-center justify-center border-wine border text-wine w-6 h-6 text-xs md:w-10 md:h-10 md:text-base`}
+                  className="rounded-full flex items-center justify-center border-wine border text-wine w-6 h-6 text-xs md:w-10 md:h-10 md:text-base"
                 >
-                  {item === "left" ? (isRTL ? ">>" : "<<") : (isRTL ? "<<" : ">>")}
+                  {item === "left"
+                    ? isRTL
+                      ? ">>"
+                      : "<<"
+                    : isRTL
+                    ? "<<"
+                    : ">>"}
                 </span>
               )
             )}
           </div>
-
           <Button
             label={t("pagination.next")}
             type="Pagination"

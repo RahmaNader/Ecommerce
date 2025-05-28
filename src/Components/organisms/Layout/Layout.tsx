@@ -2,6 +2,7 @@ import React from "react";
 import { Navbar } from "@components/organisms";
 import { Outlet, useLocation } from "react-router-dom";
 import { Footer } from "@components/molecules";
+import ScrollToTop from "@utils/ScrollToTop";
 
 const Layout: React.FC = () => {
   const location = useLocation();
@@ -10,6 +11,7 @@ const Layout: React.FC = () => {
   return (
     <>
       <Navbar />
+      <ScrollToTop />
       <Outlet />
       {!isSearchPage && <Footer />}
     </>

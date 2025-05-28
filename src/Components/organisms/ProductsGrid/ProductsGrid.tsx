@@ -13,28 +13,32 @@ export const ProductsGrid: FC<ProductsGridProps> = ({
   products,
   sectionName,
 }) => (
-  <div className="w-[90%] mx-auto px-16">
-    {/* ---- optional heading, remove if you don’t need it here ---- */}
+  <div className="w-full">
     {sectionName && <Category SectionName={sectionName} />}
 
     <section
-      className="grid auto-rows-[1fr] gap-y-8 gap-x-10 justify-center"
-      style={{ gridTemplateColumns: "repeat(auto-fit, 225px)" }}
+      className="
+  grid auto-rows-[1fr] gap-y-8 gap-x-4 md:gap-x-10 justify-center
+  grid-cols-2
+  sm:[grid-template-columns:repeat(auto-fit,minmax(180px,225px))]
+"
     >
       {products.map((p) => (
-        <ProductCard
-          key={p.productID}
-          productID={p.productID}
-          name={p.name}
-          nameEn={p.nameEn}
-          nameAr={p.nameAr}
-          productPrice={p.productPrice}
-          priceAfterDiscount={p.priceAfterDiscount}
-          discountPercent={p.discountPercent}
-          productVarients={p.productVarients}
-          productImages={p.productImages}
-          averageRate={p.averageRate}
-        />
+        <div key={p.productID} className="max-w-[225px] w-full">
+          <ProductCard
+            key={p.productID}
+            productID={p.productID}
+            name={p.name}
+            nameEn={p.nameEn}
+            nameAr={p.nameAr}
+            productPrice={p.productPrice}
+            priceAfterDiscount={p.priceAfterDiscount}
+            discountPercent={p.discountPercent}
+            productVarients={p.productVarients}
+            productImages={p.productImages}
+            averageRate={p.averageRate}
+          />
+        </div>
       ))}
     </section>
   </div>
