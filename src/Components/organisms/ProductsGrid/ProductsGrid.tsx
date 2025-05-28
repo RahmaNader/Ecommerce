@@ -18,7 +18,7 @@ export const ProductsGrid: FC<ProductsGridProps> = ({
 
     <section
       className="
-  grid auto-rows-[1fr] gap-y-8 gap-x-4 md:gap-x-10 justify-center
+  grid auto-rows-[1fr] gap-y-2 gap-x-4 md:gap-x-10 justify-center
   grid-cols-2
   sm:[grid-template-columns:repeat(auto-fit,minmax(180px,225px))]
 "

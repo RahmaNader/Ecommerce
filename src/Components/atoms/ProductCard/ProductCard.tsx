@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { SuccessAlert, CustomRating } from "@components/atoms";
+import { SuccessAlert } from "@components/atoms";
 import shoppingCart from "@assets/shoppingCart.svg";
 import { ProductPreference } from "@components/molecules";
 import {
@@ -62,7 +62,7 @@ export const ProductCard: FC<ProductCardProps> = (props) => {
           />
         </button>
       </div>
-      <div className="flex flex-col flex-1 pt-8 gap-2">
+      <div className="flex flex-col flex-1 pt-4">
         <h3 className="font-playfair font-medium text-xl truncate">
           {logic.displayName}
         </h3>
@@ -70,12 +70,18 @@ export const ProductCard: FC<ProductCardProps> = (props) => {
           {logic.t("card.priceInCurrency", { price: logic.priceAfterDiscount })}
         </p>
         <p className="font-playfair font-medium text-lg line-through text-FifthColor">
-          {logic.t("card.priceInCurrency", { price: props.productPrice })}
+          {logic.priceAfterDiscount === props.productPrice && (
+            <>
+              {logic.t("card.priceInCurrency", {
+                price: props.productPrice,
+              })}
+            </>
+          )}
         </p>
       </div>
-      <div className="flex justify-center mt-2">
+      {/* <div className="flex justify-center mt-2">
         <CustomRating rate={props.averageRate ?? 0} mode="hide" />
-      </div>
+      </div> */}
     </article>
   );
 };

@@ -69,7 +69,7 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({
     <div className="w-full">
       <section
         className="
-    grid auto-rows-[1fr] gap-y-8 gap-x-4 md:gap-x-10
+    grid auto-rows-[1fr] gap-y-2 gap-x-4 md:gap-x-10
     grid-cols-2      
     sm:grid-cols-3      
     lg:grid-cols-4  
