@@ -4,7 +4,7 @@ import { CardComponent } from "@types";
 
 type ProductsDisplayProps = {
   products: CardComponent[];
-  // language: string;
+  language?: string;
 };
 
 const ProductsDisplay: React.FC<ProductsDisplayProps> = ({

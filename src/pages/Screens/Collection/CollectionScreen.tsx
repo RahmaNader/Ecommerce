@@ -29,7 +29,10 @@ const CollectionScreen: React.FC = () => {
         const data = await fetchCollection(collectionType);
         setProducts(data);
       } catch (err) {
-        console.error(`[CollectionScreen] Error fetching ${collectionType}:`, err);
+        console.error(
+          `[CollectionScreen] Error fetching ${collectionType}:`,
+          err
+        );
         setError(t("collection.errorLoading"));
       } finally {
         setIsLoading(false);
@@ -56,17 +59,18 @@ const CollectionScreen: React.FC = () => {
   if (error) return <div className="text-center text-wine my-8">{error}</div>;
 
   return (
-    <div className={`bg-customBeige min-h-screen p-2 md:p-10 ${isRTL ? 'rtl' : 'ltr'}`}>
+    <div
+      className={`bg-customBeige min-h-screen p-2 md:p-10 ${
+        isRTL ? "rtl" : "ltr"
+      }`}
+    >
       <Breadcrumb />
-      
+
       <Category SectionName={getCollectionTitle()} mdMyValue={"mt-2"} />
 
       <div className="mt-8">
         {products.length > 0 ? (
-          <ProductsDisplay 
-            products={products}
-            language={language} 
-          />
+          <ProductsDisplay products={products} />
         ) : (
           <p className="text-center text-lg text-gray-500">
             {t("collection.noProducts")}
