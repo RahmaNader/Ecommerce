@@ -19,9 +19,12 @@ const resources = {
           "Find Your Perfect Blend of Our Traditional and Modern Fashion.",
         slide2: "Unite Timeless Traditions with Fresh, Modern Styles Today.",
         slide3: "Uncover the Perfect Balance of Tradition and Trendy Pieces.",
-        description1: "Discover our latest collection of premium pieces designed for the modern woman who appreciates tradition.",
-        description2: "Elegant designs crafted with attention to detail and high-quality materials for every occasion.",
-        description3: "Special offers on seasonal favorites. Limited time only on our most popular traditional pieces.",
+        description1:
+          "Discover our latest collection of premium pieces designed for the modern woman who appreciates tradition.",
+        description2:
+          "Elegant designs crafted with attention to detail and high-quality materials for every occasion.",
+        description3:
+          "Special offers on seasonal favorites. Limited time only on our most popular traditional pieces.",
         viewCollection: "View Collection",
       },
       home: {
@@ -119,6 +122,7 @@ const resources = {
         },
         priceRange: "Price Range",
         apply: "Apply Filters",
+        clear: "Clear Filters",
       },
       pagination: {
         previous: "Previous",
@@ -171,7 +175,8 @@ const resources = {
         resetPasswordSuccess: "Password reset link sent successfully",
         resetPasswordFailed: "Failed to send password reset link",
         forgotPasswordTitle: "Forgot Password?",
-        forgotPasswordInstructions: "Enter your email address to receive a password reset link.",
+        forgotPasswordInstructions:
+          "Enter your email address to receive a password reset link.",
         enterEmail: "Enter your email",
         sendResetLink: "Send Reset Link",
         backToLogin: "Back to Login",
@@ -280,7 +285,7 @@ const resources = {
         total: "Total",
         checkout: "Proceed to Checkout",
       },
-      
+
       cartProduct: {
         color: "Color",
         size: "Size",
@@ -341,7 +346,7 @@ const resources = {
           numberInvalid: "This field must be a valid number.",
           streetInvalid: "Enter Valid street address",
           phoneInvalid: "Enter a valid phone number",
-          cityRequired: "Please select a city."
+          cityRequired: "Please select a city.",
         },
       },
       shipping: {
@@ -359,7 +364,7 @@ const resources = {
         confirm: "Confirm",
         selectionRequired: "Please select a color, size, and quantity!",
         noSizesAvailable: "No sizes available for this color",
-        unknown: "Unknown"
+        unknown: "Unknown",
       },
       collection: {
         newArrivals: "New Arrivals",
@@ -367,20 +372,21 @@ const resources = {
         highestDiscounts: "Highest Discounts",
         products: "Products",
         errorLoading: "Failed to load products. Please try again.",
-        noProducts: "No products found in this collection."
+        noProducts: "No products found in this collection.",
       },
       orderConfirmation: {
         title: "Order Confirmed",
-        message: "Your order has been confirmed, please wait and track your order",
+        message:
+          "Your order has been confirmed, please wait and track your order",
         trackOrder: "Track Order",
-        goHome: "Go to Home"
+        goHome: "Go to Home",
       },
       common: {
         currency: "EGP",
         processing: "Processing...",
         yes: "Yes",
         no: "No",
-        cancel: "Cancel"
+        cancel: "Cancel",
       },
       orders: {
         orderHistory: "Order History",
@@ -400,7 +406,7 @@ const resources = {
         status_delivered: "Delivered",
         status_confirmed: "Confirmed",
         status_pre_production: "Pre-Production",
-        status_in_production: "In Production", 
+        status_in_production: "In Production",
         status_out_for_delivery: "Out For Delivery",
       },
       card: {
@@ -409,7 +415,7 @@ const resources = {
         productImage: "Product Image",
         priceInCurrency: "{{price}} EGP",
         shopNow: "Shop Now",
-        viewDetails: "View Details"
+        viewDetails: "View Details",
       },
       paymentCreditCard: {
         title: "Payment & Credit Card",
@@ -417,7 +423,7 @@ const resources = {
         addNewCard: "Add new card",
         masterCardLogoAlt: "MasterCard Logo",
         visaLogoAlt: "Visa Logo",
-        confirm: "Confirm"
+        confirm: "Confirm",
       },
       addCreditCardModal: {
         title: "Add your payment method",
@@ -431,7 +437,7 @@ const resources = {
         cvv: "CVV",
         cancel: "Cancel",
         confirm: "Confirm",
-        fillAllFields: "Please fill out all fields"
+        fillAllFields: "Please fill out all fields",
       },
       verification: {
         title: "Verification",
@@ -440,28 +446,29 @@ const resources = {
         uploadID: {
           title: "ID Card",
           instructions: "Attach a clear photo of the front and back of the ID",
-          altText: "ID Upload Area"
+          altText: "ID Upload Area",
         },
         reviewUpload: {
           checkInfo: "Please check if your ID information is clear and visible",
           delete: "Delete",
           submit: "Submit",
-          altText: "ID Preview"
+          altText: "ID Preview",
         },
         pendingVerification: {
           status: "Pending",
-          message: "Your request has been successfully processed and will be responded to within two business days.",
-          altText: "Pending ID Verification"
+          message:
+            "Your request has been successfully processed and will be responded to within two business days.",
+          altText: "Pending ID Verification",
         },
         verificationSuccess: {
           message: "Your verification was successful!",
-          altText: "Successfully Verified ID"
+          altText: "Successfully Verified ID",
         },
         verificationFailed: {
           message: "Your verification failed",
           tryAgain: "Try Again",
-          altText: "Failed Verification ID"
-        }
+          altText: "Failed Verification ID",
+        },
       },
       orderDetails: {
         title: "Order Details",
@@ -492,9 +499,11 @@ const resources = {
         cancelled: "Order Cancelled",
         cancelError: "Failed to cancel order. Please try again.",
         confirmCancelTitle: "Cancel Order?",
-        confirmCancelMessage: "Are you sure you want to cancel this order? This action cannot be undone.",
+        confirmCancelMessage:
+          "Are you sure you want to cancel this order? This action cannot be undone.",
         cancelledTitle: "Order Cancelled",
-        cancelledDescription: "This order has been cancelled and will not be processed further.",
+        cancelledDescription:
+          "This order has been cancelled and will not be processed further.",
         steps: {
           confirmed: "Order Confirmed",
           preProduction: "Pre-Production",
@@ -502,18 +511,19 @@ const resources = {
           shipped: "Shipped",
           outForDelivery: "Out For Delivery",
           delivered: "Delivered",
-          cancelled: "Order Cancelled" // Add this new key for cancelled step
+          cancelled: "Order Cancelled", // Add this new key for cancelled step
         },
         refund: "Request Refund",
         refundTitle: "Request a Refund",
-        refundInstructions: "Select the items you'd like to refund. You can choose to refund all or part of your order.",
+        refundInstructions:
+          "Select the items you'd like to refund. You can choose to refund all or part of your order.",
         refundSuccess: "Refund Requested Successfully",
         refundError: "Failed to process refund. Please try again.",
         quantity: "Quantity",
         selectItemsToRefund: "Please select at least one item to refund",
         submitRefund: "Submit Refund Request",
         fullyRefunded: "Fully Refunded",
-        partiallyRefunded: "{{count}} already refunded", 
+        partiallyRefunded: "{{count}} already refunded",
         noRefundableItems: "No items available for refund",
       },
       search: {
@@ -536,20 +546,20 @@ const resources = {
         popular: {
           jacket: "Jacket",
           shirt: "Shirt",
-          dress: "Dress", 
+          dress: "Dress",
           pants: "Pants",
-          shoes: "Shoes"
+          shoes: "Shoes",
         },
         breadcrumb_searchLink: "Search",
-        breadcrumb_searchResultsPage: "Search Results"
+        breadcrumb_searchResultsPage: "Search Results",
       },
       payment: {
         cashOnDelivery: "Cash on Delivery",
         creditCard: "Credit Card",
         savedCards: "Saved Cards",
         addCard: "Add Card",
-        addNewCard: "Add New Card"
-      }
+        addNewCard: "Add New Card",
+      },
     },
   },
   ar: {
@@ -568,9 +578,12 @@ const resources = {
         slide1: "اكتشف المزيج المثالي بين أزيائنا التقليدية والحديثة.",
         slide2: "اجمع بين التقاليد العريقة والأساليب العصرية الجديدة اليوم.",
         slide3: "اكتشف التوازن المثالي بين الأناقة التقليدية والقطع العصرية.",
-        description1: "اكتشفي مجموعتنا الأحدث من القطع الفاخرة المصممة للمرأة العصرية التي تقدر التقاليد.",
-        description2: "تصاميم أنيقة مصنوعة بعناية فائقة ومواد عالية الجودة لكل مناسبة.",
-        description3: "عروض خاصة على المفضلات الموسمية. لفترة محدودة فقط على أكثر قطعنا التقليدية شعبية.",
+        description1:
+          "اكتشفي مجموعتنا الأحدث من القطع الفاخرة المصممة للمرأة العصرية التي تقدر التقاليد.",
+        description2:
+          "تصاميم أنيقة مصنوعة بعناية فائقة ومواد عالية الجودة لكل مناسبة.",
+        description3:
+          "عروض خاصة على المفضلات الموسمية. لفترة محدودة فقط على أكثر قطعنا التقليدية شعبية.",
         viewCollection: "عرض المجموعة",
       },
       home: {
@@ -668,6 +681,7 @@ const resources = {
           accessories: "الإكسسوارات",
         },
         apply: "تطبيق التصفية",
+        clear: "مسح التصفية",
       },
       pagination: {
         previous: "السابق",
@@ -715,15 +729,17 @@ const resources = {
         orSignUpWith: "أو إنشاء حساب عبر",
         signUpWithGoogle: "التسجيل عبر جوجل",
         haveAccount: "لديك حساب بالفعل؟",
-        registersuccess:"تم إنشاء الحساب بنجاح",
+        registersuccess: "تم إنشاء الحساب بنجاح",
         resetPasswordSuccess: "تم إرسال رابط إعادة تعيين كلمة المرور بنجاح",
         resetPasswordFailed: "فشل في إرسال رابط إعادة تعيين كلمة المرور",
         forgotPasswordTitle: "نسيت كلمة المرور؟",
-        forgotPasswordInstructions: "أدخل عنوان بريدك الإلكتروني لتلقي رابط إعادة تعيين كلمة المرور.",
+        forgotPasswordInstructions:
+          "أدخل عنوان بريدك الإلكتروني لتلقي رابط إعادة تعيين كلمة المرور.",
         enterEmail: "أدخل بريدك الإلكتروني",
         sendResetLink: "إرسال رابط إعادة التعيين",
         backToLogin: "العودة إلى تسجيل الدخول",
-        googleSignUpFailed: "فشل التسجيل باستخدام جوجل. يرجى المحاولة مرة أخرى.",
+        googleSignUpFailed:
+          "فشل التسجيل باستخدام جوجل. يرجى المحاولة مرة أخرى.",
         successGoogleSignUp: "تم التسجيل بنجاح باستخدام جوجل!",
       },
       profile: {
@@ -828,7 +844,7 @@ const resources = {
         total: "المجموع",
         checkout: "متابعة الدفع",
       },
-      
+
       cartProduct: {
         color: "اللون",
         size: "المقاس",
@@ -889,8 +905,8 @@ const resources = {
           numberInvalid: "يجب أن يكون هذا الحقل رقمًا صالحًا",
           streetInvalid: "أدخل عنوان شارع صالح",
           phoneInvalid: "أدخل رقم هاتف صالح",
-          cityRequired: "الرجاء اختيار مدينة"
-        }
+          cityRequired: "الرجاء اختيار مدينة",
+        },
       },
       shipping: {
         title: "طريقة الشحن",
@@ -907,7 +923,7 @@ const resources = {
         confirm: "تأكيد",
         selectionRequired: "الرجاء اختيار اللون والمقاس والكمية!",
         noSizesAvailable: "لا توجد مقاسات متاحة لهذا اللون",
-        unknown: "غير معروف"
+        unknown: "غير معروف",
       },
       collection: {
         newArrivals: "وصل حديثاً",
@@ -915,20 +931,20 @@ const resources = {
         highestDiscount: "أعلى الخصومات",
         products: "المنتجات",
         errorLoading: "فشل في تحميل المنتجات. يرجى المحاولة مرة أخرى.",
-        noProducts: "لم يتم العثور على منتجات في هذه المجموعة."
+        noProducts: "لم يتم العثور على منتجات في هذه المجموعة.",
       },
       orderConfirmation: {
         title: "تم تأكيد الطلب",
         message: "تم تأكيد طلبك، يرجى الانتظار وتتبع طلبك",
         trackOrder: "تتبع الطلب",
-        goHome: "الذهاب إلى الرئيسية"
+        goHome: "الذهاب إلى الرئيسية",
       },
       common: {
         currency: "جنيه",
         processing: "جارٍ المعالجة...",
         yes: "نعم",
         no: "لا",
-        cancel: "إلغاء"
+        cancel: "إلغاء",
       },
       orders: {
         orderHistory: "سجل الطلبات",
@@ -957,7 +973,7 @@ const resources = {
         productImage: "صورة المنتج",
         priceInCurrency: "{{price}} ج.م",
         shopNow: "تسوق الآن",
-        viewDetails: "عرض التفاصيل"
+        viewDetails: "عرض التفاصيل",
       },
       paymentCreditCard: {
         title: "الدفع وبطاقة الائتمان",
@@ -965,7 +981,7 @@ const resources = {
         addNewCard: "إضافة بطاقة جديدة",
         masterCardLogoAlt: "شعار ماستر كارد",
         visaLogoAlt: "شعار فيزا",
-        confirm: "تأكيد"
+        confirm: "تأكيد",
       },
       addCreditCardModal: {
         title: "إضافة طريقة الدفع",
@@ -979,7 +995,7 @@ const resources = {
         cvv: "رمز التحقق CVV",
         cancel: "إلغاء",
         confirm: "تأكيد",
-        fillAllFields: "يرجى ملء جميع الحقول"
+        fillAllFields: "يرجى ملء جميع الحقول",
       },
       verification: {
         title: "التحقق",
@@ -988,28 +1004,28 @@ const resources = {
         uploadID: {
           title: "بطاقة الهوية",
           instructions: "قم بإرفاق صورة واضحة للوجه الأمامي والخلفي للبطاقة",
-          altText: "منطقة تحميل الهوية"
+          altText: "منطقة تحميل الهوية",
         },
         reviewUpload: {
           checkInfo: "يرجى التحقق من وضوح ورؤية معلومات الهوية الخاصة بك",
           delete: "حذف",
           submit: "إرسال",
-          altText: "معاينة الهوية"
+          altText: "معاينة الهوية",
         },
         pendingVerification: {
           status: "قيد الانتظار",
           message: "تمت معالجة طلبك بنجاح وسيتم الرد عليه في غضون يومي عمل.",
-          altText: "التحقق من الهوية قيد الانتظار"
+          altText: "التحقق من الهوية قيد الانتظار",
         },
         verificationSuccess: {
           message: "تم التحقق بنجاح!",
-          altText: "تم التحقق من الهوية بنجاح"
+          altText: "تم التحقق من الهوية بنجاح",
         },
         verificationFailed: {
           message: "فشل التحقق من الهوية",
           tryAgain: "حاول مرة أخرى",
-          altText: "فشل التحقق من الهوية"
-        }
+          altText: "فشل التحقق من الهوية",
+        },
       },
       orderDetails: {
         title: "تفاصيل الطلب",
@@ -1040,7 +1056,8 @@ const resources = {
         cancelled: "تم إلغاء الطلب",
         cancelError: "فشل إلغاء الطلب. يرجى المحاولة مرة أخرى.",
         confirmCancelTitle: "إلغاء الطلب؟",
-        confirmCancelMessage: "هل أنت متأكد من رغبتك في إلغاء هذا الطلب؟ لا يمكن التراجع عن هذا الإجراء.",
+        confirmCancelMessage:
+          "هل أنت متأكد من رغبتك في إلغاء هذا الطلب؟ لا يمكن التراجع عن هذا الإجراء.",
         cancelledTitle: "تم إلغاء الطلب",
         cancelledDescription: "تم إلغاء هذا الطلب ولن تتم متابعة معالجته.",
         steps: {
@@ -1050,11 +1067,12 @@ const resources = {
           shipped: "تم الشحن",
           outForDelivery: "خارج للتسليم",
           delivered: "تم التسليم",
-          cancelled: "تم إلغاء الطلب" // Add this new key for cancelled step
+          cancelled: "تم إلغاء الطلب", // Add this new key for cancelled step
         },
         refund: "طلب استرداد",
         refundTitle: "طلب استرداد الأموال",
-        refundInstructions: "اختر العناصر التي ترغب في استردادها. يمكنك اختيار استرداد كل طلبك أو جزء منه.",
+        refundInstructions:
+          "اختر العناصر التي ترغب في استردادها. يمكنك اختيار استرداد كل طلبك أو جزء منه.",
         refundSuccess: "تم طلب الاسترداد بنجاح",
         refundError: "فشل في معالجة الاسترداد. يرجى المحاولة مرة أخرى.",
         quantity: "الكمية",
@@ -1084,20 +1102,20 @@ const resources = {
         popular: {
           jacket: "جاكت",
           shirt: "قميص",
-          dress: "فستان", 
+          dress: "فستان",
           pants: "بنطلون",
-          shoes: "حذاء"
+          shoes: "حذاء",
         },
         breadcrumb_searchLink: "بحث",
-        breadcrumb_searchResultsPage: "نتائج البحث"
+        breadcrumb_searchResultsPage: "نتائج البحث",
       },
       payment: {
         cashOnDelivery: "الدفع عند الاستلام",
         creditCard: "بطاقة الائتمان",
         savedCards: "البطاقات المحفوظة",
         addCard: "إضافة بطاقة",
-        addNewCard: "إضافة بطاقة جديدة"
-      }
+        addNewCard: "إضافة بطاقة جديدة",
+      },
     },
   },
 };

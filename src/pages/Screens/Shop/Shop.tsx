@@ -1,14 +1,10 @@
-// src/screens/Shop/Shop.tsx
 import React, { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
-import {
-  fetchCategoryProducts,
-  fetchMainCategoryProducts,
-} from "@services/api/fetchCategoryProducts";
+import { fetchFilteredProducts } from "@services/api/fetchFilteredProducts";
 import { fetchCategories } from "@services/api/fetchCategories";
 import { useParams, useLocation, Navigate } from "react-router-dom";
 import { Filter, ProductsDisplay } from "@components/organisms";
-import { Breadcrumb, Loading } from "@components/molecules";
+import { Breadcrumb, LoadingSkeleton } from "@components/molecules";
 import FilterIcon from "@assets/FilterIcon.svg";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@context/useLanguage";
@@ -54,10 +50,16 @@ const Shop: React.FC = () => {
   const [filterCriteria, setFilterCriteria] = useState<FilterCriteria>({});
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
+  const [pageNumber, setPageNumber] = useState(1);
+  const pageSize = 12;
 
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [isMainCategory, setIsMainCategory] = useState(false);
   const [slugChecked, setSlugChecked] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [pageNumber]);
 
   const {
     data: allCats = [],
@@ -76,7 +78,6 @@ const Shop: React.FC = () => {
       return;
     }
 
-    // 2. Fallback: resolve from slug
     const matched = matchBySlug(allCats, categorySlug);
     if (matched) {
       setCategoryId(matched.categoryID);
@@ -88,18 +89,9 @@ const Shop: React.FC = () => {
     setSlugChecked(true);
   }, [allCats, categorySlug, navState]);
 
-  const {
-    data: products,
-    isLoading: prodsLoading,
-    error: prodsError,
-  } = useQuery(
-    ["categoryProducts", categoryId],
-    () =>
-      isMainCategory && categoryId !== null
-        ? fetchMainCategoryProducts(categoryId)
-        : fetchCategoryProducts(categoryId!),
-    { enabled: categoryId !== null, staleTime: 5 * 60_000 }
-  );
+  useEffect(() => {
+    setShowSidebar(isFilterOpen);
+  }, [isFilterOpen]);
 
   const subcats = useMemo(() => {
     if (!allCats || categoryId === null) return [];
@@ -110,25 +102,50 @@ const Shop: React.FC = () => {
       : allCats.filter((c) => c.parentCategoryID === current.parentCategoryID);
   }, [allCats, categoryId]);
 
-  const filteredProducts = useMemo(() => {
-    if (!products) return [];
-    let out = [...products];
+  const {
+    data: productsData,
+    isLoading: prodsLoading,
+    // isFetching,
+    error: prodsError,
+  } = useQuery(
+    ["categoryProducts", categoryId, filterCriteria, pageNumber, language],
+    () =>
+      fetchFilteredProducts({
+        parentCategories: categoryId !== null ? [categoryId] : [],
+        categoryIds: filterCriteria.categories?.map(Number),
+        minPrice: filterCriteria.priceRange?.[0],
+        maxPrice: filterCriteria.priceRange?.[1],
+        sizeLabels: filterCriteria.size ? [filterCriteria.size] : undefined,
+        pageNumber,
+        pageSize,
+        isEnglish: language !== "ar",
+      }),
+    { enabled: categoryId !== null, keepPreviousData: true }
+  );
 
-    if (filterCriteria.categories?.length) {
-      out = out.filter((p) =>
-        filterCriteria.categories!.includes(p.categoryID.toString())
-      );
+  const totalPages = Math.ceil((productsData?.totalCount || 0) / pageSize);
+
+  const getPageNumbers = () => {
+    const pageNumbers: (number | "left" | "right")[] = [];
+    const maxPageButtons = 4;
+
+    if (totalPages <= maxPageButtons) {
+      for (let i = 1; i <= totalPages; i++) pageNumbers.push(i);
+    } else if (pageNumber <= maxPageButtons - 1) {
+      for (let i = 1; i <= maxPageButtons; i++) pageNumbers.push(i);
+      pageNumbers.push("right");
+    } else if (pageNumber > totalPages - maxPageButtons + 1) {
+      pageNumbers.push("left");
+      for (let i = totalPages - maxPageButtons + 1; i <= totalPages; i++)
+        pageNumbers.push(i);
+    } else {
+      pageNumbers.push("left");
+      for (let i = pageNumber - 1; i <= pageNumber + 1; i++)
+        pageNumbers.push(i);
+      pageNumbers.push("right");
     }
-    if (filterCriteria.priceRange) {
-      const [min, max] = filterCriteria.priceRange;
-      out = out.filter(
-        (p) =>
-          Number(p.priceAfterDiscount) >= min &&
-          Number(p.priceAfterDiscount) <= max
-      );
-    }
-    return out;
-  }, [products, filterCriteria]);
+    return pageNumbers;
+  };
 
   const displayName = useMemo(() => {
     if (isMainCategory && categoryId !== null) {
@@ -140,8 +157,8 @@ const Shop: React.FC = () => {
       if (map[categoryId])
         return isRTL ? map[categoryId].ar : map[categoryId].en;
     }
-    if (products && products.length > 0) {
-      const { category } = products[0];
+    if (productsData?.products.length) {
+      const { category } = productsData.products[0];
       return isRTL
         ? category.nameAr || category.name
         : category.nameEn || category.name;
@@ -150,20 +167,31 @@ const Shop: React.FC = () => {
       (categorySlug ?? "").charAt(0).toUpperCase() +
       (categorySlug ?? "").slice(1)
     );
-  }, [isMainCategory, categoryId, products, isRTL, categorySlug]);
+  }, [isMainCategory, categoryId, productsData, isRTL, categorySlug]);
 
-  /* ───── effects ─────────────────────────────────────────────────── */
+  if ((catsLoading || prodsLoading || !slugChecked) && !productsData) {
+    return (
+      <div
+        className={`bg-customBeige min-h-screen p-2 md:p-10 ${
+          isRTL ? "rtl" : "ltr"
+        }`}
+      >
+        <div className="inline-block">
+          <Breadcrumb />
+        </div>
+        <div className="grid gap-y-4 gap-x-4 md:gap-x-10 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 justify-items-center px-4">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <div key={index} className="w-full max-w-[225px]">
+              <LoadingSkeleton variant="product" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
-  useEffect(() => setShowSidebar(isFilterOpen), [isFilterOpen]);
-  useEffect(() => setSlugChecked(!catsLoading), [categorySlug, catsLoading]);
-
-  /* ───── guards ──────────────────────────────────────────────────── */
-
-  if (catsLoading || prodsLoading || !slugChecked) return <Loading />;
   if (catsError || prodsError) return <div>{t("common.errorLoading")}</div>;
   if (slugChecked && categoryId === null) return <Navigate to="/" />;
-
-  /* ───── render ──────────────────────────────────────────────────── */
 
   return (
     <div
@@ -172,9 +200,7 @@ const Shop: React.FC = () => {
       }`}
     >
       <Breadcrumb />
-
       <div className="flex flex-col xl:flex-row xl:items-start items-center">
-        {/* mobile overlay sidebar */}
         {showSidebar && (
           <div className="fixed inset-0 z-50 flex">
             <div
@@ -189,7 +215,10 @@ const Shop: React.FC = () => {
               }`}
             >
               <Filter
-                onFilterChange={setFilterCriteria}
+                onFilterChange={(filters) => {
+                  setFilterCriteria(filters);
+                  setPageNumber(1);
+                }}
                 onClose={() => setIsFilterOpen(false)}
                 subcategories={subcats}
                 mainCategoryId={categoryId!}
@@ -202,29 +231,73 @@ const Shop: React.FC = () => {
           </div>
         )}
 
-        {/* desktop sticky sidebar */}
         <div className="laptop:hidden w-full md:w-1/4 p-4 md:sticky md:top-0 md:h-screen md:overflow-y-auto">
           <Filter
-            onFilterChange={setFilterCriteria}
+            onFilterChange={(filters) => {
+              setFilterCriteria(filters);
+              setPageNumber(1);
+            }}
             subcategories={subcats}
             mainCategoryId={categoryId!}
           />
         </div>
 
-        {/* products */}
         <div className="w-full p-4">
           <p className="kiwi font-playball text-3xl md:text-4xl text-wine text-left mb-4">
             {displayName}
           </p>
 
-          {/* filter button (mobile) */}
           <div className="banana laptop:flex hidden justify-start">
             <button onClick={() => setIsFilterOpen(true)}>
               <img src={FilterIcon} alt={t("filter.title")} />
             </button>
           </div>
 
-          <ProductsDisplay products={filteredProducts} language={language} />
+          <ProductsDisplay products={productsData?.products || []} />
+          {totalPages > 1 && (
+            <div className="mt-8 flex flex-wrap justify-center gap-2 sm:gap-4 px-2">
+              <button
+                onClick={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
+                disabled={pageNumber === 1}
+                className="px-3 sm:px-5 py-2 border border-wine text-wine rounded-md disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base font-medium"
+              >
+                {t("pagination.previous")}
+              </button>
+              <div className="flex flex-wrap gap-1 sm:gap-2 justify-center">
+                {getPageNumbers().map((item, index) =>
+                  typeof item === "number" ? (
+                    <button
+                      key={item}
+                      onClick={() => setPageNumber(item)}
+                      className={`rounded-full flex items-center justify-center font-medium w-8 h-8 sm:w-10 sm:h-10 text-xs sm:text-base ${
+                        pageNumber === item
+                          ? "bg-wine text-mainColor"
+                          : "border border-wine text-wine"
+                      }`}
+                    >
+                      {item}
+                    </button>
+                  ) : (
+                    <span
+                      key={`ellipsis-${item}-${index}`}
+                      className="rounded-full flex items-center justify-center border border-wine text-wine w-8 h-8 sm:w-10 sm:h-10 text-xs sm:text-base"
+                    >
+                      …
+                    </span>
+                  )
+                )}
+              </div>
+              <button
+                onClick={() =>
+                  setPageNumber((prev) => Math.min(prev + 1, totalPages))
+                }
+                disabled={pageNumber === totalPages}
+                className="px-3 sm:px-5 py-2 bg-wine text-mainColor rounded-md disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base font-medium"
+              >
+                {t("pagination.next")}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -8,12 +8,10 @@ import { FilterCategory as ImportedFilterCategory } from "@types";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useLocation } from "react-router-dom";
 
-// Extended FilterCategory type to include id
 interface FilterCategory extends ImportedFilterCategory {
   id?: number;
 }
 
-// Update type to include subcategories and main category info
 type FilterProps = {
   onFilterChange: (filters: {
     categories?: string[];
@@ -55,9 +53,11 @@ const Filter: React.FC<FilterProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Fallback categories in case no subcategories are provided
+  const [categoryItems, setCategoryItems] = useState<FilterCategory[]>([]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
+  const [isCategoriesCollapsed, setIsCategoriesCollapsed] =
+    useState<boolean>(false);
 
-  // Generate categories from subcategories
   useEffect(() => {
     const fallbackCategories: FilterCategory[] = FALLBACK_KEYS.map((key) => ({
       name: t(key),
@@ -75,54 +75,51 @@ const Filter: React.FC<FilterProps> = ({
     setCategoryItems(categories);
   }, [subcategories, i18n.language]);
 
-  const [categoryItems, setCategoryItems] = useState<FilterCategory[]>([]);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
-  const [isCategoriesCollapsed, setIsCategoriesCollapsed] =
-    useState<boolean>(false);
-
-  // Initialize categories when component mounts or when subcategories/language changes
-
   const handleCategoryClick = (
     categoryId: number | undefined,
     categoryName: string
   ) => {
     if (!categoryId) return;
 
-    // Get current main category name from pathname
     const pathParts = location.pathname.split("/");
     const mainCategoryName = pathParts[2] || "";
 
-    // Navigate to the subcategory
     navigate(`/products/${mainCategoryName}/${categoryName.toLowerCase()}`, {
-      state: { categoryId: categoryId },
+      state: { categoryId },
     });
 
-    // Close the filter on mobile
-    if (onClose) {
-      onClose();
-    }
+    if (onClose) onClose();
   };
 
   const handleFilterClick = () => {
-    const filters = {
-      priceRange,
-    };
-
+    const filters = { priceRange };
     onFilterChange(filters);
-
-    // Close filter on mobile after applying
-    if (onClose) {
-      onClose();
-    }
+    if (onClose) onClose();
   };
 
+  const handleClearFilters = () => {
+    setPriceRange([0, 5000]);
+    setCategoryItems((prev) =>
+      prev.map((item) => ({ ...item, isChecked: false }))
+    );
+
+    const pathParts = location.pathname.split("/");
+    const mainCategoryName = pathParts[2] || "";
+
+    if (mainCategoryName) {
+      navigate(`/products/${mainCategoryName}`);
+    }
+
+    onFilterChange({});
+
+    if (onClose) onClose();
+  };
   return (
     <div className="flex flex-col items-start w-full">
       <div
         className="relative flex flex-col gap-2 w-full bg-customBeige"
         style={{ minHeight: "100px" }}
       >
-        {/* Conditionally render the close button if onClose is provided */}
         {onClose && (
           <div className="absolute right-2">
             <button
@@ -143,9 +140,8 @@ const Filter: React.FC<FilterProps> = ({
         </div>
       </div>
 
-      {/* Main content starts below the header */}
       <div className="px-4 gap-9 w-full flex flex-col">
-        {/* Categories Filter */}
+        {/* Categories */}
         <div className="w-full flex flex-col">
           <div
             className="flex flex-row items-center justify-between cursor-pointer"
@@ -189,8 +185,7 @@ const Filter: React.FC<FilterProps> = ({
           )}
         </div>
 
-        {/* Price Range Filter */}
-        <div className="w-[100%] flex flex-col">
+        <div className="w-full flex flex-col">
           <p className="font-playfair text-2xl text-wine ltr:text-left rtl:text-right font-semibold">
             {t("filter.priceRange")}
           </p>
@@ -203,8 +198,8 @@ const Filter: React.FC<FilterProps> = ({
             </span>
           </div>
           <Slider
-            className="relative w-[100%] items-center rounded-md mt-2"
-            thumbClassName="absolute relative transform -translate-y-1/2 w-4 h-4 bg-wine rounded-full cursor-pointer focus:outline-none focus:ring-wine"
+            className="relative w-full items-center rounded-md mt-2"
+            thumbClassName="absolute relative transform -translate-y-1/2 w-4 h-4 bg-wine rounded-full cursor-pointer"
             trackClassName="h-[1px] bg-ThirdColor"
             min={0}
             max={5000}
@@ -217,7 +212,6 @@ const Filter: React.FC<FilterProps> = ({
           />
         </div>
 
-        {/* Filter Button - Only for price filtering now */}
         <Button
           label={t("filter.apply")}
           type="primary"
@@ -228,6 +222,22 @@ const Filter: React.FC<FilterProps> = ({
             fontSize: "20px",
             alignSelf: "center",
             fontFamily: "PlayFair",
+          }}
+        />
+        <Button
+          label={t("filter.clear")}
+          type="secondary"
+          onClick={handleClearFilters}
+          style={{
+            width: "90%",
+            maxHeight: "50px",
+            fontSize: "16px",
+            marginTop: "10px",
+            alignSelf: "center",
+            fontFamily: "PlayFair",
+            backgroundColor: "transparent",
+            border: "1px solid #7D3B3B",
+            color: "#7D3B3B",
           }}
         />
       </div>
