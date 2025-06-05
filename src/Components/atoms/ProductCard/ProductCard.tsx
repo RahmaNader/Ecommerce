@@ -70,13 +70,11 @@ export const ProductCard: FC<ProductCardProps> = (props) => {
           {logic.t("card.priceInCurrency", { price: logic.priceAfterDiscount })}
         </p>
         <p className="font-playfair font-medium text-lg line-through text-FifthColor">
-          {logic.priceAfterDiscount === props.productPrice && (
-            <>
-              {logic.t("card.priceInCurrency", {
-                price: props.productPrice,
-              })}
-            </>
-          )}
+          <>
+            {logic.t("card.priceInCurrency", {
+              price: props.productPrice,
+            })}
+          </>
         </p>
       </div>
       {/* <div className="flex justify-center mt-2">

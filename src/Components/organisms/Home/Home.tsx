@@ -130,7 +130,7 @@ const Home: React.FC = () => {
               cards={highestDiscount}
             /> */}
             <ProductsGrid
-              products={highestDiscount}
+              products={highestDiscount.slice(0, 3)}
               sectionName={t("home.highestDiscount")}
             />
 
