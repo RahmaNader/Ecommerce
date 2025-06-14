@@ -29,6 +29,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
     formState: { errors },
     control,
     watch,
+    setError,
   } = useForm<SignUpFormInputs>();
 
   const password = watch("password");
@@ -141,8 +142,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
         dateOfBirth: dateOfBirth,
         model: "web",
       });
-
-      console.log("Registration response:", result);
+      console.log(result);
       setAlert({
         type: "success",
         message: t("auth.registersuccess"),
@@ -154,25 +154,50 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
       }, 3000);
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        const errorMessage = error.response?.data;
+        const errorData = error.response?.data;
 
-        if (
-          errorMessage.toLowerCase().includes("already registered") ||
-          errorMessage.toLowerCase().includes("already exists")
-        ) {
+        // CASE 1: Plain string error like "Email is already registered!"
+        if (typeof errorData === "string") {
+          // Try to map it to a specific field if possible
+          if (errorData.toLowerCase().includes("email")) {
+            setError("email", {
+              type: "manual",
+              message: errorData,
+            });
+            return;
+          }
+
+          // Fallback to general alert
           setAlert({
             type: "error",
-            message: t("auth.usernameTaken"),
+            message: errorData,
           });
-        } else {
-          setAlert({
-            type: "error",
-            message: errorMessage,
+          return;
+        }
+
+        // CASE 2: Validation object with `errors` dictionary
+        if (errorData?.errors && typeof errorData.errors === "object") {
+          Object.entries(errorData.errors).forEach(([field, messages]) => {
+            if (Array.isArray(messages)) {
+              setError(field as keyof SignUpFormInputs, {
+                type: "manual",
+                message: messages[0],
+              });
+            }
           });
+          return;
         }
       }
+
+      setAlert({
+        type: "error",
+        message: t("auth.registerFailed"), // fallback translation
+      });
+
       setTimeout(() => setAlert(null), 3000);
     }
+
+    setTimeout(() => setAlert(null), 3000);
   };
 
   // Create a custom theme to match your website's styling
@@ -253,6 +278,11 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
             })}
             className={`w-full px-4 py-2 mt-1 border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none`}
           />
+          {/* <p className="mt-2 text-xs text-gray-500 ms-2">
+            email must be unique. you cant use the same email to register
+            multiple accounts.
+          </p> */}
+
           {errors.email && (
             <p className="text-FifthColor text-sm mt-1">
               {errors.email.message}
@@ -288,15 +318,15 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
                   langOfCountryName="en"
                   forceCallingCode={true}
                   // Add RTL support
-                  dir={document.dir || 'ltr'}
+                  dir={document.dir || "ltr"}
                   MenuProps={{
                     anchorOrigin: {
-                      vertical: 'bottom',
-                      horizontal: document.dir === 'rtl' ? 'right' : 'left',
+                      vertical: "bottom",
+                      horizontal: document.dir === "rtl" ? "right" : "left",
                     },
                     transformOrigin: {
-                      vertical: 'top',
-                      horizontal: document.dir === 'rtl' ? 'right' : 'left',
+                      vertical: "top",
+                      horizontal: document.dir === "rtl" ? "right" : "left",
                     },
                   }}
                   sx={{
@@ -307,19 +337,19 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
                       backgroundColor: "rgba(167, 142, 120, 0.13)",
                       color: "#A78E78",
                       borderColor: "#A78E78",
-                      textAlign: document.dir === 'rtl' ? 'right' : 'left',
+                      textAlign: document.dir === "rtl" ? "right" : "left",
                       fontFamily: "Poppins, sans-serif", // Match other inputs font
                     },
                     "& .MuiOutlinedInput-input": {
                       height: "11px",
                       padding: "14px",
-                      textAlign: document.dir === 'rtl' ? 'right' : 'left',
-                      direction: document.dir || 'ltr',
+                      textAlign: document.dir === "rtl" ? "right" : "left",
+                      direction: document.dir || "ltr",
                       fontFamily: "Poppins, sans-serif", // Match other inputs font
                       fontSize: "15px", // Match text size with other form fields
                     },
                     "& input::placeholder": {
-                      textAlign: document.dir === 'rtl' ? 'right' : 'left',
+                      textAlign: document.dir === "rtl" ? "right" : "left",
                       fontFamily: "Poppins, sans-serif", // Match placeholder font
                     },
                     "& .MuiOutlinedInput-notchedOutline": {
@@ -329,9 +359,9 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
                       color: "#A78E78",
                     },
                     "& .MuiTelInput-Flag": {
-                      marginRight: document.dir === 'rtl' ? '0' : '8px',
-                      marginLeft: document.dir === 'rtl' ? '8px' : '0',
-                      order: document.dir === 'rtl' ? '1' : '0',
+                      marginRight: document.dir === "rtl" ? "0" : "8px",
+                      marginLeft: document.dir === "rtl" ? "8px" : "0",
+                      order: document.dir === "rtl" ? "1" : "0",
                     },
                     "&:hover .MuiOutlinedInput-notchedOutline": {
                       borderColor: "#A78E78",
@@ -370,6 +400,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
             })}
             className={`w-full px-4 py-2 mt-1 border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none`}
           />
+          {/* <p className="mt-2 text-xs text-gray-500 ms-2">
+            Password must contain at least one uppercase letter, one lowercase
+            letter, one digit, and one special character.
+          </p> */}
           {errors.password && (
             <p className="text-FifthColor text-sm mt-1">
               {errors.password.message}
