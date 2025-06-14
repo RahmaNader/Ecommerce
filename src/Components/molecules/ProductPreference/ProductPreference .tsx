@@ -10,10 +10,14 @@ interface ColorOption {
 
 interface ProductPreferenceProps {
   product: {
-    productVarients?: { $id: string; $values: ProductVariant[] } | ProductVariant[];
+    productVarients?:
+      | { $id: string; $values: ProductVariant[] }
+      | ProductVariant[];
     productPrice?: number;
     priceAfterDiscount?: number;
-    productImages?: Array<{ imageUrl: string }> | { $values: Array<{ imageUrl: string }> };
+    productImages?:
+      | Array<{ imageUrl: string }>
+      | { $values: Array<{ imageUrl: string }> };
     name?: string;
     productID?: number;
   };
@@ -40,7 +44,6 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
   const [error, setError] = useState<string | null>(null);
-
   useEffect(() => {
     if (error) {
       const timer = setTimeout(() => setError(null), 2000);
@@ -57,15 +60,43 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
 
   const colors: ColorOption[] = Array.from(
     new Map(
-      variants.map((variant) => [variant.colorNameEn, { name: variant.colorNameEn || "Unknown", code: variant.colorCode }])
+      variants.map((variant) => [
+        variant.colorNameEn,
+        { name: variant.colorNameEn || "Unknown", code: variant.colorCode },
+      ])
     ).values()
   );
+  const normalise = (s?: string | null) => (s ?? "").trim().toLowerCase();
 
-  const availableSizes = variants.find(
-    (v) => v.colorNameEn === selectedColor
-  )?.sizeQuantities ?? [];
+  const availableSizes =
+    variants.find((v) => normalise(v.colorNameEn) === normalise(selectedColor))
+      ?.sizeQuantities ?? [];
+  const getQty = (sq: SizeQuantity) =>
+    Number(
+      (sq as any).quantity ??
+        (sq as any).qty ??
+        (sq as any).remainingQuantity ??
+        0
+    );
+  const getMaxStock = (color: string | null, size: string | null): number => {
+    if (!color || !size) return 1; // until both are chosen
+    const line = variants
+      .find((v) => normalise(v.colorNameEn) === normalise(color))
+      ?.sizeQuantities?.find((s) => s.sizeLabel === size);
+    return line ? getQty(line) : 1;
+  };
+  useEffect(() => {
+    setQuantity(1);
+  }, [selectedColor, selectedSize]);
+  const maxStock = getMaxStock(selectedColor, selectedSize);
 
   const handleSubmit = () => {
+    const max = getMaxStock(selectedColor, selectedSize);
+    if (quantity > max) {
+      setError(t("productPreference.exceedStock")); // add this key to i18n
+      return;
+    }
+
     if (selectedColor && selectedSize && quantity > 0) {
       onSubmit({
         color: selectedColor,
@@ -73,7 +104,11 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
         quantity,
         price: product.productPrice || 0,
         priceAfterDiscount: product.priceAfterDiscount || 0,
-        imageUrl: product.productImages ? (Array.isArray(product.productImages) ? product.productImages[0]?.imageUrl : product.productImages.$values[0]?.imageUrl) : "",
+        imageUrl: product.productImages
+          ? Array.isArray(product.productImages)
+            ? product.productImages[0]?.imageUrl
+            : product.productImages.$values[0]?.imageUrl
+          : "",
         name: product.name || "",
         productId: product.productID || 0,
       });
@@ -100,66 +135,101 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
             stroke="currentColor"
             className="w-6 h-6"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
 
         {/* Color Selection */}
-        <p className="font-playfair font-semibold text-lg text-wine mb-4">{t("productPreference.chooseColor")}</p>
+        <p className="font-playfair font-semibold text-lg text-wine mb-4">
+          {t("productPreference.chooseColor")}
+        </p>
         <div className="flex gap-3 mb-4">
           {colors.map((colorOption: ColorOption, index) => (
             <div key={index} className="flex flex-col items-center">
               <div
                 className={`w-10 h-10 rounded-full cursor-pointer border-2 ${
-                  selectedColor === colorOption.name ? "border-wine" : "border-golden"
+                  selectedColor === colorOption.name
+                    ? "border-wine"
+                    : "border-golden"
                 }`}
                 style={{ backgroundColor: colorOption.code }}
                 onClick={() => {
                   setSelectedColor(colorOption.name);
-                  setSelectedSize(null); 
+                  setSelectedSize(null);
                 }}
-                title={colorOption.name} 
+                title={colorOption.name}
               />
             </div>
           ))}
         </div>
 
-        {/* Size Selection */}
-        <p className="font-playfair font-semibold text-lg text-wine mb-4">{t("productPreference.chooseSize")}</p>
+        <p className="font-playfair font-semibold text-lg text-wine mb-4">
+          {t("productPreference.chooseSize")}
+        </p>
         <div className="flex gap-3 mb-4">
           {availableSizes.length > 0 ? (
-            availableSizes.map((sizeOption: SizeQuantity, index: number) => (
-              <button
-                key={index}
-                className={`px-3 py-1 rounded-md border ${
-                  selectedSize === sizeOption.sizeLabel ? "bg-wine text-white" : "border-ForthColor text-ForthColor"
-                }`}
-                onClick={() => setSelectedSize(sizeOption.sizeLabel || null)}
-                disabled={sizeOption.quantity <= 0}
-              >
-                {sizeOption.sizeLabel || t("productPreference.unknown")}
-              </button>
-            ))
+            availableSizes.map((sizeOption: SizeQuantity, index: number) => {
+              const isOutOfStock = getQty(sizeOption) <= 0;
+              console.log("sizeOption 👉", sizeOption);
+
+              return (
+                <button
+                  key={index}
+                  type="button"
+                  disabled={isOutOfStock}
+                  aria-disabled={isOutOfStock}
+                  onClick={() =>
+                    !isOutOfStock &&
+                    setSelectedSize(sizeOption.sizeLabel || null)
+                  }
+                  className={`px-3 py-1 rounded-md border transition 
+            ${
+              isOutOfStock
+                ? "border-gray-300 text-gray-400 cursor-not-allowed opacity-50" // SOLD-OUT style
+                : selectedSize === sizeOption.sizeLabel
+                ? "bg-wine text-white border-wine" // SELECTED style
+                : "border-ForthColor text-ForthColor hover:bg-ForthColor hover:text-white"
+            }`}
+                >
+                  {sizeOption.sizeLabel || t("productPreference.unknown")}
+                </button>
+              );
+            })
           ) : (
-            <p className="text-wine">{t("productPreference.noSizesAvailable")}</p>
+            <p className="text-wine">
+              {t("productPreference.noSizesAvailable")}
+            </p>
           )}
         </div>
 
         {/* Quantity Selection */}
         <div className="flex items-center gap-3 mb-6">
-          <p className="font-playfair font-semibold text-lg text-wine">{t("productPreference.quantity")}</p>
+          <p className="font-playfair font-semibold text-lg text-wine">
+            {t("productPreference.quantity")}
+          </p>
           <ProductCount
             initialCount={quantity}
+            max={maxStock}
             onCountChange={(newCount) => setQuantity(newCount)}
           />
         </div>
 
         {/* Action Buttons */}
         <div className="flex justify-between gap-3">
-          <button onClick={onCancel} className="px-4 py-2 bg-ForthColor text-white rounded-md">
+          <button
+            onClick={onCancel}
+            className="px-4 py-2 bg-ForthColor text-white rounded-md"
+          >
             {t("productPreference.cancel")}
           </button>
-          <button onClick={handleSubmit} className="px-4 py-2 bg-wine text-white rounded-md">
+          <button
+            onClick={handleSubmit}
+            className="px-4 py-2 bg-wine text-white rounded-md"
+          >
             {t("productPreference.confirm")}
           </button>
         </div>

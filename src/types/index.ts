@@ -144,6 +144,7 @@ export interface Product {
   language?: string;
   productID?: number;
   discountPercent?: number;
+  productVarients: ProductVariant[];
   // Include any other properties that might be in your cart items
 }
 
@@ -202,10 +203,11 @@ export type CustomRatingProps = {
   mode: "show" | "hide";
 };
 
-export type ProductCountProps = {
+export interface ProductCountProps {
   initialCount?: number;
-  onCountChange?: (count: number) => void;
-};
+  max?: number;
+  onCountChange?: (n: number) => void;
+}
 
 export type FilterCategory = {
   name: string;

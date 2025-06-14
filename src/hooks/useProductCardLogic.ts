@@ -11,6 +11,7 @@ interface CartItem {
   color: string;
   size: string;
   quantity: number;
+  productVarients: ProductVariant[];
   [key: string]: unknown;
 }
 
@@ -100,6 +101,7 @@ export function useProductCardLogic(props: UseProductCardLogicProps) {
       nameAr,
       discountPercent,
       language: i18n.language,
+      productVarients,
       productVarientId:
         productVarients.find((v) => v.colorNameEn === prefs.color)
           ?.productVarientId ?? 0,

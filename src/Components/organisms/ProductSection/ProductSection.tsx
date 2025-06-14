@@ -216,8 +216,9 @@ const ProductSection: React.FC<ProductSectionProps> = ({
     }
   };
 
-  const handleCountChange = (count: number) => {
-    setCount(count);
+  const handleCountChange = (newCount: number) => {
+    const max = getMaxStock(selectedColor, selectedSize);
+    setCount(Math.min(newCount, max || 1));
   };
 
   useEffect(() => {
@@ -266,10 +267,6 @@ const ProductSection: React.FC<ProductSectionProps> = ({
 
     setTimeout(() => setAlertType(null), 3000);
   };
-
-  const availableSizes =
-    productVariants.find((v) => v.colorNameEn === selectedColor)
-      ?.sizeQuantities ?? [];
 
   const handleImageClick = () => {
     setShowGallery(true);
@@ -333,6 +330,33 @@ const ProductSection: React.FC<ProductSectionProps> = ({
     );
   };
 
+  const normalize = (s?: string | null) => (s ?? "").trim().toLowerCase();
+
+  /** Grab whatever stock key the API sends back */
+  const getQty = (sq: SizeQuantity) =>
+    Number(
+      (sq as any).quantity ?? // most common
+        (sq as any).qty ?? // e.g. .NET “qty”
+        (sq as any).remainingQuantity ?? // sometimes used
+        0
+    );
+  const availableSizes =
+    productVariants.find(
+      (v) => normalize(v.colorNameEn) === normalize(selectedColor)
+    )?.sizeQuantities ?? [];
+  const getMaxStock = (color: string | null, size: string | null): number => {
+    if (!color || !size) return 0;
+    const variant = productVariants.find(
+      (v) => normalize(v.colorNameEn) === normalize(color)
+    );
+    const sz = variant?.sizeQuantities?.find((s) => s.sizeLabel === size);
+    return sz ? getQty(sz) : 0;
+  };
+  useEffect(() => {
+    setCount(1);
+  }, [selectedColor, selectedSize]);
+  const stockLeft = getMaxStock(selectedColor, selectedSize);
+  useEffect(() => setCount(1), [selectedColor, selectedSize]);
   return (
     <div
       className={`flex flex-col md:flex-row items-center justify-center w-full gap-10 my-8 px-6 `}
@@ -552,30 +576,45 @@ const ProductSection: React.FC<ProductSectionProps> = ({
             <p>{t("product.noAvailableSizes")}</p>
           ) : selectedColor ? (
             <div className="flex flex-row gap-3 items-center">
-              {availableSizes.map((size: SizeQuantity, index: number) => (
-                <button
-                  key={index}
-                  className={`px-4 py-2 rounded-md border-2 ${
-                    selectedSize === size.sizeLabel
-                      ? "bg-wine text-white"
-                      : "border-wine text-wine"
-                  }`}
-                  onClick={() => setSelectedSize(size.sizeLabel || "")}
-                >
-                  {size.sizeLabel}
-                </button>
-              ))}
+              {availableSizes.map((size, idx) => {
+                const isOutOfStock = getQty(size) <= 0;
+
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    disabled={isOutOfStock}
+                    aria-disabled={isOutOfStock}
+                    onClick={() =>
+                      !isOutOfStock && setSelectedSize(size.sizeLabel ?? null)
+                    }
+                    className={`px-4 py-2 rounded-md border-2 transition
+              ${
+                isOutOfStock
+                  ? "border-gray-300 text-gray-400 opacity-50 cursor-not-allowed pointer-events-none"
+                  : selectedSize === size.sizeLabel
+                  ? "bg-wine text-white border-wine"
+                  : "border-wine text-wine hover:bg-wine hover:text-white"
+              }`}
+                  >
+                    {size.sizeLabel}
+                  </button>
+                );
+              })}
             </div>
           ) : (
             <p>{t("product.noSizesAvailable")}</p>
           )}
         </div>
-
         <div
           className={`flex gap-2 flex-row justify-between items-center w-full `}
         >
           <div className={`flex flex-col sm:flex-row gap-2 items-center `}>
-            <ProductCount initialCount={1} onCountChange={handleCountChange} />
+            <ProductCount
+              initialCount={1}
+              max={stockLeft}
+              onCountChange={handleCountChange}
+            />{" "}
             <button
               onClick={handleAddToCart}
               className="w-32 h-10 bg-wine text-mainColor rounded-md hover:bg-sixColor"

@@ -40,6 +40,7 @@ const Cart: React.FC = () => {
             language,
             productID,
             discountPercent,
+            productVarients: item.productVarients ?? [],
           };
         });
         setProducts(validatedCart);
