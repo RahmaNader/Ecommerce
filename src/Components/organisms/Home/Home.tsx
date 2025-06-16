@@ -59,9 +59,9 @@ const Home: React.FC = () => {
           style={{ gridTemplateColumns: "repeat(auto-fit, 225px)" }}
         >
           <CategoryItem
-            src={kids}
-            alt="Kids"
-            onClick={() => handleCategoryClick("kids", 3)}
+            src={men}
+            alt="Men"
+            onClick={() => handleCategoryClick("men", 1)}
           />
           <CategoryItem
             src={women}
@@ -69,9 +69,9 @@ const Home: React.FC = () => {
             onClick={() => handleCategoryClick("women", 2)}
           />
           <CategoryItem
-            src={men}
-            alt="Men"
-            onClick={() => handleCategoryClick("men", 1)}
+            src={kids}
+            alt="Kids"
+            onClick={() => handleCategoryClick("kids", 3)}
           />
         </section>
       </div>
