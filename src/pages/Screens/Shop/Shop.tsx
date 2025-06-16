@@ -2,7 +2,12 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import { fetchFilteredProducts } from "@services/api/fetchFilteredProducts";
 import { fetchCategories } from "@services/api/fetchCategories";
-import { useParams, useLocation, Navigate } from "react-router-dom";
+import {
+  useParams,
+  useLocation,
+  Navigate,
+  useSearchParams,
+} from "react-router-dom";
 import { Filter, ProductsDisplay } from "@components/organisms";
 import { Breadcrumb, LoadingSkeleton } from "@components/molecules";
 import FilterIcon from "@assets/FilterIcon.svg";
@@ -50,12 +55,27 @@ const Shop: React.FC = () => {
   const [filterCriteria, setFilterCriteria] = useState<FilterCriteria>({});
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
-  const [pageNumber, setPageNumber] = useState(1);
   const pageSize = 12;
 
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [isMainCategory, setIsMainCategory] = useState(false);
   const [slugChecked, setSlugChecked] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialPage = useMemo(() => {
+    const p = parseInt(searchParams.get("page") || "1", 10);
+    return Number.isNaN(p) || p < 1 ? 1 : p;
+  }, [searchParams]);
+  const [pageNumber, setPageNumber] = useState(initialPage); // ▶️ CHANGED
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+    params.set("page", pageNumber.toString());
+    setSearchParams(params, { replace: true });
+  }, [pageNumber, searchParams, setSearchParams]); // ▶️ NEW
+  useEffect(() => {
+    const p = parseInt(searchParams.get("page") || "1", 10);
+    if (!Number.isNaN(p) && p !== pageNumber) setPageNumber(p);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]); // ▶️ NEW
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
