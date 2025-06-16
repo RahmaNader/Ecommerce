@@ -2,39 +2,30 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import { fetchFilteredProducts } from "@services/api/fetchFilteredProducts";
 import { fetchCategories } from "@services/api/fetchCategories";
-import {
-  useParams,
-  useLocation,
-  Navigate,
-  useSearchParams,
-} from "react-router-dom";
+import { useParams, Navigate, useSearchParams } from "react-router-dom";
 import { Filter, ProductsDisplay } from "@components/organisms";
 import { Breadcrumb, LoadingSkeleton } from "@components/molecules";
 import FilterIcon from "@assets/FilterIcon.svg";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@context/useLanguage";
 import { Category } from "@types";
-
+import noProducts from "@assets/no-products.png";
 const slugify = (t: string) => t.replace(/\s+/g, "-").toLowerCase();
 
-const matchBySlug = (cats: Category[], slug?: string) => {
-  if (!slug) return undefined;
-  const norm = slug.toLowerCase();
+const matchBySlug = (cats: Category[], raw?: string) => {
+  if (!raw) return undefined;
+  const norm = slugify(raw);
   return (
-    cats.find((c) => c.slug?.toLowerCase() === norm) ??
+    cats.find((c) => c.slug?.toLowerCase() === norm) ||
     cats.find(
       (c) =>
-        slugify((c.nameEn || c.name).toLowerCase()) === norm ||
-        slugify((c.nameAr || c.name).toLowerCase()) === norm
+        slugify(c.nameEn || c.name) === norm ||
+        slugify(c.nameAr || c.name) === norm
     )
   );
 };
 
-type ShopParams = { category: string };
-type NavState =
-  | { categoryId?: number; isMainCategory?: boolean }
-  | null
-  | undefined;
+type ShopParams = { mainSlug: string; subSlug?: string };
 
 type FilterCriteria = {
   size?: string;
@@ -48,10 +39,35 @@ const Shop: React.FC = () => {
   const { language } = useLanguage();
   const isRTL = language === "ar";
 
-  const { category: categorySlug } = useParams<ShopParams>();
-  const location = useLocation();
-  const navState = location.state as NavState;
+  /* ---------- URL params ---------- */
+  const { mainSlug, subSlug } = useParams<ShopParams>();
+  const activeSlug = subSlug ?? mainSlug; // ← always the slug we display/query
 
+  /* ---------- pagination ---------- */
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialPage = useMemo(() => {
+    const p = parseInt(searchParams.get("page") || "1", 10);
+    return Number.isNaN(p) || p < 1 ? 1 : p;
+  }, [searchParams]);
+  const [pageNumber, setPageNumber] = useState(initialPage);
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+    params.set("page", pageNumber.toString());
+    setSearchParams(params, { replace: true });
+  }, [pageNumber, searchParams, setSearchParams]);
+
+  useEffect(() => {
+    const p = parseInt(searchParams.get("page") || "1", 10);
+    if (!Number.isNaN(p) && p !== pageNumber) setPageNumber(p);
+  }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(
+    () => window.scrollTo({ top: 0, behavior: "smooth" }),
+    [pageNumber]
+  );
+
+  /* ---------- UI state ---------- */
   const [filterCriteria, setFilterCriteria] = useState<FilterCriteria>({});
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
@@ -60,27 +76,8 @@ const Shop: React.FC = () => {
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [isMainCategory, setIsMainCategory] = useState(false);
   const [slugChecked, setSlugChecked] = useState(false);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const initialPage = useMemo(() => {
-    const p = parseInt(searchParams.get("page") || "1", 10);
-    return Number.isNaN(p) || p < 1 ? 1 : p;
-  }, [searchParams]);
-  const [pageNumber, setPageNumber] = useState(initialPage); // ▶️ CHANGED
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams);
-    params.set("page", pageNumber.toString());
-    setSearchParams(params, { replace: true });
-  }, [pageNumber, searchParams, setSearchParams]); // ▶️ NEW
-  useEffect(() => {
-    const p = parseInt(searchParams.get("page") || "1", 10);
-    if (!Number.isNaN(p) && p !== pageNumber) setPageNumber(p);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]); // ▶️ NEW
 
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [pageNumber]);
-
+  /* ---------- fetch all categories once ---------- */
   const {
     data: allCats = [],
     isLoading: catsLoading,
@@ -89,16 +86,10 @@ const Shop: React.FC = () => {
     staleTime: 5 * 60_000,
   });
 
+  /* ---------- resolve slug → categoryID ---------- */
   useEffect(() => {
     if (allCats.length === 0) return;
-    if (navState?.categoryId) {
-      setCategoryId(navState.categoryId);
-      setIsMainCategory(navState.isMainCategory ?? false);
-      setSlugChecked(true);
-      return;
-    }
-
-    const matched = matchBySlug(allCats, categorySlug);
+    const matched = matchBySlug(allCats, slugify(activeSlug));
     if (matched) {
       setCategoryId(matched.categoryID);
       setIsMainCategory(matched.parentCategoryID === null);
@@ -107,12 +98,9 @@ const Shop: React.FC = () => {
       setIsMainCategory(false);
     }
     setSlugChecked(true);
-  }, [allCats, categorySlug, navState]);
+  }, [allCats, activeSlug]);
 
-  useEffect(() => {
-    setShowSidebar(isFilterOpen);
-  }, [isFilterOpen]);
-
+  /* ---------- child-category list for filter ---------- */
   const subcats = useMemo(() => {
     if (!allCats || categoryId === null) return [];
     const current = allCats.find((c) => c.categoryID === categoryId);
@@ -122,10 +110,10 @@ const Shop: React.FC = () => {
       : allCats.filter((c) => c.parentCategoryID === current.parentCategoryID);
   }, [allCats, categoryId]);
 
+  /* ---------- products query ---------- */
   const {
     data: productsData,
     isLoading: prodsLoading,
-    // isFetching,
     error: prodsError,
   } = useQuery(
     ["categoryProducts", categoryId, filterCriteria, pageNumber, language],
@@ -143,12 +131,12 @@ const Shop: React.FC = () => {
     { enabled: categoryId !== null, keepPreviousData: true }
   );
 
+  /* ---------- pagination helpers ---------- */
   const totalPages = Math.ceil((productsData?.totalCount || 0) / pageSize);
 
   const getPageNumbers = () => {
     const pageNumbers: (number | "left" | "right")[] = [];
     const maxPageButtons = 4;
-
     if (totalPages <= maxPageButtons) {
       for (let i = 1; i <= totalPages; i++) pageNumbers.push(i);
     } else if (pageNumber <= maxPageButtons - 1) {
@@ -167,6 +155,7 @@ const Shop: React.FC = () => {
     return pageNumbers;
   };
 
+  /* ---------- display name (breadcrumb header) ---------- */
   const displayName = useMemo(() => {
     if (isMainCategory && categoryId !== null) {
       const map: Record<number, { en: string; ar: string }> = {
@@ -184,11 +173,19 @@ const Shop: React.FC = () => {
         : category.nameEn || category.name;
     }
     return (
-      (categorySlug ?? "").charAt(0).toUpperCase() +
-      (categorySlug ?? "").slice(1)
+      (activeSlug ?? "").charAt(0).toUpperCase() + (activeSlug ?? "").slice(1)
     );
-  }, [isMainCategory, categoryId, productsData, isRTL, categorySlug]);
+  }, [isMainCategory, categoryId, productsData, isRTL, activeSlug]);
+  useEffect(() => {
+    if (isFilterOpen) {
+      setShowSidebar(true);
+    } else {
+      const timer = setTimeout(() => setShowSidebar(false), 0);
+      return () => clearTimeout(timer);
+    }
+  }, [isFilterOpen]);
 
+  /* ---------- loading / error states ---------- */
   if ((catsLoading || prodsLoading || !slugChecked) && !productsData) {
     return (
       <div
@@ -196,12 +193,10 @@ const Shop: React.FC = () => {
           isRTL ? "rtl" : "ltr"
         }`}
       >
-        <div className="inline-block">
-          <Breadcrumb />
-        </div>
+        <Breadcrumb />
         <div className="grid gap-y-4 gap-x-4 md:gap-x-10 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 justify-items-center px-4">
-          {Array.from({ length: 8 }).map((_, index) => (
-            <div key={index} className="w-full max-w-[225px]">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="w-full max-w-[225px]">
               <LoadingSkeleton variant="product" />
             </div>
           ))}
@@ -213,6 +208,7 @@ const Shop: React.FC = () => {
   if (catsError || prodsError) return <div>{t("common.errorLoading")}</div>;
   if (slugChecked && categoryId === null) return <Navigate to="/" />;
 
+  /* ---------- render ---------- */
   return (
     <div
       className={`bg-customBeige min-h-screen p-2 md:p-10 ${
@@ -220,7 +216,9 @@ const Shop: React.FC = () => {
       }`}
     >
       <Breadcrumb />
+
       <div className="flex flex-col xl:flex-row xl:items-start items-center">
+        {/* ---- slide-in filter (mobile) ---- */}
         {showSidebar && (
           <div className="fixed inset-0 z-50 flex">
             <div
@@ -235,8 +233,8 @@ const Shop: React.FC = () => {
               }`}
             >
               <Filter
-                onFilterChange={(filters) => {
-                  setFilterCriteria(filters);
+                onFilterChange={(f) => {
+                  setFilterCriteria(f);
                   setPageNumber(1);
                 }}
                 onClose={() => setIsFilterOpen(false)}
@@ -251,10 +249,11 @@ const Shop: React.FC = () => {
           </div>
         )}
 
+        {/* ---- sticky sidebar (desktop) ---- */}
         <div className="laptop:hidden w-full md:w-1/4 p-4 md:sticky md:top-0 md:h-screen md:overflow-y-auto">
           <Filter
-            onFilterChange={(filters) => {
-              setFilterCriteria(filters);
+            onFilterChange={(f) => {
+              setFilterCriteria(f);
               setPageNumber(1);
             }}
             subcategories={subcats}
@@ -262,18 +261,45 @@ const Shop: React.FC = () => {
           />
         </div>
 
+        {/* ---- products ---- */}
         <div className="w-full p-4">
           <p className="kiwi font-playball text-3xl md:text-4xl text-wine text-left mb-4">
             {displayName}
           </p>
-
+          +{" "}
+          {productsData && productsData.products.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-16 gap-6">
+              {/* replace with your own asset */}
+              <img
+                src={noProducts}
+                alt={t("shop.noProductsAlt", "No products illustration")}
+                className="w-60 h-60 opacity-80"
+              />
+              <p className="font-playfair text-xl text-ForthColor text-center">
+                {t(
+                  "shop.noProductsMessage",
+                  "Sorry, no items match your filters."
+                )}
+              </p>
+              <button
+                onClick={() => {
+                  setFilterCriteria({});
+                  setPageNumber(1);
+                }}
+                className="px-5 py-3 bg-wine text-mainColor rounded-md hover:bg-sixColor transition-colors"
+              >
+                {t("shop.clearFilters", "Clear filters")}
+              </button>
+            </div>
+          )}
+          {/* mobile filter button */}
           <div className="banana laptop:flex hidden justify-start">
             <button onClick={() => setIsFilterOpen(true)}>
               <img src={FilterIcon} alt={t("filter.title")} />
             </button>
           </div>
-
           <ProductsDisplay products={productsData?.products || []} />
+          {/* pagination */}
           {totalPages > 1 && (
             <div className="mt-8 flex flex-wrap justify-center gap-2 sm:gap-4 px-2">
               <button
@@ -283,8 +309,9 @@ const Shop: React.FC = () => {
               >
                 {t("pagination.previous")}
               </button>
+
               <div className="flex flex-wrap gap-1 sm:gap-2 justify-center">
-                {getPageNumbers().map((item, index) =>
+                {getPageNumbers().map((item, idx) =>
                   typeof item === "number" ? (
                     <button
                       key={item}
@@ -299,7 +326,7 @@ const Shop: React.FC = () => {
                     </button>
                   ) : (
                     <span
-                      key={`ellipsis-${item}-${index}`}
+                      key={`ellipsis-${item}-${idx}`}
                       className="rounded-full flex items-center justify-center border border-wine text-wine w-8 h-8 sm:w-10 sm:h-10 text-xs sm:text-base"
                     >
                       …
@@ -307,6 +334,7 @@ const Shop: React.FC = () => {
                   )
                 )}
               </div>
+
               <button
                 onClick={() =>
                   setPageNumber((prev) => Math.min(prev + 1, totalPages))

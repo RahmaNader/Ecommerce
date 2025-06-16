@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import { Layout, ProfileLayout } from "@components/organisms";
-import {OrderConfirmation} from "@components/molecules";
+import { OrderConfirmation } from "@components/molecules";
 import { SearchResultsScreen } from "@pages/Screens/Search";
 import {
   AboutScreen,
@@ -26,112 +26,52 @@ import {
   CollectionScreen,
 } from "@pages/Screens";
 
-
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
     children: [
-      {
-        index: true,
-        element: <HomeScreen />,
-      },
-      {
-        path: "*",
-        element: <NotFound />,
-      },
-      {
-        path: "blogs",
-        element: <BlogsScreen />,
-      },
-      {
-        path: "/order-details/:orderId",
-        element: <OrderDetails />
-      },
-      
-      {
-        path: "contact-us",
-        element: <ContactScreen />,
-      },
-      {
-        path: "about-us",
-        element: <AboutScreen />,
-      },
-      {
-        path: "products/:category/:item?",
-        element: <Shop />,
-      },
-      {
-        path:"/collection/:collectionType",
-        element:<CollectionScreen />,
-      },
-      {
-        path: "cart",
-        element: <Cart />,
-      },
-      {
-        path: "/cart/checkout",
-        element: <CheckOut />,
-      },
-      {
-        path: "orderConfirmaton",
-        element: <OrderConfirmation />,
-      },
-      {
-        path: "authentication",
-        element: <AuthPage />,
-      },
-      {
-        path:"forgot-password",
-        element:<ForgotPassword />,
-      },
-      {
-        path: "product-details/:id",
-        element: <ProductDetails />,
-      },
-      {
-        path: "search",
-        element: <Search />,
-      },
-      {
-        path: "/search-results",
-        element: <SearchResultsScreen />
-      },
+      { index: true, element: <HomeScreen /> },
+
+      { path: "*", element: <NotFound /> },
+
+      { path: "blogs", element: <BlogsScreen /> },
+
+      { path: "order-details/:orderId", element: <OrderDetails /> },
+
+      { path: "contact-us", element: <ContactScreen /> },
+      { path: "about-us", element: <AboutScreen /> },
+
+      { path: "products/:mainSlug/:subSlug?", element: <Shop /> },
+
+      { path: "collection/:collectionType", element: <CollectionScreen /> },
+
+      { path: "cart", element: <Cart /> },
+      { path: "cart/checkout", element: <CheckOut /> },
+
+      { path: "orderConfirmation", element: <OrderConfirmation /> },
+
+      { path: "authentication", element: <AuthPage /> },
+      { path: "forgot-password", element: <ForgotPassword /> },
+
+      { path: "product-details/:id", element: <ProductDetails /> },
+
+      { path: "search", element: <Search /> },
+      { path: "search-results", element: <SearchResultsScreen /> },
+
       {
         path: "profile",
         element: <ProfileLayout />,
         children: [
-          {
-            index: true,
-            element: <PersonalData />,
-          },
-          {
-            path: "orders",
-            element: <Orders />,
-          },
-          {
-            path: "returns",
-            element: <Returns />,
-          },
-          {
-            path: "wishlist",
-            element: <Wishlist />,
-          },
-          {
-            path: "verification",
-            element: <Verification />,
-          },
-          {
-            path: "payment-credit-card",
-            element: <Payment />,
-          },
-          {
-            path: "logout",
-            element: <Logout />,
-          },
+          { index: true, element: <PersonalData /> },
+          { path: "orders", element: <Orders /> },
+          { path: "returns", element: <Returns /> },
+          { path: "wishlist", element: <Wishlist /> },
+          { path: "verification", element: <Verification /> },
+          { path: "payment-credit-card", element: <Payment /> },
+          { path: "logout", element: <Logout /> },
         ],
       },
     ],
-    
   },
 ]);

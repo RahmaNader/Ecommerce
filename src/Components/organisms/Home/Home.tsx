@@ -10,17 +10,15 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { ProductsGrid } from "@components/organisms/ProductsGrid/ProductsGrid";
 import { CategoryItem } from "@components/atoms/CategoryItem/CategoryItem";
+import { buildProductPath } from "@utils/buildProductPath";
 
 const Home: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const handleCategoryClick = (category: string, categoryId: number) => {
-    navigate(`/products/${category.toLowerCase()}`, {
-      state: {
-        categoryId,
-        isMainCategory: true,
-      },
+  const handleCategoryClick = (categoryName: string, categoryId: number) => {
+    navigate(buildProductPath(categoryName), {
+      state: { categoryId, isMainCategory: true },
     });
   };
 

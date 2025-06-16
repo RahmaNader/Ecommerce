@@ -7,6 +7,7 @@ import { Button } from "@components/atoms";
 import { FilterCategory as ImportedFilterCategory } from "@types";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useLocation } from "react-router-dom";
+import { buildProductPath } from "@utils/buildProductPath";
 
 interface FilterCategory extends ImportedFilterCategory {
   id?: number;
@@ -81,14 +82,13 @@ const Filter: React.FC<FilterProps> = ({
   ) => {
     if (!categoryId) return;
 
-    const pathParts = location.pathname.split("/");
-    const mainCategoryName = pathParts[2] || "";
+    const mainCategoryName = location.pathname.split("/")[2] || "";
+    navigate(
+      buildProductPath(mainCategoryName, categoryName), // 👈 fixed
+      { state: { categoryId } }
+    );
 
-    navigate(`/products/${mainCategoryName}/${categoryName.toLowerCase()}`, {
-      state: { categoryId },
-    });
-
-    if (onClose) onClose();
+    onClose?.();
   };
 
   const handleFilterClick = () => {
@@ -106,9 +106,7 @@ const Filter: React.FC<FilterProps> = ({
     const pathParts = location.pathname.split("/");
     const mainCategoryName = pathParts[2] || "";
 
-    if (mainCategoryName) {
-      navigate(`/products/${mainCategoryName}`);
-    }
+    if (mainCategoryName) navigate(buildProductPath(mainCategoryName));
 
     onFilterChange({});
 

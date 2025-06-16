@@ -1,3 +1,4 @@
+import { buildProductPath } from "@utils/buildProductPath";
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -23,10 +24,10 @@ const ShopModal: React.FC<ShopModalProps> = ({
   categories,
   language,
   onMouseEnter,
-  onMouseLeave
+  onMouseLeave,
 }) => {
   const location = useLocation();
-  
+
   const getCategoryName = (category: Category) => {
     if (language === "ar") {
       return category.nameAr || category.name;
@@ -54,7 +55,7 @@ const ShopModal: React.FC<ShopModalProps> = ({
               (sub) => sub.parentCategoryID === mainCat.categoryID
             );
             const mainCatName = getCategoryName(mainCat);
-            const mainPath = `/products/${mainCatName.toLowerCase()}`;
+            const mainPath = buildProductPath(mainCatName);
             const isMainActive = location.pathname === mainPath;
 
             return (
@@ -62,10 +63,15 @@ const ShopModal: React.FC<ShopModalProps> = ({
                 <div className="pb-2 mb-4 border-b border-wine/20">
                   <Link
                     to={mainPath}
-                    state={{ categoryId: mainCat.categoryID, isMainCategory: true }}
+                    state={{
+                      categoryId: mainCat.categoryID,
+                      isMainCategory: true,
+                    }}
                     className={`text-xl font-semibold text-wine hover:text-wine/80 
                               transition-colors duration-200 ${
-                                isMainActive ? "underline underline-offset-4" : ""
+                                isMainActive
+                                  ? "underline underline-offset-4"
+                                  : ""
                               }`}
                   >
                     {getCategoryName(mainCat)}
@@ -74,7 +80,7 @@ const ShopModal: React.FC<ShopModalProps> = ({
                 <ul className="space-y-3">
                   {subcategories.map((sub) => {
                     const subCatName = getCategoryName(sub);
-                    const subPath = `/products/${mainCatName.toLowerCase()}/${subCatName.toLowerCase()}`;
+                    const subPath = buildProductPath(mainCatName, subCatName);
                     const isActive = location.pathname.includes(subPath);
 
                     return (
@@ -83,13 +89,20 @@ const ShopModal: React.FC<ShopModalProps> = ({
                           to={subPath}
                           state={{ categoryId: sub.categoryID }}
                           className={`text-[16px] transition-all duration-200
-                                    ${isActive
-                                      ? "text-wine font-medium"
-                                      : "text-mutedGray hover:text-wine/80"
+                                    ${
+                                      isActive
+                                        ? "text-wine font-medium"
+                                        : "text-mutedGray hover:text-wine/80"
                                     } flex items-center`}
                         >
-                          <span className={`transition-all duration-200 
-                                          ${isActive ? "translate-x-1" : "group-hover:translate-x-1"}`}>
+                          <span
+                            className={`transition-all duration-200 
+                                          ${
+                                            isActive
+                                              ? "translate-x-1"
+                                              : "group-hover:translate-x-1"
+                                          }`}
+                          >
                             {getCategoryName(sub)}
                           </span>
                         </Link>

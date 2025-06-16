@@ -381,6 +381,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
           onClick={handleImageClick}
         >
           <div
+            dir="ltr"
             className="flex h-full transition-transform duration-500 ease-in-out"
             style={{ transform: `translateX(-${selectedImageIndex * 100}%)` }}
           >
@@ -399,7 +400,6 @@ const ProductSection: React.FC<ProductSectionProps> = ({
             ))}
           </div>
 
-          {/* On mobile or tablet, use the in-place zoom */}
           {isHovering && window.innerWidth < 1024 && (
             <div
               className="absolute top-0 left-0 w-full h-full pointer-events-none"

@@ -560,10 +560,20 @@ const resources = {
         addCard: "Add Card",
         addNewCard: "Add New Card",
       },
+      shop: {
+        noProductsAlt: "No products illustration",
+        noProductsMessage: "Sorry, no items match your filters.",
+        clearFilters: "Clear filters",
+      },
     },
   },
   ar: {
     translation: {
+      shop: {
+        noProductsAlt: "صورة لا توجد منتجات",
+        noProductsMessage: "عذرًا، لا توجد عناصر مطابقة لبحثك.",
+        clearFilters: "إلغاء الفلاتر",
+      },
       navbar: {
         home: "الرئيسية",
         shop: "المتجر",
