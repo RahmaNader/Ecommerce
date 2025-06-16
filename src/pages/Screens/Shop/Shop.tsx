@@ -89,7 +89,7 @@ const Shop: React.FC = () => {
   /* ---------- resolve slug → categoryID ---------- */
   useEffect(() => {
     if (allCats.length === 0) return;
-    const matched = matchBySlug(allCats, slugify(activeSlug));
+    const matched = matchBySlug(allCats, activeSlug);
     if (matched) {
       setCategoryId(matched.categoryID);
       setIsMainCategory(matched.parentCategoryID === null);
