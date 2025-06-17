@@ -1,12 +1,12 @@
 import React from "react";
 import "./AboutScreen.css";
 import aboutSectionHero from "@assets/lady-good-mood-looks-into-camera-beige-background-beautiful-smiling-woman-with-big-bright-lips-red-beret-earrings-long-coat-posing_197531-18681.svg";
-import AboutImage1 from "@assets/AboutImage1.svg";
-import AboutImage2 from "@assets/AboutImage2.svg";
-import AboutImage3 from "@assets/AboutImage3.svg";
-import TwitterIcon from "@assets/Twitter-icon.svg";
-import InstgramIcon from "@assets/Instgram-icon.svg";
-import LinkedInIcon from "@assets/LinkedIn-icon.svg";
+// import AboutImage1 from "@assets/AboutImage1.svg";
+// import AboutImage2 from "@assets/AboutImage2.svg";
+// import AboutImage3 from "@assets/AboutImage3.svg";
+// import TwitterIcon from "@assets/Twitter-icon.svg";
+// import InstgramIcon from "@assets/Instgram-icon.svg";
+// import LinkedInIcon from "@assets/LinkedIn-icon.svg";
 import DeliveryIcon from "@assets/icon-delivery.svg";
 import CustomerServiceIcon from "@assets/Icon-Customer service.svg";
 import SecureIcon from "@assets/Icon-secure.svg";
@@ -224,11 +224,9 @@ const AboutScreen: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="flex w-[80%] mx-auto justify-between sm:flex-col xs:flex-col md:flex-row ">
-          <div className="flex-col sm:mb-8 xs:mb-8">
-            <div className="flex justify-center">
-              <img src={AboutImage1} className="w-2/3" alt="" />
-            </div>
+        <div className="flex w-[50%] mx-auto justify-between sm:flex-col xs:flex-col md:flex-row ">
+          {/* <div className="flex-col sm:mb-8 xs:mb-8">
+            <div className="flex justify-center"></div>
             <h3 className="text-center mt-4 font-Poppins text-wine">
               John Salem
             </h3>
@@ -239,38 +237,32 @@ const AboutScreen: React.FC = () => {
               <img src={TwitterIcon} className="w-4" alt="" />
               <img src={InstgramIcon} className="w-4" alt="" />
               <img src={LinkedInIcon} className="w-3" alt="" />
+            </div>
+          </div> */}
+          <div className="flex-col sm:mb-8 xs:mb-8">
+            <div className="flex justify-center"></div>
+            <h3 className="text-center mt-4 font-Poppins text-wine">
+              Sidig MohamedAli
+            </h3>
+            <h4 className="text-center mt-1 font-Poppins text-skin">
+              Founder and owner{" "}
+            </h4>
+            <div className="flex justify-around w-1/4 mx-auto mt-2">
+              {/* <img src={TwitterIcon} className="w-4" alt="" />
+              <img src={InstgramIcon} className="w-4" alt="" />
+              <img src={LinkedInIcon} className="w-3" alt="" /> */}
             </div>
           </div>
           <div className="flex-col sm:mb-8 xs:mb-8">
-            <div className="flex justify-center">
-              <img src={AboutImage2} className="w-2/3" alt="" />
-            </div>
+            <div className="flex justify-center"></div>
             <h3 className="text-center mt-4 font-Poppins text-wine">
-              John Salem
+              Islam hawash
             </h3>
-            <h4 className="text-center mt-1 font-Poppins text-skin">
-              Manager Director{" "}
-            </h4>
+            <h4 className="text-center mt-1 font-Poppins text-skin">CEO </h4>
             <div className="flex justify-around w-1/4 mx-auto mt-2">
-              <img src={TwitterIcon} className="w-4" alt="" />
+              {/* <img src={TwitterIcon} className="w-4" alt="" />
               <img src={InstgramIcon} className="w-4" alt="" />
-              <img src={LinkedInIcon} className="w-3" alt="" />
-            </div>
-          </div>
-          <div className="flex-col sm:mb-8 xs:mb-8">
-            <div className="flex justify-center">
-              <img src={AboutImage3} className="w-2/3" alt="" />
-            </div>
-            <h3 className="text-center mt-4 font-Poppins text-wine">
-              John Salem
-            </h3>
-            <h4 className="text-center mt-1 font-Poppins text-skin">
-              Manager Director{" "}
-            </h4>
-            <div className="flex justify-around w-1/4 mx-auto mt-2">
-              <img src={TwitterIcon} className="w-4" alt="" />
-              <img src={InstgramIcon} className="w-4" alt="" />
-              <img src={LinkedInIcon} className="w-3" alt="" />
+              <img src={LinkedInIcon} className="w-3" alt="" /> */}
             </div>
           </div>
         </div>
