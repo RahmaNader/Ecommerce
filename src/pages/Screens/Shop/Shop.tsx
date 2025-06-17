@@ -111,16 +111,42 @@ const Shop: React.FC = () => {
   }, [allCats, categoryId]);
 
   /* ---------- products query ---------- */
+  const resolvedParentIds: number[] = React.useMemo(() => {
+    if (categoryId === null) return [];
+
+    if (isMainCategory) return [categoryId]; // e.g. “Men”
+
+    const parentId = allCats.find(
+      (c) => c.categoryID === categoryId
+    )?.parentCategoryID;
+    return parentId ? [parentId] : []; // e.g. parent of “Shirts” (= Men)
+  }, [categoryId, isMainCategory, allCats]);
+
+  const resolvedCategoryIds: number[] | undefined = React.useMemo(() => {
+    if (categoryId === null) return undefined;
+
+    // sub-category selected → include it as an explicit category filter
+    return isMainCategory
+      ? filterCriteria.categories?.map(Number)
+      : [categoryId, ...(filterCriteria.categories?.map(Number) || [])];
+  }, [categoryId, isMainCategory, filterCriteria.categories]);
+
   const {
     data: productsData,
     isLoading: prodsLoading,
     error: prodsError,
   } = useQuery(
-    ["categoryProducts", categoryId, filterCriteria, pageNumber, language],
+    [
+      "categoryProducts",
+      resolvedParentIds,
+      resolvedCategoryIds,
+      pageNumber,
+      language,
+    ],
     () =>
       fetchFilteredProducts({
-        parentCategories: categoryId !== null ? [categoryId] : [],
-        categoryIds: filterCriteria.categories?.map(Number),
+        parentCategories: resolvedParentIds,
+        categoryIds: resolvedCategoryIds,
         minPrice: filterCriteria.priceRange?.[0],
         maxPrice: filterCriteria.priceRange?.[1],
         sizeLabels: filterCriteria.size ? [filterCriteria.size] : undefined,
@@ -128,7 +154,11 @@ const Shop: React.FC = () => {
         pageSize,
         isEnglish: language !== "ar",
       }),
-    { enabled: categoryId !== null, keepPreviousData: true }
+    {
+      enabled:
+        resolvedParentIds.length > 0 || resolvedCategoryIds !== undefined,
+      keepPreviousData: true,
+    }
   );
 
   /* ---------- pagination helpers ---------- */
