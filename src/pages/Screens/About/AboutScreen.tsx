@@ -258,7 +258,9 @@ const AboutScreen: React.FC = () => {
             <h3 className="text-center mt-4 font-Poppins text-wine">
               Islam hawash
             </h3>
-            <h4 className="text-center mt-1 font-Poppins text-skin">CEO </h4>
+            <h4 className="text-center mt-1 font-Poppins text-skin">
+              CEO (Chief Executive Officer){" "}
+            </h4>
             <div className="flex justify-around w-1/4 mx-auto mt-2">
               {/* <img src={TwitterIcon} className="w-4" alt="" />
               <img src={InstgramIcon} className="w-4" alt="" />
