@@ -25,6 +25,7 @@ import {
   ForgotPassword,
   CollectionScreen,
 } from "@pages/Screens";
+import ResetPassword from "@pages/Screens/ResetPassword/ResetPassword";
 
 export const router = createBrowserRouter([
   {
@@ -58,6 +59,7 @@ export const router = createBrowserRouter([
 
       { path: "search", element: <Search /> },
       { path: "search-results", element: <SearchResultsScreen /> },
+      { path: "reset-password", element: <ResetPassword /> },
 
       {
         path: "profile",
