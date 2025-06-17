@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
+  useRef,
+} from "react";
 import { useQuery } from "react-query";
 import { fetchFilteredProducts } from "@services/api/fetchFilteredProducts";
 import { fetchCategories } from "@services/api/fetchCategories";
@@ -10,6 +16,7 @@ import { useTranslation } from "react-i18next";
 import { useLanguage } from "@context/useLanguage";
 import { Category } from "@types";
 import noProducts from "@assets/no-products.png";
+
 const slugify = (t: string) => t.replace(/\s+/g, "-").toLowerCase();
 
 const matchBySlug = (cats: Category[], raw?: string) => {
@@ -41,31 +48,18 @@ const Shop: React.FC = () => {
 
   /* ---------- URL params ---------- */
   const { mainSlug, subSlug } = useParams<ShopParams>();
-  const activeSlug = subSlug ?? mainSlug; // ← always the slug we display/query
+  const activeSlug = subSlug ?? mainSlug;
+  const prevActiveSlug = useRef<string | undefined>();
 
   /* ---------- pagination ---------- */
   const [searchParams, setSearchParams] = useSearchParams();
-  const initialPage = useMemo(() => {
+  const [pageNumber, setPageNumber] = useState(() => {
     const p = parseInt(searchParams.get("page") || "1", 10);
     return Number.isNaN(p) || p < 1 ? 1 : p;
-  }, [searchParams]);
-  const [pageNumber, setPageNumber] = useState(initialPage);
+  });
 
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams);
-    params.set("page", pageNumber.toString());
-    setSearchParams(params, { replace: true });
-  }, [pageNumber, searchParams, setSearchParams]);
-
-  useEffect(() => {
-    const p = parseInt(searchParams.get("page") || "1", 10);
-    if (!Number.isNaN(p) && p !== pageNumber) setPageNumber(p);
-  }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(
-    () => window.scrollTo({ top: 0, behavior: "smooth" }),
-    [pageNumber]
-  );
+  // Track if we're in the middle of a category change
+  const [isCategoryChanging, setIsCategoryChanging] = useState(false);
 
   /* ---------- UI state ---------- */
   const [filterCriteria, setFilterCriteria] = useState<FilterCriteria>({});
@@ -86,6 +80,23 @@ const Shop: React.FC = () => {
     staleTime: 5 * 60_000,
   });
 
+  /* ---------- Handle category changes ---------- */
+  useEffect(() => {
+    if (prevActiveSlug.current !== activeSlug) {
+      if (prevActiveSlug.current !== undefined) {
+        // This is a category change, not initial load
+        setIsCategoryChanging(true);
+        setPageNumber(1);
+
+        // Update URL immediately to remove page parameter
+        const params = new URLSearchParams(searchParams);
+        params.delete("page");
+        setSearchParams(params, { replace: true });
+      }
+      prevActiveSlug.current = activeSlug;
+    }
+  }, [activeSlug, searchParams, setSearchParams]);
+
   /* ---------- resolve slug → categoryID ---------- */
   useEffect(() => {
     if (allCats.length === 0) return;
@@ -98,7 +109,38 @@ const Shop: React.FC = () => {
       setIsMainCategory(false);
     }
     setSlugChecked(true);
-  }, [allCats, activeSlug]);
+
+    // Reset category changing flag after category is resolved
+    if (isCategoryChanging) {
+      setIsCategoryChanging(false);
+    }
+  }, [allCats, activeSlug, isCategoryChanging]);
+
+  /* ---------- Handle pagination URL sync ---------- */
+  const updatePageInUrl = useCallback(
+    (page: number) => {
+      if (isCategoryChanging) return; // Don't update URL during category change
+
+      const params = new URLSearchParams(searchParams);
+      if (page > 1) {
+        params.set("page", page.toString());
+      } else {
+        params.delete("page");
+      }
+      setSearchParams(params);
+    },
+    [searchParams, setSearchParams, isCategoryChanging]
+  );
+
+  // Handle page number changes (from pagination clicks)
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      setPageNumber(newPage);
+      updatePageInUrl(newPage);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    },
+    [updatePageInUrl]
+  );
 
   /* ---------- child-category list for filter ---------- */
   const subcats = useMemo(() => {
@@ -114,35 +156,46 @@ const Shop: React.FC = () => {
   const resolvedParentIds: number[] = React.useMemo(() => {
     if (categoryId === null) return [];
 
-    if (isMainCategory) return [categoryId]; // e.g. “Men”
+    if (isMainCategory) return [categoryId];
 
     const parentId = allCats.find(
       (c) => c.categoryID === categoryId
     )?.parentCategoryID;
-    return parentId ? [parentId] : []; // e.g. parent of “Shirts” (= Men)
+    return parentId ? [parentId] : [];
   }, [categoryId, isMainCategory, allCats]);
 
   const resolvedCategoryIds: number[] | undefined = React.useMemo(() => {
     if (categoryId === null) return undefined;
 
-    // sub-category selected → include it as an explicit category filter
     return isMainCategory
       ? filterCriteria.categories?.map(Number)
       : [categoryId, ...(filterCriteria.categories?.map(Number) || [])];
   }, [categoryId, isMainCategory, filterCriteria.categories]);
+
+  const queryKey = React.useMemo(
+    () => [
+      "categoryProducts",
+      resolvedParentIds.join(","),
+      resolvedCategoryIds?.join(",") ?? "",
+      pageNumber,
+      language,
+      JSON.stringify(filterCriteria), // Include filter criteria in query key
+    ],
+    [
+      resolvedParentIds,
+      resolvedCategoryIds,
+      pageNumber,
+      language,
+      filterCriteria,
+    ]
+  );
 
   const {
     data: productsData,
     isLoading: prodsLoading,
     error: prodsError,
   } = useQuery(
-    [
-      "categoryProducts",
-      resolvedParentIds,
-      resolvedCategoryIds,
-      pageNumber,
-      language,
-    ],
+    queryKey,
     () =>
       fetchFilteredProducts({
         parentCategories: resolvedParentIds,
@@ -156,7 +209,8 @@ const Shop: React.FC = () => {
       }),
     {
       enabled:
-        resolvedParentIds.length > 0 || resolvedCategoryIds !== undefined,
+        !isCategoryChanging &&
+        (resolvedParentIds.length > 0 || resolvedCategoryIds !== undefined),
       keepPreviousData: true,
     }
   );
@@ -206,6 +260,7 @@ const Shop: React.FC = () => {
       (activeSlug ?? "").charAt(0).toUpperCase() + (activeSlug ?? "").slice(1)
     );
   }, [isMainCategory, categoryId, productsData, isRTL, activeSlug]);
+
   useEffect(() => {
     if (isFilterOpen) {
       setShowSidebar(true);
@@ -265,7 +320,7 @@ const Shop: React.FC = () => {
               <Filter
                 onFilterChange={(f) => {
                   setFilterCriteria(f);
-                  setPageNumber(1);
+                  handlePageChange(1);
                 }}
                 onClose={() => setIsFilterOpen(false)}
                 subcategories={subcats}
@@ -284,7 +339,7 @@ const Shop: React.FC = () => {
           <Filter
             onFilterChange={(f) => {
               setFilterCriteria(f);
-              setPageNumber(1);
+              handlePageChange(1);
             }}
             subcategories={subcats}
             mainCategoryId={categoryId!}
@@ -296,10 +351,9 @@ const Shop: React.FC = () => {
           <p className="kiwi font-playball text-3xl md:text-4xl text-wine text-left mb-4">
             {displayName}
           </p>
-          +{" "}
+
           {productsData && productsData.products.length === 0 && (
             <div className="flex flex-col items-center justify-center py-16 gap-6">
-              {/* replace with your own asset */}
               <img
                 src={noProducts}
                 alt={t("shop.noProductsAlt", "No products illustration")}
@@ -314,7 +368,7 @@ const Shop: React.FC = () => {
               <button
                 onClick={() => {
                   setFilterCriteria({});
-                  setPageNumber(1);
+                  handlePageChange(1);
                 }}
                 className="px-5 py-3 bg-wine text-mainColor rounded-md hover:bg-sixColor transition-colors"
               >
@@ -322,18 +376,21 @@ const Shop: React.FC = () => {
               </button>
             </div>
           )}
+
           {/* mobile filter button */}
           <div className="banana laptop:flex hidden justify-start">
             <button onClick={() => setIsFilterOpen(true)}>
               <img src={FilterIcon} alt={t("filter.title")} />
             </button>
           </div>
+
           <ProductsDisplay products={productsData?.products || []} />
+
           {/* pagination */}
           {totalPages > 1 && (
             <div className="mt-8 flex flex-wrap justify-center gap-2 sm:gap-4 px-2">
               <button
-                onClick={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
+                onClick={() => handlePageChange(Math.max(pageNumber - 1, 1))}
                 disabled={pageNumber === 1}
                 className="px-3 sm:px-5 py-2 border border-wine text-wine rounded-md disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base font-medium"
               >
@@ -345,7 +402,7 @@ const Shop: React.FC = () => {
                   typeof item === "number" ? (
                     <button
                       key={item}
-                      onClick={() => setPageNumber(item)}
+                      onClick={() => handlePageChange(item)}
                       className={`rounded-full flex items-center justify-center font-medium w-8 h-8 sm:w-10 sm:h-10 text-xs sm:text-base ${
                         pageNumber === item
                           ? "bg-wine text-mainColor"
@@ -367,7 +424,7 @@ const Shop: React.FC = () => {
 
               <button
                 onClick={() =>
-                  setPageNumber((prev) => Math.min(prev + 1, totalPages))
+                  handlePageChange(Math.min(pageNumber + 1, totalPages))
                 }
                 disabled={pageNumber === totalPages}
                 className="px-3 sm:px-5 py-2 bg-wine text-mainColor rounded-md disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base font-medium"
