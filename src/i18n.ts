@@ -187,6 +187,13 @@ const resources = {
         backToLogin: "Back to Login",
         googleSignUpFailed: "Google sign up failed. Please try again.",
         successGoogleSignUp: "Successfully signed up with Google!",
+        resetPasswordTitle: "Set a New Password",
+        resetPasswordInstructions:
+          "Choose a strong password, then confirm it below.",
+        newPassword: "New password",
+        passwordsDontMatch: "Passwords do not match",
+        saveNewPassword: "Save password",
+        resetPasswordDone: "Password updated successfully. Please log in.",
       },
       profile: {
         identification: "Identification",
@@ -761,6 +768,12 @@ const resources = {
         googleSignUpFailed:
           "فشل التسجيل باستخدام جوجل. يرجى المحاولة مرة أخرى.",
         successGoogleSignUp: "تم التسجيل بنجاح باستخدام جوجل!",
+        resetPasswordTitle: "تعيين كلمة مرور جديدة",
+        resetPasswordInstructions: "اختر كلمة مرور قوية ثم أكدها أدناه.",
+        newPassword: "كلمة المرور الجديدة",
+        passwordsDontMatch: "كلمتا المرور غير متطابقتين",
+        saveNewPassword: "حفظ كلمة المرور",
+        resetPasswordDone: "تم تحديث كلمة المرور بنجاح. يرجى تسجيل الدخول.",
       },
       profile: {
         identification: "الهوية",
