@@ -26,6 +26,8 @@ import { cancelOrder } from "@services/api/cancelOrder";
 import { refundOrder, RefundItem } from "@services/api/refundOrder";
 import Checkbox from "@mui/material/Checkbox";
 import { LoadingSkeleton } from "@components/molecules";
+import { downloadReceipt } from "@services/api/downloadReceipt";
+
 // import FormControlLabel from "@mui/material/FormControlLabel";
 
 interface OrderStep {
@@ -161,13 +163,14 @@ const OrderDetails: React.FC = () => {
   const [isCancelling, setIsCancelling] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [isRefunding, setIsRefunding] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [openRefundDialog, setOpenRefundDialog] = useState(false);
   const [selectedItems, setSelectedItems] = useState<{ [key: string]: number }>(
     {}
   );
   const [refundSuccess, setRefundSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-
+  console.log("ddaksdbakjsdORDERIDDD", orderId);
   // Format date based on locale
   const formatDate = (dateString: string) => {
     try {
@@ -472,6 +475,20 @@ const OrderDetails: React.FC = () => {
       );
     } finally {
       setIsRefunding(false);
+    }
+  };
+  const handleDownloadReceipt = async () => {
+    if (!orderId) return;
+    try {
+      setIsDownloading(true);
+      await downloadReceipt(orderId);
+    } catch (err) {
+      console.error("[OrderDetails] Error downloading receipt:", err);
+      setError(
+        err instanceof Error ? err.message : t("orderDetails.downloadError")
+      );
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -884,6 +901,39 @@ const OrderDetails: React.FC = () => {
                 <img src={payment.icon} alt={payment.method} className="ml-2" />
               )}
             </p>
+            <button
+              className="bg-wine text-mainColor font-playfair px-8 py-2 rounded-md hover:bg-ForthColor text-lg md:text-xl disabled:opacity-70 disabled:cursor-not-allowed mt-6"
+              onClick={handleDownloadReceipt}
+              disabled={isDownloading}
+            >
+              {isDownloading ? (
+                <span className="flex items-center justify-center">
+                  <svg
+                    className="animate-spin -ml-1 mr-2 h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  {t("common.processing")}
+                </span>
+              ) : (
+                t("orderDetails.downloadReceipt")
+              )}
+            </button>
           </div>
 
           <div>

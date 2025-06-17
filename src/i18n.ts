@@ -483,6 +483,8 @@ const resources = {
         },
       },
       orderDetails: {
+        downloadReceipt: "Download receipt",
+        downloadError: "Could not download the receipt. Please try again.",
         title: "Order Details",
         noOrderId: "Order ID not found",
         loadError: "Error loading order details",
@@ -1061,6 +1063,8 @@ const resources = {
         },
       },
       orderDetails: {
+        downloadReceipt: "تحميل الإيصال",
+        downloadError: "تعذر تحميل الإيصال. حاول مرة أخرى.",
         title: "تفاصيل الطلب",
         noOrderId: "لم يتم العثور على معرف الطلب",
         loadError: "خطأ في تحميل تفاصيل الطلب",
