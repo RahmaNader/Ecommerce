@@ -1,12 +1,11 @@
 import {
   IconBrandFacebook,
-  IconBrandTwitter,
+  // IconBrandTwitter,
   IconBrandInstagram,
-  IconBrandLinkedin,
+  IconBrandTiktok,
 } from "@tabler/icons-react";
-import {NavLink} from "@components/atoms";
+import { NavLink } from "@components/atoms";
 import { useTranslation } from "react-i18next";
-
 
 const Footer: React.FC = () => {
   const { t } = useTranslation();
@@ -14,28 +13,28 @@ const Footer: React.FC = () => {
   const socialLinks = [
     {
       id: "facebook",
-      href: "https://facebook.com",
+      href: "https://www.facebook.com/share/1AwUbjzFi8/",
       icon: <IconBrandFacebook width={25} height={25} />,
     },
     {
       id: "linkedin",
-      href: "https://linkedin.com",
-      icon: <IconBrandLinkedin width={25} height={25} />,
+      href: "https://www.tiktok.com/@kiswa.eg?_t=ZS-8xCeDr9LR4R&_r=1",
+      icon: <IconBrandTiktok width={25} height={25} />,
     },
-    {
-      id: "twitter",
-      href: "https://twitter.com",
-      icon: <IconBrandTwitter width={25} height={25} />,
-    },
+    // {
+    //   id: "twitter",
+    //   href: "https://twitter.com",
+    //   icon: <IconBrandTwitter width={25} height={25} />,
+    // },
     {
       id: "instagram",
-      href: "https://instagram.com",
+      href: "https://www.instagram.com/kiswa_eg?igsh=MTRzZndrN2EwZWlsNA==",
       icon: <IconBrandInstagram width={25} height={25} />,
     },
   ];
 
   const contactInfo = {
-    phone: "522-252-4244",
+    phone: "+20 109 178 8117",
     email: "Kiswa@gmail.com",
   };
 
@@ -66,17 +65,35 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="flex flex-col mt-8 space-y-3 font-medium ltr:mr-60 rtl:ml-60">
-        <NavLink label={t("footer.collection")} to="#" variant="footer" />
-          <NavLink label={t("footer.brands")} to="#" variant="footer" />
-          <NavLink label={t("footer.aboutUs")} to="/about-us" variant="footer" />
+          <NavLink
+            label={t("footer.collectionMen")}
+            to="/products/men"
+            variant="footer"
+          />
+          <NavLink
+            label={t("footer.collectionWomen")}
+            to="/products/women"
+            variant="footer"
+          />
+          <NavLink
+            label={t("footer.aboutUs")}
+            to="/about-us"
+            variant="footer"
+          />
         </div>
 
-        {/* Section 2: Contact Information */}
         <div className="flex flex-col  mt-8 space-y-3 font-medium ">
-        <h4>{t("footer.contactUs")}:</h4>
+          <h4>{t("footer.contactUs")}:</h4>
           <NavLink
-            label={`${t("footer.phone")}: ${contactInfo.phone}`}
-            to={`tel:${contactInfo.phone}`}
+            label={
+              <>
+                {t("footer.phone")}:{" "}
+                <span dir="ltr" className="inline-block">
+                  +20 109 178 8117
+                </span>
+              </>
+            }
+            to="tel:+201091788117"
             variant="footer"
           />
           <NavLink

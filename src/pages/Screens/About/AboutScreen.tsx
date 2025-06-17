@@ -12,8 +12,6 @@ import CustomerServiceIcon from "@assets/Icon-Customer service.svg";
 import SecureIcon from "@assets/Icon-secure.svg";
 import { useTranslation } from "react-i18next";
 
-
-
 const AboutScreen: React.FC = () => {
   const { t } = useTranslation();
   return (
@@ -23,20 +21,16 @@ const AboutScreen: React.FC = () => {
           <div className="flex justify-between items-center sm:flex-col xs:flex-col lg:flex-row">
             <div className="lg:w-1/2 md:w-full">
               <h1 className="text-5xl mb-10 text-wine font-playfair sm:w-full xs:w-full font-bold">
-                {t("about.ourStory")}
+                <h2>{t("about.brandStoryTitle")}</h2>
               </h1>
               <p className="text-md mb-5 text-wine font-Poppins">
-                Launched in 2015, Exclusive is South Asia’s premier online
-                shopping makterplace with an active presense in Bangladesh.
-                Supported by wide range of tailored marketing, data and service
-                solutions, Exclusive has 10,500 sallers and 300 brands and
-                serves 3 millioons customers across the region.{" "}
+                {t("about.brandStoryDescription")}
               </p>
-              <p className="text-md text-wine font-Poppins">
+              {/* <p className="text-md text-wine font-Poppins">
                 Exclusive has more than 1 Million products to offer, growing at
                 a very fast. Exclusive offers a diverse assotment in categories
                 ranging from consumer.
-              </p>
+              </p> */}
             </div>
             <div className="lg:w-1/2 md:w-full sm:w-full xs:w-full xl:px-8 lg:px-4 md:px-5">
               <img

@@ -48,6 +48,8 @@ const resources = {
         brandName: "Kiswa",
         copyright: "2024 Kiswa. All Rights Reserved",
         collection: "Collection",
+        collectionMen: "Men's Collection",
+        collectionWomen: "Women's Collection",
         brands: "Brands",
         aboutUs: "About Us",
         contactUs: "Contact Us",
@@ -84,6 +86,9 @@ const resources = {
         },
       },
       about: {
+        brandStoryTitle: "Who We Are",
+        brandStoryDescription:
+          "An Egyptian brand that provides high-quality casual clothing for men and women, in addition to cosmetics. We started with a clear vision to deliver high-quality products targeting the middle class, initially focusing on Cairo and Giza governorates. Our philosophy is based on providing products from Egyptian factories with excellent quality and competitive prices, achieving excellence without compromising quality or customer satisfaction. Our long-term vision is to expand to cover all governorates while maintaining the same quality and service we provide.",
         ourStory: "Our Story",
         ourStoryParagraph1:
           "Launched in 2015, Exclusive is South Asia’s premier online shopping marketplace...",
@@ -617,6 +622,8 @@ const resources = {
         brandName: "كسوة",
         copyright: "© 2024 كسوة. جميع الحقوق محفوظة",
         collection: "المجموعة",
+        collectionMen: "مجموعة الرجال",
+        collectionWomen: "مجموعة النساء",
         brands: "العلامات التجارية",
         aboutUs: "من نحن",
         contactUs: "اتصل بنا",
@@ -652,6 +659,9 @@ const resources = {
         },
       },
       about: {
+        brandStoryTitle: "من نحن",
+        brandStoryDescription:
+          "نحن علامة تجارية مصرية تقدم ملابس كاجوال عالية الجودة للرجال والنساء، بالإضافة إلى مستحضرات التجميل. بدأنا برؤية واضحة لتقديم منتجات عالية الجودة تستهدف الطبقة المتوسطة، مع التركيز في البداية على محافظتي القاهرة والجيزة. تقوم فلسفتنا على توفير منتجات من مصانع مصرية بجودة ممتازة وأسعار تنافسية، محققين التميز دون المساس بالجودة أو رضا العملاء. رؤيتنا طويلة المدى هي التوسع لتغطية جميع المحافظات مع الحفاظ على نفس الجودة والخدمة التي نقدمها.",
         ourStory: "قصتنا",
         ourStoryParagraph1:
           "تم إطلاق Exclusive في عام 2015، وهو السوق الرائد للتسوق عبر الإنترنت في جنوب آسيا...",

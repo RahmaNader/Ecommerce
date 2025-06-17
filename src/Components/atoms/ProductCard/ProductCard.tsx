@@ -69,13 +69,13 @@ export const ProductCard: FC<ProductCardProps> = (props) => {
         <p className="font-playfair font-semibold text-2xl text-ForthColor">
           {logic.t("card.priceInCurrency", { price: logic.priceAfterDiscount })}
         </p>
-        <p className="font-playfair font-medium text-lg line-through text-FifthColor">
-          <>
+        {props.productPrice !== logic.priceAfterDiscount && (
+          <p className="font-playfair font-medium text-lg line-through text-FifthColor">
             {logic.t("card.priceInCurrency", {
               price: props.productPrice,
             })}
-          </>
-        </p>
+          </p>
+        )}
       </div>
       {/* <div className="flex justify-center mt-2">
         <CustomRating rate={props.averageRate ?? 0} mode="hide" />
