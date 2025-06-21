@@ -30,13 +30,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
 
   // Add Google login functionality
   const googleLogin = useGoogleLogin({
-    flow: "implicit",
+    flow: "auth-code",
     scope: "email profile",
-    onSuccess: async (response) => {
+    onSuccess: async ({ code }) => {
       try {
-        console.log("Google OAuth Response:", response);
+        console.log("Google OAuth Response:", code);
 
-        if (!response.access_token) {
+        if (!code) {
           throw new Error("No access token received from Google");
         }
 
@@ -45,7 +45,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
           "https://www.googleapis.com/oauth2/v3/userinfo",
           {
             headers: {
-              Authorization: `Bearer ${response.access_token}`,
+              Authorization: `Bearer ${code}`,
             },
           }
         );
@@ -57,10 +57,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
         const backendResponse = await apiClient.post(
           "/Account/authenticateGoogle",
           {
-            token: response.access_token,
+            token: code,
             email: userInfo.email,
             name: userInfo.name,
-            picture: userInfo.picture
+            picture: userInfo.picture,
           }
         );
 
@@ -70,7 +70,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
           // Success handling
           setAlert({
             type: "success",
-            message: t("auth.successGoogleSignUp")
+            message: t("auth.successGoogleSignUp"),
           });
 
           // Store token from your backend
@@ -84,36 +84,38 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
           }, 2000);
         } else {
           // API returned success=false
-          throw new Error(backendResponse.data.message || "Authentication failed");
+          throw new Error(
+            backendResponse.data.message || "Authentication failed"
+          );
         }
       } catch (error) {
         console.error("Google sign-in error:", error);
-        
+
         let errorMessage = t("auth.googleLoginFailed");
-        
+
         // Get more specific error messages if available
         if (axios.isAxiosError(error) && error.response?.data?.message) {
           errorMessage = error.response.data.message;
         } else if (error instanceof Error) {
           errorMessage = error.message;
         }
-        
+
         setAlert({
           type: "error",
-          message: errorMessage
+          message: errorMessage,
         });
-        
+
         setTimeout(() => setAlert(null), 3000);
       }
     },
     onError: (error) => {
       console.error("Google login error:", error);
       setAlert({
-        type: "error", 
-        message: t("auth.googleLoginFailed")
+        type: "error",
+        message: t("auth.googleLoginFailed"),
       });
       setTimeout(() => setAlert(null), 3000);
-    }
+    },
   });
 
   const handleGoogleLogin = () => {
@@ -123,7 +125,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
   const onSubmit = async (data: LoginFormInputs) => {
     // Existing code remains the same
     try {
-      const result = await loginUser({ email: data.email, password: data.password });
+      const result = await loginUser({
+        email: data.email,
+        password: data.password,
+      });
       setAlert({
         type: "success",
         message: t("auth.successLogin", { userName: data.email }),
@@ -136,7 +141,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
     } catch (error) {
       console.error(error);
       if (axios.isAxiosError(error)) {
-        const errorMessage = error.response?.data?.message || t("auth.loginFailed");
+        const errorMessage =
+          error.response?.data?.message || t("auth.loginFailed");
         setAlert({ type: "error", message: errorMessage });
       } else {
         setAlert({ type: "error", message: t("auth.loginFailed") });
