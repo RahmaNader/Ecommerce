@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getAddressesForUser, updateSavedAddresses } from "@utils/addressUtils";
 import {
   getAllShippingAddresses,
@@ -12,6 +12,12 @@ import { Product } from "@types";
 import { OrderSummary } from "@components/organisms";
 import { useTranslation } from "react-i18next";
 import placeOrder from "@services/api/placeOrder";
+import {
+  getPaymobAuthToken,
+  createPaymobOrder,
+  generatePaymentKey,
+  getPaymentUrl,
+} from "@services/api/paymobServices";
 
 import {
   ToggleRadioButton,
@@ -25,6 +31,7 @@ import {
   PaymentMethod,
   OrderConfirmation,
   Breadcrumb,
+  PaymentModal,
 } from "@components/molecules";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import Typography from "@mui/material/Typography";
@@ -57,6 +64,14 @@ export default function CheckOut() {
 
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
+
+  const [paymentUrl, setPaymentUrl] = useState<string | null>(null);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  // Removed unused state variable
+  const [userData, setUserData] = useState<any>(null);
+
+  // Add a reference for the order data to access in payment callbacks
+  const orderDataRef = useRef<any>(null);
 
   const openModal = () => {
     setShowModal(true);
@@ -112,6 +127,19 @@ export default function CheckOut() {
         )
       );
     }
+  }, []);
+
+  // Load user data from cookies
+  useEffect(() => {
+    const username = Cookies.get("username");
+    const email = Cookies.get("email");
+    const fullName = Cookies.get("fullName");
+
+    setUserData({
+      username,
+      email,
+      fullName,
+    });
   }, []);
 
   const handleEditAddress = (index: number) => {
@@ -266,10 +294,35 @@ export default function CheckOut() {
         shoppingItems: shoppingItems,
       };
 
+      // Store order data for later use in payment callbacks
+      orderDataRef.current = orderData;
       console.log(
         "[CheckOut] Prepared order data:",
         JSON.stringify(orderData, null, 2)
       );
+
+      // Handle different payment methods
+      if (selectedPaymentMethod === "cash") {
+        // Cash on delivery - proceed with direct order placement
+        console.log("[CheckOut] Processing cash on delivery order...");
+        await processOrder(orderData);
+      } else if (selectedPaymentMethod === "credit") {
+        // Credit card payment via Paymob
+        console.log("[CheckOut] Processing credit card payment...");
+        await processCardPayment();
+      }
+    } catch (error) {
+      console.error("[CheckOut] Order error:", error);
+      setAlert({ type: "error", message: t("checkout.orderError") });
+      setTimeout(() => setAlert(null), 5000);
+    } finally {
+      setIsPlacingOrder(false);
+    }
+  };
+
+  // Add a new function to process orders
+  const processOrder = async (orderData: any) => {
+    try {
       console.log("[CheckOut] Sending order to API...");
       const response = await placeOrder(orderData);
       console.log("[CheckOut] Order API response:", response);
@@ -295,13 +348,107 @@ export default function CheckOut() {
         setTimeout(() => setAlert(null), 5000);
       }
     } catch (error) {
-      console.error("[CheckOut] Order error:", error);
-      setAlert({ type: "error", message: t("checkout.orderError") });
-      setTimeout(() => setAlert(null), 5000);
-    } finally {
-      setIsPlacingOrder(false);
+      throw error;
     }
   };
+
+  // Add a new function to process card payments through Paymob
+  const processCardPayment = async () => {
+    try {
+      setIsProcessingPayment(true);
+
+      // Calculate total amount from products and shipping
+      const summary = calculateOrderSummary();
+      const totalAmount = summary.totalAfterCoupon;
+
+      console.log("[CheckOut] Processing payment for amount:", totalAmount);
+
+      // 1. Get Paymob authentication token
+      const authToken = await getPaymobAuthToken();
+      console.log("[CheckOut] Got Paymob auth token");
+
+      // 2. Create Paymob order
+      const orderId = await createPaymobOrder(authToken, totalAmount);
+      console.log("[CheckOut] Created Paymob order:", orderId);
+
+      // 3. Generate payment key
+      const selectedAddress = addresses[selectedAddressIndex];
+      const paymentKey = await generatePaymentKey(
+        authToken,
+        totalAmount,
+        orderId,
+        userData,
+        selectedAddress
+      );
+      console.log("[CheckOut] Generated payment key");
+
+      // 4. Get iframe URL
+      const url = getPaymentUrl(paymentKey);
+      console.log("[CheckOut] Payment URL:", url);
+
+      // 5. Show payment iframe
+      setPaymentUrl(url);
+    } catch (error) {
+      console.error("[CheckOut] Payment processing error:", error);
+      setAlert({ type: "error", message: t("payment.processingError") });
+      setTimeout(() => setAlert(null), 5000);
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
+
+  // Helper function to calculate order summary
+  const calculateOrderSummary = () => {
+    // This should return the total amount to be paid including shipping
+    const cart = Cookies.get("orderSummary");
+    if (cart) {
+      return JSON.parse(cart);
+    }
+    // Fallback calculation if summary not available
+    const subtotal = products.reduce((acc, item) => {
+      return acc + (parseFloat(item.DisPrice || item.NormalPrice) * item.quantity);
+    }, 0);
+    const shipping = selectedShippingMethod === "fast" ? 50 : 0;
+    return {
+      subtotal,
+      shipping,
+      totalAfterCoupon: subtotal + shipping,
+    };
+  };
+
+  // Add handlers for payment callbacks
+  const handlePaymentSuccess = async () => {
+    setPaymentUrl(null);
+
+    try {
+      // Process the order after successful payment
+      if (orderDataRef.current) {
+        await processOrder(orderDataRef.current);
+      }
+    } catch (error) {
+      console.error("[CheckOut] Error processing order after payment:", error);
+      setAlert({ type: "error", message: t("payment.orderProcessingError") });
+      setTimeout(() => setAlert(null), 5000);
+    }
+  };
+
+  const handlePaymentFailure = (message: string) => {
+    setPaymentUrl(null);
+    setAlert({ type: "error", message: message || t("payment.failed") });
+    setTimeout(() => setAlert(null), 5000);
+  };
+
+  // Render the payment modal when needed
+  if (paymentUrl) {
+    return (
+      <PaymentModal
+        paymentUrl={paymentUrl}
+        onClose={() => setPaymentUrl(null)}
+        onSuccess={handlePaymentSuccess}
+        onFailure={handlePaymentFailure}
+      />
+    );
+  }
 
   if (orderConfirmed && orderSuccess) {
     return <OrderConfirmation />;
@@ -478,7 +625,7 @@ export default function CheckOut() {
                 : null
             }
             selectedShippingMethod={selectedShippingMethod}
-            isPlacingOrder={isPlacingOrder}
+            isPlacingOrder={isPlacingOrder || isProcessingPayment}
           />
         </div>
       </div>
