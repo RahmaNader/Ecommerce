@@ -11,6 +11,7 @@ import { AddressProps } from "@types";
 import { Product } from "@types";
 import { OrderSummary } from "@components/organisms";
 import { useTranslation } from "react-i18next";
+import { useLocation, useNavigate } from "react-router-dom";
 import placeOrder from "@services/api/placeOrder";
 import {
   getPaymobAuthToken,
@@ -36,9 +37,44 @@ import {
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import Typography from "@mui/material/Typography";
 
+// Define proper types instead of using 'any'
+interface OrderItem {
+  productId: number;
+  quantity: number;
+  color: string;
+  sizeLabel: string;
+}
+
+interface OrderData {
+  city: string;
+  shippingAddressId: string;
+  isFastShipping: boolean;
+  couponCode: string;
+  shoppingItems: OrderItem[];
+  orderId?: string; // Optional since it gets populated after order creation
+}
+
+interface OrderResponse {
+  success: boolean;
+  message?: string;
+}
+
+interface OrderSummaryData {
+  subtotal: number;
+  shipping: number;
+  totalAfterCoupon: number;
+}
+
 export default function CheckOut() {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === "ar";
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Parse query parameters for payment callbacks
+  const queryParams = new URLSearchParams(location.search);
+  const paymentStatus = queryParams.get("payment_status");
+  const transactionId = queryParams.get("transaction_id");
 
   const [showModal, setShowModal] = useState(false);
   const [addresses, setAddresses] = useState<AddressProps[]>([]);
@@ -47,7 +83,7 @@ export default function CheckOut() {
     number | null
   >(null);
   const [selectedShippingMethod, setSelectedShippingMethod] =
-    useState<string>("regular"); // Default to "regular"
+    useState<string>("regular");
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<string>("");
   const [orderConfirmed, setOrderConfirmed] = useState(false);
@@ -63,45 +99,75 @@ export default function CheckOut() {
   >("address");
 
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
-  const [orderSuccess, setOrderSuccess] = useState(false);
-
   const [paymentUrl, setPaymentUrl] = useState<string | null>(null);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
-  // Removed unused state variable
-  const [userData, setUserData] = useState<any>(null);
+  const [userData, setUserData] = useState({
+    username: "",
+    email: "",
+    fullName: "",
+  });
 
-  // Add a reference for the order data to access in payment callbacks
-  const orderDataRef = useRef<any>(null);
+  // Store order data for payment callbacks - replace 'any' with proper type
+  const orderDataRef = useRef<OrderData | null>(null);
 
-  const openModal = () => {
-    setShowModal(true);
-  };
+  // Handle payment return from external gateway
+  useEffect(() => {
+    if (paymentStatus) {
+      const handlePaymentReturn = async () => {
+        // Clear query params to avoid processing the same payment again on refresh
+        navigate('/cart/checkout', { replace: true });
+        
+        if (paymentStatus === "success" && transactionId && orderDataRef.current) {
+          try {
+            // Process the successful order first
+            await processOrder(orderDataRef.current);
+            
+            // Display success message
+            showAlertMessage("success", t("payment.successMessage"), 3000);
+            
+            // Perform any additional post-payment actions here
+            // For example: analytics tracking, loyalty points, etc.
+            
+            // Redirect to home page after a short delay (allows user to see the success message)
+            setTimeout(() => {
+              navigate('/');
+            }, 3000);
+            
+          } catch (error) {
+            console.error("[CheckOut] Error processing returned payment:", error);
+            setAlert({ 
+              type: "error", 
+              message: t("payment.verificationError") 
+            });
+            setTimeout(() => setAlert(null), 5000);
+          }
+        } else if (paymentStatus === "failed") {
+          handlePaymentFailure(t("payment.rejectedByGateway"));
+        }
+      };
+      
+      handlePaymentReturn();
+    }
+  }, [paymentStatus, transactionId, navigate, t]);
 
   useEffect(() => {
     const loadAddresses = async () => {
-      const savedAddresses = getAddressesForUser();
-      setAddresses(savedAddresses);
-
       try {
+        const savedAddresses = getAddressesForUser();
         const apiAddresses = await getAllShippingAddresses();
 
         if (apiAddresses && apiAddresses.length > 0) {
           const convertedAddresses = apiAddresses.map(
             convertApiAddressToAddressProps
           );
-          console.log(
-            "[CheckOut] Fetched addresses from API:",
-            convertedAddresses
-          );
-
           setAddresses(convertedAddresses);
         } else {
-          console.log(
-            "[CheckOut] No addresses found in API, using local addresses"
-          );
+          setAddresses(savedAddresses);
         }
       } catch (error) {
-        console.log("[CheckOut] Error fetching addresses:", error);
+        console.error("[CheckOut] Error fetching addresses:", error);
+        // Fall back to local addresses if API fails
+        setAddresses(getAddressesForUser());
       }
     };
 
@@ -110,37 +176,55 @@ export default function CheckOut() {
 
   useEffect(() => {
     const cartData = Cookies.get("cart");
-
     if (cartData) {
-      console.log("AAAAAAAAAAA Cart Data:", cartData);
-      setProducts(JSON.parse(cartData));
+      try {
+        setProducts(JSON.parse(cartData));
+      } catch (error) {
+        console.error("[CheckOut] Error parsing cart data:", error);
+        setAlert({ 
+          type: "error", 
+          message: t("checkout.invalidCartData") 
+        });
+        setTimeout(() => setAlert(null), 3000);
+      }
     }
 
+    // Save current cart as previous cart for recovery
     if (!Cookies.get("previousCart") && cartData) {
-      Cookies.set(
-        "previousCart",
-        JSON.stringify(
-          JSON.parse(cartData).map((p: Product) => ({
-            id: p.id,
-            quantity: p.quantity,
-          }))
-        )
-      );
+      try {
+        const parsedCart = JSON.parse(cartData);
+        Cookies.set(
+          "previousCart",
+          JSON.stringify(
+            parsedCart.map((p: Product) => ({
+              id: p.id,
+              quantity: p.quantity,
+            }))
+          ),
+          { expires: 7 }
+        );
+      } catch (error) {
+        console.error("[CheckOut] Error saving previous cart:", error);
+      }
     }
-  }, []);
+  }, [t]);
 
   // Load user data from cookies
   useEffect(() => {
-    const username = Cookies.get("username");
-    const email = Cookies.get("email");
-    const fullName = Cookies.get("fullName");
-
     setUserData({
-      username,
-      email,
-      fullName,
+      username: Cookies.get("username") || "",
+      email: Cookies.get("email") || "",
+      fullName: Cookies.get("fullName") || "",
     });
   }, []);
+
+  const showAlertMessage = (type: "success" | "error", message: string, duration = 3000) => {
+    setAlert({ type, message });
+    setTimeout(() => setAlert(null), duration);
+  };
+
+  const openModal = () => setShowModal(true);
+  const closeModal = () => setShowModal(false);
 
   const handleEditAddress = (index: number) => {
     setEditingAddressIndex(index);
@@ -171,18 +255,11 @@ export default function CheckOut() {
     if (addressToDelete.shippingAddressId) {
       try {
         const success = await deleteAddress(addressToDelete.shippingAddressId);
-
-        if (success) {
-          console.log(
-            `[CheckOut] Successfully deleted address with ID: ${addressToDelete.shippingAddressId} from backend`
-          );
-        } else {
-          console.log(
-            `[CheckOut] Failed to delete address with ID: ${addressToDelete.shippingAddressId} from backend`
-          );
+        if (!success) {
+          console.error(`[CheckOut] Failed to delete address with ID: ${addressToDelete.shippingAddressId}`);
         }
       } catch (error) {
-        console.error(`[CheckOut] Error when deleting address:`, error);
+        console.error(`[CheckOut] Error deleting address:`, error);
       }
     }
 
@@ -197,10 +274,6 @@ export default function CheckOut() {
     }
   };
 
-  const closeModal = () => {
-    setShowModal(false);
-  };
-
   const handleAddressSelection = (index: number) => {
     setSelectedAddressIndex(index);
   };
@@ -210,18 +283,13 @@ export default function CheckOut() {
       if (selectedAddressIndex !== null) {
         setCurrentStep("shipping");
       } else {
-        setAlert({ type: "error", message: t("checkout.selectAddress") });
-        setTimeout(() => setAlert(null), 3000);
+        showAlertMessage("error", t("checkout.selectAddress"));
       }
     } else if (currentStep === "shipping") {
       if (selectedShippingMethod) {
         setCurrentStep("payment");
       } else {
-        setAlert({
-          type: "error",
-          message: t("checkout.selectShipping"),
-        });
-        setTimeout(() => setAlert(null), 3000);
+        showAlertMessage("error", t("checkout.selectShipping"));
       }
     } else if (currentStep === "payment") {
       handlePlaceOrder();
@@ -235,178 +303,145 @@ export default function CheckOut() {
   const handlePaymentMethodChange = (method: string) => {
     setSelectedPaymentMethod(method);
   };
+
   const handlePlaceOrder = async () => {
     if (selectedAddressIndex === null) {
-      setAlert({ type: "error", message: t("checkout.selectAddress") });
-      setTimeout(() => setAlert(null), 3000);
+      showAlertMessage("error", t("checkout.selectAddress"));
       return;
     }
     if (!selectedShippingMethod) {
-      setAlert({ type: "error", message: t("checkout.selectShipping") });
-      setTimeout(() => setAlert(null), 3000);
+      showAlertMessage("error", t("checkout.selectShipping"));
       return;
     }
     if (!selectedPaymentMethod) {
-      setAlert({ type: "error", message: t("checkout.selectPayment") });
-      setTimeout(() => setAlert(null), 3000);
+      showAlertMessage("error", t("checkout.selectPayment"));
       return;
     }
 
     const selectedAddress = addresses[selectedAddressIndex];
     setIsPlacingOrder(true);
-    console.log("[CheckOut] Starting order placement...");
 
     try {
-      const shoppingItems = products.map((product) => {
-        const variantId = product?.productVarientId
-          ? product?.productVarientId
-          : "ERRRRRORORORORS";
-        console.log("PRODUCTSSSSSSSSSS:", product);
-        console.log(`[CheckOut] Variant ID for ${product.name}: ${variantId}`);
-
+      const shoppingItems: OrderItem[] = products.map((product) => {
+        const variantId = product?.productVarientId;
+        
         if (!variantId) {
-          throw new Error(`Missing variant ID for item ${product.name}`);
+          throw new Error(`Missing variant ID for ${product.name || 'unnamed product'}`);
         }
 
-        const item = {
-          productId:
-            typeof variantId === "string" ? parseInt(variantId, 10) : variantId,
+        return {
+          productId: typeof variantId === "string" ? parseInt(variantId, 10) : variantId,
           quantity: product.quantity,
           color: product.color || "Default",
           sizeLabel: product.size || "Default",
         };
-
-        console.log(
-          `[CheckOut] Using variantId: ${variantId} for order item ${product.name}`
-        );
-        return item;
       });
 
-      const orderData = {
+      const orderData: OrderData = {
         city: selectedAddress.city,
         shippingAddressId: String(
           selectedAddress.shippingAddressId ||
-            selectedAddress.id ||
-            Date.now().toString()
+          selectedAddress.id ||
+          Date.now().toString()
         ),
         isFastShipping: selectedShippingMethod === "fast",
         couponCode: Cookies.get("appliedCoupon") || "",
         shoppingItems: shoppingItems,
       };
 
-      // Store order data for later use in payment callbacks
+      // Store order data for payment callbacks
       orderDataRef.current = orderData;
-      console.log(
-        "[CheckOut] Prepared order data:",
-        JSON.stringify(orderData, null, 2)
-      );
 
-      // Handle different payment methods
       if (selectedPaymentMethod === "cash") {
-        // Cash on delivery - proceed with direct order placement
-        console.log("[CheckOut] Processing cash on delivery order...");
+        // Cash on delivery - direct order placement
         await processOrder(orderData);
       } else if (selectedPaymentMethod === "credit") {
         // Credit card payment via Paymob
-        console.log("[CheckOut] Processing credit card payment...");
         await processCardPayment();
       }
     } catch (error) {
       console.error("[CheckOut] Order error:", error);
-      setAlert({ type: "error", message: t("checkout.orderError") });
-      setTimeout(() => setAlert(null), 5000);
+      showAlertMessage("error", t("checkout.orderError"), 5000);
     } finally {
       setIsPlacingOrder(false);
     }
   };
 
-  // Add a new function to process orders
-  const processOrder = async (orderData: any) => {
+  const processOrder = async (orderData: OrderData) => {
     try {
-      console.log("[CheckOut] Sending order to API...");
-      const response = await placeOrder(orderData);
-      console.log("[CheckOut] Order API response:", response);
+      const response = await placeOrder(orderData) as OrderResponse;
 
       if (response && response.success) {
-        console.log(
-          "[CheckOut] Order successful - clearing cookies and navigating"
-        );
-        Cookies.remove("cart");
-        Cookies.remove("appliedCoupon");
-        Cookies.remove("orderSummary");
-        setOrderSuccess(true);
+        // Clear cart data after successful order
+        cleanupCartData();
         setOrderConfirmed(true);
       } else {
-        console.error(
-          "[CheckOut] Order placement failed:",
-          response?.message || "Unknown error"
-        );
-        setAlert({
-          type: "error",
-          message: response?.message || t("checkout.orderError"),
-        });
-        setTimeout(() => setAlert(null), 5000);
+        showAlertMessage("error", response?.message || t("checkout.orderError"), 5000);
       }
     } catch (error) {
       throw error;
     }
   };
 
-  // Add a new function to process card payments through Paymob
+  const cleanupCartData = () => {
+    Cookies.remove("cart");
+    Cookies.remove("appliedCoupon");
+    Cookies.remove("orderSummary");
+  };
+
   const processCardPayment = async () => {
     try {
       setIsProcessingPayment(true);
 
-      // Calculate total amount from products and shipping
+      // Calculate total from cart summary
       const summary = calculateOrderSummary();
       const totalAmount = summary.totalAfterCoupon;
 
-      console.log("[CheckOut] Processing payment for amount:", totalAmount);
-
-      // 1. Get Paymob authentication token
+      // Create Payment Flow
       const authToken = await getPaymobAuthToken();
-      console.log("[CheckOut] Got Paymob auth token");
-
-      // 2. Create Paymob order
       const orderId = await createPaymobOrder(authToken, totalAmount);
-      console.log("[CheckOut] Created Paymob order:", orderId);
 
-      // 3. Generate payment key
-      const selectedAddress = addresses[selectedAddressIndex];
+      // Generate current page URL as return URL
+      const baseUrl = window.location.origin;
+      const returnUrl = `${baseUrl}/cart/checkout`;
+
+      const selectedAddress = addresses[selectedAddressIndex!];
+      
+      // Include return URLs in payment key generation
       const paymentKey = await generatePaymentKey(
         authToken,
         totalAmount,
         orderId,
         userData,
-        selectedAddress
+        selectedAddress,
+        returnUrl // Add return URL
       );
-      console.log("[CheckOut] Generated payment key");
 
-      // 4. Get iframe URL
+      // Get payment URL and redirect
       const url = getPaymentUrl(paymentKey);
-      console.log("[CheckOut] Payment URL:", url);
-
-      // 5. Show payment iframe
       setPaymentUrl(url);
     } catch (error) {
       console.error("[CheckOut] Payment processing error:", error);
-      setAlert({ type: "error", message: t("payment.processingError") });
-      setTimeout(() => setAlert(null), 5000);
+      showAlertMessage("error", t("payment.processingError"), 5000);
     } finally {
       setIsProcessingPayment(false);
     }
   };
 
-  // Helper function to calculate order summary
-  const calculateOrderSummary = () => {
-    // This should return the total amount to be paid including shipping
+  // Calculate order summary from cart data or products
+  const calculateOrderSummary = (): OrderSummaryData => {
     const cart = Cookies.get("orderSummary");
     if (cart) {
-      return JSON.parse(cart);
+      try {
+        return JSON.parse(cart);
+      } catch (error) {
+        console.error("[CheckOut] Error parsing order summary:", error);
+      }
     }
-    // Fallback calculation if summary not available
+    
+    // Fallback calculation
     const subtotal = products.reduce((acc, item) => {
-      return acc + (parseFloat(item.DisPrice || item.NormalPrice) * item.quantity);
+      return acc + (Number(item.DisPrice || item.NormalPrice) * item.quantity);
     }, 0);
     const shipping = selectedShippingMethod === "fast" ? 50 : 0;
     return {
@@ -416,7 +451,6 @@ export default function CheckOut() {
     };
   };
 
-  // Add handlers for payment callbacks
   const handlePaymentSuccess = async () => {
     setPaymentUrl(null);
 
@@ -424,21 +458,37 @@ export default function CheckOut() {
       // Process the order after successful payment
       if (orderDataRef.current) {
         await processOrder(orderDataRef.current);
+        
+        // Show success message
+        showAlertMessage("success", t("payment.successMessage"), 3000);
+        
+        // Perform additional actions after successful payment
+        // Example: Record analytics event
+        console.log("[CheckOut] Recording successful payment");
+        
+        // Example: Save order ID for order tracking
+        const orderId = orderDataRef.current.orderId || 'unknown';
+        Cookies.set("lastCompletedOrder", orderId, { expires: 1 });
+        
+        // Redirect to home page after a short delay
+        setTimeout(() => {
+          navigate('/');
+        }, 3000);
+      } else {
+        throw new Error("Missing order data");
       }
     } catch (error) {
       console.error("[CheckOut] Error processing order after payment:", error);
-      setAlert({ type: "error", message: t("payment.orderProcessingError") });
-      setTimeout(() => setAlert(null), 5000);
+      showAlertMessage("error", t("payment.orderProcessingError"), 5000);
     }
   };
 
   const handlePaymentFailure = (message: string) => {
     setPaymentUrl(null);
-    setAlert({ type: "error", message: message || t("payment.failed") });
-    setTimeout(() => setAlert(null), 5000);
+    showAlertMessage("error", message || t("payment.failed"), 5000);
   };
 
-  // Render the payment modal when needed
+  // Render payment modal when needed
   if (paymentUrl) {
     return (
       <PaymentModal
@@ -450,7 +500,7 @@ export default function CheckOut() {
     );
   }
 
-  if (orderConfirmed && orderSuccess) {
+  if (orderConfirmed) {
     return <OrderConfirmation />;
   }
 
