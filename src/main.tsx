@@ -1,18 +1,19 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import './i18n';
+import "./i18n";
 import "./index.css";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./router";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { LanguageProvider } from "./context/LanguageProvider";
-import { GoogleOAuthProvider } from '@react-oauth/google';
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 // Initialize your QueryClient
 const queryClient = new QueryClient();
 
 // Define your Google OAuth client ID
-const googleClientId = "478766202773-3a2j4siq6cb4sjediej70to1rftlhdhi.apps.googleusercontent.com";
+const googleClientId =
+  "684294082408-dmsohk4tmuvo1uke1gmakffp6jhild60.apps.googleusercontent.com";
 
 // Main App component
 const App: React.FC = () => {
