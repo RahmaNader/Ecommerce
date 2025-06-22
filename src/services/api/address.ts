@@ -13,6 +13,7 @@ interface AddressPostData {
   floorNumber: number;
   phoneNumber: string;
   isSaved: boolean;
+  area: string;
 }
 
 interface AddressResponse {
@@ -74,6 +75,7 @@ export const postAddress = async (
       floorNumber: addressData.floorNumber,
       phoneNumber: phoneNumber,
       isSaved: addressData.isSaved,
+      area: addressData.area,
     };
 
     console.log(

@@ -7,8 +7,6 @@ import Cookies from "js-cookie";
 import "react-phone-input-2/lib/style.css";
 import { useTranslation } from "react-i18next";
 import { postAddress, getCityId } from "@services/api/address";
-import { MuiTelInput } from "mui-tel-input";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 interface AddressModalProps {
   closeModal: () => void;
@@ -24,34 +22,6 @@ const AddressModal: React.FC<AddressModalProps> = ({
   isArabic = false,
 }) => {
   const { t } = useTranslation();
-  const phoneInputTheme = createTheme({
-    palette: {
-      primary: { main: "#A78E78" }, // wine
-    },
-    components: {
-      MuiOutlinedInput: {
-        styleOverrides: {
-          root: {
-            borderRadius: "0.25rem",
-            backgroundColor: "rgba(167, 142, 120, 0.13)",
-            "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#A78E78",
-            },
-            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#A78E78",
-            },
-            "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#A78E78",
-            },
-          },
-          input: {
-            color: "#A78E78",
-            "&::placeholder": { color: "#A78E78", opacity: 0.7 },
-          },
-        },
-      },
-    },
-  });
 
   const citiesOfEgypt = [
     "Cairo",
@@ -155,13 +125,18 @@ const AddressModal: React.FC<AddressModalProps> = ({
         }
         break;
       case "street":
-        if (!/^[a-zA-Z\s\d\u0600-\u06FF]+$/.test(value)) {
+        // If the field is empty, treat it as valid (optional)
+        if (
+          value.trim() !== "" &&
+          !/^[a-zA-Z\s\d\u0600-\u06FF]+$/.test(value)
+        ) {
           error = t("addressModal.validation.streetInvalid");
         }
         break;
       case "phoneNumber": {
+        // keep digits only
         const digitsOnly = value.replace(/\D/g, "");
-        if (digitsOnly.length !== 13) {
+        if (!/^01\d{9}$/.test(digitsOnly)) {
           error = t("addressModal.validation.phoneInvalid");
         }
         break;
@@ -245,8 +220,8 @@ const AddressModal: React.FC<AddressModalProps> = ({
 
         const apiAddressData = {
           buildingName: newAddress.building,
-          street: newAddress.street,
-          area: newAddress.area, // ★ added
+          street: newAddress.street || "",
+          area: newAddress.area,
           city: getCityId(newAddress.city),
           additionalDirections: newAddress.additionalDirections || "",
           flatNumber: parseInt(newAddress.aptNo) || 0,
@@ -402,69 +377,34 @@ const AddressModal: React.FC<AddressModalProps> = ({
 
           <div className="input-group">
             {" "}
-            <ThemeProvider theme={phoneInputTheme}>
-              <MuiTelInput
-                value={newAddress.phoneNumber}
-                onChange={(v) => {
-                  setNewAddress((p) => ({ ...p, phoneNumber: v }));
-                  validateInput("phoneNumber", v);
-                }}
-                defaultCountry="EG"
-                disableDropdown
-                forceCallingCode
-                placeholder={t("addressModal.phonePlaceholder")}
-                langOfCountryName="en"
-                dir={document.dir || "ltr"}
-                className="w-full"
-                MenuProps={{
-                  anchorOrigin: {
-                    vertical: "bottom",
-                    horizontal: document.dir === "rtl" ? "right" : "left",
-                  },
-                  transformOrigin: {
-                    vertical: "top",
-                    horizontal: document.dir === "rtl" ? "right" : "left",
-                  },
-                }}
-                sx={{
-                  width: "100%",
-                  "& .MuiInputBase-root": {
-                    width: "100%",
-                    height: "45px",
-                    backgroundColor: "rgba(167, 142, 120, 0.13)",
-                    color: "#A78E78",
-                    textAlign: document.dir === "rtl" ? "right" : "left",
-                    fontFamily: "Poppins, sans-serif",
-                  },
-                  "& .MuiOutlinedInput-input": {
-                    height: "11px",
-                    padding: "14px",
-                    fontSize: "15px",
-                    textAlign: document.dir === "rtl" ? "right" : "left",
-                  },
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "#A78E78",
-                  },
-                  "& .MuiSvgIcon-root": { color: "#A78E78" },
-                  "& .MuiTelInput-Flag": {
-                    mr: document.dir === "rtl" ? 0 : 1,
-                    ml: document.dir === "rtl" ? 1 : 0,
-                    order: document.dir === "rtl" ? 1 : 0,
-                  },
-                  "& .MuiMenu-paper": { fontFamily: "Poppins, sans-serif" },
-                }}
-              />
-            </ThemeProvider>
+            {/* PHONE NUMBER (Egypt) */}
+            <input
+              type="tel"
+              name="phoneNumber"
+              dir={isArabic ? "rtl" : "ltr"}
+              className={`w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor
+              placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none
+              focus:ring-none ${isArabic ? "text-right" : "text-left"}`}
+              placeholder={t(
+                "addressModal.phonePlaceholder",
+                "01XXXXXXXXX" // Egyptian mobile format
+              )}
+              value={newAddress.phoneNumber}
+              onChange={(e) => {
+                const v = e.target.value;
+                setNewAddress((p) => ({ ...p, phoneNumber: v }));
+                validateInput("phoneNumber", v);
+              }}
+            />
             {errors.phoneNumber && (
               <p className="text-FifthColor text-sm mt-1">
                 {errors.phoneNumber}
               </p>
             )}
-            {/* Add helper text for phone format */}
             <p className="text-gray-500 text-xs mt-1">
               {t(
                 "addressModal.phoneFormatHelp",
-                "Phone number should be in format +2001XXXXXXXX"
+                "11-digit Egyptian number e.g. 01123456789"
               )}
             </p>
           </div>
