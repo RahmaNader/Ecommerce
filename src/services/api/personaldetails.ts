@@ -2,14 +2,14 @@ import axios from "axios";
 import {PersonalData} from "@types"
 import Cookies from "js-cookie";
 
-const API_BASE_URL = "https://www.bouraq-mt.com/royalkey/api/PersonalData/personal-data";
+// Add the base URL from environment variables
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = `${baseUrl}/api/PersonalData/personal-data`;
 
-// Function to retrieve the Bearer token
 const getAuthToken = (): string | null => {
   return Cookies.get("authToken") || null;
 };
 
-// Function to fetch personal data
 export const fetchPersonalData = async () => {
     const token = getAuthToken();
     console.log("Token:", token);
@@ -43,8 +43,6 @@ export const fetchPersonalData = async () => {
   };
   
   
-
-// Function to update personal data
 export const updatePersonalData = async (data: Partial<PersonalData>) => {
     const token = getAuthToken();
     if (!token) {

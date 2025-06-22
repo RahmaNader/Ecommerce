@@ -4,9 +4,11 @@ import visaLogo from "@assets/visa.svg";
 import mastercardLogo from "@assets/mastercard.svg";
 import trash from "@assets/trash.svg";
 import { CreditCard } from "@types";
+import { useTranslation } from "react-i18next";
 
 const PaymentCreditCardScreen: React.FC = () => {
   const [cards, setCards] = useState<CreditCard[]>([]);
+  const { t } = useTranslation();
 
   const cardLogos: Record<string, string> = {
     visa: visaLogo,
@@ -27,10 +29,10 @@ const PaymentCreditCardScreen: React.FC = () => {
   return (
     <div className="flex flex-col mt-8 md:mt-16">
       <h1 className="text-2xl font-semibold text-wine font-playfair md:self-start mx-auto md:mx-0">
-        Payment & Credit Card
+        {t("paymentCreditCard.title")}
       </h1>
       <p className="text-ForthColor font-playfair text-xl mb-4 md:self-start mx-auto md:mx-0">
-        Manage payment method
+        {t("paymentCreditCard.subtitle")}
       </p>
 
       <div className="space-y-4 mt-4">
@@ -78,21 +80,21 @@ const PaymentCreditCardScreen: React.FC = () => {
         <div className="flex items-center justify-between w-full p-4 h-[60px] rounded-md bg-[#A78E7833]">
           {/* Add New Card Section */}
           <div
-            className="flex items-center cursor-pointer"
-            onClick={() => setIsModalOpen(true)} // Trigger modal on click
+            className="flex items-center cursor-pointer rtl:gap-4"
+            onClick={() => setIsModalOpen(true)} 
           >
             <button className="flex items-center justify-center w-8 h-8 border-2 border-ForthColor rounded-full">
               <span className="text-lg font-bold text-ForthColor">+</span>
             </button>
             <span className="ml-3 text-sm text-ForthColor font-Poppins font-normal">
-              Add new card
+              {t("paymentCreditCard.addNewCard")}
             </span>
           </div>
 
           {/* Logos Section */}
           <div className="flex space-x-2">
-            <img src={mastercardLogo} alt="MasterCard Logo" />
-            <img src={visaLogo} alt="Visa Logo" />
+            <img src={mastercardLogo} alt={t("paymentCreditCard.masterCardLogoAlt")} />
+            <img src={visaLogo} alt={t("paymentCreditCard.visaLogoAlt")} />
           </div>
         </div>
       </div>
@@ -108,7 +110,7 @@ const PaymentCreditCardScreen: React.FC = () => {
         type="button"
         className="bg-wine text-mainColor font-playfair text-2xl rounded-md w-[50%] mx-auto mt-8 py-3 px-8 hover:bg-ForthColor transition duration-300"
       >
-        Confirm
+        {t("paymentCreditCard.confirm")}
       </button>
     </div>
   );

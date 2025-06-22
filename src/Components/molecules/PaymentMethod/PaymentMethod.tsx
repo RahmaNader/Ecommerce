@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { ToggleRadioButton } from "@components/atoms";
 import visaLogo from "@assets/visa.svg";
 import masterCardLogo from "@assets/master card.svg";
-import CardModal from "../CardModal/CardModal"; 
+import {CardModal, PaymentCard} from "@components/molecules"; 
 import addCardPlusIcon from "@assets/add-card-plus-icon.svg";
-import PaymentCard from "../PaymentCard/PaymentCard";
+import { useTranslation } from "react-i18next";
 
 interface PaymentMethodProps {
   selectedPaymentMethod: string;
@@ -15,15 +15,16 @@ const PaymentMethod: React.FC<PaymentMethodProps> = ({
   selectedPaymentMethod,
   onPaymentMethodChange,
 }) => {
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === "ar";
+  
   const [isCardModalOpen, setCardModalOpen] = useState(false);
   const [savedCards, setSavedCards] = useState<{ cardNumber: string; expirationDate: string }[]>([]);
   const [selectedCard, setSelectedCard] = useState<string>("");
 
-
   const openCardModal = () => {
     setCardModalOpen(true);
   };
-
 
   const closeCardModal = () => {
     setCardModalOpen(false);
@@ -37,21 +38,20 @@ const PaymentMethod: React.FC<PaymentMethodProps> = ({
     closeCardModal(); 
   };
 
-
   const handleCardSelect = (cardNumber: string) => {
     setSelectedCard(cardNumber);
     onPaymentMethodChange("credit"); 
   };
 
   return (
-    <div className="py-8 w-full">
+    <div className={`py-8 w-full ${isRTL ? 'rtl' : 'ltr'}`}>
 
       <div className="py-5 flex text-wine">
         <div className="w-full flex justify-between items-center">
           <div className="w-full flex justify-between">
             <div>
               <ToggleRadioButton
-                label="Cash on Delivery"
+                label={t("payment.cashOnDelivery")}
                 isChecked={selectedPaymentMethod === "cash"}
                 onChange={() => onPaymentMethodChange("cash")}
               />
@@ -65,7 +65,7 @@ const PaymentMethod: React.FC<PaymentMethodProps> = ({
           <div className="w-full flex justify-between items-center">
             <div>
               <ToggleRadioButton
-                label="Credit Card"
+                label={t("payment.creditCard")}
                 isChecked={selectedPaymentMethod === "credit"}
                 onChange={() => onPaymentMethodChange("credit")}
               />
@@ -80,7 +80,7 @@ const PaymentMethod: React.FC<PaymentMethodProps> = ({
 
       {selectedPaymentMethod === "credit" && savedCards.length > 0 && (
         <div className="mb-4">
-          <h3 className="text-sm font-semibold text-wine">Saved Cards</h3>
+          <h3 className="text-sm font-semibold text-wine">{t("payment.savedCards")}</h3>
           {savedCards.map((card, index) => (
             <PaymentCard
               key={index}
@@ -102,9 +102,9 @@ const PaymentMethod: React.FC<PaymentMethodProps> = ({
             <img
               src={addCardPlusIcon}
               className="w-6 me-1 border-2 text-[#A78E7833] border-[#A78E7833] rounded-full"
-              alt="Add Card"
+              alt={t("payment.addCard")}
             />
-            <p className="text-[#A78E78] text-xl ps-2">Add New Card</p>
+            <p className="text-[#A78E78] text-xl ps-2">{t("payment.addNewCard")}</p>
           </div>
           <div className="flex">
             <img src={visaLogo} className="w-14" alt="Visa" />
@@ -119,61 +119,3 @@ const PaymentMethod: React.FC<PaymentMethodProps> = ({
 };
 
 export default PaymentMethod;
-
-
-
-// import { ToggleRadioButton } from "@components/atoms";
-// import visaLogo from '../../../assets/visa.svg'
-// import masterCardLogo from '../../../assets/master card.svg'
-
-// interface PaymentMethodProps {
-//   selectedPaymentMethod: string;
-//   onPaymentMethodChange: (method: string) => void;
-// }
-
-// const PaymentMethod: React.FC<PaymentMethodProps> = ({
-//   selectedPaymentMethod,
-//   onPaymentMethodChange,
-// }) => {
-//   return (
-//     <div className="space-y-2 my-5 px-12">
-//       <h2 className="text-xl font-semibold text-wine">Payment Method</h2>
-
-//       {/* Cash on Delivery option */}
-//       <div className="py-5 flex border-b border-b-gray-300 text-wine">
-//         <div className="w-full flex justify-between items-center">
-//           <div className="w-full flex justify-between">
-//             <div>
-//               <ToggleRadioButton
-//                 label="Cash on Delivery"
-//                 isChecked={selectedPaymentMethod === "cash"}
-//                 onChange={() => onPaymentMethodChange("cash")}
-//               />
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-
-//       {/* Credit Card option */}
-//       <div className="py-5 flex text-wine">
-//         <div className="w-full flex justify-between items-center">
-//           <div className="w-full flex justify-between">
-//             <div>
-//               <ToggleRadioButton
-//                 label="Credit Card"
-//                 isChecked={selectedPaymentMethod === "credit"}
-//                 onChange={() => onPaymentMethodChange("credit")}
-//               />
-//             </div>
-//             <div className="flex">
-//                 <img src={visaLogo} alt="" />
-//                 <img src={masterCardLogo} alt="" />
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default PaymentMethod;

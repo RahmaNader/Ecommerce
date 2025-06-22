@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import PhoneInput from "react-phone-input-2";
+import { MuiTelInput } from "mui-tel-input";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 import "react-phone-input-2/lib/style.css";
 import { SignUpFormInputs } from "@types";
 import IconGoogle from "@assets/Icon-Google.svg";
 import { registerUser } from "@services/auth/AuthService";
-import { ErrorAlert, SuccessAlert,Button } from "@components/atoms";
+import { ErrorAlert, SuccessAlert, Button } from "@components/atoms";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
-
+import { useGoogleLogin } from "@react-oauth/google";
+import apiClient from "../../../apiClient";
 
 interface SignUpFormProps {
   onSwitchToLogin: () => void;
@@ -27,16 +29,109 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
     formState: { errors },
     control,
     watch,
+    setError,
   } = useForm<SignUpFormInputs>();
 
   const password = watch("password");
 
+  // Use the Google login hook
+  const googleLogin = useGoogleLogin({
+    flow: "implicit",
+    scope: "email profile",
+    onSuccess: async (response) => {
+      try {
+        console.log("Google OAuth Response:", response);
+
+        if (!response.access_token) {
+          throw new Error("No access token received from Google");
+        }
+
+        // Get user info using the access token
+        const userInfoResponse = await axios.get(
+          "https://www.googleapis.com/oauth2/v3/userinfo",
+          {
+            headers: {
+              Authorization: `Bearer ${response.access_token}`,
+            },
+          }
+        );
+
+        const userInfo = userInfoResponse.data;
+        console.log("Google User Data:", userInfo);
+
+        // Send access token and user info to backend
+        const backendResponse = await apiClient.post(
+          "/Account/authenticateGoogle",
+          {
+            token: response.access_token,
+          }
+        );
+
+        console.log("Backend Response:", backendResponse.data);
+
+        if (backendResponse.data && backendResponse.data.succeeded) {
+          // Success handling
+          setAlert({
+            type: "success",
+            message: t("auth.successGoogleSignUp"),
+          });
+
+          // Store token from your backend
+          if (backendResponse.data.token) {
+            localStorage.setItem("authToken", backendResponse.data.token);
+          }
+
+          setTimeout(() => {
+            setAlert(null);
+            onSwitchToLogin();
+          }, 2000);
+        } else {
+          // API returned success=false
+          throw new Error(
+            backendResponse.data.message || "Authentication failed"
+          );
+        }
+      } catch (error) {
+        console.error("Google sign-in error:", error);
+
+        let errorMessage = t("auth.googleSignUpFailed");
+
+        // Get more specific error messages if available
+        if (axios.isAxiosError(error) && error.response?.data?.message) {
+          errorMessage = error.response.data.message;
+        } else if (error instanceof Error) {
+          errorMessage = error.message;
+        }
+
+        setAlert({
+          type: "error",
+          message: errorMessage,
+        });
+
+        setTimeout(() => setAlert(null), 3000);
+      }
+    },
+    onError: (error) => {
+      console.error("Google login error:", error);
+      setAlert({
+        type: "error",
+        message: t("auth.googleSignUpFailed"),
+      });
+      setTimeout(() => setAlert(null), 3000);
+    },
+  });
+
+  const handleGoogleSignUp = () => {
+    googleLogin();
+  };
+
   const onSubmit = async (formData: SignUpFormInputs) => {
     try {
-      const paddedMonth = formData.month.padStart(2, '0');
-      const paddedDay = formData.day.padStart(2, '0');
+      const paddedMonth = formData.month.padStart(2, "0");
+      const paddedDay = formData.day.padStart(2, "0");
       const dateOfBirth = `${formData.year}-${paddedMonth}-${paddedDay}`;
       const genderValue = parseInt(formData.gender, 10);
+
       const result = await registerUser({
         userName: formData.userName,
         email: formData.email,
@@ -45,12 +140,12 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
         phoneNumber: formData.phoneNumber,
         gender: genderValue,
         dateOfBirth: dateOfBirth,
-        model: 'web',
+        model: "web",
       });
-      console.log("Registration response:", result);
+      console.log(result);
       setAlert({
         type: "success",
-        message: t("auth.registersuccess")
+        message: t("auth.registersuccess"),
       });
 
       setTimeout(() => {
@@ -59,24 +154,86 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
       }, 3000);
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        const errorMessage = error.response?.data;
-          
-        if (errorMessage.toLowerCase().includes('already registered') || 
-            errorMessage.toLowerCase().includes('already exists')) {
+        const errorData = error.response?.data;
+
+        // CASE 1: Plain string error like "Email is already registered!"
+        if (typeof errorData === "string") {
+          // Try to map it to a specific field if possible
+          if (errorData.toLowerCase().includes("email")) {
+            setError("email", {
+              type: "manual",
+              message: errorData,
+            });
+            return;
+          }
+
+          // Fallback to general alert
           setAlert({
             type: "error",
-            message: t("auth.usernameTaken")
+            message: errorData,
           });
-        } else {
-          setAlert({
-            type: "error",
-            message: errorMessage
+          return;
+        }
+
+        // CASE 2: Validation object with `errors` dictionary
+        if (errorData?.errors && typeof errorData.errors === "object") {
+          Object.entries(errorData.errors).forEach(([field, messages]) => {
+            if (Array.isArray(messages)) {
+              setError(field as keyof SignUpFormInputs, {
+                type: "manual",
+                message: messages[0],
+              });
+            }
           });
+          return;
         }
       }
+
+      setAlert({
+        type: "error",
+        message: t("auth.registerFailed"), // fallback translation
+      });
+
       setTimeout(() => setAlert(null), 3000);
     }
+
+    setTimeout(() => setAlert(null), 3000);
   };
+
+  // Create a custom theme to match your website's styling
+  const phoneInputTheme = createTheme({
+    palette: {
+      primary: {
+        main: "#A78E78", // wine color from your app
+      },
+    },
+    components: {
+      MuiOutlinedInput: {
+        styleOverrides: {
+          root: {
+            borderRadius: "0.25rem",
+            backgroundColor: "rgba(167, 142, 120, 0.13)",
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#A78E78",
+            },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#A78E78",
+            },
+            "& .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#A78E78",
+            },
+          },
+          input: {
+            color: "#A78E78",
+            "&::placeholder": {
+              color: "#A78E78",
+              opacity: 0.7,
+            },
+          },
+        },
+      },
+    },
+  });
 
   return (
     <div className="bg-mainColor text-secondColor p-6 rounded w-full mx-auto">
@@ -121,6 +278,11 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
             })}
             className={`w-full px-4 py-2 mt-1 border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none`}
           />
+          {/* <p className="mt-2 text-xs text-gray-500 ms-2">
+            email must be unique. you cant use the same email to register
+            multiple accounts.
+          </p> */}
+
           {errors.email && (
             <p className="text-FifthColor text-sm mt-1">
               {errors.email.message}
@@ -133,38 +295,86 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
           <Controller
             name="phoneNumber"
             control={control}
-            rules={{ 
+            rules={{
               required: t("auth.phoneRequired"),
-              pattern: {
-                value: /^[0-9]+$/,
-                message: t("auth.invalidPhone"),
+              validate: (value) => {
+                // Basic validation for phone format
+                if (!value || value.trim().length < 11) {
+                  return t("auth.phoneMinLength");
+                }
+                return true;
               },
-              minLength: {
-                value: 11,
-                message: t("auth.phoneMinLength"),
-              }
             }}
             render={({ field }) => (
-              <PhoneInput
-                {...field}
-                country={"eg"}
-                placeholder={t("auth.phoneNumber")}
-                containerClass="w-full ltr:text-left rtl:text-right"
-                inputStyle={{
-                  width: "100%",
-                  borderColor: "#A78E78",
-                  backgroundColor: "rgba(167, 142, 120, 0.13)",
-                  color: "#A78E78",
-                  alignItems: "center",
-                }}
-                buttonStyle={{
-                  borderColor: "#A78E78",
-                }}
-                dropdownStyle={{
-                  width: "250px",
-                }}
-                onChange={(value) => field.onChange(value)}
-              />
+              <ThemeProvider theme={phoneInputTheme}>
+                <MuiTelInput
+                  {...field}
+                  value={field.value || ""}
+                  onChange={(newValue) => field.onChange(newValue)}
+                  defaultCountry="EG"
+                  placeholder={t("auth.phoneNumber")}
+                  className="w-full"
+                  focusOnSelectCountry
+                  langOfCountryName="en"
+                  forceCallingCode={true}
+                  // Add RTL support
+                  dir={document.dir || "ltr"}
+                  MenuProps={{
+                    anchorOrigin: {
+                      vertical: "bottom",
+                      horizontal: document.dir === "rtl" ? "right" : "left",
+                    },
+                    transformOrigin: {
+                      vertical: "top",
+                      horizontal: document.dir === "rtl" ? "right" : "left",
+                    },
+                  }}
+                  sx={{
+                    width: "100%",
+                    "& .MuiInputBase-root": {
+                      width: "100%",
+                      height: "45px",
+                      backgroundColor: "rgba(167, 142, 120, 0.13)",
+                      color: "#A78E78",
+                      borderColor: "#A78E78",
+                      textAlign: document.dir === "rtl" ? "right" : "left",
+                      fontFamily: "Poppins, sans-serif", // Match other inputs font
+                    },
+                    "& .MuiOutlinedInput-input": {
+                      height: "11px",
+                      padding: "14px",
+                      textAlign: document.dir === "rtl" ? "right" : "left",
+                      fontFamily: "Poppins, sans-serif", // Match other inputs font
+                      fontSize: "15px", // Match text size with other form fields
+                    },
+                    "& input::placeholder": {
+                      textAlign: document.dir === "rtl" ? "right" : "left",
+                      fontFamily: "Poppins, sans-serif", // Match placeholder font
+                    },
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#A78E78",
+                    },
+                    "& .MuiSvgIcon-root": {
+                      color: "#A78E78",
+                    },
+                    "& .MuiTelInput-Flag": {
+                      marginRight: document.dir === "rtl" ? "0" : "8px",
+                      marginLeft: document.dir === "rtl" ? "8px" : "0",
+                      order: document.dir === "rtl" ? "1" : "0",
+                    },
+                    "&:hover .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#A78E78",
+                    },
+                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#A78E78",
+                    },
+                    // Apply font to the dropdown menu as well
+                    "& .MuiMenu-paper": {
+                      fontFamily: "Poppins, sans-serif",
+                    },
+                  }}
+                />
+              </ThemeProvider>
             )}
           />
           {errors.phoneNumber && (
@@ -189,6 +399,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
             })}
             className={`w-full px-4 py-2 mt-1 border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none`}
           />
+          {/* <p className="mt-2 text-xs text-gray-500 ms-2">
+            Password must contain at least one uppercase letter, one lowercase
+            letter, one digit, and one special character.
+          </p> */}
           {errors.password && (
             <p className="text-FifthColor text-sm mt-1">
               {errors.password.message}
@@ -217,7 +431,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
         </div>
 
         {/* Gender and Dates Row */}
-        <div className="flex flex-col md:flex-row items-center md:justify-between space-y-4 md:space-y-0 md:space-x-4">
+        <div className="flex flex-col md:flex-row items-center md:justify-between space-y-4 md:space-y-0 ltr:md:space-x-4 w-full">
           {/* Gender Dropdown */}
           <div className="w-full md:w-1/2">
             <select
@@ -237,7 +451,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
           </div>
 
           {/* Dates Dropdowns */}
-          <div className="flex flex-wrap md:flex-nowrap justify-between md:justify-end space-x-0 md:space-x-2 w-full md:w-1/2 ltr:gap-0 rtl:gap-4">
+          <div className="flex flex-wrap md:flex-nowrap justify-between md:justify-end space-x-0 ltr:md:space-x-2 w-full md:w-1/2 ltr:gap-0 rtl:gap-4">
             {/* Day Dropdown */}
             <div className="w-1/4">
               <select
@@ -336,7 +550,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
           </div>
           <div className="relative flex justify-center">
             <span className="bg-mainColor px-2 text-ForthColor">
-            {t("auth.orSignUpWith")}
+              {t("auth.orSignUpWith")}
             </span>
           </div>
         </div>
@@ -345,7 +559,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
         <button
           type="button"
           className="w-4/5 md:w-2/5 py-2 px-4 flex items-center justify-center m-auto border-2 border-ForthColor rounded-lg text-black text-[10px] md:text-[16px] hover:border-wine"
-          onClick={() => {}}
+          onClick={handleGoogleSignUp}
         >
           <img src={IconGoogle} alt="Google Icon" className="w-4 h-4 mr-2" />
           {t("auth.signUpWithGoogle")}
@@ -353,7 +567,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
 
         <div className="relative flex items-center justify-center w-3/4 mx-auto">
           <p className="font-playfair text-[10px] md:text-[28px] text-sixColor flex justify-center">
-          {t("auth.haveAccount")} &nbsp;
+            {t("auth.haveAccount")} &nbsp;
             <button
               onClick={onSwitchToLogin}
               className="text-wine border-b-2 border-wine text-[10px] md:text-[28px]"

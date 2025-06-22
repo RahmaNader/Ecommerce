@@ -1,19 +1,16 @@
 import React from "react";
-// TODO : use tailwind instead of css
 import "./AboutScreen.css";
 import aboutSectionHero from "@assets/lady-good-mood-looks-into-camera-beige-background-beautiful-smiling-woman-with-big-bright-lips-red-beret-earrings-long-coat-posing_197531-18681.svg";
-import AboutImage1 from "@assets/AboutImage1.svg";
-import AboutImage2 from "@assets/AboutImage2.svg";
-import AboutImage3 from "@assets/AboutImage3.svg";
-import TwitterIcon from "@assets/Twitter-icon.svg";
-import InstgramIcon from "@assets/Instgram-icon.svg";
-import LinkedInIcon from "@assets/LinkedIn-icon.svg";
+// import AboutImage1 from "@assets/AboutImage1.svg";
+// import AboutImage2 from "@assets/AboutImage2.svg";
+// import AboutImage3 from "@assets/AboutImage3.svg";
+// import TwitterIcon from "@assets/Twitter-icon.svg";
+// import InstgramIcon from "@assets/Instgram-icon.svg";
+// import LinkedInIcon from "@assets/LinkedIn-icon.svg";
 import DeliveryIcon from "@assets/icon-delivery.svg";
 import CustomerServiceIcon from "@assets/Icon-Customer service.svg";
 import SecureIcon from "@assets/Icon-secure.svg";
 import { useTranslation } from "react-i18next";
-
-
 
 const AboutScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -24,20 +21,16 @@ const AboutScreen: React.FC = () => {
           <div className="flex justify-between items-center sm:flex-col xs:flex-col lg:flex-row">
             <div className="lg:w-1/2 md:w-full">
               <h1 className="text-5xl mb-10 text-wine font-playfair sm:w-full xs:w-full font-bold">
-                {t("about.ourStory")}
+                <h2>{t("about.brandStoryTitle")}</h2>
               </h1>
               <p className="text-md mb-5 text-wine font-Poppins">
-                Launched in 2015, Exclusive is South Asia’s premier online
-                shopping makterplace with an active presense in Bangladesh.
-                Supported by wide range of tailored marketing, data and service
-                solutions, Exclusive has 10,500 sallers and 300 brands and
-                serves 3 millioons customers across the region.{" "}
+                {t("about.brandStoryDescription")}
               </p>
-              <p className="text-md text-wine font-Poppins">
+              {/* <p className="text-md text-wine font-Poppins">
                 Exclusive has more than 1 Million products to offer, growing at
                 a very fast. Exclusive offers a diverse assotment in categories
                 ranging from consumer.
-              </p>
+              </p> */}
             </div>
             <div className="lg:w-1/2 md:w-full sm:w-full xs:w-full xl:px-8 lg:px-4 md:px-5">
               <img
@@ -231,11 +224,9 @@ const AboutScreen: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="flex w-[80%] mx-auto justify-between sm:flex-col xs:flex-col md:flex-row ">
-          <div className="flex-col sm:mb-8 xs:mb-8">
-            <div className="flex justify-center">
-              <img src={AboutImage1} className="w-2/3" alt="" />
-            </div>
+        <div className="flex w-[50%] mx-auto justify-between sm:flex-col xs:flex-col md:flex-row ">
+          {/* <div className="flex-col sm:mb-8 xs:mb-8">
+            <div className="flex justify-center"></div>
             <h3 className="text-center mt-4 font-Poppins text-wine">
               John Salem
             </h3>
@@ -246,38 +237,34 @@ const AboutScreen: React.FC = () => {
               <img src={TwitterIcon} className="w-4" alt="" />
               <img src={InstgramIcon} className="w-4" alt="" />
               <img src={LinkedInIcon} className="w-3" alt="" />
+            </div>
+          </div> */}
+          <div className="flex-col sm:mb-8 xs:mb-8">
+            <div className="flex justify-center"></div>
+            <h3 className="text-center mt-4 font-Poppins text-wine">
+              Sidig MohamedAli
+            </h3>
+            <h4 className="text-center mt-1 font-Poppins text-skin">
+              Founder and owner{" "}
+            </h4>
+            <div className="flex justify-around w-1/4 mx-auto mt-2">
+              {/* <img src={TwitterIcon} className="w-4" alt="" />
+              <img src={InstgramIcon} className="w-4" alt="" />
+              <img src={LinkedInIcon} className="w-3" alt="" /> */}
             </div>
           </div>
           <div className="flex-col sm:mb-8 xs:mb-8">
-            <div className="flex justify-center">
-              <img src={AboutImage2} className="w-2/3" alt="" />
-            </div>
+            <div className="flex justify-center"></div>
             <h3 className="text-center mt-4 font-Poppins text-wine">
-              John Salem
+              Islam hawash
             </h3>
             <h4 className="text-center mt-1 font-Poppins text-skin">
-              Manager Director{" "}
+              CEO (Chief Executive Officer){" "}
             </h4>
             <div className="flex justify-around w-1/4 mx-auto mt-2">
-              <img src={TwitterIcon} className="w-4" alt="" />
+              {/* <img src={TwitterIcon} className="w-4" alt="" />
               <img src={InstgramIcon} className="w-4" alt="" />
-              <img src={LinkedInIcon} className="w-3" alt="" />
-            </div>
-          </div>
-          <div className="flex-col sm:mb-8 xs:mb-8">
-            <div className="flex justify-center">
-              <img src={AboutImage3} className="w-2/3" alt="" />
-            </div>
-            <h3 className="text-center mt-4 font-Poppins text-wine">
-              John Salem
-            </h3>
-            <h4 className="text-center mt-1 font-Poppins text-skin">
-              Manager Director{" "}
-            </h4>
-            <div className="flex justify-around w-1/4 mx-auto mt-2">
-              <img src={TwitterIcon} className="w-4" alt="" />
-              <img src={InstgramIcon} className="w-4" alt="" />
-              <img src={LinkedInIcon} className="w-3" alt="" />
+              <img src={LinkedInIcon} className="w-3" alt="" /> */}
             </div>
           </div>
         </div>

@@ -1,18 +1,35 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { CardComponent } from "@types";
 import { fetchProductDetails } from "@services/api/fetchProductDetails";
 import { fetchRelatedProducts } from "@services/api/fetchCollections";
 import { Category } from "@components/atoms";
-import { RatingSection, ProductSection, ReviewsSection } from "@components/organisms";
-import { ProductsView, Loading } from "@components/molecules";
+import {
+  RatingSection,
+  ProductSection,
+  ReviewsSection,
+} from "@components/organisms";
+import { Loading } from "@components/molecules";
+import { ProductsGrid } from "@components/organisms/ProductsGrid/ProductsGrid";
 
 const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const { i18n } = useTranslation();
+  const isArabic = i18n.language === "ar";
+
   const [loading, setLoading] = useState(true);
   const [product, setProduct] = useState<CardComponent | null>(null);
-  const [error, setError] = useState<string | null>(null); 
+  const [error, setError] = useState<string | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<CardComponent[]>([]);
+
+  // Add useEffect for scrolling to top
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, [id]); // Re-run when id changes
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -47,20 +64,27 @@ const ProductDetails: React.FC = () => {
 
   if (loading) return <Loading />;
   if (error) return <div className="text-center mt-20">{error}</div>;
-  if (!product) return <div className="text-center mt-20">Product not found</div>;
+  if (!product)
+    return <div className="text-center mt-20">Product not found</div>;
 
   return (
-    <div className="flex flex-col gap-8 px-10 w-full">
-      
-      <ProductSection product={product} />
-      
-      <Category SectionName={"Rating And Reviews"} />
-      
+    <div
+      className={`flex flex-col gap-8 px-10 w-full ${isArabic ? "rtl" : "ltr"}`}
+    >
+      <ProductSection product={product} isArabic={isArabic} />
+
+      <Category
+        SectionName={isArabic ? "التقييمات والمراجعات" : "Rating And Reviews"}
+      />
+
       <RatingSection reviewPercentages={product.reviewPercentages} />
-      
+
       <ReviewsSection reviews={product.reviews} />
-      
-      <ProductsView sectionName="Related Products" cards={relatedProducts} />
+
+      <ProductsGrid
+        sectionName={isArabic ? "المنتجات ذات الصلة" : "Related Products"}
+        products={relatedProducts}
+      />
     </div>
   );
 };

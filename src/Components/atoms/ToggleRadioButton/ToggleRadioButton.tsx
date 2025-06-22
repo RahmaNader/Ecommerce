@@ -1,9 +1,9 @@
 interface ToggleRadioButtonProps {
     label: string;
-    isChecked: boolean;  // Prop to control checked state
-    onChange?: () => void; // Function to toggle state
+    isChecked: boolean;  
+    onChange?: () => void; 
     borderColor?: string;
-    onClick?: () => void;  // Add this to allow `onClick` as an optional prop
+    onClick?: () => void; 
 }
 
 const ToggleRadioButton: React.FC<ToggleRadioButtonProps> = ({
@@ -16,26 +16,27 @@ const ToggleRadioButton: React.FC<ToggleRadioButtonProps> = ({
         <div 
             className="radio-container w-full" 
             onClick={onChange} 
-            style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }} // Flex container
+            style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }} 
         >
             <input
                 type="radio"
                 checked={isChecked}
                 onChange={onChange}
                 className="custom-radio"
-                style={{ display: 'none' }} // Hide default radio button
+                style={{ display: 'none' }} 
             />
             <span
                 style={{
                     display: 'inline-block',
-                    width: '24px', // Increased width for more spacing
-                    height: '24px', // Increased height for more spacing
+                    width: '24px', 
+                    height: '24px',
                     border: `1px solid ${borderColor}`,
                     borderRadius: '50%',
                     backgroundColor: isChecked ? 'transparent' : 'transparent',
                     position: 'relative',
-                    marginRight: '8px', // Space between circle and label
-                    flexShrink: 0 // Prevent shrinking of the radio button
+                    marginRight: '10px', 
+                    marginLeft: '10px',
+                    flexShrink: 0,
                 }}
             >
                 {isChecked && (

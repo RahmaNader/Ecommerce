@@ -24,8 +24,8 @@ export type LoginFormInputs = {
 //   productPrice: number;
 //   averageRate?: number;
 //   productDescription?: string;
-//   color?: string[]; 
-//   size?: string[];   
+//   color?: string[];
+//   size?: string[];
 //   availableQuantity?: number;
 //   category?: string;
 //   collection?: string;
@@ -35,6 +35,7 @@ export type LoginFormInputs = {
 // }
 
 export interface AddressProps {
+  id: string;
   building: string;
   aptNo: string;
   floor: string;
@@ -44,7 +45,8 @@ export interface AddressProps {
   city: string;
   additionalDirections?: string;
   saveAddress: boolean;
-};
+  shippingAddressId: string;
+}
 ////////////////////////////////////////////////////
 
 export interface ProductImage {
@@ -52,7 +54,6 @@ export interface ProductImage {
   imageUrl: string;
   altText: string;
 }
-
 
 export interface Review {
   reviewId: number;
@@ -66,6 +67,11 @@ export interface SizeQuantity {
   sizeId: number;
   quantity: number;
   sizeLabel?: string | null;
+}
+
+export interface SizeQuantityResponse {
+  $id: string;
+  $values: SizeQuantity[];
 }
 
 export interface ProductVariant {
@@ -89,7 +95,8 @@ export interface Category {
   nameAr: string;
   nameEn: string;
   parentCategoryID?: number | null;
-  createdAt: string; 
+  createdAt: string;
+  slug?: string;
 }
 
 export interface CardComponent {
@@ -114,24 +121,34 @@ export interface CardComponent {
   lastUpdated: string;
   priceAfterDiscount: number;
   discountPercent: number;
+  currentLanguage?: string; // Add this line
 }
 
-
-
 ////////////////////////////////////////////////////
+// Update your Product interface
 export interface Product {
   id: number;
   name: string;
   DisPrice: number;
+  NormalPrice: number;
   color: string;
   size: string;
   quantity: number;
-  NormalPrice: number;
-  src: string;
-  alt: string;
+  src?: string;
+  alt?: string;
+  // Add this property
+  productVarientId?: number;
+  // Other existing properties
+  nameEn?: string;
+  nameAr?: string;
+  language?: string;
+  productID?: number;
+  discountPercent?: number;
+  productVarients: ProductVariant[];
+  // Include any other properties that might be in your cart items
 }
 
-export type CouponStatus = 'none' | 'success' | 'already_applied' | 'invalid';
+export type CouponStatus = "none" | "success" | "already_applied" | "invalid";
 
 export interface OrderSummaryData {
   total: number;
@@ -151,20 +168,26 @@ export interface OrderSummaryProps {
   onCheckoutClick?: () => void;
   currentStep?: "address" | "shipping" | "payment";
   onNextClick?: () => void;
+  selectedPaymentMethod?: string;
+  selectedAddress?: AddressProps | null;
+  selectedShippingMethod?: string;
+  isArabic?: boolean;
+  isPlacingOrder?: boolean;
+  orderError?: string | null;
 }
 
 export type RatingDistributionItem = {
   rating: number;
   percentage: string;
   color: string;
-}
+};
 
-export type ReviewCardProps =  {
+export type ReviewCardProps = {
   reviewerName: string;
   datePosted: string;
   reviewText: string;
   rating: number;
-}
+};
 
 export type ProductsViewProps = {
   sectionName: string;
@@ -175,26 +198,34 @@ export type categoryProps = {
   SectionName: string;
 };
 
-export type CustomRatingProps  = {
+export type CustomRatingProps = {
   rate: number;
-  mode: 'show' | 'hide';
-}
-
-export type ProductCountProps = {
-  initialCount?: number; 
-  onCountChange?: (count: number) => void; 
+  mode: "show" | "hide";
 };
 
+export interface ProductCountProps {
+  initialCount?: number;
+  max?: number;
+  onCountChange?: (n: number) => void;
+}
 
-export type FilterCategory  = {
+export type FilterCategory = {
   name: string;
   isChecked: boolean;
-}
+};
 
 export type NavLinkProps = {
   label: string | JSX.Element;
   to?: string;
-  variant: "navbar" | "footer" | "navbaricons" | "subnavbar" | "breadcrumb" | "sidebar" | "sidenavbar" | "sidenavbarsub";
+  variant:
+    | "navbar"
+    | "footer"
+    | "navbaricons"
+    | "subnavbar"
+    | "breadcrumb"
+    | "sidebar"
+    | "sidenavbar"
+    | "sidenavbarsub";
   state?: { categoryId: number };
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
@@ -202,6 +233,7 @@ export type NavLinkProps = {
   isActive?: boolean;
   DefaultIcon?: string;
   ActiveIcon?: string;
+  className?: string;
 };
 
 export type PersonalData = {
@@ -209,7 +241,7 @@ export type PersonalData = {
   phoneNumber: string;
   address: string;
   email: string;
-  password:string;
+  password: string;
 };
 
 export interface PasswordResetData {
@@ -222,16 +254,81 @@ export type CreditCard = {
   nameOnCard: string;
   expiry: string;
   CVV: string;
-}
+};
 
 export type Order = {
   orderNumber: string;
   total: string;
   date: string;
   status: string;
-}
+};
 
 export type User = {
   username: string;
-  token:string;
+  token: string;
+};
+
+export interface OrderItem {
+  $id?: string;
+  orderItemId: string;
+  productId: number;
+  productName: string;
+  quantity: number;
+  unitPrice: number;
+  priceAfterDiscount: number;
+  subPrice: number;
+  productColor: string;
+  productSize: string;
+  quantityRefunded: number;
+  firstProductImageUrl: string;
+}
+
+// Update your UserOrder interface to match the actual API response
+
+export interface UserOrder {
+  orderId: string;
+  userId: string;
+  orderNumber: number;
+  subTotal: number;
+  discountAmount: number;
+  shippingCost: number;
+  total: number;
+  status: number; // This will be matched against the OrderStatus enum
+  orderDate: string;
+  deliveredDate: string;
+  shippedDate: string;
+  outForDeliveryDate: string;
+  estimadtedDelivereyDate: string;
+  inProductionDate: string | null;
+  preProductionDate: string | null;
+  isCanceled: boolean; // Note: API uses 'isCanceled' not 'isCancelled'
+  couponCode: string;
+  shippingAddress: {
+    shippingAdressId: string;
+    buildingName: string;
+    street: string;
+    city: number;
+    additionalDirections: string | null;
+    flatNumber: number;
+    floorNumber: number;
+    phoneNumber: string;
+    isSaved: boolean;
+    isDefult: boolean;
+    userId: string;
+  };
+  orderItems: {
+    $values: Array<{
+      orderItemId: string;
+      productId: number;
+      productName: string;
+      quantity: number;
+      unitPrice: number;
+      priceAfterDiscount: number;
+      subPrice: number;
+      productColor: string;
+      productSize: string;
+      quantityRefunded: number;
+      firstProductImageUrl: string;
+    }>;
+  };
 }

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import ToggleRadioButton from "../../atoms/ToggleRadioButton/ToggleRadioButton";
-import AddressModal from "@components/atoms/AddressModal/AddressModal";
+import {ToggleRadioButton} from "@components/atoms";
+import {AddressModal} from "@components/atoms";
 import { AddressProps } from "@types";
 
 const AddressList = () => {

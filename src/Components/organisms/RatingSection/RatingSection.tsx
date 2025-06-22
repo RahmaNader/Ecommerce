@@ -11,7 +11,6 @@ interface RatingSectionProps {
 const RatingSection: React.FC<RatingSectionProps> = ({ reviewPercentages }) => {
   const [ratingDistribution, setRatingDistribution] = useState<RatingDistributionItem[]>([]);
   const [averageRating, setAverageRating] = useState(0);
-  // const [totalRatings, setTotalRatings] = useState(0);
 
   useEffect(() => {
     const ratingEntries = Object.entries(reviewPercentages).filter(
@@ -19,34 +18,30 @@ const RatingSection: React.FC<RatingSectionProps> = ({ reviewPercentages }) => {
     );
   
     const total = ratingEntries.reduce((sum, [, count]) => sum + Number(count), 0);
-    // setTotalRatings(total);
-  
-    // Calculate weighted average rating
+
     const weightedSum = ratingEntries.reduce((acc, [rating, count]) => {
       return acc + Number(rating) * Number(count);
     }, 0);
     setAverageRating(total > 0 ? weightedSum / total : 0);
     
-    // Build rating distribution array
     const distribution = ratingEntries
       .map(([rating, count]) => {
         const numericRating = Number(rating);
         const percentageValue = total > 0 ? (Number(count) / total) * 100 : 0;
         return {
           rating: numericRating,
-          percentage: percentageValue.toFixed(2), // Convert to string with 2 decimal places
+          percentage: percentageValue.toFixed(2),
           color: getColorForRating(numericRating),
         } as RatingDistributionItem;
       })
       .sort((a, b) => a.rating - b.rating);
-      // console.log(totalRatings)
     setRatingDistribution(distribution);
   }, [reviewPercentages]);
   
 
   
   return (
-    <Box className="flex flex-col md:flex-row md:mx-8 gap-8 p-2 justify-between md:items-center bg-mainColor rounded-lg">
+    <Box className="flex flex-col md:flex-row md:mx-8 gap-8 p-2 md:px-20 justify-between md:items-center bg-mainColor rounded-lg">
       <Box className="flex flex-col items-center md:items-start">
         <Typography
           variant="h2"

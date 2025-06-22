@@ -1,47 +1,79 @@
-import React, { useEffect, useState } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
+import React, { useEffect, useState, useRef } from "react";
+import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import "react-phone-input-2/lib/style.css";
+import { MuiTelInput } from "mui-tel-input";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { fetchPersonalData, updatePersonalData } from "@services/api/personaldetails";
 import { PersonalData } from "@types";
 import personalDataFields from "@data/personalData";
 import addPhoto from "@assets/addPhoto.svg";
-import editIcon from "@assets/edit.svg";
+// import editIcon from "@assets/edit.svg";
 import { useTranslation } from "react-i18next";
 import axios from 'axios';
 
 const PersonalDataScreen: React.FC = () => {
   const { t } = useTranslation();
+  
+  // Add phone input theme configuration
+  const phoneInputTheme = createTheme({
+    palette: {
+      primary: {
+        main: "#A78E78", // wine color from your app
+      },
+    },
+    components: {
+      MuiOutlinedInput: {
+        styleOverrides: {
+          root: {
+            borderRadius: "0.25rem",
+            backgroundColor: "rgba(167, 142, 120, 0.13)",
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#A78E78",
+            },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#A78E78",
+            },
+            "& .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#A78E78",
+            },
+          },
+          input: {
+            color: "#A78E78",
+            "&::placeholder": {
+              color: "#A78E78",
+              opacity: 0.7,
+            },
+          },
+        },
+      },
+    },
+  });
+
   const {
     register,
     handleSubmit,
     setValue,
-    formState: { errors, isValid },
+    control,
+    formState: { errors},
   } = useForm<PersonalData>({
     mode: "onBlur",
     reValidateMode: "onChange",
   });
 
-    // Add state to store initial data
-    const [initialData, setInitialData] = useState<PersonalData | null>(null);
-
-  const [isEditable, setIsEditable] = useState<{ [key: string]: boolean }>(
-    personalDataFields.reduce((acc, field) => {
-      acc[field.id] = false;
-      return acc;
-    }, {} as { [key: string]: boolean })
-  );
-
+  const [initialData, setInitialData] = useState<PersonalData | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Fetch personal data when the component mounts
+  // New states & ref for photo upload
+  const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     const loadUserData = async () => {
       try {
         const data = await fetchPersonalData();
-        // Store the initial data
         setInitialData(data);
-        // Set form values
         Object.keys(data).forEach((key) => {
           setValue(key as keyof PersonalData, data[key]);
         });
@@ -51,21 +83,12 @@ const PersonalDataScreen: React.FC = () => {
         setLoading(false);
       }
     };
-
     loadUserData();
   }, [setValue]);
 
-  // Enable editing for specific fields
-  const onEditClick = (field: keyof PersonalData) => {
-    setIsEditable((prev) => ({ ...prev, [field]: !prev[field] }));
-  };
-
-  // Handle form submission (update data)
   const onSubmit: SubmitHandler<PersonalData> = async (data) => {
     try {
-      // Prepare the data with only the fields that have changed
       const formattedData = Object.keys(data).reduce((acc, key) => {
-        // Only check against initialData if it exists
         if (initialData && data[key as keyof PersonalData] !== initialData[key as keyof PersonalData]) {
           acc[key as keyof PersonalData] = data[key as keyof PersonalData];
         }
@@ -76,25 +99,11 @@ const PersonalDataScreen: React.FC = () => {
         alert("No changes detected.");
         return;
       }
-
       console.log("Sending changes to API:", JSON.stringify(formattedData, null, 2));
-
-      // Send changed fields to the API
       await updatePersonalData(formattedData);
-
-      // Update initialData to reflect the new values
       setInitialData({ ...initialData, ...formattedData } as PersonalData);
-      
       alert("Data updated successfully!");
-
-      // Turn off edit mode after successful submission
       setEditMode(false);
-      setIsEditable(
-        personalDataFields.reduce((acc, field) => {
-          acc[field.id] = false;
-          return acc;
-        }, {} as { [key: string]: boolean })
-      );
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response) {
         console.error("API Response Error:", error.response.data);
@@ -106,95 +115,283 @@ const PersonalDataScreen: React.FC = () => {
       alert("Failed to update data. Please try again.");
     }
   };
-  // Toggle form edit mode
+
   const onToggleEditMode = () => {
-    if (editMode) {
-      if (isValid) {
-        handleSubmit(onSubmit)();
-      } else {
-        alert(t("profile.fillAllFields"));
-      }
-    } else {
-      setEditMode(true);
-      setIsEditable(
-        personalDataFields.reduce((acc, field) => {
-          acc[field.id] = true;
-          return acc;
-        }, {} as { [key: string]: boolean })
-      );
+    // Only used for entering edit mode now
+    setEditMode(true);
+  };
+
+  const onCancelEdit = () => {
+    // Reset form to initial data
+    if (initialData) {
+      Object.keys(initialData).forEach((key) => {
+        setValue(key as keyof PersonalData, initialData[key as keyof PersonalData]);
+      });
     }
+    setEditMode(false);
+  };
+
+  // --- Photo Upload handlers ---
+  const triggerFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      if (!file.type.startsWith("image/")) {
+        alert(t("profile.onlyImagesAllowed"));
+        return;
+      }
+      if (file.size > 2 * 1024 * 1024) {
+        alert(t("profile.fileTooLarge"));
+        return;
+      }
+      setIsUploadingPhoto(true);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setTimeout(() => {
+          setProfilePhoto(reader.result as string);
+          setIsUploadingPhoto(false);
+          alert(t("profile.photoUpdateSuccess"));
+        }, 1500); // simulate network delay
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeProfilePhoto = () => {
+    setProfilePhoto(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   return (
     <div className="flex flex-col mt-8 md:mt-16 items-center justify-center">
-      <h1 className="text-2xl font-semibold text-wine font-playfair md:self-start">
-        {t("profile.identification")}
-      </h1>
-      <p className="text-ForthColor font-playfair text-xl mb-4 md:self-start mx-auto md:mx-0">
-        {t("profile.profileDetails")}
-      </p>
-
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <div className="w-full max-w-md">
-          <div className="relative mb-4 w-[100px] h-[100px] cursor-pointer mx-auto rounded-full bg-[#A78E7821] border-wine border-[1px]">
-            <div className="absolute bottom-0 right-0 hover:bg-ForthColor w-[30px] h-[30px] bg-wine flex items-center justify-center rounded-full">
-              <img src={addPhoto} alt="Add Photo" className="w-4 h-4" />
-            </div>
+      <div className="w-full max-w-3xl px-4">
+        <div className="flex flex-wrap justify-between items-center mb-6">
+          <div>
+            <h1 className="text-2xl font-semibold text-wine font-playfair">
+              {t("profile.identification")}
+            </h1>
+            <p className="text-ForthColor font-playfair text-xl">
+              {t("profile.profileDetails")}
+            </p>
           </div>
+        </div>
 
-          <form onSubmit={handleSubmit(onSubmit)}>
-            {personalDataFields.map((field) => (
-              <div key={field.id} className="mb-4 relative">
-                <input
-                  type={field.type}
-                  id={field.id}
-                  disabled={!isEditable[field.id]}
-                  placeholder={t(`${field.placeholder}`)}
-                  {...register(
-                    field.id,
-                    isEditable[field.id] ? field.validation : {}
-                  )}
-                  className={`w-full px-4 py-2 border rounded ${
-                    isEditable[field.id]
-                      ? "border-wine border-[2px]"
-                      : "border-ForthColor"
-                  } placeholder-wine text-wine bg-ForthColor/[0.13] ltr:text-left rtl:text-right focus:outline-none focus:ring-none`}
-                />
+        {loading ? (
+          <div className="flex justify-center py-8">
+            <div className="w-10 h-10 border-4 border-wine border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : (
+          <div className="w-full">
+            {/* Profile Photo Section */}
+            <div className="flex flex-col items-center mb-8">
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept="image/*"
+                className="hidden"
+              />
+              <div
+                className="relative w-[100px] h-[100px] mx-auto rounded-full bg-[#A78E7821] border-wine border-[1px]"
+              >
+                {isUploadingPhoto ? (
+                  <div className="absolute inset-0 flex items-center justify-center bg-ForthColor/20">
+                    <div className="w-8 h-8 border-4 border-wine border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                ) : profilePhoto ? (
+                  <img
+                    src={profilePhoto}
+                    alt="Profile"
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                ) : (
+                  <div className="flex items-center justify-center w-full h-full">
+                    <span className="text-wine text-2xl">
+                      {initialData?.fullName?.[0] || "?"}
+                    </span>
+                  </div>
+                )}
+                {/* Add Photo Button positioned on bottom left of the circle */}
+                <div
+                  onClick={triggerFileInput}
+                  className="absolute bottom-0 right-0 hover:bg-ForthColor w-[30px] h-[30px] bg-wine flex items-center justify-center rounded-full"
+                >
+                  <img src={addPhoto} alt="Add Photo" className="w-4 h-4" />
+                </div>
+              </div>
+              {profilePhoto && (
+                <button
+                  type="button"
+                  onClick={removeProfilePhoto}
+                  className="mt-2 text-sm text-FifthColor hover:underline"
+                >
+                  {t("profile.removePhoto")}
+                </button>
+              )}
+            </div>
 
-                {editMode && (
+            {/* New Improved Form */}
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="flex flex-col gap-y-4">
+                {personalDataFields.map((field) => (
+                  <div key={field.id} className="relative">
+                    <label 
+                      htmlFor={field.id}
+                      className="block text-sm font-medium text-wine mb-1"
+                    >
+                      {t(`${field.placeholder}`)}
+                    </label>
+                    <div className={`relative rounded-md ${editMode ? 'shadow-sm' : ''}`}>
+                      {field.id === "phoneNumber" ? (
+                        <Controller
+                          name="phoneNumber"
+                          control={control}
+                          rules={editMode ? field.validation : {}}
+                          render={({ field: controllerField }) => (
+                            <ThemeProvider theme={phoneInputTheme}>
+                              <MuiTelInput
+                                {...controllerField}
+                                value={controllerField.value || ""}
+                                onChange={(newValue) => {
+                                  // Remove any non-digit characters before setting the value
+                                  const digitsOnly = newValue.replace(/\D/g, '');
+                                  controllerField.onChange(digitsOnly);
+                                }}
+                                defaultCountry="EG"
+                                placeholder={t(`${field.placeholder}`)}
+                                className="w-full"
+                                disabled={!editMode}
+                                focusOnSelectCountry
+                                langOfCountryName="en"
+                                // Change this to false to avoid forcing country code
+                                forceCallingCode={false}
+                                dir={document.dir || 'ltr'}
+                                MenuProps={{
+                                  anchorOrigin: {
+                                    vertical: 'bottom',
+                                    horizontal: document.dir === 'rtl' ? 'right' : 'left',
+                                  },
+                                  transformOrigin: {
+                                    vertical: 'top',
+                                    horizontal: document.dir === 'rtl' ? 'right' : 'left',
+                                  },
+                                }}
+                                sx={{
+                                  width: "100%",
+                                  "& .MuiInputBase-root": {
+                                    width: "100%",
+                                    height: "45px",
+                                    backgroundColor: editMode ? "white" : "rgba(167, 142, 120, 0.13)",
+                                    color: "#A78E78",
+                                    borderColor: editMode ? "#A78E78" : "#A78E78",
+                                    textAlign: document.dir === 'rtl' ? 'right' : 'left',
+                                    fontFamily: "Poppins, sans-serif",
+                                  },
+                                  "& .MuiOutlinedInput-input": {
+                                    height: "11px",
+                                    padding: "14px",
+                                    textAlign: document.dir === 'rtl' ? 'right' : 'left',
+                                    direction: document.dir || 'ltr',
+                                    fontFamily: "Poppins, sans-serif",
+                                    fontSize: "15px",
+                                  },
+                                  "& input::placeholder": {
+                                    textAlign: document.dir === 'rtl' ? 'right' : 'left',
+                                    fontFamily: "Poppins, sans-serif",
+                                  },
+                                  "& .MuiOutlinedInput-notchedOutline": {
+                                    borderColor: "#A78E78",
+                                  },
+                                  "& .MuiSvgIcon-root": {
+                                    color: "#A78E78",
+                                  },
+                                  "& .MuiTelInput-Flag": {
+                                    marginRight: document.dir === 'rtl' ? '0' : '8px',
+                                    marginLeft: document.dir === 'rtl' ? '8px' : '0',
+                                    order: document.dir === 'rtl' ? '1' : '0',
+                                  },
+                                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                                    borderColor: "#A78E78",
+                                  },
+                                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                                    borderColor: "#A78E78",
+                                  },
+                                  "& .MuiMenu-paper": {
+                                    fontFamily: "Poppins, sans-serif",
+                                  },
+                                  "&.Mui-disabled": {
+                                    opacity: 0.7,
+                                    backgroundColor: "rgba(167, 142, 120, 0.13)",
+                                  },
+                                }}
+                              />
+                            </ThemeProvider>
+                          )}
+                        />
+                      ) : (
+                        <input
+                          type={field.type}
+                          id={field.id}
+                          disabled={!editMode}
+                          placeholder={t(`${field.placeholder}`)}
+                          {...register(
+                            field.id,
+                            editMode ? field.validation : {}
+                          )}
+                          className={`w-full px-4 py-3 border rounded-md transition-all duration-300 ${
+                            editMode
+                              ? "border-wine bg-white"
+                              : "border-ForthColor bg-ForthColor/[0.13]"
+                          } text-wine ltr:text-left rtl:text-right focus:outline-none focus:ring-1 focus:ring-wine`}
+                        />
+                      )}
+                    </div>
+                    {editMode && errors[field.id] && (
+                      <p className="text-FifthColor text-sm mt-1">
+                        {t(errors[field.id]?.message as string)}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+              
+              {/* Updated button layout */}
+              <div className="mt-8 flex justify-center gap-4">
+                {editMode ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={onCancelEdit}
+                      className="bg-white text-wine border-2 border-wine font-playfair px-6 py-2 rounded-md hover:opacity-90 transition duration-300"
+                    >
+                      {t("profile.cancel")}
+                    </button>
+                    <button
+                      type="submit"
+                      className="bg-wine text-mainColor font-playfair px-6 py-2 rounded-md hover:opacity-90 transition duration-300"
+                    >
+                      {t("profile.submit")}
+                    </button>
+                  </>
+                ) : (
                   <button
                     type="button"
-                    className={`absolute rtl:left-2 ltr:right-2 top-2`}
-                    onClick={() => onEditClick(field.id)}
+                    onClick={onToggleEditMode}
+                    className="bg-wine text-mainColor font-playfair text-xl rounded-md py-3 px-8 hover:bg-ForthColor transition duration-300"
                   >
-                    <img
-                      src={editIcon}
-                      alt="Edit"
-                      className="w-5 h-5 hover:opacity-80"
-                    />
+                    {t("profile.edit")}
                   </button>
                 )}
-
-                {isEditable[field.id] && errors[field.id] && (
-                  <p className="text-FifthColor text-sm mt-1">
-                    {t(errors[field.id]?.message as string)}
-                  </p>
-                )}
               </div>
-            ))}
-
-            <button
-              type="button"
-              onClick={onToggleEditMode}
-              className="bg-wine text-mainColor font-playfair text-2xl rounded-md w-[100%] py-3 px-8 hover:bg-ForthColor transition duration-300"
-            >
-              {editMode ? t("profile.submit") : t("profile.edit")}
-            </button>
-          </form>
-        </div>
-      )}
+            </form>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

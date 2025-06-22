@@ -1,0 +1,81 @@
+import axios from "axios";
+
+// Add the base URL from environment variables
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
+export interface Coupon {
+  couponId: string;
+  title: string;
+  couponCode: string;
+  startDate: string;
+  endDate: string;
+  type: number;
+  value: number;
+  quantity: number;
+  allowFreeShipping: boolean;
+  isUsed: boolean;
+  isDeleted: boolean;
+  isExpired: boolean;
+}
+
+interface CouponResponse {
+  $id: string;
+  $values: Array<{
+    $id: string;
+    couponId: string;
+    title: string;
+    couponCode: string;
+    startDate: string;
+    endDate: string;
+    type: number;
+    value: number;
+    quantity: number;
+    allowFreeShipping: boolean;
+    isUsed: boolean;
+    isDeleted: boolean;
+    isExpired: boolean;
+  }>;
+}
+
+export async function fetchCoupons(): Promise<Coupon[]> {
+  try {
+    const { data } = await axios.get<CouponResponse>(
+      `${baseUrl}/api/Coupons`
+    );
+
+    return data.$values.map((coupon): Coupon => ({
+      couponId: coupon.couponId,
+      title: coupon.title,
+      couponCode: coupon.couponCode,
+      startDate: coupon.startDate,
+      endDate: coupon.endDate,
+      type: coupon.type,
+      value: coupon.value,
+      quantity: coupon.quantity,
+      allowFreeShipping: coupon.allowFreeShipping,
+      isUsed: coupon.isUsed,
+      isDeleted: coupon.isDeleted,
+      isExpired: coupon.isExpired
+    }));
+  } catch (error) {
+    console.error("Error fetching coupons:", error);
+    throw new Error("Failed to fetch coupons");
+  }
+}
+
+export async function validateCoupon(couponCode: string): Promise<Coupon | null> {
+  try {
+    const coupons = await fetchCoupons();
+    const validCoupon = coupons.find(
+      coupon => 
+        coupon.couponCode.toLowerCase() === couponCode.toLowerCase() && 
+        !coupon.isExpired && 
+        !coupon.isUsed &&
+        coupon.quantity > 0
+    );
+    return validCoupon || null;
+  } catch (error) {
+    console.error("Error validating coupon:", error);
+    return null;
+  }
+}

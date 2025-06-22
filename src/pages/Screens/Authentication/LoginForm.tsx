@@ -1,15 +1,15 @@
-// src/pages/Auth/LoginForm.tsx
 import React, { useState } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
-import { Button } from "@components/atoms";
 import IconGoogle from "@assets/Icon-Google.svg";
 import { LoginFormInputs } from "@types";
 import loginInputFields from "@data/loginInputFields";
 import { loginUser } from "@services/auth/AuthService";
-import { SuccessAlert, ErrorAlert } from "@components/atoms";
+import { SuccessAlert, ErrorAlert, Button } from "@components/atoms";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useGoogleLogin } from "@react-oauth/google"; // Add this import
+import apiClient from "../../../apiClient"; // Add this import
 
 interface LoginFormProps {
   onSwitchToSignUp: () => void;
@@ -28,9 +28,107 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
   } = useForm<LoginFormInputs>();
   const navigate = useNavigate();
 
+  // Add Google login functionality
+  const googleLogin = useGoogleLogin({
+    flow: "auth-code",
+    scope: "email profile",
+    onSuccess: async ({ code }) => {
+      try {
+        console.log("Google OAuth Response:", code);
+
+        if (!code) {
+          throw new Error("No access token received from Google");
+        }
+
+        // Get user info using the access token
+        const userInfoResponse = await axios.get(
+          "https://www.googleapis.com/oauth2/v3/userinfo",
+          {
+            headers: {
+              Authorization: `Bearer ${code}`,
+            },
+          }
+        );
+
+        const userInfo = userInfoResponse.data;
+        console.log("Google User Data:", userInfo);
+
+        // Send access token and user info to backend
+        const backendResponse = await apiClient.post(
+          "/Account/authenticateGoogle",
+          {
+            token: code,
+            email: userInfo.email,
+            name: userInfo.name,
+            picture: userInfo.picture,
+          }
+        );
+
+        console.log("Backend Response:", backendResponse.data);
+
+        if (backendResponse.data && backendResponse.data.succeeded) {
+          // Success handling
+          setAlert({
+            type: "success",
+            message: t("auth.successGoogleSignUp"),
+          });
+
+          // Store token from your backend
+          if (backendResponse.data.token) {
+            localStorage.setItem("authToken", backendResponse.data.token);
+          }
+
+          setTimeout(() => {
+            setAlert(null);
+            navigate("/"); // Navigate to home page after successful login
+          }, 2000);
+        } else {
+          // API returned success=false
+          throw new Error(
+            backendResponse.data.message || "Authentication failed"
+          );
+        }
+      } catch (error) {
+        console.error("Google sign-in error:", error);
+
+        let errorMessage = t("auth.googleLoginFailed");
+
+        // Get more specific error messages if available
+        if (axios.isAxiosError(error) && error.response?.data?.message) {
+          errorMessage = error.response.data.message;
+        } else if (error instanceof Error) {
+          errorMessage = error.message;
+        }
+
+        setAlert({
+          type: "error",
+          message: errorMessage,
+        });
+
+        setTimeout(() => setAlert(null), 3000);
+      }
+    },
+    onError: (error) => {
+      console.error("Google login error:", error);
+      setAlert({
+        type: "error",
+        message: t("auth.googleLoginFailed"),
+      });
+      setTimeout(() => setAlert(null), 3000);
+    },
+  });
+
+  const handleGoogleLogin = () => {
+    googleLogin();
+  };
+
   const onSubmit = async (data: LoginFormInputs) => {
+    // Existing code remains the same
     try {
-      const result = await loginUser({ email: data.email, password: data.password });
+      const result = await loginUser({
+        email: data.email,
+        password: data.password,
+      });
       setAlert({
         type: "success",
         message: t("auth.successLogin", { userName: data.email }),
@@ -43,7 +141,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
     } catch (error) {
       console.error(error);
       if (axios.isAxiosError(error)) {
-        const errorMessage = error.response?.data?.message || t("auth.loginFailed");
+        const errorMessage =
+          error.response?.data?.message || t("auth.loginFailed");
         setAlert({ type: "error", message: errorMessage });
       } else {
         setAlert({ type: "error", message: t("auth.loginFailed") });
@@ -54,8 +153,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
     }
   };
 
+  // Update the Google button's onClick handler
   return (
     <div className="bg-mainColor text-secondColor p-6 rounded w-full mx-auto">
+      {/* Existing JSX */}
       {alert && (
         <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
           {alert.type === "success" ? (
@@ -66,6 +167,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
         </div>
       )}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        {/* Existing form fields */}
         {loginInputFields.map((field) => (
           <div key={field.id}>
             <input
@@ -116,7 +218,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
         <button
           type="button"
           className="w-4/5 md:w-2/5 py-2 px-4 flex items-center justify-center m-auto border-2 border-ForthColor rounded-lg text-black text-[10px] md:text-[16px] hover:border-wine"
-          onClick={() => {}}
+          onClick={handleGoogleLogin}
         >
           <img src={IconGoogle} alt="Google Icon" className="w-4 h-4 mr-2" />
           {t("auth.loginWithGoogle")}

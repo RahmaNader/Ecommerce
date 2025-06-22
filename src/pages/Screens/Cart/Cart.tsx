@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { Product } from "@types";
 import { Category, SuccessAlert, ErrorAlert } from "@components/atoms";
 import { CartProduct, Breadcrumb } from "@components/molecules";
-import OrderSummary from '@components/organisms/OrderSummary/OrderSummary';
+import { OrderSummary } from "@components/organisms";
+import { useTranslation } from "react-i18next";
 
 const Cart: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
   const [products, setProducts] = useState<Product[]>([]);
   const [alert, setAlert] = useState<{
     type: "success" | "error";
@@ -17,7 +20,34 @@ const Cart: React.FC = () => {
   useEffect(() => {
     const cartData = Cookies.get("cart");
     if (cartData) {
-      setProducts(JSON.parse(cartData));
+      try {
+        const parsedCart = JSON.parse(cartData);
+        const validatedCart = parsedCart.map((item: Partial<Product>) => {
+          const { nameEn, nameAr, language, productID, discountPercent } = item;
+
+          return {
+            id: item.id!,
+            name: item.name!,
+            DisPrice: item.DisPrice!,
+            NormalPrice: item.NormalPrice!,
+            color: item.color!,
+            size: item.size!,
+            quantity: item.quantity!,
+            src: item.src ?? "",
+            alt: item.alt ?? "",
+            nameEn,
+            nameAr,
+            language,
+            productID,
+            discountPercent,
+            productVarients: item.productVarients ?? [],
+          };
+        });
+        setProducts(validatedCart);
+      } catch (error) {
+        console.error("Error parsing cart data:", error);
+        setProducts([]);
+      }
     }
   }, []);
 
@@ -25,8 +55,11 @@ const Cart: React.FC = () => {
     Cookies.set("cart", JSON.stringify(updatedProducts), { expires: 2 });
   };
 
-  const removeProduct = (id: number) => {
-    const updatedProducts = products.filter((product) => product.id !== id);
+  const removeProduct = (id: number, color: string, size: string) => {
+    const updatedProducts = products.filter(
+      (product) =>
+        !(product.id === id && product.color === color && product.size === size)
+    );
     setProducts(updatedProducts);
     saveCartToCookies(updatedProducts);
   };
@@ -39,43 +72,51 @@ const Cart: React.FC = () => {
     saveCartToCookies(updatedProducts);
   };
 
-
-
-
-
-
   const handleCheckoutClick = () => {
-    const authToken = Cookies.get('authToken');
-    const cartItems = Cookies.get('cart') ? JSON.parse(Cookies.get('cart') as string) : [];
+    const authToken = Cookies.get("authToken");
+    const cartItems = Cookies.get("cart")
+      ? JSON.parse(Cookies.get("cart") as string)
+      : [];
 
     if (!authToken) {
       setAlert({
-        type: 'error',
-        message: 'Please login to proceed with checkout'
+        type: "error",
+        message: t("cart.loginRequired"),
       });
+      navigate("/authentication");
       setTimeout(() => setAlert(null), 3000);
       return;
     }
 
     if (cartItems.length === 0) {
       setAlert({
-        type: 'error',
-        message: 'Your cart is empty'
+        type: "error",
+        message: t("cart.emptyCart"),
       });
       setTimeout(() => setAlert(null), 3000);
       return;
     }
-    Cookies.set('previousCart', JSON.stringify(products.map(p => ({ 
-      id: p.id, 
-      quantity: p.quantity 
-    }))), { expires: 7 });
-    navigate('/cart/checkout');
+    Cookies.set(
+      "previousCart",
+      JSON.stringify(
+        products.map((p) => ({
+          id: p.id,
+          quantity: p.quantity,
+        }))
+      ),
+      { expires: 7 }
+    );
+    if (authToken) {
+      navigate("/cart/checkout");
+    } else {
+      navigate("/authentication");
+    }
   };
 
   return (
-    <div className="min-h-screen w-full px-2 md:px-10">
+    <div className={`min-h-screen w-full px-2 md:px-6 `}>
       <Breadcrumb />
-      <Category SectionName={"Cart"} mdMyValue={"mt-2"} />
+      <Category SectionName={t("cart.title")} mdMyValue={"mt-2"} />
 
       {alert && (
         <div
@@ -90,32 +131,38 @@ const Cart: React.FC = () => {
         </div>
       )}
 
-      <div className="flex flex-col md:flex-row justify-between w-full gap-6">
+      <div
+        className={`flex flex-col md:flex-row justify-between w-full gap-6 `}
+      >
         {/* Cart Items */}
-        <div className="md:w-7/12 w-full">
+        <div className="md:w-7/12 w- ">
           {products.length > 0 ? (
             products.map((product) => (
               <CartProduct
-                key={product.id}
-                product={product}
-                onRemove={() => removeProduct(product.id)}
+                key={`${product.id}-${product.color}-${product.size}`}
+                product={{
+                  ...product,
+                  alt: product.alt || product.name,
+                }}
+                onRemove={() =>
+                  removeProduct(product.id, product.color, product.size)
+                }
                 onQuantityChange={(quantity) =>
                   updateProductQuantity(product.id, quantity)
                 }
               />
             ))
           ) : (
-            <p className="text-center text-gray-500">Your cart is empty.</p>
+            <p className="text-center text-gray-500">{t("cart.empty")}</p>
           )}
         </div>
 
         {/* Order Summary */}
-        <OrderSummary 
+        <OrderSummary
           products={products}
           showCheckoutButton={true}
           onCheckoutClick={handleCheckoutClick}
         />
-
       </div>
     </div>
   );

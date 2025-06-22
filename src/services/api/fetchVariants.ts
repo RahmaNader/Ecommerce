@@ -1,6 +1,9 @@
 import axios from 'axios';
 import { ProductVariant, SizeQuantity } from '@types';
 
+// Add the base URL from environment variables
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 interface ProductVariantResponse {
   $id: string;
   $values: Array<{
@@ -17,35 +20,10 @@ interface ProductVariantResponse {
   }>;
 }
 
-export const fetchProductVariants = async (productId: number): Promise<ProductVariant[]> => {
-  try {
-    const { data } = await axios.get<ProductVariantResponse>(
-      `https://www.bouraq-mt.com/royalkey/api/ProductVariants/?productId=${productId}`
-    );
-
-    return data.$values.map(variant => ({
-      productVarientId: variant.productVarientId,
-      colorNameEn: variant.colorNameEn,
-      colorNameAr: variant.colorNameAr,
-      colorName: variant.colorName || null,
-      colorCode: variant.colorCode,
-      sizeQuantities: variant.sizeQuantities.$values.map((sq: SizeQuantity) => ({
-        sizeId: sq.sizeId,
-        quantity: sq.quantity,
-        sizeLabel: sq.sizeLabel || null,
-      })),
-    }));
-    console.log("Product Variants api:", data.$values);
-  } catch (error) {
-    console.error("Error fetching product variants:", error);
-    throw new Error(`Failed to fetch product variants for product ${productId}`);
-  }
-};
-
 export async function fetchProductVariant(productId: number): Promise<ProductVariant[]> {
   try {
     const response = await axios.get<ProductVariantResponse>(
-      `https://www.bouraq-mt.com/royalkey/api/ProductVariants/product/${productId}`
+      `${baseUrl}/api/ProductVariants/product/${productId}`
     );
 
     console.log("Product Variants:", response.data.$values);

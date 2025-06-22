@@ -2,11 +2,13 @@ import axios from "axios";
 import { Review } from "@types";
 import Cookies from "js-cookie";
 
+// Add the base URL from environment variables
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
 export async function fetchReviews(productId: number): Promise<Review[]> {
   try {
     const response = await axios.get(
-      `https://www.bouraq-mt.com/royalkey/api/Review/product/${productId}`
+      `${baseUrl}/api/Review/product/${productId}`
     );
     
     return response.data.$values.map((review: Review) => ({
@@ -39,7 +41,7 @@ export async function writeReview(
       }
   
       const response = await axios.post(
-        "https://www.bouraq-mt.com/royalkey/api/Review",
+        `${baseUrl}/api/Review`,
         {
           reviewContent,
           rate,
