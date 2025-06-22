@@ -1,0 +1,61 @@
+name: Build and Deploy with Password
+
+on:
+  push:
+    branches: [ prod ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build project
+        run: npm run build
+        env:
+          VITE_API_BASE_URL: http://95.179.255.156/royalkey
+      - name: Install sshpass
+        run: sudo apt-get install sshpass
+        
+      - name: Deploy to Ubuntu VM
+        env:
+          SERVER_HOST: 95.179.255.156
+          SERVER_USERNAME: root
+          SERVER_PASSWORD: P4#uRq-H@754@_B{
+          SERVER_PATH: /var/www/enduser
+          SERVER_PORT: ${{ secrets.SERVER_PORT || '22' }}
+        run: |
+          cd dist
+          sshpass -p "$SERVER_PASSWORD" rsync -avz -e "ssh -p $SERVER_PORT -o StrictHostKeyChecking=no" --delete ./ $SERVER_USERNAME@$SERVER_HOST:$SERVER_PATH
+          
+      - name: Set environment variables on production server
+        env:
+          SERVER_HOST: 95.179.255.156
+          SERVER_USERNAME: root
+          SERVER_PASSWORD: P4#uRq-H@754@_B{
+          SERVER_PORT: ${{ secrets.SERVER_PORT || '22' }}
+          # Define your environment variables here
+          PROD_API_URL: "http://95.179.255.156/royalkey"
+        run: |
+          sshpass -p "$SERVER_PASSWORD" ssh -p $SERVER_PORT -o StrictHostKeyChecking=no $SERVER_USERNAME@$SERVER_HOST "
+            echo 'Setting up environment variables...'
+            
+            # Create or update .env file in the application directory
+            cat > /var/www/dashboard/.env << 'EOL'
+            VITE_API_BASE_URL=${PROD_API_URL}
+            # Add more variables as needed
+            EOL
+            
+            echo 'Environment variables set successfully.'
+          "
