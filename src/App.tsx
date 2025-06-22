@@ -14,7 +14,7 @@ function App() {
 
   // Make sure your client ID is correct
   const googleClientId =
-    "761509372349-n9mrdsbuhjvn40b4ha2afgobblrgegpb.apps.googleusercontent.com";
+    "684294082408-dmsohk4tmuvo1uke1gmakffp6jhild60.apps.googleusercontent.com";
 
   return (
     <Suspense fallback="Loading...">
