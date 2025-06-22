@@ -164,7 +164,7 @@ export interface OrderSummaryData {
   couponDiscount: number;
   totalBeforeCoupon: number;
   totalAfterCoupon: number;
-  deliveryDate: string;
+  deliveryDate?: string;
   appliedCoupon?: string;
   couponStatus?: CouponStatus;
 }

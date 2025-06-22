@@ -7,6 +7,8 @@ import { validateCoupon, Coupon } from "@services/api/fetchCoupons";
 import icon from "@assets/discount icon.svg";
 import icon2 from "@assets/Vector.svg";
 import { useTranslation } from "react-i18next";
+import type { OrderSummaryData } from "@types";
+type SummaryState = Omit<OrderSummaryData, "deliveryDate">;
 
 const OrderSummary: React.FC<OrderSummaryProps> = ({
   products,
@@ -34,9 +36,11 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
     shippingReady && (currentStep === "shipping" || currentStep === "payment");
 
   const [couponCode, setCouponCode] = useState<string>("");
-  const [summary, setSummary] = useState(() => {
+  const [summary, setSummary] = useState<SummaryState>(() => {
     const saved = Cookies.get("orderSummary");
-    const initial = saved ? JSON.parse(saved) : calculateSummary(products);
+    const initial = saved
+      ? JSON.parse(saved)
+      : (calculateSummary(products) as SummaryState);
 
     initial.shipping = effectiveShipping; // ← single source of truth
 
@@ -62,16 +66,15 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
   // Update shipping cost based on selected shipping method
   useEffect(() => {
     setSummary((prev) => {
-      const shipping = effectiveShipping;
+      const next: SummaryState = {
+        ...prev,
+        shipping: effectiveShipping,
+        totalBeforeCoupon: prev.subTotal + effectiveShipping,
+        totalAfterCoupon:
+          prev.subTotal + effectiveShipping - (prev.couponDiscount ?? 0),
+      };
 
-      if (prev.shipping === shipping) return prev;
-
-      const next = { ...prev, shipping };
-      next.totalBeforeCoupon = next.subTotal + next.shipping;
-      next.totalAfterCoupon =
-        next.totalBeforeCoupon - (next.couponDiscount ?? 0);
-
-      saveOrderSummary(next); // still persist once
+      saveOrderSummary(next); // persists fine – cookie doesn’t care
       return next;
     });
   }, [effectiveShipping]);
@@ -93,12 +96,10 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
   ]);
 
   useEffect(() => {
-    const next = calculateSummary(products);
-
-    next.shipping = effectiveShipping; // ← << here
+    const next = calculateSummary(products) as SummaryState;
+    next.shipping = effectiveShipping;
     next.totalBeforeCoupon = next.subTotal + next.shipping;
     next.totalAfterCoupon = next.totalBeforeCoupon - (next.couponDiscount ?? 0);
-
     setSummary(next);
 
     setCouponStatus(Cookies.get("appliedCoupon") ? "success" : "none");
