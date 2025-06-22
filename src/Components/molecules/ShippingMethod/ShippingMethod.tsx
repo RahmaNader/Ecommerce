@@ -32,8 +32,6 @@ const ShippingMethod: React.FC<ShippingMethodProps> = ({
     locale,
   });
   const formattedFastDate = format(fastDeliveryDate, dateFormat, { locale });
-  const diff = fastCost - regularCost; // 35
-  const plus = diff > 0 ? `+${diff} ${t("product.currency")} • ` : "";
 
   return (
     <div className={`py-8 w-full ${isArabic ? "rtl" : "ltr"}`}>
