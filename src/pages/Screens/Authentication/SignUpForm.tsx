@@ -344,7 +344,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
                       height: "11px",
                       padding: "14px",
                       textAlign: document.dir === "rtl" ? "right" : "left",
-                      direction: document.dir || "ltr",
                       fontFamily: "Poppins, sans-serif", // Match other inputs font
                       fontSize: "15px", // Match text size with other form fields
                     },

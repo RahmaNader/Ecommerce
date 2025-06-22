@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import "./AddressModal.css";
 import { Button } from "@components/atoms";
-import { saveAddressForUser } from '@utils/addressUtils';
+import { saveAddressForUser } from "@utils/addressUtils";
 import { AddressProps } from "@types";
-import Cookies from 'js-cookie';
-import PhoneInput from "react-phone-input-2";
+import Cookies from "js-cookie";
 import "react-phone-input-2/lib/style.css";
 import { useTranslation } from "react-i18next";
-import { postAddress, getCityId } from "@services/api/address"; 
+import { postAddress, getCityId } from "@services/api/address";
+import { MuiTelInput } from "mui-tel-input";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 interface AddressModalProps {
   closeModal: () => void;
@@ -23,7 +24,35 @@ const AddressModal: React.FC<AddressModalProps> = ({
   isArabic = false,
 }) => {
   const { t } = useTranslation();
-  
+  const phoneInputTheme = createTheme({
+    palette: {
+      primary: { main: "#A78E78" }, // wine
+    },
+    components: {
+      MuiOutlinedInput: {
+        styleOverrides: {
+          root: {
+            borderRadius: "0.25rem",
+            backgroundColor: "rgba(167, 142, 120, 0.13)",
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#A78E78",
+            },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#A78E78",
+            },
+            "& .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#A78E78",
+            },
+          },
+          input: {
+            color: "#A78E78",
+            "&::placeholder": { color: "#A78E78", opacity: 0.7 },
+          },
+        },
+      },
+    },
+  });
+
   const citiesOfEgypt = [
     "Cairo",
     "Alexandria",
@@ -86,7 +115,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
 
   const [newAddress, setNewAddress] = useState<AddressProps>(
     prefillData || {
-      id:"",
+      id: "",
       building: "",
       aptNo: "",
       floor: "",
@@ -128,11 +157,13 @@ const AddressModal: React.FC<AddressModalProps> = ({
           error = t("addressModal.validation.streetInvalid");
         }
         break;
-      case "phoneNumber":
-        if (!/^\+?[0-9]{13}$/.test(value)) {
+      case "phoneNumber": {
+        const digitsOnly = value.replace(/\D/g, "");
+        if (digitsOnly.length !== 13) {
           error = t("addressModal.validation.phoneInvalid");
         }
         break;
+      }
       case "city":
         if (!value) {
           error = t("addressModal.validation.cityRequired");
@@ -187,23 +218,21 @@ const AddressModal: React.FC<AddressModalProps> = ({
     if (validateAllInputs()) {
       try {
         let phoneNumber = newAddress.phoneNumber.trim();
-        if (phoneNumber.startsWith('+')) {
+        if (phoneNumber.startsWith("+")) {
           phoneNumber = phoneNumber.substring(1);
         }
-        if (phoneNumber.startsWith('200')) {
-          phoneNumber = '2' + phoneNumber.substring(2);
+        if (phoneNumber.startsWith("200")) {
+          phoneNumber = "2" + phoneNumber.substring(2);
           console.log("[AddressModal] Fixed +200 prefix issue:", phoneNumber);
+        } else if (phoneNumber.startsWith("2020")) {
+          phoneNumber = "20" + phoneNumber.substring(4);
+        } else if (!phoneNumber.startsWith("20")) {
+          phoneNumber = "20" + phoneNumber;
         }
-        else if (phoneNumber.startsWith('2020')) {
-          phoneNumber = '20' + phoneNumber.substring(4);
-        } 
-        else if (!phoneNumber.startsWith('20')) {
-          phoneNumber = '20' + phoneNumber;
-        }
-        phoneNumber = '+' + phoneNumber;
-        
+        phoneNumber = "+" + phoneNumber;
+
         console.log("[AddressModal] Formatted phone number:", phoneNumber);
-        
+
         const apiAddressData = {
           buildingName: newAddress.building,
           street: newAddress.street,
@@ -211,35 +240,42 @@ const AddressModal: React.FC<AddressModalProps> = ({
           additionalDirections: newAddress.additionalDirections || "",
           flatNumber: parseInt(newAddress.aptNo) || 0,
           floorNumber: parseInt(newAddress.floor) || 0,
-          phoneNumber: phoneNumber, 
-          isSaved: newAddress.saveAddress
+          phoneNumber: phoneNumber,
+          isSaved: newAddress.saveAddress,
         };
-        
-        console.log("[AddressModal] Sending address data:", JSON.stringify(apiAddressData, null, 2));
+
+        console.log(
+          "[AddressModal] Sending address data:",
+          JSON.stringify(apiAddressData, null, 2)
+        );
 
         const response = await postAddress(apiAddressData);
-        
+
         if (response) {
-          console.log("[AddressModal] Address saved successfully to API:", response);
+          console.log(
+            "[AddressModal] Address saved successfully to API:",
+            response
+          );
 
           const enrichedAddress: AddressProps = {
             ...newAddress,
-            id: response.shippingAddressId, 
-            shippingAddressId: response.shippingAddressId 
+            id: response.shippingAddressId,
+            shippingAddressId: response.shippingAddressId,
           };
-          
-          const username = Cookies.get('username');
+
+          const username = Cookies.get("username");
           if (username && newAddress.saveAddress) {
             saveAddressForUser(enrichedAddress);
           }
-          
 
           addAddress(enrichedAddress);
           closeModal();
         } else {
-          console.log("[AddressModal] Failed to save address to API, falling back to local storage");
-        
-          const username = Cookies.get('username');
+          console.log(
+            "[AddressModal] Failed to save address to API, falling back to local storage"
+          );
+
+          const username = Cookies.get("username");
           if (username && newAddress.saveAddress) {
             saveAddressForUser(newAddress);
           }
@@ -248,7 +284,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
         }
       } catch (e) {
         console.log("[AddressModal] Exception when saving address:", e);
-        const username = Cookies.get('username');
+        const username = Cookies.get("username");
         if (username && newAddress.saveAddress) {
           saveAddressForUser(newAddress);
         }
@@ -260,7 +296,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
 
   return (
     <div className="modal-backdrop">
-      <div className={`modal-container ${isArabic ? 'rtl' : 'ltr'}`}>
+      <div className={`modal-container ${isArabic ? "rtl" : "ltr"}`}>
         <div className="modal-header">
           <h2 className="text-wine text-2xl">{t("addressModal.title")}</h2>
           <button onClick={closeModal} className="close-btn">
@@ -268,12 +304,14 @@ const AddressModal: React.FC<AddressModalProps> = ({
           </button>
         </div>
 
-        <div className={`modal-body ${isArabic ? 'text-right' : 'text-left'}`}>
+        <div className={`modal-body ${isArabic ? "text-right" : "text-left"}`}>
           <h4 className="text-wine">{t("addressModal.enterDetails")}</h4>
 
           <div className="input-group">
             <input
-              className={`w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none ${isArabic ? 'text-right' : 'text-left'}`}
+              className={`w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none ${
+                isArabic ? "text-right" : "text-left"
+              }`}
               placeholder={t("addressModal.buildingPlaceholder")}
               type="text"
               name="building"
@@ -286,10 +324,16 @@ const AddressModal: React.FC<AddressModalProps> = ({
             )}
           </div>
 
-          <div className={`flex justify-between gap-3 ${isArabic ? 'flex-row-reverse' : ''}`}>
+          <div
+            className={`flex justify-between gap-3 ${
+              isArabic ? "flex-row-reverse" : ""
+            }`}
+          >
             <div className="input-group w-1/2">
               <input
-                className={`w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none ${isArabic ? 'text-right' : 'text-left'}`}
+                className={`w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none ${
+                  isArabic ? "text-right" : "text-left"
+                }`}
                 placeholder={t("addressModal.aptNoPlaceholder")}
                 type="text"
                 name="aptNo"
@@ -302,7 +346,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
 
             <div className="input-group w-1/2">
               <input
-                className={`w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none ${isArabic ? 'text-right' : 'text-left'}`}
+                className={`w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none ${
+                  isArabic ? "text-right" : "text-left"
+                }`}
                 placeholder={t("addressModal.floorPlaceholder")}
                 type="text"
                 name="floor"
@@ -316,7 +362,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
 
           <div className="input-group">
             <input
-              className={`w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none ${isArabic ? 'text-right' : 'text-left'}`}
+              className={`w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none ${
+                isArabic ? "text-right" : "text-left"
+              }`}
               placeholder={t("addressModal.streetPlaceholder")}
               type="text"
               name="street"
@@ -328,38 +376,59 @@ const AddressModal: React.FC<AddressModalProps> = ({
           </div>
 
           <div className="input-group">
-            <PhoneInput
-              country={"eg"}
-              value={newAddress.phoneNumber}
-              placeholder={t("addressModal.phonePlaceholder")}
-              containerClass="w-full"
-              inputStyle={{
-                width: "100%",
-                borderColor: "#A78E78",
-                backgroundColor: "rgba(167, 142, 120, 0.13)",
-                color: "#A78E78",
-                textAlign: isArabic ? "right" : "left",
-                direction: isArabic ? "rtl" : "ltr"
-              }}
-              buttonStyle={{
-                borderColor: "#A78E78",
-                direction: isArabic ? "rtl" : "ltr"
-              }}
-              dropdownStyle={{
-                width: "250px",
-              }}
-              onChange={(value) => {
-                console.log("Phone input value:", value);
-                setNewAddress((prev) => ({
-                  ...prev,
-                  phoneNumber: value,
-                }));
-                validateInput("phoneNumber", value);
-              }}
-              enableSearch={true}
-              disableSearchIcon={false}
-              countryCodeEditable={false}
-            />
+            {" "}
+            <ThemeProvider theme={phoneInputTheme}>
+              <MuiTelInput
+                value={newAddress.phoneNumber}
+                onChange={(v) => {
+                  setNewAddress((p) => ({ ...p, phoneNumber: v }));
+                  validateInput("phoneNumber", v);
+                }}
+                defaultCountry="EG"
+                forceCallingCode
+                placeholder={t("addressModal.phonePlaceholder")}
+                langOfCountryName="en"
+                dir={document.dir || "ltr"}
+                className="w-full"
+                MenuProps={{
+                  anchorOrigin: {
+                    vertical: "bottom",
+                    horizontal: document.dir === "rtl" ? "right" : "left",
+                  },
+                  transformOrigin: {
+                    vertical: "top",
+                    horizontal: document.dir === "rtl" ? "right" : "left",
+                  },
+                }}
+                sx={{
+                  width: "100%",
+                  "& .MuiInputBase-root": {
+                    width: "100%",
+                    height: "45px",
+                    backgroundColor: "rgba(167, 142, 120, 0.13)",
+                    color: "#A78E78",
+                    textAlign: document.dir === "rtl" ? "right" : "left",
+                    fontFamily: "Poppins, sans-serif",
+                  },
+                  "& .MuiOutlinedInput-input": {
+                    height: "11px",
+                    padding: "14px",
+                    fontSize: "15px",
+                    textAlign: document.dir === "rtl" ? "right" : "left",
+                  },
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#A78E78",
+                  },
+                  "& .MuiSvgIcon-root": { color: "#A78E78" },
+                  "& .MuiTelInput-Flag": {
+                    mr: document.dir === "rtl" ? 0 : 1,
+                    ml: document.dir === "rtl" ? 1 : 0,
+                    order: document.dir === "rtl" ? 1 : 0,
+                  },
+                  "& .MuiMenu-paper": { fontFamily: "Poppins, sans-serif" },
+                }}
+              />
+            </ThemeProvider>
             {errors.phoneNumber && (
               <p className="text-FifthColor text-sm mt-1">
                 {errors.phoneNumber}
@@ -367,15 +436,22 @@ const AddressModal: React.FC<AddressModalProps> = ({
             )}
             {/* Add helper text for phone format */}
             <p className="text-gray-500 text-xs mt-1">
-              {t("addressModal.phoneFormatHelp", "Phone number should be in format +201XXXXXXXX")}
+              {t(
+                "addressModal.phoneFormatHelp",
+                "Phone number should be in format +201XXXXXXXX"
+              )}
             </p>
           </div>
 
           <div className="input-group">
-            <label htmlFor="city" className="text-wine">{t("addressModal.city")}</label>
+            <label htmlFor="city" className="text-wine">
+              {t("addressModal.city")}
+            </label>
             <select
               id="city"
-              className={`w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none ${isArabic ? 'text-right' : 'text-left'}`}
+              className={`w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none ${
+                isArabic ? "text-right" : "text-left"
+              }`}
               name="city"
               value={newAddress.city}
               onChange={handleChange}
@@ -383,7 +459,10 @@ const AddressModal: React.FC<AddressModalProps> = ({
             >
               <option value="">{t("addressModal.selectCity")}</option>
               {cities.map((city, index) => (
-                <option key={city} value={isArabic ? citiesOfEgypt[index] : city}>
+                <option
+                  key={city}
+                  value={isArabic ? citiesOfEgypt[index] : city}
+                >
                   {city}
                 </option>
               ))}
@@ -393,7 +472,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
 
           <div className="input-group">
             <input
-              className={`w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none ${isArabic ? 'text-right' : 'text-left'}`}
+              className={`w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none ${
+                isArabic ? "text-right" : "text-left"
+              }`}
               placeholder={t("addressModal.additionalDirections")}
               type="text"
               name="additionalDirections"
@@ -403,7 +484,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
             />
           </div>
 
-          <div className={`checkbox-group ${isArabic ? 'flex justify-end' : ''}`}>
+          <div
+            className={`checkbox-group ${isArabic ? "flex justify-end" : ""}`}
+          >
             <label className="text-wine">
               <input
                 type="checkbox"
@@ -416,19 +499,24 @@ const AddressModal: React.FC<AddressModalProps> = ({
                   }))
                 }
               />
-              {isArabic ? ' ' : ''}{t("addressModal.saveAddress")}
+              {isArabic ? " " : ""}
+              {t("addressModal.saveAddress")}
             </label>
           </div>
         </div>
 
-        <div className={`modal-footer ${isArabic ? 'flex-row-reverse' : ''}`}>
+        <div className={`modal-footer ${isArabic ? "flex-row-reverse" : ""}`}>
           <Button
             label={t("addressModal.cancel")}
             onClick={closeModal}
             size="large"
             type="outlined"
           />
-          <Button label={t("addressModal.next")} onClick={handleSubmit} size="large" />
+          <Button
+            label={t("addressModal.next")}
+            onClick={handleSubmit}
+            size="large"
+          />
         </div>
       </div>
     </div>
