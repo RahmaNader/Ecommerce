@@ -126,6 +126,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
       additionalDirections: "",
       saveAddress: false,
       shippingAddressId: "",
+      area: "",
     }
   );
 
@@ -134,6 +135,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
     aptNo: "",
     floor: "",
     street: "",
+    area: "",
     phoneNumber: "",
     city: "",
   });
@@ -169,6 +171,14 @@ const AddressModal: React.FC<AddressModalProps> = ({
           error = t("addressModal.validation.cityRequired");
         }
         break;
+      case "area":
+        if (!value.trim()) {
+          error = t("addressModal.validation.areaRequired");
+        } else if (!/^[a-zA-Z\u0600-\u06FF\d\s]+$/.test(value)) {
+          error = t("addressModal.validation.areaInvalid");
+        }
+        break;
+
       default:
         break;
     }
@@ -236,11 +246,12 @@ const AddressModal: React.FC<AddressModalProps> = ({
         const apiAddressData = {
           buildingName: newAddress.building,
           street: newAddress.street,
+          area: newAddress.area, // ★ added
           city: getCityId(newAddress.city),
           additionalDirections: newAddress.additionalDirections || "",
           flatNumber: parseInt(newAddress.aptNo) || 0,
           floorNumber: parseInt(newAddress.floor) || 0,
-          phoneNumber: phoneNumber,
+          phoneNumber,
           isSaved: newAddress.saveAddress,
         };
 
@@ -306,6 +317,20 @@ const AddressModal: React.FC<AddressModalProps> = ({
 
         <div className={`modal-body ${isArabic ? "text-right" : "text-left"}`}>
           <h4 className="text-wine">{t("addressModal.enterDetails")}</h4>
+          <div className="input-group">
+            <input
+              className={`w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none ${
+                isArabic ? "text-right" : "text-left"
+              }`}
+              placeholder={t("addressModal.area")}
+              type="text"
+              name="area"
+              value={newAddress.area}
+              onChange={handleChange}
+              dir={isArabic ? "rtl" : "ltr"}
+            />
+            {errors.area && <p className="text-red-500">{errors.area}</p>}
+          </div>
 
           <div className="input-group">
             <input
@@ -385,6 +410,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
                   validateInput("phoneNumber", v);
                 }}
                 defaultCountry="EG"
+                disableDropdown
                 forceCallingCode
                 placeholder={t("addressModal.phonePlaceholder")}
                 langOfCountryName="en"

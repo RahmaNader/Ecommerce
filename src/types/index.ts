@@ -46,6 +46,7 @@ export interface AddressProps {
   additionalDirections?: string;
   saveAddress: boolean;
   shippingAddressId: string;
+  area: string;
 }
 ////////////////////////////////////////////////////
 
