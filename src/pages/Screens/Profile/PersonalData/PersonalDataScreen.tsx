@@ -1,60 +1,27 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useForm, SubmitHandler, Controller } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import "react-phone-input-2/lib/style.css";
-import { MuiTelInput } from "mui-tel-input";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { fetchPersonalData, updatePersonalData } from "@services/api/personaldetails";
+import {
+  fetchPersonalData,
+  updatePersonalData,
+} from "@services/api/personaldetails";
 import { PersonalData } from "@types";
 import personalDataFields from "@data/personalData";
 import addPhoto from "@assets/addPhoto.svg";
 // import editIcon from "@assets/edit.svg";
 import { useTranslation } from "react-i18next";
-import axios from 'axios';
+import axios from "axios";
+import i18next from "i18next";
 
 const PersonalDataScreen: React.FC = () => {
   const { t } = useTranslation();
-  
-  // Add phone input theme configuration
-  const phoneInputTheme = createTheme({
-    palette: {
-      primary: {
-        main: "#A78E78", // wine color from your app
-      },
-    },
-    components: {
-      MuiOutlinedInput: {
-        styleOverrides: {
-          root: {
-            borderRadius: "0.25rem",
-            backgroundColor: "rgba(167, 142, 120, 0.13)",
-            "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#A78E78",
-            },
-            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#A78E78",
-            },
-            "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#A78E78",
-            },
-          },
-          input: {
-            color: "#A78E78",
-            "&::placeholder": {
-              color: "#A78E78",
-              opacity: 0.7,
-            },
-          },
-        },
-      },
-    },
-  });
+  const isArabic = i18next.language === "ar";
 
   const {
     register,
     handleSubmit,
     setValue,
-    control,
-    formState: { errors},
+    formState: { errors },
   } = useForm<PersonalData>({
     mode: "onBlur",
     reValidateMode: "onChange",
@@ -89,7 +56,11 @@ const PersonalDataScreen: React.FC = () => {
   const onSubmit: SubmitHandler<PersonalData> = async (data) => {
     try {
       const formattedData = Object.keys(data).reduce((acc, key) => {
-        if (initialData && data[key as keyof PersonalData] !== initialData[key as keyof PersonalData]) {
+        if (
+          initialData &&
+          data[key as keyof PersonalData] !==
+            initialData[key as keyof PersonalData]
+        ) {
           acc[key as keyof PersonalData] = data[key as keyof PersonalData];
         }
         return acc;
@@ -99,7 +70,10 @@ const PersonalDataScreen: React.FC = () => {
         alert("No changes detected.");
         return;
       }
-      console.log("Sending changes to API:", JSON.stringify(formattedData, null, 2));
+      console.log(
+        "Sending changes to API:",
+        JSON.stringify(formattedData, null, 2)
+      );
       await updatePersonalData(formattedData);
       setInitialData({ ...initialData, ...formattedData } as PersonalData);
       alert("Data updated successfully!");
@@ -125,7 +99,10 @@ const PersonalDataScreen: React.FC = () => {
     // Reset form to initial data
     if (initialData) {
       Object.keys(initialData).forEach((key) => {
-        setValue(key as keyof PersonalData, initialData[key as keyof PersonalData]);
+        setValue(
+          key as keyof PersonalData,
+          initialData[key as keyof PersonalData]
+        );
       });
     }
     setEditMode(false);
@@ -196,9 +173,7 @@ const PersonalDataScreen: React.FC = () => {
                 accept="image/*"
                 className="hidden"
               />
-              <div
-                className="relative w-[100px] h-[100px] mx-auto rounded-full bg-[#A78E7821] border-wine border-[1px]"
-              >
+              <div className="relative w-[100px] h-[100px] mx-auto rounded-full bg-[#A78E7821] border-wine border-[1px]">
                 {isUploadingPhoto ? (
                   <div className="absolute inset-0 flex items-center justify-center bg-ForthColor/20">
                     <div className="w-8 h-8 border-4 border-wine border-t-transparent rounded-full animate-spin"></div>
@@ -240,98 +215,49 @@ const PersonalDataScreen: React.FC = () => {
               <div className="flex flex-col gap-y-4">
                 {personalDataFields.map((field) => (
                   <div key={field.id} className="relative">
-                    <label 
+                    <label
                       htmlFor={field.id}
                       className="block text-sm font-medium text-wine mb-1"
                     >
                       {t(`${field.placeholder}`)}
                     </label>
-                    <div className={`relative rounded-md ${editMode ? 'shadow-sm' : ''}`}>
+                    <div
+                      className={`relative rounded-md ${
+                        editMode ? "shadow-sm" : ""
+                      }`}
+                    >
                       {field.id === "phoneNumber" ? (
-                        <Controller
-                          name="phoneNumber"
-                          control={control}
-                          rules={editMode ? field.validation : {}}
-                          render={({ field: controllerField }) => (
-                            <ThemeProvider theme={phoneInputTheme}>
-                              <MuiTelInput
-                                {...controllerField}
-                                value={controllerField.value || ""}
-                                onChange={(newValue) => {
-                                  // Remove any non-digit characters before setting the value
-                                  const digitsOnly = newValue.replace(/\D/g, '');
-                                  controllerField.onChange(digitsOnly);
-                                }}
-                                defaultCountry="EG"
-                                placeholder={t(`${field.placeholder}`)}
-                                className="w-full"
-                                disabled={!editMode}
-                                focusOnSelectCountry
-                                langOfCountryName="en"
-                                // Change this to false to avoid forcing country code
-                                forceCallingCode={false}
-                                dir={document.dir || 'ltr'}
-                                MenuProps={{
-                                  anchorOrigin: {
-                                    vertical: 'bottom',
-                                    horizontal: document.dir === 'rtl' ? 'right' : 'left',
+                        <input
+                          type="tel"
+                          id="phoneNumber"
+                          dir={isArabic ? "rtl" : "ltr"}
+                          disabled={!editMode}
+                          placeholder={t(field.placeholder, "01XXXXXXXXX")}
+                          {...register(
+                            "phoneNumber",
+                            editMode
+                              ? {
+                                  required: t("profile.phoneRequired"),
+                                  pattern: {
+                                    value: /^01\d{9}$/, // Egyptian mobile, 11 digits
+                                    message: t("profile.phoneInvalid"),
                                   },
-                                  transformOrigin: {
-                                    vertical: 'top',
-                                    horizontal: document.dir === 'rtl' ? 'right' : 'left',
-                                  },
-                                }}
-                                sx={{
-                                  width: "100%",
-                                  "& .MuiInputBase-root": {
-                                    width: "100%",
-                                    height: "45px",
-                                    backgroundColor: editMode ? "white" : "rgba(167, 142, 120, 0.13)",
-                                    color: "#A78E78",
-                                    borderColor: editMode ? "#A78E78" : "#A78E78",
-                                    textAlign: document.dir === 'rtl' ? 'right' : 'left',
-                                    fontFamily: "Poppins, sans-serif",
-                                  },
-                                  "& .MuiOutlinedInput-input": {
-                                    height: "11px",
-                                    padding: "14px",
-                                    textAlign: document.dir === 'rtl' ? 'right' : 'left',
-                                    direction: document.dir || 'ltr',
-                                    fontFamily: "Poppins, sans-serif",
-                                    fontSize: "15px",
-                                  },
-                                  "& input::placeholder": {
-                                    textAlign: document.dir === 'rtl' ? 'right' : 'left',
-                                    fontFamily: "Poppins, sans-serif",
-                                  },
-                                  "& .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: "#A78E78",
-                                  },
-                                  "& .MuiSvgIcon-root": {
-                                    color: "#A78E78",
-                                  },
-                                  "& .MuiTelInput-Flag": {
-                                    marginRight: document.dir === 'rtl' ? '0' : '8px',
-                                    marginLeft: document.dir === 'rtl' ? '8px' : '0',
-                                    order: document.dir === 'rtl' ? '1' : '0',
-                                  },
-                                  "&:hover .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: "#A78E78",
-                                  },
-                                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: "#A78E78",
-                                  },
-                                  "& .MuiMenu-paper": {
-                                    fontFamily: "Poppins, sans-serif",
-                                  },
-                                  "&.Mui-disabled": {
-                                    opacity: 0.7,
-                                    backgroundColor: "rgba(167, 142, 120, 0.13)",
-                                  },
-                                }}
-                              />
-                            </ThemeProvider>
+                                }
+                              : {}
                           )}
+                          onInput={(e) => {
+                            // keep only digits while typing
+                            e.currentTarget.value =
+                              e.currentTarget.value.replace(/\D/g, "");
+                          }}
+                          className={`w-full px-4 py-3 border rounded-md transition-all duration-300
+      ${
+        editMode
+          ? "border-wine bg-white"
+          : "border-ForthColor bg-ForthColor/[0.13]"
+      }
+      text-wine ${isArabic ? "rtl:text-right" : "ltr:text-left"}
+      focus:outline-none focus:ring-1 focus:ring-wine`}
                         />
                       ) : (
                         <input
@@ -359,7 +285,7 @@ const PersonalDataScreen: React.FC = () => {
                   </div>
                 ))}
               </div>
-              
+
               {/* Updated button layout */}
               <div className="mt-8 flex justify-center gap-4">
                 {editMode ? (

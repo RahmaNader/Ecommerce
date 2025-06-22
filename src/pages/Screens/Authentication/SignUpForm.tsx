@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { MuiTelInput } from "mui-tel-input";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { useForm } from "react-hook-form";
 import "react-phone-input-2/lib/style.css";
 import { SignUpFormInputs } from "@types";
 import { registerUser, setAuthTokens } from "@services/auth/AuthService";
@@ -17,7 +15,7 @@ interface SignUpFormProps {
 }
 
 const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [alert, setAlert] = useState<{
     type: "success" | "error";
@@ -28,12 +26,12 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
     register,
     handleSubmit,
     formState: { errors },
-    control,
     watch,
     setError,
   } = useForm<SignUpFormInputs>();
 
   const password = watch("password");
+  const isArabic = i18n.language === "ar";
 
   const handleSuccess = async (resp: CredentialResponse) => {
     try {
@@ -142,41 +140,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
     setTimeout(() => setAlert(null), 3000);
   };
 
-  // Create a custom theme to match your website's styling
-  const phoneInputTheme = createTheme({
-    palette: {
-      primary: {
-        main: "#A78E78", // wine color from your app
-      },
-    },
-    components: {
-      MuiOutlinedInput: {
-        styleOverrides: {
-          root: {
-            borderRadius: "0.25rem",
-            backgroundColor: "rgba(167, 142, 120, 0.13)",
-            "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#A78E78",
-            },
-            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#A78E78",
-            },
-            "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#A78E78",
-            },
-          },
-          input: {
-            color: "#A78E78",
-            "&::placeholder": {
-              color: "#A78E78",
-              opacity: 0.7,
-            },
-          },
-        },
-      },
-    },
-  });
-
   return (
     <div className="bg-mainColor text-secondColor p-6 rounded w-full mx-auto">
       {alert && (
@@ -234,91 +197,27 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
 
         {/* Phone Number Field with Country Code */}
         <div>
-          <Controller
-            name="phoneNumber"
-            control={control}
-            rules={{
+          <input
+            type="tel"
+            dir={isArabic ? "rtl" : "ltr"}
+            className={`w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor
+    placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none
+    ${isArabic ? "text-right" : "text-left"}`}
+            placeholder={t("addressModal.phonePlaceholder", "01XXXXXXXXX")}
+            /* RHF registration & validation */
+            {...register("phoneNumber", {
               required: t("auth.phoneRequired"),
-              validate: (value) => {
-                // Basic validation for phone format
-                if (!value || value.trim().length < 11) {
-                  return t("auth.phoneMinLength");
-                }
-                return true;
+              pattern: {
+                value: /^01\d{9}$/, // Egyptian mobile number (11 digits)
+                message: t("auth.invalidPhone"),
               },
+            })}
+            /* keep only digits as the user types / pastes */
+            onInput={(e) => {
+              e.currentTarget.value = e.currentTarget.value.replace(/\D/g, "");
             }}
-            render={({ field }) => (
-              <ThemeProvider theme={phoneInputTheme}>
-                <MuiTelInput
-                  {...field}
-                  value={field.value || ""}
-                  onChange={(newValue) => field.onChange(newValue)}
-                  defaultCountry="EG"
-                  placeholder={t("auth.phoneNumber")}
-                  className="w-full"
-                  focusOnSelectCountry
-                  langOfCountryName="en"
-                  forceCallingCode={true}
-                  // Add RTL support
-                  dir={document.dir || "ltr"}
-                  MenuProps={{
-                    anchorOrigin: {
-                      vertical: "bottom",
-                      horizontal: document.dir === "rtl" ? "right" : "left",
-                    },
-                    transformOrigin: {
-                      vertical: "top",
-                      horizontal: document.dir === "rtl" ? "right" : "left",
-                    },
-                  }}
-                  sx={{
-                    width: "100%",
-                    "& .MuiInputBase-root": {
-                      width: "100%",
-                      height: "45px",
-                      backgroundColor: "rgba(167, 142, 120, 0.13)",
-                      color: "#A78E78",
-                      borderColor: "#A78E78",
-                      textAlign: document.dir === "rtl" ? "right" : "left",
-                      fontFamily: "Poppins, sans-serif", // Match other inputs font
-                    },
-                    "& .MuiOutlinedInput-input": {
-                      height: "11px",
-                      padding: "14px",
-                      textAlign: document.dir === "rtl" ? "right" : "left",
-                      fontFamily: "Poppins, sans-serif", // Match other inputs font
-                      fontSize: "15px", // Match text size with other form fields
-                    },
-                    "& input::placeholder": {
-                      textAlign: document.dir === "rtl" ? "right" : "left",
-                      fontFamily: "Poppins, sans-serif", // Match placeholder font
-                    },
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#A78E78",
-                    },
-                    "& .MuiSvgIcon-root": {
-                      color: "#A78E78",
-                    },
-                    "& .MuiTelInput-Flag": {
-                      marginRight: document.dir === "rtl" ? "0" : "8px",
-                      marginLeft: document.dir === "rtl" ? "8px" : "0",
-                      order: document.dir === "rtl" ? "1" : "0",
-                    },
-                    "&:hover .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#A78E78",
-                    },
-                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#A78E78",
-                    },
-                    // Apply font to the dropdown menu as well
-                    "& .MuiMenu-paper": {
-                      fontFamily: "Poppins, sans-serif",
-                    },
-                  }}
-                />
-              </ThemeProvider>
-            )}
           />
+
           {errors.phoneNumber && (
             <p className="text-FifthColor text-sm mt-1">
               {errors.phoneNumber.message}

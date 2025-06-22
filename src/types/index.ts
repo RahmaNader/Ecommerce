@@ -49,6 +49,12 @@ export interface AddressProps {
   area: string;
 }
 ////////////////////////////////////////////////////
+export interface CityShippingCost {
+  cityName: string;
+  cityNameAr: string;
+  regularShippingCost: number;
+  fastShippingCost: number;
+}
 
 export interface ProductImage {
   imageId: number;
@@ -175,6 +181,8 @@ export interface OrderSummaryProps {
   isArabic?: boolean;
   isPlacingOrder?: boolean;
   orderError?: string | null;
+  fastShippingCost?: number;
+  regularShippingCost?: number;
 }
 
 export type RatingDistributionItem = {

@@ -368,7 +368,7 @@ const resources = {
       shipping: {
         title: "Shipment Method",
         regularDelivery: "Delivery Regular",
-        fastDelivery: "Fast Delivery +50 EGP",
+        fastDelivery: "Fast Delivery",
         regularDatePrefix: "By {{date}}",
         fastDatePrefix: "By {{date}}",
       },
@@ -954,7 +954,7 @@ const resources = {
       shipping: {
         title: "طريقة الشحن",
         regularDelivery: "شحن عادي",
-        fastDelivery: "شحن سريع +٥٠ جنيه",
+        fastDelivery: "شحن سريع",
         regularDatePrefix: "بتاريخ {{date}}",
         fastDatePrefix: "بتاريخ {{date}}",
       },

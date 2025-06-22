@@ -6,7 +6,15 @@ import { AddressProps } from "@types";
 import Cookies from "js-cookie";
 import "react-phone-input-2/lib/style.css";
 import { useTranslation } from "react-i18next";
-import { postAddress, getCityId } from "@services/api/address";
+import { postAddress } from "@services/api/address";
+import apiClient from "src/apiClient";
+
+type City = {
+  cityName: string;
+  cityNameAr: string;
+  regularShippingCost: number;
+  fastShippingCost: number;
+};
 
 interface AddressModalProps {
   closeModal: () => void;
@@ -22,66 +30,40 @@ const AddressModal: React.FC<AddressModalProps> = ({
   isArabic = false,
 }) => {
   const { t } = useTranslation();
+  const [cities, setCities] = useState<City[]>([]);
+  const [isLoadingCities, setIsLoadingCities] = useState<boolean>(true);
 
-  const citiesOfEgypt = [
-    "Cairo",
-    "Alexandria",
-    "Giza",
-    "Sharm El Sheikh",
-    "Hurghada",
-    "Luxor",
-    "Aswan",
-    "Asyut",
-    "Beheira",
-    "Beni Suef",
-    "Dakahlia",
-    "Damietta",
-    "Faiyum",
-    "Ismailia",
-    "Gharbia",
-    "Kafr el-Sheikh",
-    "Matruh",
-    "Minya",
-    "Monufia",
-    "New Valley",
-    "North Sinai",
-    "Port Said",
-    "Qalyubia",
-    "Sharqia",
-    "Sohag",
-    "Suez",
-  ];
+  useEffect(() => {
+    const fetchCities = async () => {
+      try {
+        const token = Cookies.get("authToken"); // you already set this cookie on login
+        const { data } = await apiClient.get(
+          "/ShippingCosts/getCostsForAllCities",
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
 
-  const arabicCities = [
-    "القاهرة",
-    "الإسكندرية",
-    "الجيزة",
-    "شرم الشيخ",
-    "الغردقة",
-    "الأقصر",
-    "أسوان",
-    "أسيوط",
-    "البحيرة",
-    "بني سويف",
-    "الدقهلية",
-    "دمياط",
-    "الفيوم",
-    "الإسماعيلية",
-    "الغربية",
-    "كفر الشيخ",
-    "مطروح",
-    "المنيا",
-    "المنوفية",
-    "الوادي الجديد",
-    "شمال سيناء",
-    "بورسعيد",
-    "القليوبية",
-    "الشرقية",
-    "سوهاج",
-    "السويس",
-  ];
+        // BE returns `{ shippingCosts: { $values: [...] } }`
+        const received: City[] = data?.shippingCosts?.$values ?? [];
+        setCities(received);
+      } catch (err) {
+        console.error(
+          "[AddressModal] Couldn’t fetch cities, falling back:",
+          err
+        );
+        // ⤵️  If you still want a fallback list, put it here:
+        // setCities(fallbackEnglishArray.map((c, i) => ({
+        //   cityName: c,
+        //   cityNameAr: fallbackArabicArray[i],
+        //   regularShippingCost: 0,
+        //   fastShippingCost: 0,
+        // })));
+      } finally {
+        setIsLoadingCities(false);
+      }
+    };
 
-  const cities = isArabic ? arabicCities : citiesOfEgypt;
+    fetchCities();
+  }, []);
 
   const [newAddress, setNewAddress] = useState<AddressProps>(
     prefillData || {
@@ -222,7 +204,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
           buildingName: newAddress.building,
           street: newAddress.street || "",
           area: newAddress.area,
-          city: getCityId(newAddress.city),
+          city: newAddress.city,
           additionalDirections: newAddress.additionalDirections || "",
           flatNumber: parseInt(newAddress.aptNo) || 0,
           floorNumber: parseInt(newAddress.floor) || 0,
@@ -415,24 +397,25 @@ const AddressModal: React.FC<AddressModalProps> = ({
             </label>
             <select
               id="city"
-              className={`w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none ${
-                isArabic ? "text-right" : "text-left"
-              }`}
               name="city"
+              dir={isArabic ? "rtl" : "ltr"}
+              disabled={isLoadingCities}
               value={newAddress.city}
               onChange={handleChange}
-              dir={isArabic ? "rtl" : "ltr"}
+              className={`w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor
+                placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none
+                focus:ring-none ${isArabic ? "text-right" : "text-left"}`}
             >
               <option value="">{t("addressModal.selectCity")}</option>
-              {cities.map((city, index) => (
-                <option
-                  key={city}
-                  value={isArabic ? citiesOfEgypt[index] : city}
-                >
-                  {city}
+
+              {cities.map((c) => (
+                /* keep the VALUE in English so getCityId() still works */
+                <option key={c.cityName} value={c.cityName}>
+                  {isArabic ? c.cityNameAr : c.cityName}
                 </option>
               ))}
             </select>
+
             {errors.city && <p className="text-red-500">{errors.city}</p>}
           </div>
 

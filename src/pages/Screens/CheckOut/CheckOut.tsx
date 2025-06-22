@@ -7,7 +7,7 @@ import {
 } from "@services/api/address";
 import Cookies from "js-cookie";
 import plusIcon from "@assets/plus.svg";
-import { AddressProps } from "@types";
+import { AddressProps, CityShippingCost } from "@types";
 import { Product } from "@types";
 import { OrderSummary } from "@components/organisms";
 import { useTranslation } from "react-i18next";
@@ -28,6 +28,7 @@ import {
 } from "@components/molecules";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import Typography from "@mui/material/Typography";
+import apiClient from "src/apiClient";
 
 export default function CheckOut() {
   const { t, i18n } = useTranslation();
@@ -47,6 +48,41 @@ export default function CheckOut() {
   const [editingAddressIndex, setEditingAddressIndex] = useState<number | null>(
     null
   );
+  const [shippingCostsList, setShippingCostsList] = useState<
+    CityShippingCost[]
+  >([]);
+  const [currentCityCosts, setCurrentCityCosts] = useState({
+    regular: 0,
+    fast: 0,
+  });
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const token = Cookies.get("authToken");
+        const { data } = await apiClient.get(
+          "/ShippingCosts/getCostsForAllCities",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setShippingCostsList(data?.shippingCosts?.$values ?? []);
+      } catch (e) {
+        console.error("[Checkout] shipping cost fetch failed:", e);
+      }
+    })();
+  }, []);
+  useEffect(() => {
+    if (selectedAddressIndex !== null && shippingCostsList.length) {
+      const cityName = addresses[selectedAddressIndex].city;
+      const hit = shippingCostsList.find((c) => c.cityName === cityName);
+      setCurrentCityCosts({
+        regular: hit?.regularShippingCost ?? 0,
+        fast: hit?.fastShippingCost ?? 0,
+      });
+    }
+  }, [selectedAddressIndex, shippingCostsList, addresses]);
+
   const [alert, setAlert] = useState<{
     type: "success" | "error";
     message: string;
@@ -303,6 +339,13 @@ export default function CheckOut() {
     }
   };
 
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, [currentStep]);
+
   if (orderConfirmed && orderSuccess) {
     return <OrderConfirmation />;
   }
@@ -455,6 +498,9 @@ export default function CheckOut() {
               <ShippingMethod
                 selectedShippingMethod={selectedShippingMethod}
                 onShippingMethodChange={handleShippingMethodChange}
+                regularCost={currentCityCosts.regular}
+                fastCost={currentCityCosts.fast}
+                isArabic={isRTL}
               />
             )}
 
@@ -478,6 +524,8 @@ export default function CheckOut() {
                 : null
             }
             selectedShippingMethod={selectedShippingMethod}
+            regularShippingCost={currentCityCosts.regular}
+            fastShippingCost={currentCityCosts.fast}
             isPlacingOrder={isPlacingOrder}
           />
         </div>

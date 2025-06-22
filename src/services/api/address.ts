@@ -7,7 +7,7 @@ const baseUrl = import.meta.env.VITE_API_BASE_URL;
 interface AddressPostData {
   buildingName: string;
   street: string;
-  city: number;
+  city: string;
   additionalDirections: string;
   flatNumber: number;
   floorNumber: number;
@@ -21,7 +21,7 @@ interface AddressResponse {
   shippingAddressId: string;
   buildingName: string;
   street: string;
-  city: number;
+  city: string;
   additionalDirections: string;
   flatNumber: number;
   floorNumber: number;
@@ -159,19 +159,12 @@ export const convertApiAddressToAddressProps = (
     street: apiAddress.street,
     phoneNumber: apiAddress.phoneNumber,
     country: "Egypt",
-    city: getCityNameById(apiAddress.city),
+    city: apiAddress.city,
     additionalDirections: apiAddress.additionalDirections,
     saveAddress: apiAddress.isSaved,
     shippingAddressId: apiAddress.shippingAddressId,
     area: apiAddress.area,
   };
-};
-
-export const getCityNameById = (cityId: number): string => {
-  const englishCities = Object.keys(cityIdMap);
-  const cityName = englishCities.find((city) => cityIdMap[city] === cityId);
-
-  return cityName || "Cairo";
 };
 
 export const deleteAddress = async (
