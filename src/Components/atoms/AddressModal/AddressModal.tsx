@@ -16,6 +16,9 @@ type City = {
   fastShippingCost: number;
 };
 
+const toEnglishDigits = (s: string) =>
+  s.replace(/[\u0660-\u0669]/g, (d) => "0123456789"["٠١٢٣٤٥٦٧٨٩".indexOf(d)]);
+
 interface AddressModalProps {
   closeModal: () => void;
   addAddress: (newAddress: AddressProps) => void;
@@ -101,11 +104,13 @@ const AddressModal: React.FC<AddressModalProps> = ({
         }
         break;
       case "aptNo":
-      case "floor":
-        if (!/^\d+$/.test(value)) {
+      case "floor": {
+        const ascii = toEnglishDigits(value);
+        if (!/^\d+$/.test(ascii)) {
           error = t("addressModal.validation.numberInvalid");
         }
         break;
+      }
       case "street":
         // If the field is empty, treat it as valid (optional)
         if (
@@ -116,9 +121,8 @@ const AddressModal: React.FC<AddressModalProps> = ({
         }
         break;
       case "phoneNumber": {
-        // keep digits only
-        const digitsOnly = value.replace(/\D/g, "");
-        if (!/^01\d{9}$/.test(digitsOnly)) {
+        const ascii = toEnglishDigits(value); // <- NEW
+        if (!/^01\d{9}$/.test(ascii)) {
           error = t("addressModal.validation.phoneInvalid");
         }
         break;
@@ -184,7 +188,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
   const handleSubmit = async () => {
     if (validateAllInputs()) {
       try {
-        let phoneNumber = newAddress.phoneNumber.trim();
+        const flatNumber = Number(toEnglishDigits(newAddress.aptNo)) || 0;
+        const floorNumber = Number(toEnglishDigits(newAddress.floor)) || 0;
+        let phoneNumber = toEnglishDigits(newAddress.phoneNumber.trim());
         if (phoneNumber.startsWith("+")) {
           phoneNumber = phoneNumber.substring(1);
         }
@@ -206,8 +212,8 @@ const AddressModal: React.FC<AddressModalProps> = ({
           area: newAddress.area,
           city: newAddress.city,
           additionalDirections: newAddress.additionalDirections || "",
-          flatNumber: parseInt(newAddress.aptNo) || 0,
-          floorNumber: parseInt(newAddress.floor) || 0,
+          flatNumber,
+          floorNumber,
           phoneNumber,
           isSaved: newAddress.saveAddress,
         };
