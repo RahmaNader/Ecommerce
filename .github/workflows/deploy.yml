@@ -24,13 +24,13 @@ jobs:
       - name: Build project
         run: npm run build
         env:
-          VITE_API_BASE_URL: http://95.179.255.156/royalkey
+          VITE_API_BASE_URL: http://www.kiswaeg.com/royalkey
       - name: Install sshpass
         run: sudo apt-get install sshpass
         
       - name: Deploy to Ubuntu VM
         env:
-          SERVER_HOST: 95.179.255.156
+          SERVER_HOST: www.kiswaeg.com
           SERVER_USERNAME: root
           SERVER_PASSWORD: P4#uRq-H@754@_B{
           SERVER_PATH: /var/www/enduser
@@ -41,18 +41,18 @@ jobs:
           
       - name: Set environment variables on production server
         env:
-          SERVER_HOST: 95.179.255.156
+          SERVER_HOST: www.kiswaeg.com
           SERVER_USERNAME: root
           SERVER_PASSWORD: P4#uRq-H@754@_B{
           SERVER_PORT: ${{ secrets.SERVER_PORT || '22' }}
           # Define your environment variables here
-          PROD_API_URL: "http://95.179.255.156/royalkey"
+          PROD_API_URL: "http://www.kiswaeg.com/royalkey"
         run: |
           sshpass -p "$SERVER_PASSWORD" ssh -p $SERVER_PORT -o StrictHostKeyChecking=no $SERVER_USERNAME@$SERVER_HOST "
             echo 'Setting up environment variables...'
             
             # Create or update .env file in the application directory
-            cat > /var/www/dashboard/.env << 'EOL'
+            cat > /var/www/enduser/.env << 'EOL'
             VITE_API_BASE_URL=${PROD_API_URL}
             # Add more variables as needed
             EOL
