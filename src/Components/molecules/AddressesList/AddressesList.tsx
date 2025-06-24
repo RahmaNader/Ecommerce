@@ -1,11 +1,13 @@
 import { useState } from "react";
-import {ToggleRadioButton} from "@components/atoms";
-import {AddressModal} from "@components/atoms";
+import { ToggleRadioButton } from "@components/atoms";
+import { AddressModal } from "@components/atoms";
 import { AddressProps } from "@types";
 
 const AddressList = () => {
   const [addresses, setAddresses] = useState<AddressProps[]>([]);
-  const [selectedAddress, setSelectedAddress] = useState<AddressProps | null>(null);
+  const [selectedAddress, setSelectedAddress] = useState<AddressProps | null>(
+    null
+  );
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
@@ -13,12 +15,18 @@ const AddressList = () => {
   const addAddress = (address: AddressProps) => {
     if (isEditing && editIndex !== null) {
       const updatedAddresses = [...addresses];
-      updatedAddresses[editIndex] = { ...address, saveAddress: address.saveAddress ?? false };
+      updatedAddresses[editIndex] = {
+        ...address,
+        saveAddress: address.saveAddress ?? false,
+      };
       setAddresses(updatedAddresses);
       setIsEditing(false);
       setEditIndex(null);
     } else {
-      setAddresses([...addresses, { ...address, saveAddress: address.saveAddress ?? false }]);
+      setAddresses([
+        ...addresses,
+        { ...address, saveAddress: address.saveAddress ?? false },
+      ]);
     }
     setShowModal(false);
   };
@@ -83,7 +91,12 @@ const AddressList = () => {
           }}
           addAddress={addAddress}
           {...(isEditing && editIndex !== null
-            ? { prefillData: { ...addresses[editIndex], saveAddress: addresses[editIndex].saveAddress ?? false } }
+            ? {
+                prefillData: {
+                  ...addresses[editIndex],
+                  saveAddress: addresses[editIndex].saveAddress ?? false,
+                },
+              }
             : {})}
         />
       )}
@@ -91,7 +104,7 @@ const AddressList = () => {
       {selectedAddress && (
         <div className="selected-address mt-6 p-4 border rounded">
           <h3 className="text-lg font-semibold">Selected Address:</h3>
-          <p>{`${selectedAddress.building}, ${selectedAddress.city}`}</p>
+          <p>{`${selectedAddress.building}, ${selectedAddress.area}`}</p>
           <p>{`${selectedAddress.street}, ${selectedAddress.city}`}</p>
         </div>
       )}
@@ -100,4 +113,3 @@ const AddressList = () => {
 };
 
 export default AddressList;
-

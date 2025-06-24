@@ -2,14 +2,13 @@ import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@components/atoms";
 import Cookies from "js-cookie";
 import { OrderSummaryProps, CouponStatus } from "@types";
-import {
-  calculateSummary,
-  saveOrderSummary,
-} from "@utils/OrderSummaryUtils";
+import { calculateSummary, saveOrderSummary } from "@utils/OrderSummaryUtils";
 import { validateCoupon, Coupon } from "@services/api/fetchCoupons";
 import icon from "@assets/discount icon.svg";
 import icon2 from "@assets/Vector.svg";
 import { useTranslation } from "react-i18next";
+import type { OrderSummaryData } from "@types";
+type SummaryState = Omit<OrderSummaryData, "deliveryDate">;
 
 const OrderSummary: React.FC<OrderSummaryProps> = ({
   products,
@@ -23,133 +22,124 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
   isArabic = false,
   isPlacingOrder = false,
   orderError = null,
+  fastShippingCost = 0,
+  regularShippingCost = 0,
 }) => {
-  const { t } = useTranslation(); 
-  
+  const { t } = useTranslation();
+  const shippingReady = Boolean(selectedAddress);
+  const effectiveShipping = !shippingReady
+    ? 0
+    : selectedShippingMethod === "fast"
+    ? fastShippingCost
+    : regularShippingCost;
+  const showShippingInfo =
+    shippingReady && (currentStep === "shipping" || currentStep === "payment");
+
   const [couponCode, setCouponCode] = useState<string>("");
-  const [summary, setSummary] = useState(() => {
+  const [summary, setSummary] = useState<SummaryState>(() => {
     const saved = Cookies.get("orderSummary");
-    console.log("[OrderSummary] Initial cookie summary:", saved);
-    const initialSummary = saved ? JSON.parse(saved) : calculateSummary(products);
-    
-    // ALWAYS set shipping to 20 by default for normal shipping
-    initialSummary.shipping = 20; // Default to normal shipping cost
-    
-    // Recalculate total with shipping cost
-    if (initialSummary.totalAfterCoupon) {
-      initialSummary.totalAfterCoupon = 
-        initialSummary.totalBeforeCoupon - initialSummary.couponDiscount + initialSummary.shipping;
-    } else {
-      initialSummary.total = initialSummary.subTotal + initialSummary.shipping;
-    }
-    
-    console.log("[OrderSummary] Initial summary state with default shipping:", initialSummary);
-    return initialSummary;
+    const initial = saved
+      ? JSON.parse(saved)
+      : (calculateSummary(products) as SummaryState);
+
+    initial.shipping = effectiveShipping; // ← single source of truth
+
+    initial.totalBeforeCoupon = initial.subTotal + initial.shipping;
+    initial.totalAfterCoupon =
+      initial.totalBeforeCoupon - (initial.couponDiscount ?? 0);
+
+    return initial;
   });
-  
+
   const [couponStatus, setCouponStatus] = useState<CouponStatus>(() => {
     const appliedCoupon = Cookies.get("appliedCoupon");
-    console.log("[OrderSummary] Initial coupon status:", appliedCoupon ? "success" : "none");
+    console.log(
+      "[OrderSummary] Initial coupon status:",
+      appliedCoupon ? "success" : "none"
+    );
     return appliedCoupon ? "success" : "none";
   });
-  
+
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
   const couponInputRef = useRef<HTMLInputElement>(null);
 
   // Update shipping cost based on selected shipping method
   useEffect(() => {
-    const newSummary = { ...summary };
+    setSummary((prev) => {
+      const next: SummaryState = {
+        ...prev,
+        shipping: effectiveShipping,
+        totalBeforeCoupon: prev.subTotal + effectiveShipping,
+        totalAfterCoupon:
+          prev.subTotal + effectiveShipping - (prev.couponDiscount ?? 0),
+      };
 
-    // Ensure default shipping is 20 unless explicitly set to 'fast'
-    if (selectedShippingMethod === "fast") {
-      newSummary.shipping = 50; // Fast shipping cost
-    } else {
-      newSummary.shipping = 20; // Default to normal shipping cost
-    }
-
-    // Recalculate totals properly to avoid adding shipping twice
-    if (newSummary.totalAfterCoupon !== undefined) {
-      // First recalculate totalBeforeCoupon with the correct shipping
-      newSummary.totalBeforeCoupon = newSummary.subTotal + newSummary.shipping;
-      
-      // Then recalculate totalAfterCoupon using the correct discount
-      newSummary.totalAfterCoupon = 
-        newSummary.totalBeforeCoupon * (1 - (newSummary.couponDiscount / newSummary.totalBeforeCoupon));
-    } else {
-      // If no coupon, update the regular total
-      newSummary.total = newSummary.subTotal + newSummary.shipping;
-    }
-
-    console.log("[OrderSummary] Updated shipping cost:", newSummary.shipping);
-    setSummary(newSummary);
-    saveOrderSummary(newSummary);
-  }, [selectedShippingMethod]);
+      saveOrderSummary(next); // persists fine – cookie doesn’t care
+      return next;
+    });
+  }, [effectiveShipping]);
 
   useEffect(() => {
-    console.log("[OrderSummary] Component mounted with props:", { 
-      productsCount: products.length, 
-      currentStep, 
+    console.log("[OrderSummary] Component mounted with props:", {
+      productsCount: products.length,
+      currentStep,
       selectedPaymentMethod,
       selectedAddress: selectedAddress ? "Present" : "Missing",
-      selectedShippingMethod
+      selectedShippingMethod,
     });
-  }, [products.length, currentStep, selectedPaymentMethod, selectedAddress, selectedShippingMethod]);
+  }, [
+    products.length,
+    currentStep,
+    selectedPaymentMethod,
+    selectedAddress,
+    selectedShippingMethod,
+  ]);
 
   useEffect(() => {
-    console.log("[OrderSummary] Products changed:", products);
-    const newSummary = calculateSummary(products);
-    
-    // Set default shipping cost to 20 always
-    newSummary.shipping = 20;
-    
-    // Only override with selected shipping method if explicitly chosen
-    if (selectedShippingMethod) {
-      newSummary.shipping = selectedShippingMethod === 'fast' ? 50 : 20;
-    }
-    
-    console.log("[OrderSummary] Recalculated summary with shipping:", newSummary);
-    setSummary(newSummary);
-    
-    const existingCoupon = Cookies.get('appliedCoupon');
-    console.log("[OrderSummary] Existing coupon:", existingCoupon || "None");
-    if (existingCoupon) {
-      setCouponStatus('success');
-    } else {
-      setCouponStatus('none');
-    }
-  }, [products]);
+    const next = calculateSummary(products) as SummaryState;
+    next.shipping = effectiveShipping;
+    next.totalBeforeCoupon = next.subTotal + next.shipping;
+    next.totalAfterCoupon = next.totalBeforeCoupon - (next.couponDiscount ?? 0);
+    setSummary(next);
+
+    setCouponStatus(Cookies.get("appliedCoupon") ? "success" : "none");
+  }, [products, effectiveShipping]);
 
   useEffect(() => {
-    console.log("[OrderSummary] Saving summary to cookies:", summary);
     saveOrderSummary(summary);
   }, [summary]);
 
   const applyDiscount = (validCoupon: Coupon) => {
-    const newSummary = {...summary};
-    
-    newSummary.totalBeforeCoupon = newSummary.totalAfterCoupon || newSummary.total;
-    
+    const newSummary = { ...summary };
+
+    newSummary.totalBeforeCoupon =
+      newSummary.totalAfterCoupon || newSummary.total;
+
     if (validCoupon.type === 0) {
       newSummary.couponDiscount = validCoupon.value;
     } else {
-      newSummary.couponDiscount = (newSummary.totalBeforeCoupon * validCoupon.value) / 100;
+      newSummary.couponDiscount =
+        (newSummary.totalBeforeCoupon * validCoupon.value) / 100;
     }
-    
-    newSummary.totalAfterCoupon = Math.max(0, newSummary.totalBeforeCoupon - newSummary.couponDiscount);
-    
+
+    newSummary.totalAfterCoupon = Math.max(
+      0,
+      newSummary.totalBeforeCoupon - newSummary.couponDiscount
+    );
+
     if (validCoupon.allowFreeShipping) {
       newSummary.shipping = 0;
     }
-    
+
     const couponData = {
       code: validCoupon.couponCode,
       value: validCoupon.value,
       type: validCoupon.type,
-      freeShipping: validCoupon.allowFreeShipping
+      freeShipping: validCoupon.allowFreeShipping,
     };
-    
-    Cookies.set('appliedCoupon', JSON.stringify(couponData), { expires: 1 });
-    
+
+    Cookies.set("appliedCoupon", JSON.stringify(couponData), { expires: 1 });
+
     return newSummary;
   };
 
@@ -159,48 +149,56 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
       console.log("[OrderSummary] No coupon code entered");
       return;
     }
-  
-    const existingCouponJson = Cookies.get('appliedCoupon');
+
+    const existingCouponJson = Cookies.get("appliedCoupon");
     if (existingCouponJson) {
       try {
         const existingCoupon = JSON.parse(existingCouponJson);
         console.log("[OrderSummary] Found existing coupon:", existingCoupon);
-        
-        if (existingCoupon.code && existingCoupon.code.toLowerCase() === couponCode.toLowerCase()) {
+
+        if (
+          existingCoupon.code &&
+          existingCoupon.code.toLowerCase() === couponCode.toLowerCase()
+        ) {
           console.log("[OrderSummary] User tried to apply same coupon again");
           setCouponStatus("already_applied");
           return;
         }
-        
+
         setCouponStatus("already_applied");
         return;
       } catch (e) {
         console.error("[OrderSummary] Error parsing existing coupon:", e);
-        Cookies.remove('appliedCoupon');
+        Cookies.remove("appliedCoupon");
       }
     }
-  
+
     setIsApplyingCoupon(true);
-    
+
     try {
       const { fetchCoupons } = await import("@services/api/fetchCoupons");
       const allCoupons = await fetchCoupons();
       console.log("[OrderSummary] Available coupons:", allCoupons);
       console.log("[OrderSummary] Entered coupon code:", couponCode);
-      
+
       const validCoupon = await validateCoupon(couponCode);
       console.log("[OrderSummary] Coupon validation result:", validCoupon);
-      
+
       if (validCoupon) {
         console.log("[OrderSummary] Valid coupon found:", validCoupon);
         setCouponStatus("success");
-        
+
         const updatedSummary = applyDiscount(validCoupon);
-        console.log("[OrderSummary] Updated summary after coupon:", updatedSummary);
+        console.log(
+          "[OrderSummary] Updated summary after coupon:",
+          updatedSummary
+        );
         setSummary(updatedSummary);
         setCouponCode("");
       } else {
-        console.log("[OrderSummary] Invalid coupon - not found in available coupons");
+        console.log(
+          "[OrderSummary] Invalid coupon - not found in available coupons"
+        );
         setCouponStatus("invalid");
       }
     } catch (error) {
@@ -232,7 +230,11 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
           </p>
         );
       case "invalid":
-        return <p className="text-red-600 text-sm mt-2">{t("orderSummary.couponInvalid")}</p>;
+        return (
+          <p className="text-red-600 text-sm mt-2">
+            {t("orderSummary.couponInvalid")}
+          </p>
+        );
       default:
         return null;
     }
@@ -243,48 +245,78 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
   };
 
   return (
-    <div className={`w-full h-fit md:w-4/12 flex flex-col border border-ForthColor rounded-xl p-6 bg-[#A78E781C] ${isArabic ? 'rtl' : 'ltr'}`}>
+    <div
+      className={`w-full h-fit md:w-4/12 flex flex-col border border-ForthColor rounded-xl p-6 bg-[#A78E781C] ${
+        isArabic ? "rtl" : "ltr"
+      }`}
+    >
       <h2 className="font-semibold font-playfair mb-4 text-wine text-lg md:text-xl">
         {t("orderSummary.title")}
       </h2>
-
       <div className="flex flex-col gap-4 border-b border-b-gray-400 pb-4">
-        <div className={`flex justify-between text-wine text-base font-medium font-Poppins ${isArabic ? 'flex-row-reverse' : ''}`}>
+        <div
+          className={`flex justify-between text-wine text-base font-medium font-Poppins ${
+            isArabic ? "flex-row-reverse" : ""
+          }`}
+        >
           <h4>{t("orderSummary.price")}</h4>
-          <h4>{formatNumber(summary.total)} {t("product.currency")}</h4>
+          <h4>
+            {formatNumber(summary.total)} {t("product.currency")}
+          </h4>
         </div>
-
-        <div className={`flex justify-between text-wine text-base font-medium font-Poppins ${isArabic ? 'flex-row-reverse' : ''}`}>
+        <div
+          className={`flex justify-between text-wine text-base font-medium font-Poppins ${
+            isArabic ? "flex-row-reverse" : ""
+          }`}
+        >
           <h4>{t("orderSummary.discount")}</h4>
-          <h4>{formatNumber(summary.total - summary.subTotal)} {t("product.currency")}</h4>
+          <h4>
+            {formatNumber(summary.total - summary.subTotal)}{" "}
+            {t("product.currency")}
+          </h4>
         </div>
-
-        <div className={`flex justify-between text-wine text-base font-medium font-Poppins ${isArabic ? 'flex-row-reverse' : ''}`}>
-          <h4>{t("orderSummary.shipping")}</h4>
-          <h4>{formatNumber(summary.shipping)} {t("product.currency")}</h4>
-        </div>
-
+        {showShippingInfo && (
+          <div
+            className={`flex justify-between text-wine text-base font-medium font-Poppins ${
+              isArabic ? "flex-row-reverse" : ""
+            }`}
+          >
+            <h4>{t("orderSummary.shipping")}</h4>
+            <h4>
+              {formatNumber(summary.shipping)} {t("product.currency")}
+            </h4>
+          </div>
+        )}
         {summary.couponDiscount > 0 && (
-          <div className={`flex justify-between text-wine text-base font-medium font-Poppins ${isArabic ? 'flex-row-reverse' : ''}`}>
+          <div
+            className={`flex justify-between text-wine text-base font-medium font-Poppins ${
+              isArabic ? "flex-row-reverse" : ""
+            }`}
+          >
             <h4>{t("orderSummary.couponDiscount")}</h4>
             <h4>
               -
-              {formatNumber(summary.totalBeforeCoupon - summary.totalAfterCoupon)}{" "}
+              {formatNumber(
+                summary.totalBeforeCoupon - summary.totalAfterCoupon
+              )}{" "}
               {t("product.currency")}
             </h4>
           </div>
         )}
       </div>
-
-      <div className={`flex justify-between mt-4 text-wine text-base font-medium font-Poppins ${isArabic ? 'flex-row-reverse' : ''}`}>
-        <h4>{t("orderSummary.total")}</h4>
-        <h4>{formatNumber(summary.totalAfterCoupon)} {t("product.currency")}</h4>
-      </div>
-
-      {orderError && (
-        <p className="text-red-600 text-sm mt-2">{orderError}</p>
+      {showShippingInfo && (
+        <div
+          className={`flex justify-between mt-4 text-wine text-base font-medium font-Poppins ${
+            isArabic ? "flex-row-reverse" : ""
+          }`}
+        >
+          <h4>{t("orderSummary.total")}</h4>
+          <h4>
+            {formatNumber(summary.totalAfterCoupon)} {t("product.currency")}
+          </h4>
+        </div>
       )}
-      
+      {orderError && <p className="text-red-600 text-sm mt-2">{orderError}</p>}
       <div className="flex flex-col gap-4 my-4 justify-between w-full">
         <div className="mt-4 relative">
           <input
@@ -293,7 +325,9 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
             value={couponCode}
             onChange={(e) => setCouponCode(e.target.value)}
             placeholder={t("orderSummary.couponPlaceholder")}
-            className={`w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none text-center ${isArabic ? 'text-right' : 'text-left'}`}
+            className={`w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none text-center ${
+              isArabic ? "text-right" : "text-left"
+            }`}
             dir={isArabic ? "rtl" : "ltr"}
           />
           <div className="absolute right-3 bottom-2.5">
@@ -304,7 +338,11 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
         {getCouponMessage()}
 
         <Button
-          label={isApplyingCoupon ? t("orderSummary.checking") : t("orderSummary.applyCoupon")}
+          label={
+            isApplyingCoupon
+              ? t("orderSummary.checking")
+              : t("orderSummary.applyCoupon")
+          }
           type="secondary"
           size="medium"
           onClick={handleApplyCoupon}
@@ -323,11 +361,11 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
           <Button
             size="large"
             label={
-              isPlacingOrder 
+              isPlacingOrder
                 ? t("common.processing")
-                : currentStep === "payment" 
-                  ? t("orderSummary.confirmOrder") 
-                  : t("orderSummary.next")
+                : currentStep === "payment"
+                ? t("orderSummary.confirmOrder")
+                : t("orderSummary.next")
             }
             onClick={handleConfirmOrder}
             isDisabled={isPlacingOrder}

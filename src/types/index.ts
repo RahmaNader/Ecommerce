@@ -46,8 +46,15 @@ export interface AddressProps {
   additionalDirections?: string;
   saveAddress: boolean;
   shippingAddressId: string;
+  area: string;
 }
 ////////////////////////////////////////////////////
+export interface CityShippingCost {
+  cityName: string;
+  cityNameAr: string;
+  regularShippingCost: number;
+  fastShippingCost: number;
+}
 
 export interface ProductImage {
   imageId: number;
@@ -157,7 +164,7 @@ export interface OrderSummaryData {
   couponDiscount: number;
   totalBeforeCoupon: number;
   totalAfterCoupon: number;
-  deliveryDate: string;
+  deliveryDate?: string;
   appliedCoupon?: string;
   couponStatus?: CouponStatus;
 }
@@ -174,6 +181,8 @@ export interface OrderSummaryProps {
   isArabic?: boolean;
   isPlacingOrder?: boolean;
   orderError?: string | null;
+  fastShippingCost?: number;
+  regularShippingCost?: number;
 }
 
 export type RatingDistributionItem = {

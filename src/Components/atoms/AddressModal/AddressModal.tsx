@@ -6,9 +6,18 @@ import { AddressProps } from "@types";
 import Cookies from "js-cookie";
 import "react-phone-input-2/lib/style.css";
 import { useTranslation } from "react-i18next";
-import { postAddress, getCityId } from "@services/api/address";
-import { MuiTelInput } from "mui-tel-input";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { postAddress } from "@services/api/address";
+import apiClient from "src/apiClient";
+
+type City = {
+  cityName: string;
+  cityNameAr: string;
+  regularShippingCost: number;
+  fastShippingCost: number;
+};
+
+const toEnglishDigits = (s: string) =>
+  s.replace(/[\u0660-\u0669]/g, (d) => "0123456789"["٠١٢٣٤٥٦٧٨٩".indexOf(d)]);
 
 interface AddressModalProps {
   closeModal: () => void;
@@ -24,94 +33,40 @@ const AddressModal: React.FC<AddressModalProps> = ({
   isArabic = false,
 }) => {
   const { t } = useTranslation();
-  const phoneInputTheme = createTheme({
-    palette: {
-      primary: { main: "#A78E78" }, // wine
-    },
-    components: {
-      MuiOutlinedInput: {
-        styleOverrides: {
-          root: {
-            borderRadius: "0.25rem",
-            backgroundColor: "rgba(167, 142, 120, 0.13)",
-            "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#A78E78",
-            },
-            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#A78E78",
-            },
-            "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#A78E78",
-            },
-          },
-          input: {
-            color: "#A78E78",
-            "&::placeholder": { color: "#A78E78", opacity: 0.7 },
-          },
-        },
-      },
-    },
-  });
+  const [cities, setCities] = useState<City[]>([]);
+  const [isLoadingCities, setIsLoadingCities] = useState<boolean>(true);
 
-  const citiesOfEgypt = [
-    "Cairo",
-    "Alexandria",
-    "Giza",
-    "Sharm El Sheikh",
-    "Hurghada",
-    "Luxor",
-    "Aswan",
-    "Asyut",
-    "Beheira",
-    "Beni Suef",
-    "Dakahlia",
-    "Damietta",
-    "Faiyum",
-    "Ismailia",
-    "Gharbia",
-    "Kafr el-Sheikh",
-    "Matruh",
-    "Minya",
-    "Monufia",
-    "New Valley",
-    "North Sinai",
-    "Port Said",
-    "Qalyubia",
-    "Sharqia",
-    "Sohag",
-    "Suez",
-  ];
+  useEffect(() => {
+    const fetchCities = async () => {
+      try {
+        const token = Cookies.get("authToken"); // you already set this cookie on login
+        const { data } = await apiClient.get(
+          "/ShippingCosts/getCostsForAllCities",
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
 
-  const arabicCities = [
-    "القاهرة",
-    "الإسكندرية",
-    "الجيزة",
-    "شرم الشيخ",
-    "الغردقة",
-    "الأقصر",
-    "أسوان",
-    "أسيوط",
-    "البحيرة",
-    "بني سويف",
-    "الدقهلية",
-    "دمياط",
-    "الفيوم",
-    "الإسماعيلية",
-    "الغربية",
-    "كفر الشيخ",
-    "مطروح",
-    "المنيا",
-    "المنوفية",
-    "الوادي الجديد",
-    "شمال سيناء",
-    "بورسعيد",
-    "القليوبية",
-    "الشرقية",
-    "سوهاج",
-    "السويس",
-  ];
+        // BE returns `{ shippingCosts: { $values: [...] } }`
+        const received: City[] = data?.shippingCosts?.$values ?? [];
+        setCities(received);
+      } catch (err) {
+        console.error(
+          "[AddressModal] Couldn’t fetch cities, falling back:",
+          err
+        );
+        // ⤵️  If you still want a fallback list, put it here:
+        // setCities(fallbackEnglishArray.map((c, i) => ({
+        //   cityName: c,
+        //   cityNameAr: fallbackArabicArray[i],
+        //   regularShippingCost: 0,
+        //   fastShippingCost: 0,
+        // })));
+      } finally {
+        setIsLoadingCities(false);
+      }
+    };
 
-  const cities = isArabic ? arabicCities : citiesOfEgypt;
+    fetchCities();
+  }, []);
 
   const [newAddress, setNewAddress] = useState<AddressProps>(
     prefillData || {
@@ -126,6 +81,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
       additionalDirections: "",
       saveAddress: false,
       shippingAddressId: "",
+      area: "",
     }
   );
 
@@ -134,6 +90,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
     aptNo: "",
     floor: "",
     street: "",
+    area: "",
     phoneNumber: "",
     city: "",
   });
@@ -147,19 +104,25 @@ const AddressModal: React.FC<AddressModalProps> = ({
         }
         break;
       case "aptNo":
-      case "floor":
-        if (!/^\d+$/.test(value)) {
+      case "floor": {
+        const ascii = toEnglishDigits(value);
+        if (!/^\d+$/.test(ascii)) {
           error = t("addressModal.validation.numberInvalid");
         }
         break;
+      }
       case "street":
-        if (!/^[a-zA-Z\s\d\u0600-\u06FF]+$/.test(value)) {
+        // If the field is empty, treat it as valid (optional)
+        if (
+          value.trim() !== "" &&
+          !/^[a-zA-Z\s\d\u0600-\u06FF]+$/.test(value)
+        ) {
           error = t("addressModal.validation.streetInvalid");
         }
         break;
       case "phoneNumber": {
-        const digitsOnly = value.replace(/\D/g, "");
-        if (digitsOnly.length !== 13) {
+        const ascii = toEnglishDigits(value); // <- NEW
+        if (!/^01\d{9}$/.test(ascii)) {
           error = t("addressModal.validation.phoneInvalid");
         }
         break;
@@ -169,6 +132,14 @@ const AddressModal: React.FC<AddressModalProps> = ({
           error = t("addressModal.validation.cityRequired");
         }
         break;
+      case "area":
+        if (!value.trim()) {
+          error = t("addressModal.validation.areaRequired");
+        } else if (!/^[a-zA-Z\u0600-\u06FF\d\s]+$/.test(value)) {
+          error = t("addressModal.validation.areaInvalid");
+        }
+        break;
+
       default:
         break;
     }
@@ -217,7 +188,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
   const handleSubmit = async () => {
     if (validateAllInputs()) {
       try {
-        let phoneNumber = newAddress.phoneNumber.trim();
+        const flatNumber = Number(toEnglishDigits(newAddress.aptNo)) || 0;
+        const floorNumber = Number(toEnglishDigits(newAddress.floor)) || 0;
+        let phoneNumber = toEnglishDigits(newAddress.phoneNumber.trim());
         if (phoneNumber.startsWith("+")) {
           phoneNumber = phoneNumber.substring(1);
         }
@@ -235,12 +208,13 @@ const AddressModal: React.FC<AddressModalProps> = ({
 
         const apiAddressData = {
           buildingName: newAddress.building,
-          street: newAddress.street,
-          city: getCityId(newAddress.city),
+          street: newAddress.street || "",
+          area: newAddress.area,
+          city: newAddress.city,
           additionalDirections: newAddress.additionalDirections || "",
-          flatNumber: parseInt(newAddress.aptNo) || 0,
-          floorNumber: parseInt(newAddress.floor) || 0,
-          phoneNumber: phoneNumber,
+          flatNumber,
+          floorNumber,
+          phoneNumber,
           isSaved: newAddress.saveAddress,
         };
 
@@ -306,6 +280,20 @@ const AddressModal: React.FC<AddressModalProps> = ({
 
         <div className={`modal-body ${isArabic ? "text-right" : "text-left"}`}>
           <h4 className="text-wine">{t("addressModal.enterDetails")}</h4>
+          <div className="input-group">
+            <input
+              className={`w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none ${
+                isArabic ? "text-right" : "text-left"
+              }`}
+              placeholder={t("addressModal.area")}
+              type="text"
+              name="area"
+              value={newAddress.area}
+              onChange={handleChange}
+              dir={isArabic ? "rtl" : "ltr"}
+            />
+            {errors.area && <p className="text-red-500">{errors.area}</p>}
+          </div>
 
           <div className="input-group">
             <input
@@ -377,68 +365,34 @@ const AddressModal: React.FC<AddressModalProps> = ({
 
           <div className="input-group">
             {" "}
-            <ThemeProvider theme={phoneInputTheme}>
-              <MuiTelInput
-                value={newAddress.phoneNumber}
-                onChange={(v) => {
-                  setNewAddress((p) => ({ ...p, phoneNumber: v }));
-                  validateInput("phoneNumber", v);
-                }}
-                defaultCountry="EG"
-                forceCallingCode
-                placeholder={t("addressModal.phonePlaceholder")}
-                langOfCountryName="en"
-                dir={document.dir || "ltr"}
-                className="w-full"
-                MenuProps={{
-                  anchorOrigin: {
-                    vertical: "bottom",
-                    horizontal: document.dir === "rtl" ? "right" : "left",
-                  },
-                  transformOrigin: {
-                    vertical: "top",
-                    horizontal: document.dir === "rtl" ? "right" : "left",
-                  },
-                }}
-                sx={{
-                  width: "100%",
-                  "& .MuiInputBase-root": {
-                    width: "100%",
-                    height: "45px",
-                    backgroundColor: "rgba(167, 142, 120, 0.13)",
-                    color: "#A78E78",
-                    textAlign: document.dir === "rtl" ? "right" : "left",
-                    fontFamily: "Poppins, sans-serif",
-                  },
-                  "& .MuiOutlinedInput-input": {
-                    height: "11px",
-                    padding: "14px",
-                    fontSize: "15px",
-                    textAlign: document.dir === "rtl" ? "right" : "left",
-                  },
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "#A78E78",
-                  },
-                  "& .MuiSvgIcon-root": { color: "#A78E78" },
-                  "& .MuiTelInput-Flag": {
-                    mr: document.dir === "rtl" ? 0 : 1,
-                    ml: document.dir === "rtl" ? 1 : 0,
-                    order: document.dir === "rtl" ? 1 : 0,
-                  },
-                  "& .MuiMenu-paper": { fontFamily: "Poppins, sans-serif" },
-                }}
-              />
-            </ThemeProvider>
+            {/* PHONE NUMBER (Egypt) */}
+            <input
+              type="tel"
+              name="phoneNumber"
+              dir={isArabic ? "rtl" : "ltr"}
+              className={`w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor
+              placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none
+              focus:ring-none ${isArabic ? "text-right" : "text-left"}`}
+              placeholder={t(
+                "addressModal.phonePlaceholder",
+                "01XXXXXXXXX" // Egyptian mobile format
+              )}
+              value={newAddress.phoneNumber}
+              onChange={(e) => {
+                const v = e.target.value;
+                setNewAddress((p) => ({ ...p, phoneNumber: v }));
+                validateInput("phoneNumber", v);
+              }}
+            />
             {errors.phoneNumber && (
               <p className="text-FifthColor text-sm mt-1">
                 {errors.phoneNumber}
               </p>
             )}
-            {/* Add helper text for phone format */}
             <p className="text-gray-500 text-xs mt-1">
               {t(
                 "addressModal.phoneFormatHelp",
-                "Phone number should be in format +201XXXXXXXX"
+                "11-digit Egyptian number e.g. 01123456789"
               )}
             </p>
           </div>
@@ -449,24 +403,25 @@ const AddressModal: React.FC<AddressModalProps> = ({
             </label>
             <select
               id="city"
-              className={`w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none ${
-                isArabic ? "text-right" : "text-left"
-              }`}
               name="city"
+              dir={isArabic ? "rtl" : "ltr"}
+              disabled={isLoadingCities}
               value={newAddress.city}
               onChange={handleChange}
-              dir={isArabic ? "rtl" : "ltr"}
+              className={`w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor
+                placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none
+                focus:ring-none ${isArabic ? "text-right" : "text-left"}`}
             >
               <option value="">{t("addressModal.selectCity")}</option>
-              {cities.map((city, index) => (
-                <option
-                  key={city}
-                  value={isArabic ? citiesOfEgypt[index] : city}
-                >
-                  {city}
+
+              {cities.map((c) => (
+                /* keep the VALUE in English so getCityId() still works */
+                <option key={c.cityName} value={c.cityName}>
+                  {isArabic ? c.cityNameAr : c.cityName}
                 </option>
               ))}
             </select>
+
             {errors.city && <p className="text-red-500">{errors.city}</p>}
           </div>
 

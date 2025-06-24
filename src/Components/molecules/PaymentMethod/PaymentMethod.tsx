@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ToggleRadioButton } from "@components/atoms";
 import visaLogo from "@assets/visa.svg";
 import masterCardLogo from "@assets/master card.svg";
-import {CardModal, PaymentCard} from "@components/molecules"; 
+import { CardModal, PaymentCard } from "@components/molecules";
 import addCardPlusIcon from "@assets/add-card-plus-icon.svg";
 import { useTranslation } from "react-i18next";
 
@@ -17,9 +17,11 @@ const PaymentMethod: React.FC<PaymentMethodProps> = ({
 }) => {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === "ar";
-  
+
   const [isCardModalOpen, setCardModalOpen] = useState(false);
-  const [savedCards, setSavedCards] = useState<{ cardNumber: string; expirationDate: string }[]>([]);
+  const [savedCards, setSavedCards] = useState<
+    { cardNumber: string; expirationDate: string }[]
+  >([]);
   const [selectedCard, setSelectedCard] = useState<string>("");
 
   const openCardModal = () => {
@@ -35,17 +37,16 @@ const PaymentMethod: React.FC<PaymentMethodProps> = ({
       ...prevCards,
       { cardNumber, expirationDate },
     ]);
-    closeCardModal(); 
+    closeCardModal();
   };
 
   const handleCardSelect = (cardNumber: string) => {
     setSelectedCard(cardNumber);
-    onPaymentMethodChange("credit"); 
+    onPaymentMethodChange("credit");
   };
 
   return (
-    <div className={`py-8 w-full ${isRTL ? 'rtl' : 'ltr'}`}>
-
+    <div className={`py-8 w-full ${isRTL ? "rtl" : "ltr"}`}>
       <div className="py-5 flex text-wine">
         <div className="w-full flex justify-between items-center">
           <div className="w-full flex justify-between">
@@ -64,23 +65,25 @@ const PaymentMethod: React.FC<PaymentMethodProps> = ({
         <div className="w-full flex justify-between items-center">
           <div className="w-full flex justify-between items-center">
             <div>
-              <ToggleRadioButton
+              {/* <ToggleRadioButton
                 label={t("payment.creditCard")}
                 isChecked={selectedPaymentMethod === "credit"}
                 onChange={() => onPaymentMethodChange("credit")}
-              />
+              /> */}
             </div>
-            <div className="flex">
+            {/* <div className="flex">
               <img src={visaLogo} alt="Visa" />
               <img src={masterCardLogo} alt="MasterCard" />
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
 
       {selectedPaymentMethod === "credit" && savedCards.length > 0 && (
         <div className="mb-4">
-          <h3 className="text-sm font-semibold text-wine">{t("payment.savedCards")}</h3>
+          <h3 className="text-sm font-semibold text-wine">
+            {t("payment.savedCards")}
+          </h3>
           {savedCards.map((card, index) => (
             <PaymentCard
               key={index}
@@ -96,7 +99,7 @@ const PaymentMethod: React.FC<PaymentMethodProps> = ({
       {selectedPaymentMethod === "credit" && (
         <div
           className="flex justify-between items-center mt-4 rounded-md cursor-pointer w-full bg-[#A78E7833] px-4"
-          onClick={openCardModal} 
+          onClick={openCardModal}
         >
           <div className="flex">
             <img
@@ -104,7 +107,9 @@ const PaymentMethod: React.FC<PaymentMethodProps> = ({
               className="w-6 me-1 border-2 text-[#A78E7833] border-[#A78E7833] rounded-full"
               alt={t("payment.addCard")}
             />
-            <p className="text-[#A78E78] text-xl ps-2">{t("payment.addNewCard")}</p>
+            <p className="text-[#A78E78] text-xl ps-2">
+              {t("payment.addNewCard")}
+            </p>
           </div>
           <div className="flex">
             <img src={visaLogo} className="w-14" alt="Visa" />
@@ -113,7 +118,9 @@ const PaymentMethod: React.FC<PaymentMethodProps> = ({
         </div>
       )}
 
-      {isCardModalOpen && <CardModal closeModal={closeCardModal} addSavedCard={addSavedCard} />}
+      {isCardModalOpen && (
+        <CardModal closeModal={closeCardModal} addSavedCard={addSavedCard} />
+      )}
     </div>
   );
 };

@@ -1,23 +1,22 @@
 import React, { useState } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { MuiTelInput } from "mui-tel-input";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { useForm } from "react-hook-form";
 import "react-phone-input-2/lib/style.css";
 import { SignUpFormInputs } from "@types";
-import IconGoogle from "@assets/Icon-Google.svg";
-import { registerUser } from "@services/auth/AuthService";
+import { registerUser, setAuthTokens } from "@services/auth/AuthService";
 import { ErrorAlert, SuccessAlert, Button } from "@components/atoms";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
-import { useGoogleLogin } from "@react-oauth/google";
+import { CredentialResponse } from "@react-oauth/google";
 import apiClient from "../../../apiClient";
-
+import { GoogleLogin } from "@react-oauth/google";
+import { useNavigate } from "react-router-dom";
 interface SignUpFormProps {
   onSwitchToLogin: () => void;
 }
 
 const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const [alert, setAlert] = useState<{
     type: "success" | "error";
     message: string;
@@ -27,102 +26,43 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
     register,
     handleSubmit,
     formState: { errors },
-    control,
     watch,
     setError,
   } = useForm<SignUpFormInputs>();
 
   const password = watch("password");
+  const isArabic = i18n.language === "ar";
 
-  // Use the Google login hook
-  const googleLogin = useGoogleLogin({
-    flow: "implicit",
-    scope: "email profile",
-    onSuccess: async (response) => {
-      try {
-        console.log("Google OAuth Response:", response);
+  const handleSuccess = async (resp: CredentialResponse) => {
+    try {
+      console.log("respasdasdasdasd", resp);
+      const idToken = resp.credential;
+      if (!idToken) throw new Error("Missing Google credential");
 
-        if (!response.access_token) {
-          throw new Error("No access token received from Google");
-        }
-
-        // Get user info using the access token
-        const userInfoResponse = await axios.get(
-          "https://www.googleapis.com/oauth2/v3/userinfo",
-          {
-            headers: {
-              Authorization: `Bearer ${response.access_token}`,
-            },
-          }
-        );
-
-        const userInfo = userInfoResponse.data;
-        console.log("Google User Data:", userInfo);
-
-        // Send access token and user info to backend
-        const backendResponse = await apiClient.post(
-          "/Account/authenticateGoogle",
-          {
-            token: response.access_token,
-          }
-        );
-
-        console.log("Backend Response:", backendResponse.data);
-
-        if (backendResponse.data && backendResponse.data.succeeded) {
-          // Success handling
-          setAlert({
-            type: "success",
-            message: t("auth.successGoogleSignUp"),
-          });
-
-          // Store token from your backend
-          if (backendResponse.data.token) {
-            localStorage.setItem("authToken", backendResponse.data.token);
-          }
-
-          setTimeout(() => {
-            setAlert(null);
-            onSwitchToLogin();
-          }, 2000);
-        } else {
-          // API returned success=false
-          throw new Error(
-            backendResponse.data.message || "Authentication failed"
-          );
-        }
-      } catch (error) {
-        console.error("Google sign-in error:", error);
-
-        let errorMessage = t("auth.googleSignUpFailed");
-
-        // Get more specific error messages if available
-        if (axios.isAxiosError(error) && error.response?.data?.message) {
-          errorMessage = error.response.data.message;
-        } else if (error instanceof Error) {
-          errorMessage = error.message;
-        }
-
-        setAlert({
-          type: "error",
-          message: errorMessage,
-        });
-
-        setTimeout(() => setAlert(null), 3000);
+      const { data } = await apiClient.post("/Account/authenticateGoogle", {
+        token: idToken,
+      });
+      console.log("DATTAAAAAA", data);
+      if (data.token) {
+        setAlert({ type: "success", message: t("auth.successGoogleSignUp") });
+        setAuthTokens(data.token, data.refreshToken, data.username);
+        setTimeout(() => {
+          setAlert(null);
+          navigate("/");
+        }, 2000);
+      } else {
+        // fall back to whatever field your backend sends
+        const msg = data.message || "Authentication failed";
+        throw new Error(msg);
       }
-    },
-    onError: (error) => {
-      console.error("Google login error:", error);
+    } catch (err) {
+      // show a user-friendly alert
       setAlert({
         type: "error",
-        message: t("auth.googleSignUpFailed"),
+        message: err instanceof Error ? err.message : t("auth.registerFailed"),
       });
-      setTimeout(() => setAlert(null), 3000);
-    },
-  });
-
-  const handleGoogleSignUp = () => {
-    googleLogin();
+      console.error("Google login flow failed:", err);
+    }
   };
 
   const onSubmit = async (formData: SignUpFormInputs) => {
@@ -200,41 +140,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
     setTimeout(() => setAlert(null), 3000);
   };
 
-  // Create a custom theme to match your website's styling
-  const phoneInputTheme = createTheme({
-    palette: {
-      primary: {
-        main: "#A78E78", // wine color from your app
-      },
-    },
-    components: {
-      MuiOutlinedInput: {
-        styleOverrides: {
-          root: {
-            borderRadius: "0.25rem",
-            backgroundColor: "rgba(167, 142, 120, 0.13)",
-            "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#A78E78",
-            },
-            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#A78E78",
-            },
-            "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#A78E78",
-            },
-          },
-          input: {
-            color: "#A78E78",
-            "&::placeholder": {
-              color: "#A78E78",
-              opacity: 0.7,
-            },
-          },
-        },
-      },
-    },
-  });
-
   return (
     <div className="bg-mainColor text-secondColor p-6 rounded w-full mx-auto">
       {alert && (
@@ -292,91 +197,27 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
 
         {/* Phone Number Field with Country Code */}
         <div>
-          <Controller
-            name="phoneNumber"
-            control={control}
-            rules={{
+          <input
+            type="tel"
+            dir={isArabic ? "rtl" : "ltr"}
+            className={`w-full px-4 py-2 mt-1 text-wine border rounded border-ForthColor
+    placeholder-ForthColor bg-ForthColor/[0.13] focus:outline-none focus:ring-none
+    ${isArabic ? "text-right" : "text-left"}`}
+            placeholder={t("addressModal.phonePlaceholder", "01XXXXXXXXX")}
+            /* RHF registration & validation */
+            {...register("phoneNumber", {
               required: t("auth.phoneRequired"),
-              validate: (value) => {
-                // Basic validation for phone format
-                if (!value || value.trim().length < 11) {
-                  return t("auth.phoneMinLength");
-                }
-                return true;
+              pattern: {
+                value: /^01\d{9}$/, // Egyptian mobile number (11 digits)
+                message: t("auth.invalidPhone"),
               },
+            })}
+            /* keep only digits as the user types / pastes */
+            onInput={(e) => {
+              e.currentTarget.value = e.currentTarget.value.replace(/\D/g, "");
             }}
-            render={({ field }) => (
-              <ThemeProvider theme={phoneInputTheme}>
-                <MuiTelInput
-                  {...field}
-                  value={field.value || ""}
-                  onChange={(newValue) => field.onChange(newValue)}
-                  defaultCountry="EG"
-                  placeholder={t("auth.phoneNumber")}
-                  className="w-full"
-                  focusOnSelectCountry
-                  langOfCountryName="en"
-                  forceCallingCode={true}
-                  // Add RTL support
-                  dir={document.dir || "ltr"}
-                  MenuProps={{
-                    anchorOrigin: {
-                      vertical: "bottom",
-                      horizontal: document.dir === "rtl" ? "right" : "left",
-                    },
-                    transformOrigin: {
-                      vertical: "top",
-                      horizontal: document.dir === "rtl" ? "right" : "left",
-                    },
-                  }}
-                  sx={{
-                    width: "100%",
-                    "& .MuiInputBase-root": {
-                      width: "100%",
-                      height: "45px",
-                      backgroundColor: "rgba(167, 142, 120, 0.13)",
-                      color: "#A78E78",
-                      borderColor: "#A78E78",
-                      textAlign: document.dir === "rtl" ? "right" : "left",
-                      fontFamily: "Poppins, sans-serif", // Match other inputs font
-                    },
-                    "& .MuiOutlinedInput-input": {
-                      height: "11px",
-                      padding: "14px",
-                      textAlign: document.dir === "rtl" ? "right" : "left",
-                      fontFamily: "Poppins, sans-serif", // Match other inputs font
-                      fontSize: "15px", // Match text size with other form fields
-                    },
-                    "& input::placeholder": {
-                      textAlign: document.dir === "rtl" ? "right" : "left",
-                      fontFamily: "Poppins, sans-serif", // Match placeholder font
-                    },
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#A78E78",
-                    },
-                    "& .MuiSvgIcon-root": {
-                      color: "#A78E78",
-                    },
-                    "& .MuiTelInput-Flag": {
-                      marginRight: document.dir === "rtl" ? "0" : "8px",
-                      marginLeft: document.dir === "rtl" ? "8px" : "0",
-                      order: document.dir === "rtl" ? "1" : "0",
-                    },
-                    "&:hover .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#A78E78",
-                    },
-                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#A78E78",
-                    },
-                    // Apply font to the dropdown menu as well
-                    "& .MuiMenu-paper": {
-                      fontFamily: "Poppins, sans-serif",
-                    },
-                  }}
-                />
-              </ThemeProvider>
-            )}
           />
+
           {errors.phoneNumber && (
             <p className="text-FifthColor text-sm mt-1">
               {errors.phoneNumber.message}
@@ -556,15 +397,14 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSwitchToLogin }) => {
         </div>
 
         {/* Login with Google Button */}
-        <button
-          type="button"
-          className="w-4/5 md:w-2/5 py-2 px-4 flex items-center justify-center m-auto border-2 border-ForthColor rounded-lg text-black text-[10px] md:text-[16px] hover:border-wine"
-          onClick={handleGoogleSignUp}
-        >
-          <img src={IconGoogle} alt="Google Icon" className="w-4 h-4 mr-2" />
-          {t("auth.signUpWithGoogle")}
-        </button>
-
+        <div className="max-w-60 mx-auto">
+          <GoogleLogin
+            onSuccess={handleSuccess}
+            onError={() =>
+              setAlert({ type: "error", message: t("auth.googleFailed") })
+            }
+          />
+        </div>
         <div className="relative flex items-center justify-center w-3/4 mx-auto">
           <p className="font-playfair text-[10px] md:text-[28px] text-sixColor flex justify-center">
             {t("auth.haveAccount")} &nbsp;

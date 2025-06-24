@@ -11,7 +11,7 @@ import {
 import Badge, { BadgeProps } from "@mui/material/Badge";
 import { styled } from "@mui/material/styles";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import Logo from "@assets/Logo.png";
+import Logo from "@assets/KiswaLogo-01.png";
 import profile from "@assets/Profile.svg";
 import { ShopModal } from "@components/organisms";
 import { NavLink } from "@components/atoms";
@@ -142,11 +142,7 @@ const Navbar: React.FC = () => {
           </button>
 
           <Link to="/" className="relative z-10">
-            <img
-              src={Logo}
-              alt="Logo"
-              className="w-20 md:w-24 transition-all"
-            />
+            <img src={Logo} alt="Logo" className="w-32   transition-all" />
           </Link>
         </div>
 

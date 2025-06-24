@@ -234,16 +234,7 @@ const OrderDetails: React.FC = () => {
   const getCityName = (cityCode: number | undefined) => {
     if (!cityCode) return t("orderDetails.notAvailable");
 
-    const cityCodes: Record<number, string> = {
-      1: isRTL ? "القاهرة" : "Cairo",
-      2: isRTL ? "الإسكندرية" : "Alexandria",
-      3: isRTL ? "الجيزة" : "Giza",
-      4: isRTL ? "شرم الشيخ" : "Sharm El Sheikh",
-      5: isRTL ? "الغردقة" : "Hurghada",
-      // Add more cities as needed
-    };
-
-    return cityCodes[cityCode] || `${t("orderDetails.city")} ${cityCode}`;
+    return cityCode.toLocaleString();
   };
 
   // Map API response to UI model

@@ -337,6 +337,7 @@ const resources = {
         contact: "Contact",
       },
       addressModal: {
+        area: "area",
         title: "Add New Address",
         enterDetails: "Enter your details",
         buildingPlaceholder: "Building Name",
@@ -354,6 +355,9 @@ const resources = {
         enterNewAddress: "Enter a new address",
         useThisAddress: "Use this address",
         validation: {
+          areaInvalid:
+            "Area name can only include letters, numbers, and spaces",
+          areaRequired: "are is required",
           buildingInvalid: "Enter a Valid Building name",
           numberInvalid: "This field must be a valid number.",
           streetInvalid: "Enter Valid street address",
@@ -364,7 +368,7 @@ const resources = {
       shipping: {
         title: "Shipment Method",
         regularDelivery: "Delivery Regular",
-        fastDelivery: "Fast Delivery +50 EGP",
+        fastDelivery: "Fast Delivery",
         regularDatePrefix: "By {{date}}",
         fastDatePrefix: "By {{date}}",
       },
@@ -919,6 +923,7 @@ const resources = {
         contact: "رقم الاتصال",
       },
       addressModal: {
+        area: "المنطقة",
         title: "إضافة عنوان جديد",
         enterDetails: "أدخل التفاصيل الخاصة بك",
         buildingPlaceholder: "اسم المبنى",
@@ -936,6 +941,9 @@ const resources = {
         enterNewAddress: "أدخل عنوانًا جديدًا",
         useThisAddress: "استخدم هذا العنوان",
         validation: {
+          areaInvalid:
+            "اسم المنطقة يجب أن يحتوي على حروف أو أرقام أو مسافات فقط",
+          areaRequired: "اسم المنطقة مطلوب",
           buildingInvalid: "أدخل اسم مبنى صالح",
           numberInvalid: "يجب أن يكون هذا الحقل رقمًا صالحًا",
           streetInvalid: "أدخل عنوان شارع صالح",
@@ -946,7 +954,7 @@ const resources = {
       shipping: {
         title: "طريقة الشحن",
         regularDelivery: "شحن عادي",
-        fastDelivery: "شحن سريع +٥٠ جنيه",
+        fastDelivery: "شحن سريع",
         regularDatePrefix: "بتاريخ {{date}}",
         fastDatePrefix: "بتاريخ {{date}}",
       },
