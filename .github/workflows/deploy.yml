@@ -24,7 +24,7 @@ jobs:
       - name: Build project
         run: npm run build
         env:
-          VITE_API_BASE_URL: https://www.kiswaeg.com/royalkey
+          VITE_API_BASE_URL: https://www.bouraq-mt.com/royalkey
       - name: Install sshpass
         run: sudo apt-get install sshpass
         
