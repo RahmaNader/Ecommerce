@@ -580,15 +580,16 @@ const ProductSection: React.FC<ProductSectionProps> = ({
                 const isOutOfStock = getQty(size) <= 0;
 
                 return (
-                  <button
-                    key={idx}
-                    type="button"
-                    disabled={isOutOfStock}
-                    aria-disabled={isOutOfStock}
-                    onClick={() =>
-                      !isOutOfStock && setSelectedSize(size.sizeLabel ?? null)
-                    }
-                    className={`px-4 py-2 rounded-md border-2 transition
+                  <>
+                    <button
+                      key={idx}
+                      type="button"
+                      disabled={isOutOfStock}
+                      aria-disabled={isOutOfStock}
+                      onClick={() =>
+                        !isOutOfStock && setSelectedSize(size.sizeLabel ?? null)
+                      }
+                      className={`px-4 py-2 rounded-md border-2 transition
               ${
                 isOutOfStock
                   ? "border-gray-300 text-gray-400 opacity-50 cursor-not-allowed pointer-events-none"
@@ -596,9 +597,11 @@ const ProductSection: React.FC<ProductSectionProps> = ({
                   ? "bg-wine text-white border-wine"
                   : "border-wine text-wine hover:bg-wine hover:text-white"
               }`}
-                  >
-                    {size.sizeLabel}
-                  </button>
+                    >
+                      {size.sizeLabel}
+                    </button>
+                    {isOutOfStock && <p>Out of stock</p>}
+                  </>
                 );
               })}
             </div>
