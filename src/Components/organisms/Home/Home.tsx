@@ -60,16 +60,19 @@ const Home: React.FC = () => {
             src={men}
             alt="Men"
             onClick={() => handleCategoryClick("men", 1)}
+            label={t("home.men")}
           />
           <CategoryItem
             src={women}
             alt="Women"
             onClick={() => handleCategoryClick("women", 2)}
+            label={t("home.women")}
           />
           <CategoryItem
             src={kids}
             alt="Kids"
             onClick={() => handleCategoryClick("kids", 3)}
+            label={t("home.kids")}
           />
         </section>
       </div>
