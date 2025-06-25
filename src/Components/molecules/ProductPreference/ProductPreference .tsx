@@ -177,16 +177,17 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
               console.log("sizeOption 👉", sizeOption);
 
               return (
-                <button
-                  key={index}
-                  type="button"
-                  disabled={isOutOfStock}
-                  aria-disabled={isOutOfStock}
-                  onClick={() =>
-                    !isOutOfStock &&
-                    setSelectedSize(sizeOption.sizeLabel || null)
-                  }
-                  className={`px-3 py-1 rounded-md border transition 
+                <>
+                  <button
+                    key={index}
+                    type="button"
+                    disabled={isOutOfStock}
+                    aria-disabled={isOutOfStock}
+                    onClick={() =>
+                      !isOutOfStock &&
+                      setSelectedSize(sizeOption.sizeLabel || null)
+                    }
+                    className={`px-3 py-1 rounded-md border transition 
             ${
               isOutOfStock
                 ? "border-gray-300 text-gray-400 cursor-not-allowed opacity-50" // SOLD-OUT style
@@ -194,9 +195,11 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
                 ? "bg-wine text-white border-wine" // SELECTED style
                 : "border-ForthColor text-ForthColor hover:bg-ForthColor hover:text-white"
             }`}
-                >
-                  {sizeOption.sizeLabel || t("productPreference.unknown")}
-                </button>
+                  >
+                    {sizeOption.sizeLabel || t("productPreference.unknown")}
+                  </button>
+                  {isOutOfStock && <p>Out of stock</p>}
+                </>
               );
             })
           ) : (
