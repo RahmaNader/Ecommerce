@@ -13,6 +13,6 @@ export const CategoryItem: React.FC<CategoryItemProps> = ({
 }) => (
   <div onClick={onClick} className="relative w-full cursor-pointer">
     <img src={src} alt={alt} className="w-full h-full object-cover" />
-    <p className="font-playball text-3xl text-wine text-center ">{label}</p>
+    <p className="font-playball text-3xl text-wine text-center">{label}</p>
   </div>
 );

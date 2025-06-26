@@ -247,6 +247,7 @@ const resources = {
         refundConfirmed: "Refund Confirmed",
       },
       product: {
+        OutOfStock: "Out of Stock",
         selectColorAndSize: "Please select both a color and a size.",
         loginToAddCart: "You need to log in to add to the cart.",
         addedToCart: "Item added successfully to cart.",
@@ -833,6 +834,7 @@ const resources = {
         refundConfirmed: "تم تأكيد الاسترداد",
       },
       product: {
+        OutOfStock: "إنتهى من المخزن",
         selectColorAndSize: "يرجى اختيار اللون والمقاس معًا.",
         loginToAddCart: "يجب عليك تسجيل الدخول لإضافة إلى السلة.",
         addedToCart: "تمت إضافة المنتج إلى السلة بنجاح.",

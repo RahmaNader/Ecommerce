@@ -177,7 +177,7 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
               console.log("sizeOption 👉", sizeOption);
 
               return (
-                <>
+                <div className="flex flex-col">
                   <button
                     key={index}
                     type="button"
@@ -198,14 +198,16 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
                   >
                     {sizeOption.sizeLabel || t("productPreference.unknown")}
                   </button>
-                  {isOutOfStock && <p>Out of stock</p>}
-                </>
+                  {isOutOfStock && (
+                    <p className="text-xs text-red-400">
+                      {t("product.OutOfStock")}
+                    </p>
+                  )}
+                </div>
               );
             })
           ) : (
-            <p className="text-wine">
-              {t("productPreference.noSizesAvailable")}
-            </p>
+            <p className="text-wine"></p>
           )}
         </div>
 

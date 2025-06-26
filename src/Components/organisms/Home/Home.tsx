@@ -53,7 +53,7 @@ const Home: React.FC = () => {
       {/* Category Section - Updated for single column on small screens */}
       <div className="w-[90%] mx-auto px-16">
         <section
-          className="grid auto-rows-[1fr] gap-y-8 gap-x-10 justify-center"
+          className="grid auto-rows-[1fr] gap-y-20 gap-x-10 justify-center"
           style={{ gridTemplateColumns: "repeat(auto-fit, 225px)" }}
         >
           <CategoryItem

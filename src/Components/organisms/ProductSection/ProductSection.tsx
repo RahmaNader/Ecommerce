@@ -575,12 +575,12 @@ const ProductSection: React.FC<ProductSectionProps> = ({
           {selectedColor && availableSizes.length === 0 ? (
             <p>{t("product.noAvailableSizes")}</p>
           ) : selectedColor ? (
-            <div className="flex flex-row gap-3 items-center">
+            <div className="flex flex-row gap-3 items-start">
               {availableSizes.map((size, idx) => {
                 const isOutOfStock = getQty(size) <= 0;
 
                 return (
-                  <>
+                  <div className="flex flex-col justify-between">
                     <button
                       key={idx}
                       type="button"
@@ -600,13 +600,15 @@ const ProductSection: React.FC<ProductSectionProps> = ({
                     >
                       {size.sizeLabel}
                     </button>
-                    {isOutOfStock && <p>Out of stock</p>}
-                  </>
+                    <p className="text-xs text-red-400">
+                      {isOutOfStock && t("product.OutOfStock")}
+                    </p>
+                  </div>
                 );
               })}
             </div>
           ) : (
-            <p>{t("product.noSizesAvailable")}</p>
+            <p></p>
           )}
         </div>
         <div

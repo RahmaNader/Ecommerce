@@ -19,6 +19,8 @@ type City = {
 const toEnglishDigits = (s: string) =>
   s.replace(/[\u0660-\u0669]/g, (d) => "0123456789"["٠١٢٣٤٥٦٧٨٩".indexOf(d)]);
 
+const stripSpaces = (s: string) => s.replace(/\s+/g, "");
+
 interface AddressModalProps {
   closeModal: () => void;
   addAddress: (newAddress: AddressProps) => void;
@@ -121,7 +123,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
         }
         break;
       case "phoneNumber": {
-        const ascii = toEnglishDigits(value); // <- NEW
+        const ascii = stripSpaces(toEnglishDigits(value));
         if (!/^01\d{9}$/.test(ascii)) {
           error = t("addressModal.validation.phoneInvalid");
         }
@@ -190,7 +192,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
       try {
         const flatNumber = Number(toEnglishDigits(newAddress.aptNo)) || 0;
         const floorNumber = Number(toEnglishDigits(newAddress.floor)) || 0;
-        let phoneNumber = toEnglishDigits(newAddress.phoneNumber.trim());
+        let phoneNumber = stripSpaces(toEnglishDigits(newAddress.phoneNumber));
         if (phoneNumber.startsWith("+")) {
           phoneNumber = phoneNumber.substring(1);
         }
