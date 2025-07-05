@@ -1,6 +1,10 @@
-import { slugify } from "./slugify";
-
-export const buildProductPath = (mainName: string, subName?: string) =>
-  subName
-    ? `/products/${slugify(mainName)}/${slugify(subName)}`
-    : `/products/${slugify(mainName)}`;
+export const buildProductPath = (
+  slugMap: Record<number, string>,
+  parentId: number | null,
+  subId?: number | null
+): string =>
+  parentId
+    ? subId
+      ? `/products/${slugMap[parentId]}/${slugMap[subId]}`
+      : `/products/${slugMap[parentId]}`
+    : "/products";

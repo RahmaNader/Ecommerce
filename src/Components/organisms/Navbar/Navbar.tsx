@@ -20,7 +20,6 @@ import { fetchCategories } from "@services/api/fetchCategories";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@context/useLanguage";
 import { Category } from "@types";
-import { buildProductPath } from "@utils/buildProductPath";
 
 // Enhanced StyledBadge with better visual design
 const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
@@ -34,6 +33,12 @@ const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
     fontWeight: "bold",
   },
 }));
+const slugifyName = (t: string) =>
+  t
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^\p{L}\p{N}-]+/gu, "");
 
 const Navbar: React.FC = () => {
   const { t } = useTranslation();
@@ -378,7 +383,8 @@ const Navbar: React.FC = () => {
 
                     const isExpanded = expandedCategory === category.categoryID;
                     const categoryName = getCategoryName(category);
-                    const mainPath = buildProductPath(categoryName);
+                    const parentSlug = slugifyName(categoryName);
+                    const mainPath = `/products/${parentSlug}`;
 
                     return (
                       <div
@@ -436,11 +442,8 @@ const Navbar: React.FC = () => {
                                 nameAr: string;
                               }) => {
                                 const subCategoryName = getCategoryName(sub);
-                                const subPath = buildProductPath(
-                                  categoryName,
-                                  subCategoryName
-                                );
-
+                                const subSlug = slugifyName(subCategoryName);
+                                const subPath = `/products/${parentSlug}/${subSlug}`;
                                 return (
                                   <Link
                                     key={sub.categoryID}

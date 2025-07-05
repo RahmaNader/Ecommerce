@@ -26,6 +26,7 @@ import {
   CollectionScreen,
 } from "@pages/Screens";
 import ResetPassword from "@pages/Screens/ResetPassword/ResetPassword";
+import { ShopProvider } from "@context/ShopContext";
 
 export const router = createBrowserRouter([
   {
@@ -43,7 +44,14 @@ export const router = createBrowserRouter([
       { path: "contact-us", element: <ContactScreen /> },
       { path: "about-us", element: <AboutScreen /> },
 
-      { path: "products/:mainSlug/:subSlug?", element: <Shop /> },
+      {
+        path: "products/:mainSlug/:subSlug?",
+        element: (
+          <ShopProvider>
+            <Shop />
+          </ShopProvider>
+        ),
+      },
 
       { path: "collection/:collectionType", element: <CollectionScreen /> },
 

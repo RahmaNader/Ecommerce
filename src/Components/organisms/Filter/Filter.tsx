@@ -1,37 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import ReactSlider, { ReactSliderProps } from "react-slider";
 import FilterIcon from "@assets/FilterIcon.svg";
-import { IconX } from "@tabler/icons-react";
 import FilterArrow from "@assets/FilterArrow.svg";
+import { IconX } from "@tabler/icons-react";
 import { Button } from "@components/atoms";
-import { FilterCategory as ImportedFilterCategory } from "@types";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useLocation } from "react-router-dom";
-import { buildProductPath } from "@utils/buildProductPath";
+import { useShop } from "@context/ShopContext";
 
-interface FilterCategory extends ImportedFilterCategory {
-  id?: number;
-}
-
-type FilterProps = {
-  onFilterChange: (filters: {
-    categories?: string[];
-    priceRange?: [number, number];
-  }) => void;
-  onClose?: () => void;
-  subcategories?: {
-    categoryID: number;
-    name: string;
-    nameEn?: string;
-    nameAr?: string;
-  }[];
-  mainCategoryId?: number;
-  mainCategoryName?: string;
-};
-
-const Slider = ReactSlider as unknown as React.FC<
-  ReactSliderProps<[number, number]>
->;
+type SliderProps = ReactSliderProps<[number, number]>;
+const Slider = ReactSlider as unknown as React.FC<SliderProps>;
 
 const FALLBACK_KEYS = [
   "filter.categories.jackets",
@@ -43,91 +20,74 @@ const FALLBACK_KEYS = [
   "filter.categories.hats",
 ];
 
-const Filter: React.FC<FilterProps> = ({
-  onFilterChange,
-  onClose,
-  subcategories,
-  mainCategoryId,
-}) => {
+type FilterProps = { onClose?: () => void };
+
+const Filter: React.FC<FilterProps> = ({ onClose }) => {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === "ar";
-  const navigate = useNavigate();
-  const location = useLocation();
+  const shop = useShop();
 
-  const [categoryItems, setCategoryItems] = useState<FilterCategory[]>([]);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
-  const [isCategoriesCollapsed, setIsCategoriesCollapsed] =
-    useState<boolean>(false);
+  /* ---------- subcategory list ---------- */
+  const subcategories = useMemo(() => {
+    if (!shop.parentId) return [];
+    return shop.categories.filter((c) => c.parentCategoryID === shop.parentId);
+  }, [shop.categories, shop.parentId]);
 
+  /* ---------- local UI state ---------- */
+  const [categoryItems, setCategoryItems] = useState<
+    { id?: number; name: string }[]
+  >([]);
+  const [priceRange, setPriceRange] = useState<[number, number]>(
+    shop.filters.priceRange ?? [0, 5000]
+  );
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  /* ---------- build category list whenever language / data change ---------- */
   useEffect(() => {
-    const fallbackCategories: FilterCategory[] = FALLBACK_KEYS.map((key) => ({
-      name: t(key),
-      isChecked: false,
-    }));
-
-    const categories = subcategories?.length
+    const fallback = FALLBACK_KEYS.map((key) => ({ name: t(key) }));
+    const cats = subcategories.length
       ? subcategories.map((c) => ({
           id: c.categoryID,
           name: isRTL ? c.nameAr ?? c.name : c.nameEn ?? c.name,
-          isChecked: false,
         }))
-      : fallbackCategories;
+      : fallback;
+    setCategoryItems(cats);
+  }, [subcategories, i18n.language, t, isRTL]);
 
-    setCategoryItems(categories);
-  }, [subcategories, i18n.language]);
-
-  const handleCategoryClick = (
-    categoryId: number | undefined,
-    categoryName: string
-  ) => {
-    if (!categoryId) return;
-
-    const mainCategoryName = location.pathname.split("/")[2] || "";
-    navigate(
-      buildProductPath(mainCategoryName, categoryName), // 👈 fixed
-      { state: { categoryId } }
-    );
-
+  /* ---------- handlers ---------- */
+  const clickCategory = (id?: number) => {
+    if (!id) return;
+    shop.setActiveIds(shop.parentId, id);
     onClose?.();
   };
 
-  const handleFilterClick = () => {
-    const filters = { priceRange };
-    onFilterChange(filters);
-    if (onClose) onClose();
+  const applyFilters = () => {
+    shop.setFilters({ ...shop.filters, priceRange });
+    onClose?.();
   };
 
-  const handleClearFilters = () => {
+  const clear = () => {
     setPriceRange([0, 5000]);
-    setCategoryItems((prev) =>
-      prev.map((item) => ({ ...item, isChecked: false }))
-    );
-
-    const pathParts = location.pathname.split("/");
-    const mainCategoryName = pathParts[2] || "";
-
-    if (mainCategoryName) navigate(buildProductPath(mainCategoryName));
-
-    onFilterChange({});
-
-    if (onClose) onClose();
+    shop.resetFilters();
+    onClose?.();
   };
+
+  /* ---------- render ---------- */
   return (
     <div className="flex flex-col items-start w-full">
+      {/* header */}
       <div
         className="relative flex flex-col gap-2 w-full bg-customBeige"
-        style={{ minHeight: "100px" }}
+        style={{ minHeight: 100 }}
       >
         {onClose && (
-          <div className="absolute right-2">
-            <button
-              onClick={onClose}
-              aria-label={t("filter.close")}
-              className="text-wine border-wine border-2 rounded-full cursor-pointer"
-            >
-              <IconX size={28} />
-            </button>
-          </div>
+          <button
+            onClick={onClose}
+            aria-label={t("filter.close")}
+            className="absolute right-2 text-wine border-wine border-2 rounded-full cursor-pointer"
+          >
+            <IconX size={28} />
+          </button>
         )}
 
         <div className="absolute bottom-4 flex flex-row justify-between w-full items-center mt-2">
@@ -139,37 +99,35 @@ const Filter: React.FC<FilterProps> = ({
       </div>
 
       <div className="px-4 gap-9 w-full flex flex-col">
-        {/* Categories */}
+        {/* categories */}
         <div className="w-full flex flex-col">
           <div
             className="flex flex-row items-center justify-between cursor-pointer"
-            onClick={() => setIsCategoriesCollapsed(!isCategoriesCollapsed)}
+            onClick={() => setIsCollapsed(!isCollapsed)}
           >
             <p className="font-playfair text-2xl text-wine text-left font-semibold">
               {t("filter.categoriestitle")}
             </p>
             <img
               src={FilterArrow}
-              alt="Filter icon"
+              alt=""
               className={`w-5 h-5 transform transition-transform duration-300 ${
-                isCategoriesCollapsed ? "rotate-180" : "rotate-270"
+                isCollapsed ? "rotate-180" : "rotate-270"
               }`}
             />
           </div>
 
-          {!isCategoriesCollapsed && (
+          {!isCollapsed && (
             <div className="mt-2">
-              {categoryItems.length > 0 ? (
-                categoryItems.map((category, index) => (
+              {categoryItems.length ? (
+                categoryItems.map((cat, idx) => (
                   <div
-                    key={`category-${category.id || index}-${mainCategoryId}`}
+                    key={`cat-${cat.id ?? idx}`}
                     className="flex flex-row items-center justify-between py-2 cursor-pointer hover:bg-wine/10 px-2 rounded transition-colors"
-                    onClick={() =>
-                      handleCategoryClick(category.id, category.name)
-                    }
+                    onClick={() => clickCategory(cat.id)}
                   >
                     <span className="font-Poppins text-base text-wine hover:text-wine/80 transition-colors">
-                      {category.name}
+                      {cat.name}
                     </span>
                     <span className="text-wine">&rsaquo;</span>
                   </div>
@@ -183,6 +141,7 @@ const Filter: React.FC<FilterProps> = ({
           )}
         </div>
 
+        {/* price range */}
         <div className="w-full flex flex-col">
           <p className="font-playfair text-2xl text-wine ltr:text-left rtl:text-right font-semibold">
             {t("filter.priceRange")}
@@ -203,21 +162,22 @@ const Filter: React.FC<FilterProps> = ({
             max={5000}
             step={100}
             value={priceRange}
-            onChange={(values: [number, number]) => setPriceRange(values)}
-            withTracks={true}
+            onChange={(v: [number, number]) => setPriceRange(v)}
+            withTracks
             pearling
             minDistance={10}
           />
         </div>
 
+        {/* buttons */}
         <Button
           label={t("filter.apply")}
           type="primary"
-          onClick={handleFilterClick}
+          onClick={applyFilters}
           style={{
             width: "90%",
-            maxHeight: "60px",
-            fontSize: "20px",
+            maxHeight: 60,
+            fontSize: 20,
             alignSelf: "center",
             fontFamily: "PlayFair",
           }}
@@ -225,12 +185,12 @@ const Filter: React.FC<FilterProps> = ({
         <Button
           label={t("filter.clear")}
           type="secondary"
-          onClick={handleClearFilters}
+          onClick={clear}
           style={{
             width: "90%",
-            maxHeight: "50px",
-            fontSize: "16px",
-            marginTop: "10px",
+            maxHeight: 50,
+            fontSize: 16,
+            marginTop: 10,
             alignSelf: "center",
             fontFamily: "PlayFair",
             backgroundColor: "transparent",

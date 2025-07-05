@@ -1,277 +1,43 @@
-import React, {
-  useEffect,
-  useMemo,
-  useState,
-  useCallback,
-  useRef,
-} from "react";
-import { useQuery } from "react-query";
-import { fetchFilteredProducts } from "@services/api/fetchFilteredProducts";
-import { fetchCategories } from "@services/api/fetchCategories";
-import { useParams, Navigate, useSearchParams } from "react-router-dom";
-import { Filter, ProductsDisplay } from "@components/organisms";
+import React, { useMemo, useState, useEffect } from "react";
+import { Navigate } from "react-router-dom";
 import { Breadcrumb, LoadingSkeleton } from "@components/molecules";
+import { Filter, ProductsDisplay } from "@components/organisms";
 import FilterIcon from "@assets/FilterIcon.svg";
+import noProducts from "@assets/no-products.png";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@context/useLanguage";
-import { Category } from "@types";
-import noProducts from "@assets/no-products.png";
-
-const slugify = (t: string) => t.replace(/\s+/g, "-").toLowerCase();
-
-const matchBySlug = (cats: Category[], raw?: string) => {
-  if (!raw) return undefined;
-  const norm = slugify(raw);
-  return (
-    cats.find((c) => c.slug?.toLowerCase() === norm) ||
-    cats.find(
-      (c) =>
-        slugify(c.nameEn || c.name) === norm ||
-        slugify(c.nameAr || c.name) === norm
-    )
-  );
-};
-
-type ShopParams = { mainSlug: string; subSlug?: string };
-
-type FilterCriteria = {
-  size?: string;
-  collection?: number;
-  categories?: string[];
-  priceRange?: [number, number];
-};
+import { useShop } from "@context/ShopContext";
 
 const Shop: React.FC = () => {
   const { t } = useTranslation();
   const { language } = useLanguage();
   const isRTL = language === "ar";
+  const shop = useShop();
 
-  /* ---------- URL params ---------- */
-  const { mainSlug, subSlug } = useParams<ShopParams>();
-  const activeSlug = subSlug ?? mainSlug;
-  const prevActiveSlug = useRef<string | undefined>();
-
-  /* ---------- pagination ---------- */
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [pageNumber, setPageNumber] = useState(() => {
-    const p = parseInt(searchParams.get("page") || "1", 10);
-    return Number.isNaN(p) || p < 1 ? 1 : p;
-  });
-
-  // Track if we're in the middle of a category change
-  const [isCategoryChanging, setIsCategoryChanging] = useState(false);
-
-  /* ---------- UI state ---------- */
-  const [filterCriteria, setFilterCriteria] = useState<FilterCriteria>({});
+  /* ---------- local UI state ---------- */
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
-  const pageSize = 12;
 
-  const [categoryId, setCategoryId] = useState<number | null>(null);
-  const [isMainCategory, setIsMainCategory] = useState(false);
-  const [slugChecked, setSlugChecked] = useState(false);
-
-  /* ---------- fetch all categories once ---------- */
-  const {
-    data: allCats = [],
-    isLoading: catsLoading,
-    error: catsError,
-  } = useQuery<Category[], Error>(["allCategories"], fetchCategories, {
-    staleTime: 5 * 60_000,
-  });
-
-  /* ---------- Handle category changes ---------- */
-  useEffect(() => {
-    if (prevActiveSlug.current !== activeSlug) {
-      if (prevActiveSlug.current !== undefined) {
-        // This is a category change, not initial load
-        setIsCategoryChanging(true);
-        setPageNumber(1);
-
-        // Update URL immediately to remove page parameter
-        const params = new URLSearchParams(searchParams);
-        params.delete("page");
-        setSearchParams(params, { replace: true });
-      }
-      prevActiveSlug.current = activeSlug;
-    }
-  }, [activeSlug, searchParams, setSearchParams]);
-
-  /* ---------- resolve slug → categoryID ---------- */
-  useEffect(() => {
-    if (allCats.length === 0) return;
-    const matched = matchBySlug(allCats, activeSlug);
-    if (matched) {
-      setCategoryId(matched.categoryID);
-      setIsMainCategory(matched.parentCategoryID === null);
-    } else {
-      setCategoryId(null);
-      setIsMainCategory(false);
-    }
-    setSlugChecked(true);
-
-    // Reset category changing flag after category is resolved
-    if (isCategoryChanging) {
-      setIsCategoryChanging(false);
-    }
-  }, [allCats, activeSlug, isCategoryChanging]);
-
-  /* ---------- Handle pagination URL sync ---------- */
-  const updatePageInUrl = useCallback(
-    (page: number) => {
-      if (isCategoryChanging) return; // Don't update URL during category change
-
-      const params = new URLSearchParams(searchParams);
-      if (page > 1) {
-        params.set("page", page.toString());
-      } else {
-        params.delete("page");
-      }
-      setSearchParams(params);
-    },
-    [searchParams, setSearchParams, isCategoryChanging]
-  );
-
-  // Handle page number changes (from pagination clicks)
-  const handlePageChange = useCallback(
-    (newPage: number) => {
-      setPageNumber(newPage);
-      updatePageInUrl(newPage);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    },
-    [updatePageInUrl]
-  );
-
-  /* ---------- child-category list for filter ---------- */
-  const subcats = useMemo(() => {
-    if (!allCats || categoryId === null) return [];
-    const current = allCats.find((c) => c.categoryID === categoryId);
-    if (!current) return [];
-    return current.parentCategoryID === null
-      ? allCats.filter((c) => c.parentCategoryID === current.categoryID)
-      : allCats.filter((c) => c.parentCategoryID === current.parentCategoryID);
-  }, [allCats, categoryId]);
-
-  /* ---------- products query ---------- */
-  const resolvedParentIds: number[] = React.useMemo(() => {
-    if (categoryId === null) return [];
-
-    if (isMainCategory) return [categoryId];
-
-    const parentId = allCats.find(
-      (c) => c.categoryID === categoryId
-    )?.parentCategoryID;
-    return parentId ? [parentId] : [];
-  }, [categoryId, isMainCategory, allCats]);
-
-  const resolvedCategoryIds: number[] | undefined = React.useMemo(() => {
-    if (categoryId === null) return undefined;
-
-    return isMainCategory
-      ? filterCriteria.categories?.map(Number)
-      : [categoryId, ...(filterCriteria.categories?.map(Number) || [])];
-  }, [categoryId, isMainCategory, filterCriteria.categories]);
-
-  const queryKey = React.useMemo(
-    () => [
-      "categoryProducts",
-      resolvedParentIds.join(","),
-      resolvedCategoryIds?.join(",") ?? "",
-      pageNumber,
-      language,
-      JSON.stringify(filterCriteria), // Include filter criteria in query key
-    ],
-    [
-      resolvedParentIds,
-      resolvedCategoryIds,
-      pageNumber,
-      language,
-      filterCriteria,
-    ]
-  );
-
-  const {
-    data: productsData,
-    isLoading: prodsLoading,
-    error: prodsError,
-  } = useQuery(
-    queryKey,
-    () =>
-      fetchFilteredProducts({
-        parentCategories: resolvedParentIds,
-        categoryIds: resolvedCategoryIds,
-        minPrice: filterCriteria.priceRange?.[0],
-        maxPrice: filterCriteria.priceRange?.[1],
-        sizeLabels: filterCriteria.size ? [filterCriteria.size] : undefined,
-        pageNumber,
-        pageSize,
-        isEnglish: language !== "ar",
-      }),
-    {
-      enabled:
-        !isCategoryChanging &&
-        (resolvedParentIds.length > 0 || resolvedCategoryIds !== undefined),
-      keepPreviousData: true,
-    }
-  );
-
-  /* ---------- pagination helpers ---------- */
-  const totalPages = Math.ceil((productsData?.totalCount || 0) / pageSize);
-
-  const getPageNumbers = () => {
-    const pageNumbers: (number | "left" | "right")[] = [];
-    const maxPageButtons = 4;
-    if (totalPages <= maxPageButtons) {
-      for (let i = 1; i <= totalPages; i++) pageNumbers.push(i);
-    } else if (pageNumber <= maxPageButtons - 1) {
-      for (let i = 1; i <= maxPageButtons; i++) pageNumbers.push(i);
-      pageNumbers.push("right");
-    } else if (pageNumber > totalPages - maxPageButtons + 1) {
-      pageNumbers.push("left");
-      for (let i = totalPages - maxPageButtons + 1; i <= totalPages; i++)
-        pageNumbers.push(i);
-    } else {
-      pageNumbers.push("left");
-      for (let i = pageNumber - 1; i <= pageNumber + 1; i++)
-        pageNumbers.push(i);
-      pageNumbers.push("right");
-    }
-    return pageNumbers;
-  };
-
-  /* ---------- display name (breadcrumb header) ---------- */
+  /* ---------- derived display name ---------- */
   const displayName = useMemo(() => {
-    if (isMainCategory && categoryId !== null) {
-      const map: Record<number, { en: string; ar: string }> = {
-        1: { en: "Men", ar: "رجالي" },
-        2: { en: "Women", ar: "حريمي" },
-        3: { en: "Kids", ar: "أطفالي" },
-      };
-      if (map[categoryId])
-        return isRTL ? map[categoryId].ar : map[categoryId].en;
-    }
-    if (productsData?.products.length) {
-      const { category } = productsData.products[0];
-      return isRTL
-        ? category.nameAr || category.name
-        : category.nameEn || category.name;
-    }
-    return (
-      (activeSlug ?? "").charAt(0).toUpperCase() + (activeSlug ?? "").slice(1)
-    );
-  }, [isMainCategory, categoryId, productsData, isRTL, activeSlug]);
+    if (!shop.products.length) return "";
+    const { category } = shop.products[0];
+    return isRTL
+      ? category.nameAr || category.name
+      : category.nameEn || category.name;
+  }, [shop.products, isRTL]);
 
+  /* ---------- filter slide-in toggle (mobile) ---------- */
   useEffect(() => {
-    if (isFilterOpen) {
-      setShowSidebar(true);
-    } else {
-      const timer = setTimeout(() => setShowSidebar(false), 0);
-      return () => clearTimeout(timer);
+    if (isFilterOpen) setShowSidebar(true);
+    else {
+      const t = setTimeout(() => setShowSidebar(false), 0);
+      return () => clearTimeout(t);
     }
   }, [isFilterOpen]);
 
-  /* ---------- loading / error states ---------- */
-  if ((catsLoading || prodsLoading || !slugChecked) && !productsData) {
+  /* ---------- loading / error shortcuts ---------- */
+  if (shop.loadingCats || shop.loadingProducts) {
     return (
       <div
         className={`bg-customBeige min-h-screen p-2 md:p-10 ${
@@ -290,8 +56,37 @@ const Shop: React.FC = () => {
     );
   }
 
-  if (catsError || prodsError) return <div>{t("common.errorLoading")}</div>;
-  if (slugChecked && categoryId === null) return <Navigate to="/" />;
+  if (shop.slugsChecked && !shop.parentId && !shop.subId)
+    return <Navigate to="/" />;
+
+  /* ---------- pagination helpers ---------- */
+  const totalPages = shop.totalPages;
+  const pageNumber = shop.pageNumber;
+
+  const getPageNumbers = () => {
+    const nums: (number | "left" | "right")[] = [];
+    const maxButtons = 4;
+    if (totalPages <= maxButtons) {
+      for (let i = 1; i <= totalPages; i++) nums.push(i);
+    } else if (pageNumber <= maxButtons - 1) {
+      for (let i = 1; i <= maxButtons; i++) nums.push(i);
+      nums.push("right");
+    } else if (pageNumber > totalPages - maxButtons + 1) {
+      nums.push("left");
+      for (let i = totalPages - maxButtons + 1; i <= totalPages; i++)
+        nums.push(i);
+    } else {
+      nums.push("left");
+      for (let i = pageNumber - 1; i <= pageNumber + 1; i++) nums.push(i);
+      nums.push("right");
+    }
+    return nums;
+  };
+
+  const handlePageChange = (n: number) => {
+    shop.setPageNumber(n);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   /* ---------- render ---------- */
   return (
@@ -317,15 +112,7 @@ const Shop: React.FC = () => {
                 isRTL ? "right-0" : "left-0"
               }`}
             >
-              <Filter
-                onFilterChange={(f) => {
-                  setFilterCriteria(f);
-                  handlePageChange(1);
-                }}
-                onClose={() => setIsFilterOpen(false)}
-                subcategories={subcats}
-                mainCategoryId={categoryId!}
-              />
+              <Filter onClose={() => setIsFilterOpen(false)} />
             </div>
             <div
               className="flex-1 bg-black opacity-50"
@@ -336,14 +123,7 @@ const Shop: React.FC = () => {
 
         {/* ---- sticky sidebar (desktop) ---- */}
         <div className="laptop:hidden w-full md:w-1/4 p-4 md:sticky md:top-0 md:h-screen md:overflow-y-auto">
-          <Filter
-            onFilterChange={(f) => {
-              setFilterCriteria(f);
-              handlePageChange(1);
-            }}
-            subcategories={subcats}
-            mainCategoryId={categoryId!}
-          />
+          <Filter />
         </div>
 
         {/* ---- products ---- */}
@@ -352,11 +132,11 @@ const Shop: React.FC = () => {
             {displayName}
           </p>
 
-          {productsData && productsData.products.length === 0 && (
+          {shop.products.length === 0 && (
             <div className="flex flex-col items-center justify-center py-16 gap-6">
               <img
                 src={noProducts}
-                alt={t("shop.noProductsAlt", "No products illustration")}
+                alt={t("shop.noProductsAlt")}
                 className="w-60 h-60 opacity-80"
               />
               <p className="font-playfair text-xl text-ForthColor text-center">
@@ -366,13 +146,10 @@ const Shop: React.FC = () => {
                 )}
               </p>
               <button
-                onClick={() => {
-                  setFilterCriteria({});
-                  handlePageChange(1);
-                }}
+                onClick={shop.resetFilters}
                 className="px-5 py-3 bg-wine text-mainColor rounded-md hover:bg-sixColor transition-colors"
               >
-                {t("shop.clearFilters", "Clear filters")}
+                {t("shop.clearFilters")}
               </button>
             </div>
           )}
@@ -384,7 +161,7 @@ const Shop: React.FC = () => {
             </button>
           </div>
 
-          <ProductsDisplay products={productsData?.products || []} />
+          <ProductsDisplay products={shop.products} />
 
           {/* pagination */}
           {totalPages > 1 && (

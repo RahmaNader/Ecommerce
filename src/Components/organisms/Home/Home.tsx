@@ -10,14 +10,26 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { ProductsGrid } from "@components/organisms/ProductsGrid/ProductsGrid";
 import { CategoryItem } from "@components/atoms/CategoryItem/CategoryItem";
-import { buildProductPath } from "@utils/buildProductPath";
+import { useLanguage } from "@context/useLanguage";
 
 const Home: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { language } = useLanguage();
+  const slugify = (txt: string) =>
+    txt
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^\p{L}\p{N}-]+/gu, "");
 
-  const handleCategoryClick = (categoryName: string, categoryId: number) => {
-    navigate(buildProductPath(categoryName), {
+  const handleCategoryClick = (
+    nameEn: string,
+    nameAr: string,
+    categoryId: number
+  ) => {
+    const slug = slugify(language === "ar" ? nameAr : nameEn);
+    navigate(`/products/${slug}`, {
       state: { categoryId, isMainCategory: true },
     });
   };
@@ -59,19 +71,19 @@ const Home: React.FC = () => {
           <CategoryItem
             src={men}
             alt="Men"
-            onClick={() => handleCategoryClick("men", 1)}
+            onClick={() => handleCategoryClick("Men", "رجالي", 1)}
             label={t("home.men")}
           />
           <CategoryItem
             src={women}
             alt="Women"
-            onClick={() => handleCategoryClick("women", 2)}
+            onClick={() => handleCategoryClick("Women", "حريمي", 2)}
             label={t("home.women")}
           />
           <CategoryItem
             src={kids}
             alt="Kids"
-            onClick={() => handleCategoryClick("kids", 3)}
+            onClick={() => handleCategoryClick("Kids", "اطفالي", 3)}
             label={t("home.kids")}
           />
         </section>

@@ -1,6 +1,6 @@
-import { buildProductPath } from "@utils/buildProductPath";
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import { buildNamePath } from "@utils/buildNamePath";
 
 interface Category {
   categoryID: number;
@@ -55,7 +55,8 @@ const ShopModal: React.FC<ShopModalProps> = ({
               (sub) => sub.parentCategoryID === mainCat.categoryID
             );
             const mainCatName = getCategoryName(mainCat);
-            const mainPath = buildProductPath(mainCatName);
+            const mainPath = buildNamePath(mainCatName);
+
             const isMainActive = location.pathname === mainPath;
 
             return (
@@ -80,7 +81,7 @@ const ShopModal: React.FC<ShopModalProps> = ({
                 <ul className="space-y-3">
                   {subcategories.map((sub) => {
                     const subCatName = getCategoryName(sub);
-                    const subPath = buildProductPath(mainCatName, subCatName);
+                    const subPath = buildNamePath(mainCatName, subCatName);
                     const isActive = location.pathname.includes(subPath);
 
                     return (
