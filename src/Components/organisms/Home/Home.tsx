@@ -1,27 +1,47 @@
 import React from "react";
-// import { ProductsView } from "@components/molecules";
-import { Button } from "@components/atoms";
 import { useQuery } from "react-query";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { motion, type Variants } from "framer-motion";
+
+import { Button } from "@components/atoms";
+import { ProductsGrid } from "@components/organisms/ProductsGrid/ProductsGrid";
+import { CategoryItem } from "@components/atoms/CategoryItem/CategoryItem";
 import { fetchHomeCategory } from "@services/api/fetchCollections";
+import { useLanguage } from "@context/useLanguage";
+
 import kids from "@assets/Kids.jpeg";
 import women from "@assets/WomenCategory.jpg";
 import men from "@assets/MenCategory.jpeg";
-import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
-import { ProductsGrid } from "@components/organisms/ProductsGrid/ProductsGrid";
-import { CategoryItem } from "@components/atoms/CategoryItem/CategoryItem";
-import { useLanguage } from "@context/useLanguage";
+
+const slugify = (txt: string) =>
+  txt
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^\p{L}\p{N}-]+/gu, "");
+
+const gridVariants: Variants = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: 0.15, delayChildren: 0.1 },
+  },
+};
+
+const fadeSlide: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 120 } },
+};
+
+const sectionVariants: Variants = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { duration: 0.4 } },
+};
 
 const Home: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { language } = useLanguage();
-  const slugify = (txt: string) =>
-    txt
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, "-")
-      .replace(/[^\p{L}\p{N}-]+/gu, "");
 
   const handleCategoryClick = (
     nameEn: string,
@@ -40,67 +60,72 @@ const Home: React.FC = () => {
     );
   };
 
-  const {
-    data: newArrivals,
-    isLoading: isLoadingNewArrivals,
-    isError: isErrorNewArrivals,
-  } = useQuery("newArrivals", () => fetchHomeCategory(3, "new-arrivals"));
-
-  const {
-    data: bestSellers,
-    isLoading: isLoadingBestSellers,
-    isError: isErrorBestSellers,
-  } = useQuery("bestSellers", () => fetchHomeCategory(3, "best-selling"));
-
-  const {
-    data: highestDiscount,
-    isLoading: isLoadingHighestDiscount,
-    isError: isErrorHighestDiscount,
-  } = useQuery("highestDiscount", () =>
+  /* ---------- data queries ---------- */
+  const { data: newArrivals } = useQuery("newArrivals", () =>
+    fetchHomeCategory(3, "new-arrivals")
+  );
+  const { data: bestSellers } = useQuery("bestSellers", () =>
+    fetchHomeCategory(3, "best-selling")
+  );
+  const { data: highestDiscount } = useQuery("highestDiscount", () =>
     fetchHomeCategory(3, "highest-discount")
   );
 
+  /* ---------- render ---------- */
   return (
     <>
-      {/* Category Section - Updated for single column on small screens */}
+      {/* Category grid */}
       <div className="w-[90%] mx-auto px-16">
-        <section
+        <motion.section
+          variants={gridVariants}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.3 }}
           className="grid auto-rows-[1fr] gap-y-20 gap-x-10 justify-center"
           style={{ gridTemplateColumns: "repeat(auto-fit, 225px)" }}
         >
-          <CategoryItem
-            src={men}
-            alt="Men"
-            onClick={() => handleCategoryClick("Men", "رجالي", 1)}
-            label={t("home.men")}
-          />
-          <CategoryItem
-            src={women}
-            alt="Women"
-            onClick={() => handleCategoryClick("Women", "حريمي", 2)}
-            label={t("home.women")}
-          />
-          <CategoryItem
-            src={kids}
-            alt="Kids"
-            onClick={() => handleCategoryClick("Kids", "اطفالي", 3)}
-            label={t("home.kids")}
-          />
-        </section>
+          <motion.div variants={fadeSlide}>
+            <CategoryItem
+              src={men}
+              alt="Men"
+              onClick={() => handleCategoryClick("Men", "رجالي", 1)}
+              label={t("home.men")}
+            />
+          </motion.div>
+
+          <motion.div variants={fadeSlide}>
+            <CategoryItem
+              src={women}
+              alt="Women"
+              onClick={() => handleCategoryClick("Women", "حريمي", 2)}
+              label={t("home.women")}
+            />
+          </motion.div>
+
+          <motion.div variants={fadeSlide}>
+            <CategoryItem
+              src={kids}
+              alt="Kids"
+              onClick={() => handleCategoryClick("Kids", "اطفالي", 3)}
+              label={t("home.kids")}
+            />
+          </motion.div>
+        </motion.section>
       </div>
 
-      <div className="flex flex-col">
-        {isLoadingNewArrivals && <p>{t("home.loadingNewCollection")}</p>}
-        {isErrorNewArrivals && <p>{t("home.errorNewCollection")}</p>}
+      {/* Collections */}
+      <motion.div
+        className="flex flex-col"
+        variants={sectionVariants}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.2 }}
+      >
         {newArrivals && newArrivals.length > 0 && (
           <>
-            {/* <ProductsView
-              sectionName={t("home.newCollection")}
-              cards={newArrivals}
-            /> */}
             <ProductsGrid
               products={newArrivals}
-              sectionName={t("home.newCollection")} // optional
+              sectionName={t("home.newCollection")}
             />
 
             <div className="flex justify-center mt-12">
@@ -112,14 +137,8 @@ const Home: React.FC = () => {
           </>
         )}
 
-        {isLoadingBestSellers && <p>{t("home.loadingBestSellers")}</p>}
-        {isErrorBestSellers && <p>{t("home.errorBestSellers")}</p>}
         {bestSellers && bestSellers.length > 0 && (
           <>
-            {/* <ProductsView
-              sectionName={t("home.bestSellers")}
-              cards={bestSellers}
-            /> */}
             <ProductsGrid
               products={bestSellers}
               sectionName={t("home.bestSellers")}
@@ -134,14 +153,8 @@ const Home: React.FC = () => {
           </>
         )}
 
-        {isLoadingHighestDiscount && <p>{t("home.loadingHighestDiscount")}</p>}
-        {isErrorHighestDiscount && <p>{t("home.errorHighestDiscount")}</p>}
         {highestDiscount && highestDiscount.length > 0 && (
           <>
-            {/* <ProductsView
-              sectionName={t("home.highestDiscount")}
-              cards={highestDiscount}
-            /> */}
             <ProductsGrid
               products={highestDiscount.slice(0, 3)}
               sectionName={t("home.highestDiscount")}
@@ -155,7 +168,7 @@ const Home: React.FC = () => {
             </div>
           </>
         )}
-      </div>
+      </motion.div>
     </>
   );
 };
