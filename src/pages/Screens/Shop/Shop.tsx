@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import { Breadcrumb, LoadingSkeleton } from "@components/molecules";
 import { Filter, ProductsDisplay } from "@components/organisms";
 import FilterIcon from "@assets/FilterIcon.svg";
@@ -17,15 +17,34 @@ const Shop: React.FC = () => {
   /* ---------- local UI state ---------- */
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
+  const { mainSlug, subSlug } = useParams<{
+    mainSlug?: string;
+    subSlug?: string;
+  }>();
+  const prettify = (slug?: string) =>
+    slug
+      ? slug
+          .split("-")
+          .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+          .join(" ")
+      : "";
+
+  const displayName = useMemo(() => {
+    // use category names when we have them
+    const activeId = shop.subId ?? shop.parentId ?? null;
+    if (activeId) {
+      const cat = shop.categories.find((c) => c.categoryID === activeId);
+      if (cat) {
+        return isRTL
+          ? cat.nameAr || cat.name // Arabic UI → Arabic label
+          : cat.nameEn || cat.name; // English UI → English label
+      }
+    }
+    // fallback: prettify the slug itself
+    return prettify(subSlug ?? mainSlug);
+  }, [shop.categories, shop.parentId, shop.subId, isRTL, mainSlug, subSlug]);
 
   /* ---------- derived display name ---------- */
-  const displayName = useMemo(() => {
-    if (!shop.products.length) return "";
-    const { category } = shop.products[0];
-    return isRTL
-      ? category.nameAr || category.name
-      : category.nameEn || category.name;
-  }, [shop.products, isRTL]);
 
   /* ---------- filter slide-in toggle (mobile) ---------- */
   useEffect(() => {

@@ -6,12 +6,18 @@ import {
   useReducer,
   ReactNode,
 } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { useQuery } from "react-query";
 import { fetchCategories } from "@services/api/fetchCategories";
 import { fetchFilteredProducts } from "@services/api/fetchFilteredProducts";
 import { Category, CardComponent } from "@types";
 import { buildProductPath } from "@utils/buildProductPath";
+import { filtersFromSearch, filtersToSearch } from "@utils/urlFilters";
 
 /* ---------- helpers ---------- */
 
@@ -86,14 +92,21 @@ function reducer(state: ShopState, action: Action): ShopState {
       return { ...state, categories: action.cats, slugMap, idFromSlug };
     }
 
-    case "SET_IDS":
+    case "SET_IDS": {
+      // don’t treat the initial slug→id hydration as a “category change”
+      const isInitialMount = !state.slugsChecked;
+      const idsActuallyChanged =
+        state.parentId !== action.parent || state.subId !== action.sub;
+
       return {
         ...state,
         parentId: action.parent,
         subId: action.sub,
-        pageNumber: 1, // reset page on category change
-        filters: {}, // reset filters on category change
+        pageNumber:
+          !isInitialMount && idsActuallyChanged ? 1 : state.pageNumber,
+        filters: !isInitialMount && idsActuallyChanged ? {} : state.filters,
       };
+    }
     case "SLUGS_DONE":
       return { ...state, slugsChecked: true };
 
@@ -131,6 +144,25 @@ export const ShopProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const raw = filtersFromSearch(searchParams);
+    const initFilters: Filters = {
+      priceRange:
+        raw.minPrice !== undefined || raw.maxPrice !== undefined
+          ? [raw.minPrice ?? 0, raw.maxPrice ?? 5000]
+          : undefined,
+      sizeLabels: raw.sizes,
+      search: raw.search,
+    };
+    if (Object.keys(initFilters).length) {
+      dispatch({ type: "SET_FILTERS", filters: initFilters });
+    }
+    if (raw.page) dispatch({ type: "SET_PAGE", page: raw.page });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // only on first mount
+
   const { mainSlug, subSlug } = useParams<{
     mainSlug?: string;
     subSlug?: string;
@@ -176,10 +208,21 @@ export const ShopProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (!state.parentId) return;
 
-    const target = buildPath(state.parentId, state.subId ?? undefined);
-    if (location.pathname !== target) navigate(target, { replace: true });
+    const pathPart = buildPath(state.parentId, state.subId ?? undefined);
+    const query = filtersToSearch({
+      minPrice: state.filters.priceRange?.[0],
+      maxPrice: state.filters.priceRange?.[1],
+      sizes: state.filters.sizeLabels,
+      search: state.filters.search,
+      page: state.pageNumber,
+    });
+
+    const target = `${pathPart}${query}`;
+    if (location.pathname + location.search !== target) {
+      navigate(target, { replace: true });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.parentId, state.subId]);
+  }, [state.parentId, state.subId, state.filters, state.pageNumber]);
 
   /* ---------- products query ---------- */
   const pageSize = 12;
