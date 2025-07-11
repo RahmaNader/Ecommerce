@@ -50,10 +50,6 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
     (val ?? "").replace(/\s+/g, "").toLowerCase() === "comingsoon";
 
   useEffect(() => {
-    console.log("🛂 status prop →", status); // should log "ComingSoon"
-  }, [status]);
-
-  useEffect(() => {
     if (error) {
       const timer = setTimeout(() => setError(null), 2000);
       return () => clearTimeout(timer);
