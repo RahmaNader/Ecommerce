@@ -14,7 +14,6 @@ interface ProductCardProps extends UseProductCardLogicProps {
 
 export const ProductCard: FC<ProductCardProps> = (props) => {
   const logic = useProductCardLogic(props);
-
   return (
     <article className="relative flex flex-col text-center h-full">
       {logic.alertVisible && (
@@ -34,6 +33,7 @@ export const ProductCard: FC<ProductCardProps> = (props) => {
           }}
           onSubmit={logic.handlePreferenceSubmit}
           onCancel={logic.closePreference}
+          status={props.status}
         />
       )}
       <div

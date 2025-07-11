@@ -37,6 +37,7 @@ export const ProductsGrid: FC<ProductsGridProps> = ({
             productVarients={p.productVarients}
             productImages={p.productImages}
             averageRate={p.averageRate}
+            status={p.status}
           />
         </div>
       ))}

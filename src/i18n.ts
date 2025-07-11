@@ -248,6 +248,7 @@ const resources = {
       },
       product: {
         OutOfStock: "Out of Stock",
+        ComingSoon: "Coming Soon",
         selectColorAndSize: "Please select both a color and a size.",
         loginToAddCart: "You need to log in to add to the cart.",
         addedToCart: "Item added successfully to cart.",
@@ -835,6 +836,7 @@ const resources = {
       },
       product: {
         OutOfStock: "إنتهى من المخزن",
+        ComingSoon: "قريبًا",
         selectColorAndSize: "يرجى اختيار اللون والمقاس معًا.",
         loginToAddCart: "يجب عليك تسجيل الدخول لإضافة إلى السلة.",
         addedToCart: "تمت إضافة المنتج إلى السلة بنجاح.",

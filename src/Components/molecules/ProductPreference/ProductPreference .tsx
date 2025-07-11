@@ -32,18 +32,27 @@ interface ProductPreferenceProps {
     productId: number;
   }) => void;
   onCancel: () => void;
+  status?: string; // Optional status prop
 }
 
 const ProductPreference: React.FC<ProductPreferenceProps> = ({
   product,
   onSubmit,
   onCancel,
+  status = "Available",
 }) => {
   const { t } = useTranslation();
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
   const [error, setError] = useState<string | null>(null);
+  const isComingSoon = (val?: string | null) =>
+    (val ?? "").replace(/\s+/g, "").toLowerCase() === "comingsoon";
+
+  useEffect(() => {
+    console.log("🛂 status prop →", status); // should log "ComingSoon"
+  }, [status]);
+
   useEffect(() => {
     if (error) {
       const timer = setTimeout(() => setError(null), 2000);
@@ -174,7 +183,10 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
           {availableSizes.length > 0 ? (
             availableSizes.map((sizeOption: SizeQuantity, index: number) => {
               const isOutOfStock = getQty(sizeOption) <= 0;
-              console.log("sizeOption 👉", sizeOption);
+              const statusLabel =
+                isOutOfStock && isComingSoon(status)
+                  ? t("product.ComingSoon", "Coming Soon")
+                  : t("product.OutOfStock", "Out of Stock");
 
               return (
                 <div className="flex flex-col">
@@ -199,9 +211,7 @@ const ProductPreference: React.FC<ProductPreferenceProps> = ({
                     {sizeOption.sizeLabel || t("productPreference.unknown")}
                   </button>
                   {isOutOfStock && (
-                    <p className="text-xs text-red-400">
-                      {t("product.OutOfStock")}
-                    </p>
+                    <p className="text-xs text-red-400">{statusLabel}</p>
                   )}
                 </div>
               );

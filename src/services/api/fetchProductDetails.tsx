@@ -4,7 +4,9 @@ import { CardComponent, Review, ProductImage, ProductVariant } from "@types";
 // Add the base URL from environment variables
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
-export async function fetchProductDetails(productId: number): Promise<CardComponent> {
+export async function fetchProductDetails(
+  productId: number
+): Promise<CardComponent> {
   try {
     const response = await axios.get(`${baseUrl}/api/Product/${productId}`);
     const product = response.data;
@@ -19,7 +21,8 @@ export async function fetchProductDetails(productId: number): Promise<CardCompon
       productDescriptionAr: product.productDescriptionAr,
       productCode: product.productCode,
       productPrice: product.productPrice,
-      averageRate: product.averageRate !== undefined ? product.averageRate : null,
+      averageRate:
+        product.averageRate !== undefined ? product.averageRate : null,
       productQuantity: product.productQuantity,
       categoryID: product.categoryID,
       category: product.category
@@ -32,33 +35,38 @@ export async function fetchProductDetails(productId: number): Promise<CardCompon
             createdAt: product.category.createdAt,
           }
         : { categoryID: 0, name: "", nameAr: "", nameEn: "", createdAt: "" },
-      reviews: product.reviews?.$values?.map((review: Review) => ({
-        reviewId: review.reviewId,
-        reviewContent: review.reviewContent,
-        rate: review.rate,
-        createdAt: review.createdAt,
-        userName: review.userName,
-      })) || [],
-      productVarients: product.productVarients?.$values?.map((variant: ProductVariant) => ({
-        productVarientId: variant.productVarientId,
-        colorNameEn: variant.colorNameEn,
-        colorNameAr: variant.colorNameAr,
-        colorName: variant.colorName,
-        colorCode: variant.colorCode,
-        sizeQuantities: variant.sizeQuantities?.values || [],
-      })) || [],
-      productImages: product.productImages?.$values?.map((image: ProductImage) => ({
-        imageId: image.imageId,
-        imageUrl: image.imageUrl,
-        altText: image.altText,
-      })) || [],
-      reviewPercentages: product.reviewPercentages ? { ...product.reviewPercentages } : {},
+      reviews:
+        product.reviews?.$values?.map((review: Review) => ({
+          reviewId: review.reviewId,
+          reviewContent: review.reviewContent,
+          rate: review.rate,
+          createdAt: review.createdAt,
+          userName: review.userName,
+        })) || [],
+      productVarients:
+        product.productVarients?.$values?.map((variant: ProductVariant) => ({
+          productVarientId: variant.productVarientId,
+          colorNameEn: variant.colorNameEn,
+          colorNameAr: variant.colorNameAr,
+          colorName: variant.colorName,
+          colorCode: variant.colorCode,
+          sizeQuantities: variant.sizeQuantities?.values || [],
+        })) || [],
+      productImages:
+        product.productImages?.$values?.map((image: ProductImage) => ({
+          imageId: image.imageId,
+          imageUrl: image.imageUrl,
+          altText: image.altText,
+        })) || [],
+      reviewPercentages: product.reviewPercentages
+        ? { ...product.reviewPercentages }
+        : {},
       created: product.created,
       lastUpdated: product.lastUpdated,
       priceAfterDiscount: product.priceAfterDiscount,
       discountPercent: product.discountPercent,
+      status: product.status,
     };
-    
   } catch (error) {
     console.error("Error fetching product details:", error);
     throw new Error("Failed to fetch product details.");

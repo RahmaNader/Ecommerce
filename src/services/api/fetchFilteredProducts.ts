@@ -78,6 +78,7 @@ interface ApiProduct {
   lastUpdated: string;
   priceAfterDiscount: number;
   discountPercent: number;
+  status?: string;
 }
 
 interface ApiResponse {
@@ -189,6 +190,7 @@ export const fetchFilteredProducts = async ({
       lastUpdated: product.lastUpdated,
       priceAfterDiscount: product.priceAfterDiscount,
       discountPercent: product.discountPercent,
+      status: product.status || "Available",
     })
   );
 

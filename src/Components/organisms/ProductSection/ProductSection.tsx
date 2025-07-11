@@ -60,7 +60,6 @@ const ProductSection: React.FC<ProductSectionProps> = ({
   // If "product.copyLink" is not yet defined in translations
   // You can add this to your component
   const copyLinkText = t("product.copyLink", "Copy Link");
-
   useEffect(() => {
     const fetchVariants = async () => {
       try {
@@ -332,7 +331,6 @@ const ProductSection: React.FC<ProductSectionProps> = ({
 
   const normalize = (s?: string | null) => (s ?? "").trim().toLowerCase();
 
-  /** Grab whatever stock key the API sends back */
   const getQty = (sq: SizeQuantity) =>
     Number(
       (sq as any).quantity ?? // most common
@@ -578,6 +576,13 @@ const ProductSection: React.FC<ProductSectionProps> = ({
             <div className="flex flex-row gap-3 items-start">
               {availableSizes.map((size, idx) => {
                 const isOutOfStock = getQty(size) <= 0;
+                const isComingSoon =
+                  isOutOfStock &&
+                  (product.status ?? "").toLowerCase().includes("coming");
+
+                const statusLabel = isComingSoon
+                  ? t("product.ComingSoon", "Coming Soon")
+                  : t("product.OutOfStock", "Out of Stock");
 
                 return (
                   <div className="flex flex-col justify-between">
@@ -600,8 +605,8 @@ const ProductSection: React.FC<ProductSectionProps> = ({
                     >
                       {size.sizeLabel}
                     </button>
-                    <p className="text-xs text-red-400">
-                      {isOutOfStock && t("product.OutOfStock")}
+                    <p className="text-xs text-red-400 text-center">
+                      {isOutOfStock && statusLabel}
                     </p>
                   </div>
                 );

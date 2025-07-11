@@ -129,6 +129,7 @@ export interface CardComponent {
   priceAfterDiscount: number;
   discountPercent: number;
   currentLanguage?: string; // Add this line
+  status?: string; // Add this line
 }
 
 ////////////////////////////////////////////////////

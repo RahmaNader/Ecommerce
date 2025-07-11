@@ -19,17 +19,18 @@ const Card: React.FC<CardComponent> = ({
   averageRate,
   productVarients,
   discountPercent,
+  status = "Available",
 }) => {
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation(); 
+  const { t, i18n } = useTranslation();
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [isInCart, setIsInCart] = useState(false);
   const [showPreference, setShowPreference] = useState(false);
   const [imageUrl, setImageUrl] = useState<string>(fallbackImage);
   const [imageAlt, setImageAlt] = useState<string>(t("card.productImage"));
-  
-  const displayName = i18n.language === "ar" ? nameAr : (nameEn || name);
+
+  const displayName = i18n.language === "ar" ? nameAr : nameEn || name;
 
   useEffect(() => {
     const existingCart = Cookies.get("cart")
@@ -74,17 +75,17 @@ const Card: React.FC<CardComponent> = ({
     productId: number;
   }) => {
     setShowPreference(false);
-  
+
     const existingCart = Cookies.get("cart")
       ? JSON.parse(Cookies.get("cart") as string)
       : [];
-  
+
     const cartItem = {
       id: productID,
-      name: displayName, 
+      name: displayName,
       DisPrice: priceAfterDiscount,
       NormalPrice: productPrice,
-      src: preferences.imageUrl || (productImages?.[0]?.imageUrl || ""),
+      src: preferences.imageUrl || productImages?.[0]?.imageUrl || "",
       alt: displayName,
       color: preferences.color,
       size: preferences.size,
@@ -93,23 +94,25 @@ const Card: React.FC<CardComponent> = ({
       nameEn: nameEn,
       nameAr: nameAr,
       discountPercent: discountPercent,
-      language: i18n.language, 
-      productVarientId: productVarients?.find(v => v.colorNameEn === preferences.color)?.productVarientId,
+      language: i18n.language,
+      productVarientId: productVarients?.find(
+        (v) => v.colorNameEn === preferences.color
+      )?.productVarientId,
     };
-  
+
     const existingItemIndex = existingCart.findIndex(
       (item: { id: number; color: string; size: string }) =>
         item.id === cartItem.id &&
         item.color === cartItem.color &&
         item.size === cartItem.size
     );
-  
+
     if (existingItemIndex !== -1) {
       existingCart[existingItemIndex].quantity += cartItem.quantity;
     } else {
       existingCart.push(cartItem);
     }
-  
+
     Cookies.set("cart", JSON.stringify(existingCart), { expires: 7 });
     setAlertMessage(t("card.addedToCart"));
     setIsInCart(true);
@@ -131,6 +134,7 @@ const Card: React.FC<CardComponent> = ({
             product={{ productVarients }}
             onSubmit={handlePreferenceSubmit}
             onCancel={() => setShowPreference(false)}
+            status={status}
           />
         </div>
       )}
@@ -151,7 +155,11 @@ const Card: React.FC<CardComponent> = ({
             isInCart ? "bg-ForthColor" : "bg-wine"
           }`}
         >
-          <img src={shoppingCart} alt={t("card.addToCart")} className="w-5 h-5" />
+          <img
+            src={shoppingCart}
+            alt={t("card.addToCart")}
+            className="w-5 h-5"
+          />
         </div>
       </div>
 
@@ -160,7 +168,8 @@ const Card: React.FC<CardComponent> = ({
           onClick={handleCardClick}
           className="font-playfair font-medium text-base md:text-2xl hover:opacity-80 cursor-pointer text-wine"
         >
-          {displayName} {/* Use the displayName variable instead of just name */}
+          {displayName}{" "}
+          {/* Use the displayName variable instead of just name */}
         </p>
         <p className="font-playfair font-semibold text-base md:text-xl text-ForthColor">
           {t("card.priceInCurrency", { price: priceAfterDiscount })}

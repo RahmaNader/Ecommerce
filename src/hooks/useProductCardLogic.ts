@@ -25,6 +25,7 @@ export interface UseProductCardLogicProps {
   discountPercent: number;
   productVarients: ProductVariant[];
   productImages: ProductImage[];
+  status?: string;
 }
 
 export function useProductCardLogic(props: UseProductCardLogicProps) {

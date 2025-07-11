@@ -37,6 +37,7 @@ const ProductsDisplay: React.FC<ProductsDisplayProps> = ({
               productVarients={card.productVarients}
               productImages={card.productImages}
               averageRate={card.averageRate}
+              status={card.status}
             />
           </div>
         ))}
