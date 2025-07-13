@@ -129,8 +129,24 @@ const Navbar: React.FC = () => {
     return category.nameEn || category.name;
   };
 
+  const navRef = React.useRef<HTMLDivElement>(null);
+
+  // ⬇︎ update --nav-h whenever the navbar is resized (brand logo swaps, window resize, etc.)
+  React.useLayoutEffect(() => {
+    if (!navRef.current) return;
+    const ro = new ResizeObserver(([entry]) => {
+      document.documentElement.style.setProperty(
+        "--nav-h",
+        `${entry.contentRect.height}px`
+      );
+    });
+    ro.observe(navRef.current);
+    return () => ro.disconnect();
+  }, []);
+
   return (
     <div
+      ref={navRef}
       className={`sticky top-0 z-40 w-full bg-mainColor shadow-sm ${
         isRTL ? "rtl" : "ltr"
       }`}

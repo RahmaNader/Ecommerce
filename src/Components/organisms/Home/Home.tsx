@@ -13,6 +13,7 @@ import { useLanguage } from "@context/useLanguage";
 import kids from "@assets/Kids.jpeg";
 import women from "@assets/WomenCategory.jpg";
 import men from "@assets/MenCategory.jpeg";
+import { useIsSmall } from "@hooks/useIsSmall";
 
 const slugify = (txt: string) =>
   txt
@@ -21,28 +22,80 @@ const slugify = (txt: string) =>
     .replace(/\s+/g, "-")
     .replace(/[^\p{L}\p{N}-]+/gu, "");
 
+/* ─────────────────────────────────────────────────────────
+   1 ▪ Grid st agger  (slower reveal)
+   ───────────────────────────────────────────────────────── */
 const gridVariants: Variants = {
   hidden: {},
   show: {
-    transition: { staggerChildren: 0.15, delayChildren: 0.1 },
+    /* was 0.15 / 0.1   →   now each card waits a bit longer */
+    transition: { staggerChildren: 0.25, delayChildren: 0.2 },
   },
 };
 
+/* ─────────────────────────────────────────────────────────
+   2 ▪ Fade-slide  (slower spring)
+   ───────────────────────────────────────────────────────── */
 const fadeSlide: Variants = {
   hidden: { opacity: 0, y: 30 },
-  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 120 } },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      /* ↓ lower stiffness + extra damping  → gentler + longer */
+      stiffness: 80,
+      damping: 18,
+    },
+  },
 };
 
+/* ─────────────────────────────────────────────────────────
+   3 ▪ Section fade-in
+   ───────────────────────────────────────────────────────── */
 const sectionVariants: Variants = {
   hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { duration: 0.4 } },
+  show: {
+    opacity: 1,
+    /* was 0.4 s → now 0.8 s */
+    transition: { duration: 0.8 },
+  },
+};
+
+/* ─────────────────────────────────────────────────────────
+   4 ▪ “Swoop” animations for small screens
+   ───────────────────────────────────────────────────────── */
+const swoopLeft: Variants = {
+  hidden: { opacity: 0, x: -80 },
+  show: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      type: "spring",
+      stiffness: 140, // lower = slower
+      damping: 20,
+    },
+  },
+};
+
+const swoopRight: Variants = {
+  hidden: { opacity: 0, x: 80 },
+  show: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      type: "spring",
+      stiffness: 140,
+      damping: 20,
+    },
+  },
 };
 
 const Home: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { language } = useLanguage();
-
+  const isSmall = useIsSmall();
   const handleCategoryClick = (
     nameEn: string,
     nameAr: string,
@@ -84,7 +137,13 @@ const Home: React.FC = () => {
           className="grid auto-rows-[1fr] gap-y-20 gap-x-10 justify-center"
           style={{ gridTemplateColumns: "repeat(auto-fit, 225px)" }}
         >
-          <motion.div variants={fadeSlide}>
+          <motion.div
+            variants={isSmall ? swoopLeft : fadeSlide}
+            initial="hidden"
+            whileInView="show"
+            /*  ↓ fire only after the card is **completely** in view  */
+            viewport={{ once: true, amount: 1 }}
+          >
             <CategoryItem
               src={men}
               alt="Men"
@@ -93,7 +152,12 @@ const Home: React.FC = () => {
             />
           </motion.div>
 
-          <motion.div variants={fadeSlide}>
+          <motion.div
+            variants={fadeSlide}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 1 }}
+          >
             <CategoryItem
               src={women}
               alt="Women"
@@ -102,7 +166,12 @@ const Home: React.FC = () => {
             />
           </motion.div>
 
-          <motion.div variants={fadeSlide}>
+          <motion.div
+            variants={isSmall ? swoopRight : fadeSlide}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 1 }}
+          >
             <CategoryItem
               src={kids}
               alt="Kids"
