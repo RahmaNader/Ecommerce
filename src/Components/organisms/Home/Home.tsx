@@ -142,7 +142,11 @@ const Home: React.FC = () => {
             initial="hidden"
             whileInView="show"
             /*  ↓ fire only after the card is **completely** in view  */
-            viewport={{ once: true, amount: 1 }}
+            viewport={{
+              once: true,
+              amount: 0.8,
+              margin: "-64px 0px -32px 0px",
+            }}
           >
             <CategoryItem
               src={men}
@@ -156,7 +160,11 @@ const Home: React.FC = () => {
             variants={fadeSlide}
             initial="hidden"
             whileInView="show"
-            viewport={{ once: true, amount: 1 }}
+            viewport={{
+              once: true,
+              amount: 0.8,
+              margin: "-64px 0px -32px 0px",
+            }}
           >
             <CategoryItem
               src={women}
@@ -170,7 +178,11 @@ const Home: React.FC = () => {
             variants={isSmall ? swoopRight : fadeSlide}
             initial="hidden"
             whileInView="show"
-            viewport={{ once: true, amount: 1 }}
+            viewport={{
+              once: true,
+              amount: 0.8,
+              margin: "-64px 0px -32px 0px",
+            }}
           >
             <CategoryItem
               src={kids}
