@@ -95,6 +95,7 @@ const Home: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { language } = useLanguage();
+
   const isSmall = useIsSmall();
   const handleCategoryClick = (
     nameEn: string,
@@ -142,11 +143,8 @@ const Home: React.FC = () => {
             initial="hidden"
             whileInView="show"
             /*  ↓ fire only after the card is **completely** in view  */
-            viewport={{
-              once: true,
-              amount: 0.8,
-              margin: "-64px 0px -32px 0px",
-            }}
+            viewport={{ once: true, amount: 0.6 }}
+            style={{ willChange: "transform", transform: "translateZ(0)" }}
           >
             <CategoryItem
               src={men}
@@ -160,11 +158,8 @@ const Home: React.FC = () => {
             variants={fadeSlide}
             initial="hidden"
             whileInView="show"
-            viewport={{
-              once: true,
-              amount: 0.8,
-              margin: "-64px 0px -32px 0px",
-            }}
+            viewport={{ once: true, amount: 0.6 }}
+            style={{ willChange: "transform", transform: "translateZ(0)" }}
           >
             <CategoryItem
               src={women}
@@ -178,11 +173,8 @@ const Home: React.FC = () => {
             variants={isSmall ? swoopRight : fadeSlide}
             initial="hidden"
             whileInView="show"
-            viewport={{
-              once: true,
-              amount: 0.8,
-              margin: "-64px 0px -32px 0px",
-            }}
+            viewport={{ once: true, amount: 0.6 }}
+            style={{ willChange: "transform", transform: "translateZ(0)" }}
           >
             <CategoryItem
               src={kids}
@@ -201,6 +193,7 @@ const Home: React.FC = () => {
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, amount: 0.2 }}
+        style={{ willChange: "transform", transform: "translateZ(0)" }}
       >
         {newArrivals && newArrivals.length > 0 && (
           <>

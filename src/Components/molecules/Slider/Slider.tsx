@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Button } from "@components/atoms";
+// import { Button } from "@components/atoms";
 import slide1 from "@assets/test_slider.png";
 import slide2 from "@assets/test_slider.png";
 import slide3 from "@assets/test_slider.png";
@@ -21,7 +21,7 @@ const variants = {
 const Slider: React.FC = () => {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.dir() === "rtl";
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [[page, dir], setPage] = useState<[number, number]>([0, 0]);
   const [autoPlay, setAutoPlay] = useState(true);
 
@@ -123,12 +123,12 @@ const Slider: React.FC = () => {
               <p className="mb-8 text-sm sm:text-base lg:text-lg text-wine/90 leading-relaxed max-w-prose">
                 {slide.description || t("slider.description")}
               </p>
-              <Button
+              {/* <Button
                 label={t("slider.viewCollection")}
                 onClick={() => navigate(slide.link)}
                 type="primary"
                 className="text-base hover:shadow-lg transition-all"
-              />
+              /> */}
             </motion.div>
           </div>
         </motion.div>
