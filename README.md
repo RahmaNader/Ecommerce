@@ -1,156 +1,112 @@
-Kiswa - Modern E-Commerce Storefront
+# Kiswa - Modern E-Commerce Storefront
+
 <p align="center">
-<img src="./public/KiswaLogoMark.svg" alt="Kiswa Logo" width="150">
+  <img src="./public/image.png" alt="Project Screenshot" width="500" height="500">
 </p>
 
 <p align="center">
-<strong>A responsive and feature-rich frontend for a modern clothing e-commerce website.</strong>
-<br />
-This project demonstrates a complete, scalable, and production-ready storefront built with a modern tech stack.
+  <strong>A responsive and feature-rich frontend for a modern clothing e-commerce website.</strong><br/>
+  This project demonstrates a complete, scalable, and production-ready storefront built with a modern tech stack.
 </p>
 
 <p align="center">
-<img src="https://www.google.com/search?q=https://img.shields.io/badge/React-20232A%3Fstyle%3Dfor-the-badge%26logo%3Dreact%26logoColor%3D61DAFB" alt="React">
-<img src="https://www.google.com/search?q=https://img.shields.io/badge/TypeScript-007ACC%3Fstyle%3Dfor-the-badge%26logo%3Dtypescript%26logoColor%3Dwhite" alt="TypeScript">
-<img src="https://www.google.com/search?q=https://img.shields.io/badge/Redux-593D88%3Fstyle%3Dfor-the-badge%26logo%3Dredux%26logoColor%3Dwhite" alt="Redux">
-<img src="https://www.google.com/search?q=https://img.shields.io/badge/Tailwind_CSS-38B2AC%3Fstyle%3Dfor-the-badge%26logo%3Dtailwind-css%26logoColor%3Dwhite" alt="Tailwind CSS">
-<img src="https://www.google.com/search?q=https://img.shields.io/badge/Vite-646CFF%3Fstyle%3Dfor-the-badge%26logo%3Dvite%26logoColor%3Dwhite" alt="Vite">
+  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React Badge"/>
+  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript Badge"/>
+  <img src="https://img.shields.io/badge/Redux-593D88?style=for-the-badge&logo=redux&logoColor=white" alt="Redux Badge"/>
+  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS Badge"/>
+  <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite Badge"/>
 </p>
 
-📋 Table of Contents
-Live Demo
+---
 
-Project Preview
+## 📋 Table of Contents
+- [Live Demo & Preview](#live-demo--preview)
+- [Key Features](#key-features)
+- [Technology & Architecture](#technology--architecture)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
 
-Features
+---
 
-Tech Stack & Architecture
+## 🌐 Live Demo & Preview
 
-Project Structure
+### Live Site  
+➡️ [View Live Site](https://royalkey-ten.vercel.app/)
 
-Getting Started
-
-Contact
-
-🌐 Live Demo
-Check out the live version of the project here:
-
-➡️ View Live Site <!--- <<< 👈 REPLACE THIS WITH YOUR DEPLOYMENT LINK -->
-
-📸 Project Preview
-<!--
-IMPORTANT: Add a high-quality GIF or screenshot of your application here.
-This is the most important part of the README for a UI project.
-You can drag and drop a GIF/image file directly into the GitHub editor.
--->
-
+### Screenshot  
 <p align="center">
-<img src="./public/image.png" alt="Project Screenshot">
-
-
-
-
-
-<em>(Replace this placeholder image with a screenshot or GIF of your running application!)</em>
+  <!-- <img src="./public/image.png" alt="Project Screenshot" width="800"> -->
 </p>
 
-✨ Features
-This application is packed with features designed to provide a complete and intuitive e-commerce experience.
+### Video Walkthrough (Optional)  
+A brief demo video showcasing search, cart, and checkout.  
+*(Add Loom/YouTube link here)*
 
-Dynamic Product Catalog: Browse a wide range of clothing items categorized for Men, Women, and Kids.
+---
 
-Advanced Search & Filtering: Quickly find products by name and refine results with a dedicated filter component for price, ratings, and more.
+## 🛠️ Technology & Architecture
 
-Product Details Page: View detailed information for each product, including descriptions, image galleries, and customer reviews.
+This project is built with a modern, scalable, and efficient frontend stack, designed to deliver a high-performance user experience and a clean developer experience.
 
-Wishlist / Favorites: Save products to a personal wishlist for later.
+- **Core Framework (React 18)**: The UI is built on React's component-based architecture, enabling the creation of reusable and interactive components that efficiently manage their own state.  
+- **Language (TypeScript)**: The entire codebase is written in TypeScript, providing strong type-safety to reduce runtime errors, improve code clarity, and enhance developer productivity in a large-scale project.  
+- **State Management (Redux Toolkit)**: For centralized state management, Redux Toolkit provides a single source of truth for application-wide data such as the shopping cart, user session, and product filters. This makes the application's state predictable and easier to debug.  
+- **Routing (React Router DOM)**: Client-side routing is handled by React Router, enabling a seamless single-page application (SPA) experience with dynamic, nested, and protected routes.  
+- **Styling (Tailwind CSS)**: A utility-first CSS framework used for rapidly building custom user interfaces directly in the markup. It allows for a consistent design system and highly responsive layouts without writing custom CSS.  
+- **Build Tool (Vite)**: The project is powered by Vite, offering a lightning-fast development server with Hot Module Replacement (HMR) and an optimized build process that bundles code efficiently for production.  
+- **API Communication (Axios)**: All asynchronous communication with the backend API for fetching products, handling user data, and processing orders is managed using Axios, a promise-based HTTP client.  
+- **Internationalization (i18next)**: Integrated to provide multi-language support, allowing the user interface to be easily translated and adapted for a global audience.  
 
-Shopping Cart: A fully functional cart where users can add/remove items and update quantities.
+---
 
-User Authentication: Secure sign-up and login functionality for a personalized experience.
+## 📂 Project Structure
+This project uses **Atomic Design** principles for scalable organization.
 
-Comprehensive User Profile: A dedicated section where users can:
-
-Manage personal data and addresses.
-
-View and track their complete order history.
-
-Manage saved payment methods.
-
-Process product returns and view their status.
-
-Multi-Language Support: Internationalization support using i18next allows for seamless language switching.
-
-Fully Responsive Design: A mobile-first approach that ensures a great user experience on any device, from desktops to smartphones.
-
-🛠️ Tech Stack & Architecture
-This project was built using modern frontend technologies and follows best practices for a maintainable and scalable codebase.
-
-Core Framework: React 18
-
-Language: TypeScript for robust type-safety.
-
-State Management: Redux Toolkit for efficient and predictable global state management.
-
-Routing: React Router DOM for declarative, client-side navigation.
-
-Styling: Tailwind CSS for a utility-first, highly customizable design system.
-
-Build Tool: Vite for a blazing fast development server and optimized production builds.
-
-API Communication: Axios for making asynchronous HTTP requests to the backend.
-
-Internationalization: i18next to handle multi-language support.
-
-Linting & Formatting: ESLint and Prettier to maintain high code quality and consistent style.
-
-📂 Project Structure
-The project's code is structured using Atomic Design principles to promote reusability and a clear separation of concerns.
-
+```
 /src
-├── /assets         # Static assets like images and fonts
-├── /components     # Reusable UI components
-│   ├── /atoms      # Basic building blocks (Button, Input, etc.)
-│   ├── /molecules  # Groups of atoms (SearchBar, ProductCard, etc.)
-│   └── /organisms  # Complex components (Navbar, Footer, ProductsGrid)
-├── /context        # React Context providers (ShopContext, LanguageProvider)
-├── /hooks          # Custom React hooks
-├── /pages          # Application screens/views
-├── /services       # API calls and authentication logic
-├── /types          # TypeScript type definitions
-└── /utils          # Helper functions and utilities
+├── assets         # Static assets (images, fonts)
+├── components     # Atoms, molecules, organisms
+├── context        # React Context providers
+├── hooks          # Custom hooks
+├── pages          # Application screens/views
+├── services       # API & auth logic
+├── types          # TypeScript type definitions
+└── utils          # Helper functions
+```
+---
 
-This structure makes it easy to locate components and understand their level of complexity, which is crucial for scalability and team collaboration.
+## 🚀 Getting Started
 
-🚀 Getting Started
-To get a local copy up and running, follow these simple steps.
+### Prerequisites
+- Node.js v18+
+- npm or yarn
 
-Prerequisites
-Make sure you have Node.js and npm (or yarn) installed on your machine.
+### Installation
+```bash
+# Clone repository
+git clone https://github.com/your-username/your-repo-name.git
 
-Node.js (v18.x or higher is recommended)
-
-npm or yarn
-
-Installation & Setup
-Clone the repository:
-
-git clone [https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git)
-
-Navigate to the project directory:
-
+# Navigate into folder
 cd your-repo-name
 
-Install the dependencies:
-
+# Install dependencies
 npm install
+# or
+yarn install
+```
 
-(or yarn install if you prefer Yarn)
+### Environment Variables
+Create a `.env` file in the root:
 
-Running the Application
-Once the dependencies are installed, you can run the development server:
+```env
+VITE_API_BASE_URL=http://your-backend-api-url.com
+```
 
+### Run Development Server
+```bash
 npm run dev
+```
+App will be available at: **http://localhost:5173**
 
-The application will now be running and accessible at http://localhost:5173.
+---
 
